@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Test - Hooomz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .qr-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .qr-section h2 {
+            margin-top: 0;
+            color: #444;
+            font-size: 18px;
+        }
+        .qr-code {
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            display: inline-block;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+        .data-info {
+            text-align: left;
+            background: white;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .instructions {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+            border-left: 4px solid #2196f3;
+        }
+        .instructions h3 {
+            margin-top: 0;
+            color: #1976d2;
+        }
+        .instructions ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .instructions li {
+            margin: 8px 0;
+        }
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏠 QR Code Scanner Test</h1>
+        <p class="subtitle">Use these test QR codes to verify the scanner functionality</p>
+
+        <!-- QR Code 1: JSON Format -->
+        <div class="qr-section">
+            <h2>Test 1: JSON Format (LG Refrigerator)</h2>
+            <div class="qr-code">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=%7B%22brand%22%3A%22LG%22%2C%22model%22%3A%22LFX28968ST%22%2C%22serial%22%3A%22123ABC456DEF%22%7D" alt="QR Code - LG Refrigerator">
+            </div>
+            <div class="data-info">
+                <strong>Expected Data:</strong><br>
+                Brand: LG<br>
+                Model: LFX28968ST<br>
+                Serial: 123ABC456DEF
+            </div>
+        </div>
+
+        <!-- QR Code 2: Pipe-Delimited Format -->
+        <div class="qr-section">
+            <h2>Test 2: Pipe-Delimited Format (Samsung Washer)</h2>
+            <div class="qr-code">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=BRAND%3ASamsung%7CMODEL%3AWF45R6100AW%7CSERIAL%3ASN789456123" alt="QR Code - Samsung Washer">
+            </div>
+            <div class="data-info">
+                <strong>Expected Data:</strong><br>
+                Brand: Samsung<br>
+                Model: WF45R6100AW<br>
+                Serial: SN789456123
+            </div>
+        </div>
+
+        <!-- QR Code 3: URL Format -->
+        <div class="qr-section">
+            <h2>Test 3: URL Format (Whirlpool Dryer)</h2>
+            <div class="qr-code">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https%3A%2F%2Fmanufacturer.com%2Fproduct%3Fbrand%3DWhirlpool%26model%3DWED5100HW%26serial%3DWHP123456" alt="QR Code - Whirlpool Dryer">
+            </div>
+            <div class="data-info">
+                <strong>Expected Data:</strong><br>
+                Brand: Whirlpool<br>
+                Model: WED5100HW<br>
+                Serial: WHP123456
+            </div>
+        </div>
+
+        <!-- QR Code 4: Comma-Separated Format -->
+        <div class="qr-section">
+            <h2>Test 4: Comma-Separated Format (GE Dishwasher)</h2>
+            <div class="qr-code">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=GE%2CGDT645SYNFS%2CGE987654321" alt="QR Code - GE Dishwasher">
+            </div>
+            <div class="data-info">
+                <strong>Expected Data:</strong><br>
+                Brand: GE<br>
+                Model: GDT645SYNFS<br>
+                Serial: GE987654321
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="instructions">
+            <h3>📱 How to Test on Mobile</h3>
+            <ol>
+                <li>Open this page on your mobile device: <code>http://10.0.0.77:5173/qr-test.html</code></li>
+                <li>Navigate to the Hooomz app: <code>http://10.0.0.77:5173</code></li>
+                <li>Go to a home → Materials → Click "Add Material"</li>
+                <li>Tap "Take Photo" button</li>
+                <li>Point your camera at one of the QR codes on this screen</li>
+                <li>Take the photo</li>
+                <li>Check the browser console (use Chrome Remote Debugging) for logs</li>
+                <li>The form fields should auto-populate with the brand and model</li>
+            </ol>
+
+            <h3>💻 Alternative: Screenshot Method</h3>
+            <ol>
+                <li>Take a screenshot of one of these QR codes</li>
+                <li>In the Hooomz app, use "Browse Files" instead of "Take Photo"</li>
+                <li>Upload the screenshot</li>
+                <li>Watch for auto-population</li>
+            </ol>
+
+            <h3>🔍 What to Check</h3>
+            <ul style="list-style: none; padding-left: 0;">
+                <li>✓ Console logs starting with [QR Scanner], [QR Parser], [ImageUpload], [MaterialForm]</li>
+                <li>✓ Green success message showing "QR Code Detected!"</li>
+                <li>✓ Brand and Model fields auto-filled</li>
+                <li>✓ No error messages in red</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

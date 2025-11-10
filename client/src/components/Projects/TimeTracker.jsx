@@ -1,22 +1,27 @@
 import { useState, useEffect } from 'react'
 import { Card } from '../UI/Card'
 import { Button } from '../UI/Button'
-import { Play, Square, Clock } from 'lucide-react'
+import { Play, Square, Clock, Plus } from 'lucide-react'
 import { useTimeTracking } from '../../hooks/useProjects'
 import * as projectsApi from '../../services/projectsApi'
+import { api } from '../../services/api'
 
 /**
  * TimeTracker Component
- * Timer widget with dropdown restricted to project scope items
+ * Hierarchical category/subcategory/task selection with quick task creation
  */
 const TimeTracker = ({ projectId }) => {
   const [workerName, setWorkerName] = useState(localStorage.getItem('workerName') || '')
+  const [selectedCategory, setSelectedCategory] = useState('')
+  const [selectedSubcategory, setSelectedSubcategory] = useState('')
   const [selectedItemId, setSelectedItemId] = useState('')
-  const [scopeItems, setScopeItems] = useState([])
+  const [projectScope, setProjectScope] = useState(null)
   const [notes, setNotes] = useState('')
   const [elapsedTime, setElapsedTime] = useState(0)
   const [showAddWorker, setShowAddWorker] = useState(false)
   const [newWorkerName, setNewWorkerName] = useState('')
+  const [showAddTask, setShowAddTask] = useState(false)
+  const [newTaskDescription, setNewTaskDescription] = useState('')
   const [workersList, setWorkersList] = useState(() => {
     const saved = localStorage.getItem('workersList')
     return saved ? JSON.parse(saved) : ['Nathan', 'Nishant']
@@ -24,19 +29,19 @@ const TimeTracker = ({ projectId }) => {
 
   const { activeEntry, startTimer, stopTimer, checkActiveEntry } = useTimeTracking(projectId)
 
-  // Load scope items for dropdown
+  // Load project scope with hierarchy
   useEffect(() => {
-    const loadScopeItems = async () => {
+    const loadProjectScope = async () => {
       try {
-        const items = await projectsApi.getAllScopeItems(projectId)
-        setScopeItems(items)
+        const response = await api.get(`/projects/${projectId}/scope`)
+        setProjectScope(response.data.data)
       } catch (err) {
-        console.error('Error loading scope items:', err)
+        console.error('Error loading project scope:', err)
       }
     }
 
     if (projectId) {
-      loadScopeItems()
+      loadProjectScope()
     }
   }, [projectId])
 
@@ -75,7 +80,7 @@ const TimeTracker = ({ projectId }) => {
     }
 
     if (!selectedItemId) {
-      alert('Please select a task from the scope of work')
+      alert('Please select a task')
       return
     }
 
@@ -83,6 +88,8 @@ const TimeTracker = ({ projectId }) => {
       localStorage.setItem('workerName', workerName)
       await startTimer(selectedItemId, workerName, notes)
       setNotes('')
+      setSelectedCategory('')
+      setSelectedSubcategory('')
       setSelectedItemId('')
     } catch (err) {
       console.error('Error starting timer:', err)
@@ -96,6 +103,9 @@ const TimeTracker = ({ projectId }) => {
     try {
       await stopTimer(activeEntry.id)
       setElapsedTime(0)
+      // Reload project scope to get updated hours
+      const response = await api.get(`/projects/${projectId}/scope`)
+      setProjectScope(response.data.data)
     } catch (err) {
       console.error('Error stopping timer:', err)
       alert('Failed to stop timer')
@@ -121,6 +131,36 @@ const TimeTracker = ({ projectId }) => {
     setShowAddWorker(false)
   }
 
+  const handleAddTask = async () => {
+    if (!selectedSubcategory) {
+      alert('Please select a category and subcategory first')
+      return
+    }
+
+    if (!newTaskDescription.trim()) {
+      alert('Please enter a task description')
+      return
+    }
+
+    try {
+      await projectsApi.createScopeItem(selectedSubcategory, {
+        description: newTaskDescription.trim(),
+        status: 'pending'
+      })
+
+      // Reload project scope
+      const response = await api.get(`/projects/${projectId}/scope`)
+      setProjectScope(response.data.data)
+
+      setNewTaskDescription('')
+      setShowAddTask(false)
+      alert('Task created successfully!')
+    } catch (err) {
+      console.error('Error creating task:', err)
+      alert('Failed to create task')
+    }
+  }
+
   const formatTime = (seconds) => {
     const hours = Math.floor(seconds / 3600)
     const minutes = Math.floor((seconds % 3600) / 60)
@@ -128,12 +168,18 @@ const TimeTracker = ({ projectId }) => {
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
   }
 
-  const formatItemLabel = (item) => {
-    // Format: Category > Subcategory > Task
-    const category = item.subcategory?.category?.name || 'Unknown'
-    const subcategory = item.subcategory?.name || 'Unknown'
-    return `${category} > ${subcategory} > ${item.description}`
-  }
+  // Get available categories
+  const categories = projectScope?.categories || []
+
+  // Get subcategories for selected category
+  const subcategories = selectedCategory
+    ? categories.find(c => c.id === selectedCategory)?.subcategories || []
+    : []
+
+  // Get tasks for selected subcategory
+  const tasks = selectedSubcategory
+    ? subcategories.find(s => s.id === selectedSubcategory)?.items || []
+    : []
 
   return (
     <Card className="bg-gradient-to-r from-primary-50 to-blue-50">
@@ -232,34 +278,118 @@ const TimeTracker = ({ projectId }) => {
             )}
           </div>
 
-          {/* Task Selection - ONLY SCOPE ITEMS */}
+          {/* Category Selection */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Select Task <span className="text-xs text-gray-500">(Scope items only)</span>
+              Category
             </label>
             <select
-              value={selectedItemId}
-              onChange={(e) => setSelectedItemId(e.target.value)}
+              value={selectedCategory}
+              onChange={(e) => {
+                setSelectedCategory(e.target.value)
+                setSelectedSubcategory('')
+                setSelectedItemId('')
+              }}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
-              <option value="">-- Select a task from scope --</option>
-              {scopeItems
-                .filter(item => item.status !== 'completed' && item.status !== 'cancelled')
-                .map(item => (
-                  <option key={item.id} value={item.id}>
-                    {formatItemLabel(item)}
-                  </option>
-                ))
-              }
+              <option value="">-- Select category --</option>
+              {categories.map(category => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
             </select>
-            {scopeItems.length === 0 && (
-              <p className="text-xs text-amber-600 mt-1">
-                No scope items available. Add tasks to the project scope first.
-              </p>
-            )}
           </div>
 
-          {/* Notes */}
+          {/* Subcategory Selection */}
+          {selectedCategory && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Subcategory
+              </label>
+              <select
+                value={selectedSubcategory}
+                onChange={(e) => {
+                  setSelectedSubcategory(e.target.value)
+                  setSelectedItemId('')
+                }}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              >
+                <option value="">-- Select subcategory --</option>
+                {subcategories.map(subcategory => (
+                  <option key={subcategory.id} value={subcategory.id}>
+                    {subcategory.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* Task Selection */}
+          {selectedSubcategory && (
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-sm font-medium text-gray-700">
+                  Task
+                </label>
+                <button
+                  onClick={() => setShowAddTask(!showAddTask)}
+                  className="text-xs text-primary-600 hover:text-primary-700 font-medium flex items-center gap-1"
+                >
+                  <Plus size={14} />
+                  Add New Task
+                </button>
+              </div>
+
+              {showAddTask && (
+                <div className="mb-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <input
+                    type="text"
+                    value={newTaskDescription}
+                    onChange={(e) => setNewTaskDescription(e.target.value)}
+                    placeholder="Enter task description"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 mb-2"
+                  />
+                  <div className="flex gap-2">
+                    <Button
+                      variant="primary"
+                      onClick={handleAddTask}
+                      className="flex-1 text-sm"
+                    >
+                      Create Task
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setShowAddTask(false)
+                        setNewTaskDescription('')
+                      }}
+                      className="flex-1 text-sm"
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              <select
+                value={selectedItemId}
+                onChange={(e) => setSelectedItemId(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              >
+                <option value="">-- Select task --</option>
+                {tasks
+                  .filter(item => item.status !== 'completed' && item.status !== 'cancelled')
+                  .map(item => (
+                    <option key={item.id} value={item.id}>
+                      {item.description}
+                    </option>
+                  ))}
+              </select>
+            </div>
+          )}
+
+          {/* Optional Notes */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Notes (Optional)
@@ -267,17 +397,18 @@ const TimeTracker = ({ projectId }) => {
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Add any notes about this work session..."
+              placeholder="Add notes about this work session..."
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
               rows={2}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none"
             />
           </div>
 
           {/* Start Button */}
           <Button
+            variant="primary"
             className="w-full"
             onClick={handleStartTimer}
-            disabled={!workerName || !selectedItemId}
+            disabled={!selectedItemId || !workerName}
           >
             <Play size={20} className="mr-2" />
             Start Timer

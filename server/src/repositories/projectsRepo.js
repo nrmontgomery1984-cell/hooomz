@@ -158,3 +158,18 @@ export const getProjectWithScope = async (projectId) => {
     categories: organizedCategories
   }
 }
+
+/**
+ * Get all active workers
+ * @returns {Promise<Array>} Array of active workers
+ */
+export const getWorkers = async () => {
+  const { data, error } = await supabase
+    .from('workers')
+    .select('*')
+    .eq('is_active', true)
+    .order('name')
+
+  if (error) throw error
+  return data
+}

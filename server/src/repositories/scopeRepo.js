@@ -223,3 +223,192 @@ export const getAllScopeItemsByProject = async (projectId) => {
   if (error) throw error
   return data || []
 }
+
+// ==================== SCOPE ITEM DETAILS (Tools, Materials, Checklist, Photos) ====================
+
+/**
+ * Get full details for a scope item (tools, materials, checklist, photos)
+ * @param {string} itemId - Scope item ID
+ * @returns {Promise<Object>} Object with materials, tools, checklist, and photos arrays
+ */
+export const getScopeItemDetails = async (itemId) => {
+  const [materials, tools, checklist, photos] = await Promise.all([
+    getScopeItemMaterials(itemId),
+    getScopeItemTools(itemId),
+    getScopeItemChecklist(itemId),
+    getScopeItemPhotos(itemId)
+  ])
+
+  return { materials, tools, checklist, photos }
+}
+
+// Materials
+export const getScopeItemMaterials = async (itemId) => {
+  const { data, error } = await supabase
+    .from('scope_item_materials')
+    .select('*')
+    .eq('scope_item_id', itemId)
+    .order('display_order')
+
+  if (error) throw error
+  return data || []
+}
+
+export const updateScopeItemMaterials = async (itemId, materials) => {
+  // Delete existing materials
+  await supabase
+    .from('scope_item_materials')
+    .delete()
+    .eq('scope_item_id', itemId)
+
+  // Insert new materials
+  if (materials && materials.length > 0) {
+    const materialsWithItemId = materials.map((m, index) => ({
+      ...m,
+      scope_item_id: itemId,
+      display_order: m.display_order || index
+    }))
+
+    const { data, error } = await supabase
+      .from('scope_item_materials')
+      .insert(materialsWithItemId)
+      .select()
+
+    if (error) throw error
+    return data
+  }
+
+  return []
+}
+
+// Tools
+export const getScopeItemTools = async (itemId) => {
+  const { data, error } = await supabase
+    .from('scope_item_tools')
+    .select('*')
+    .eq('scope_item_id', itemId)
+    .order('display_order')
+
+  if (error) throw error
+  return data || []
+}
+
+export const updateScopeItemTools = async (itemId, tools) => {
+  // Delete existing tools
+  await supabase
+    .from('scope_item_tools')
+    .delete()
+    .eq('scope_item_id', itemId)
+
+  // Insert new tools
+  if (tools && tools.length > 0) {
+    const toolsWithItemId = tools.map((t, index) => ({
+      ...t,
+      scope_item_id: itemId,
+      display_order: t.display_order || index
+    }))
+
+    const { data, error} = await supabase
+      .from('scope_item_tools')
+      .insert(toolsWithItemId)
+      .select()
+
+    if (error) throw error
+    return data
+  }
+
+  return []
+}
+
+// Checklist
+export const getScopeItemChecklist = async (itemId) => {
+  const { data, error } = await supabase
+    .from('scope_item_checklist')
+    .select('*')
+    .eq('scope_item_id', itemId)
+    .order('display_order')
+
+  if (error) throw error
+  return data || []
+}
+
+export const updateScopeItemChecklist = async (itemId, checklist) => {
+  // Delete existing checklist items
+  await supabase
+    .from('scope_item_checklist')
+    .delete()
+    .eq('scope_item_id', itemId)
+
+  // Insert new checklist items
+  if (checklist && checklist.length > 0) {
+    const checklistWithItemId = checklist.map((c, index) => ({
+      ...c,
+      scope_item_id: itemId,
+      display_order: c.display_order || index
+    }))
+
+    const { data, error } = await supabase
+      .from('scope_item_checklist')
+      .insert(checklistWithItemId)
+      .select()
+
+    if (error) throw error
+    return data
+  }
+
+  return []
+}
+
+export const toggleChecklistItem = async (checklistItemId, isCompleted) => {
+  const updateData = {
+    is_completed: isCompleted
+  }
+
+  if (isCompleted) {
+    updateData.completed_at = new Date().toISOString()
+  } else {
+    updateData.completed_at = null
+  }
+
+  const { data, error } = await supabase
+    .from('scope_item_checklist')
+    .update(updateData)
+    .eq('id', checklistItemId)
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+// Photos
+export const getScopeItemPhotos = async (itemId) => {
+  const { data, error } = await supabase
+    .from('scope_item_photos')
+    .select('*')
+    .eq('scope_item_id', itemId)
+    .order('created_at', { ascending: false })
+
+  if (error) throw error
+  return data || []
+}
+
+export const addScopeItemPhoto = async (photoData) => {
+  const { data, error } = await supabase
+    .from('scope_item_photos')
+    .insert(photoData)
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export const deleteScopeItemPhoto = async (photoId) => {
+  const { error } = await supabase
+    .from('scope_item_photos')
+    .delete()
+    .eq('id', photoId)
+
+  if (error) throw error
+}

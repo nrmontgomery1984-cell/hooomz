@@ -15,6 +15,19 @@ router.use((req, res, next) => {
   next()
 })
 
+// ==================== WORKERS ====================
+
+// Get all active workers
+router.get('/workers', async (req, res) => {
+  try {
+    const workers = await projectsRepo.getWorkers()
+    res.json({ data: workers })
+  } catch (error) {
+    console.error('Error fetching workers:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
 // ==================== TIME ENTRIES (Must come BEFORE /:projectId) ====================
 
 // Get active time entry for a worker
@@ -221,6 +234,94 @@ router.post('/items/:itemId/time-entries', async (req, res) => {
     res.status(201).json({ data: timeEntry })
   } catch (error) {
     console.error('Error creating time entry:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Get scope item details (tools, materials, checklist, photos)
+router.get('/items/:itemId/details', async (req, res) => {
+  try {
+    const { itemId } = req.params
+    const details = await scopeRepo.getScopeItemDetails(itemId)
+    res.json({ data: details })
+  } catch (error) {
+    console.error('Error fetching scope item details:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Update scope item materials
+router.put('/items/:itemId/materials', async (req, res) => {
+  try {
+    const { itemId } = req.params
+    const materials = await scopeRepo.updateScopeItemMaterials(itemId, req.body.materials)
+    res.json({ data: materials })
+  } catch (error) {
+    console.error('Error updating materials:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Update scope item tools
+router.put('/items/:itemId/tools', async (req, res) => {
+  try {
+    const { itemId } = req.params
+    const tools = await scopeRepo.updateScopeItemTools(itemId, req.body.tools)
+    res.json({ data: tools })
+  } catch (error) {
+    console.error('Error updating tools:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Update scope item checklist
+router.put('/items/:itemId/checklist', async (req, res) => {
+  try {
+    const { itemId } = req.params
+    const checklist = await scopeRepo.updateScopeItemChecklist(itemId, req.body.checklist)
+    res.json({ data: checklist })
+  } catch (error) {
+    console.error('Error updating checklist:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Toggle checklist item
+router.patch('/items/checklist/:checklistItemId', async (req, res) => {
+  try {
+    const { checklistItemId } = req.params
+    const { isCompleted } = req.body
+    const item = await scopeRepo.toggleChecklistItem(checklistItemId, isCompleted)
+    res.json({ data: item })
+  } catch (error) {
+    console.error('Error toggling checklist item:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Upload photo for scope item
+router.post('/items/:itemId/photos', async (req, res) => {
+  try {
+    const { itemId } = req.params
+    const photo = await scopeRepo.addScopeItemPhoto({
+      ...req.body,
+      scope_item_id: itemId
+    })
+    res.status(201).json({ data: photo })
+  } catch (error) {
+    console.error('Error uploading photo:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Delete photo
+router.delete('/items/photos/:photoId', async (req, res) => {
+  try {
+    const { photoId } = req.params
+    await scopeRepo.deleteScopeItemPhoto(photoId)
+    res.json({ success: true })
+  } catch (error) {
+    console.error('Error deleting photo:', error)
     res.status(500).json({ error: error.message })
   }
 })

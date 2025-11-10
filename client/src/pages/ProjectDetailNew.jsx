@@ -7,6 +7,7 @@ import Breadcrumbs from '../components/Layout/Breadcrumbs'
 import { Button } from '../components/UI/Button'
 import { ArrowLeft, CheckCircle2, Circle, Clock, AlertCircle, MapPin } from 'lucide-react'
 import TimeTracker from '../components/Projects/TimeTracker'
+import TaskDetailDialog from '../components/Projects/TaskDetailDialog'
 import { colors } from '../styles/design-tokens'
 
 /**
@@ -26,6 +27,8 @@ const ProjectDetailNew = () => {
     status: 'all',
   })
   const [expandedCategories, setExpandedCategories] = useState({})
+  const [selectedTask, setSelectedTask] = useState(null)
+  const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false)
 
   // Extract unique locations from scope items
   const locations = useMemo(() => {
@@ -401,7 +404,11 @@ const ProjectDetailNew = () => {
                                       </div>
                                       <div className="flex-1">
                                         <p
-                                          className={`text-sm font-medium ${
+                                          onClick={() => {
+                                            setSelectedTask(item)
+                                            setIsTaskDialogOpen(true)
+                                          }}
+                                          className={`text-sm font-medium cursor-pointer hover:text-blue-600 transition-colors ${
                                             item.status === 'completed' ? 'line-through text-gray-600' : 'text-gray-900'
                                           }`}
                                         >
@@ -479,6 +486,20 @@ const ProjectDetailNew = () => {
           )}
         </div>
       </div>
+
+      {/* Task Detail Dialog */}
+      <TaskDetailDialog
+        item={selectedTask}
+        isOpen={isTaskDialogOpen}
+        onClose={() => {
+          setIsTaskDialogOpen(false)
+          setSelectedTask(null)
+        }}
+        onUpdate={() => {
+          // Refresh project data after updates
+          window.location.reload()
+        }}
+      />
     </div>
   )
 }

@@ -79,14 +79,51 @@ const TimeTracker = ({ projectId }) => {
       return
     }
 
-    if (!selectedItemId) {
-      alert('Please select a task')
+    if (!selectedCategory) {
+      alert('Please select at least a category')
       return
     }
 
     try {
       localStorage.setItem('workerName', workerName)
-      await startTimer(selectedItemId, workerName, notes)
+
+      let itemId = selectedItemId
+
+      // If no specific task selected, create a generic one
+      if (!itemId) {
+        // Determine the description based on what's selected
+        const category = categories.find(c => c.id === selectedCategory)
+        const subcategory = selectedSubcategory
+          ? subcategories.find(s => s.id === selectedSubcategory)
+          : null
+
+        let description = category?.name || 'General work'
+        if (subcategory) {
+          description = `${category.name} - ${subcategory.name}`
+        }
+
+        // Need a subcategory to create a task, so use the first one if not selected
+        const targetSubcategoryId = selectedSubcategory || subcategories[0]?.id
+
+        if (!targetSubcategoryId) {
+          alert('This category has no subcategories. Please add a subcategory first.')
+          return
+        }
+
+        // Create a generic task
+        const newTask = await projectsApi.createScopeItem(targetSubcategoryId, {
+          description: `${description} - ${workerName}`,
+          status: 'in_progress'
+        })
+
+        itemId = newTask.id
+
+        // Reload project scope
+        const response = await api.get(`/projects/${projectId}/scope`)
+        setProjectScope(response.data.data)
+      }
+
+      await startTimer(itemId, workerName, notes)
       setNotes('')
       setSelectedCategory('')
       setSelectedSubcategory('')
@@ -408,7 +445,7 @@ const TimeTracker = ({ projectId }) => {
             variant="primary"
             className="w-full"
             onClick={handleStartTimer}
-            disabled={!selectedItemId || !workerName}
+            disabled={!selectedCategory || !workerName}
           >
             <Play size={20} className="mr-2" />
             Start Timer

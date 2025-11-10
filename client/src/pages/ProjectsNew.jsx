@@ -15,7 +15,7 @@ const ProjectsNew = () => {
   const navigate = useNavigate()
   const { projects, loading, error } = useProjects()
   const [searchQuery, setSearchQuery] = useState('')
-  const [statusFilter, setStatusFilter] = useState('all')
+  const [statusFilter, setStatusFilter] = useState('active') // Default to active projects only
 
   // Filter projects
   const filteredProjects = useMemo(() => {
@@ -47,10 +47,11 @@ const ProjectsNew = () => {
       key: 'status',
       label: 'Status',
       options: [
+        { value: 'all', label: 'All Projects' },
         { value: 'active', label: 'Active' },
         { value: 'planning', label: 'Planning' },
         { value: 'on_hold', label: 'On Hold' },
-        { value: 'completed', label: 'Completed' },
+        { value: 'completed', label: 'Archived (Completed)' },
         { value: 'cancelled', label: 'Cancelled' },
       ],
     },

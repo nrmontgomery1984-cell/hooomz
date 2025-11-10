@@ -463,4 +463,59 @@ router.delete('/:projectId', async (req, res) => {
   }
 })
 
+// ==================== PROJECT MEMBERS ====================
+
+// Get project members
+router.get('/:projectId/members', async (req, res) => {
+  try {
+    const { projectId } = req.params
+    const members = await projectsRepo.getProjectMembers(projectId)
+    res.json({ data: members })
+  } catch (error) {
+    console.error('Error fetching project members:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Add project member
+router.post('/:projectId/members', async (req, res) => {
+  try {
+    const { projectId } = req.params
+    const { email, role } = req.body
+    const invitedBy = req.user?.id
+
+    const member = await projectsRepo.addProjectMember(projectId, email, role, invitedBy)
+    res.status(201).json({ data: member })
+  } catch (error) {
+    console.error('Error adding project member:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Update project member role
+router.patch('/:projectId/members/:memberId', async (req, res) => {
+  try {
+    const { memberId } = req.params
+    const { role } = req.body
+
+    const member = await projectsRepo.updateProjectMemberRole(memberId, role)
+    res.json({ data: member })
+  } catch (error) {
+    console.error('Error updating project member:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Remove project member
+router.delete('/:projectId/members/:memberId', async (req, res) => {
+  try {
+    const { memberId } = req.params
+    await projectsRepo.removeProjectMember(memberId)
+    res.json({ success: true })
+  } catch (error) {
+    console.error('Error removing project member:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
 export default router

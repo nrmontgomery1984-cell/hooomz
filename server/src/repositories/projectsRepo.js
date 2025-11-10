@@ -27,20 +27,36 @@ export const createProject = async (projectData) => {
  * @returns {Promise<Array>} Array of projects
  */
 export const getProjects = async (userId = null) => {
-  let query = supabase
+  if (!userId) {
+    // If no userId, return all projects (admin use case)
+    const { data, error } = await supabase
+      .from('projects')
+      .select('*')
+      .is('deleted_at', null)
+      .order('created_at', { ascending: false })
+
+    if (error) throw error
+    return data
+  }
+
+  // Get projects where user is a member
+  const { data, error } = await supabase
     .from('projects')
-    .select('*')
+    .select(`
+      *,
+      project_members!inner(role)
+    `)
+    .eq('project_members.user_id', userId)
     .is('deleted_at', null)
     .order('created_at', { ascending: false })
 
-  if (userId) {
-    query = query.eq('created_by', userId)
-  }
-
-  const { data, error } = await query
-
   if (error) throw error
-  return data
+
+  // Clean up the nested project_members array to just include role
+  return data.map(project => ({
+    ...project,
+    user_role: project.project_members?.[0]?.role || 'member'
+  }))
 }
 
 /**
@@ -171,5 +187,109 @@ export const getWorkers = async () => {
     .order('name')
 
   if (error) throw error
+  return data
+}
+
+/**
+ * Get project members
+ * @param {string} projectId - Project ID
+ * @returns {Promise<Array>} Array of project members with user details
+ */
+export const getProjectMembers = async (projectId) => {
+  const { data, error } = await supabase
+    .from('project_members')
+    .select(`
+      *,
+      user:auth.users(id, email, raw_user_meta_data)
+    `)
+    .eq('project_id', projectId)
+    .order('role')
+    .order('joined_at')
+
+  if (error) throw error
+  return data
+}
+
+/**
+ * Add member to project
+ * @param {string} projectId - Project ID
+ * @param {string} userEmail - User email to add
+ * @param {string} role - User role (owner, admin, member, viewer)
+ * @param {string} invitedBy - User ID of inviter
+ * @returns {Promise<Object>} Created project member
+ */
+export const addProjectMember = async (projectId, userEmail, role = 'member', invitedBy = null) => {
+  // First, find the user by email
+  const { data: users, error: userError } = await supabase
+    .from('auth.users')
+    .select('id')
+    .eq('email', userEmail)
+    .single()
+
+  if (userError) throw new Error(`User with email ${userEmail} not found`)
+
+  // Add user to project
+  const { data, error } = await supabase
+    .from('project_members')
+    .insert({
+      project_id: projectId,
+      user_id: users.id,
+      role,
+      invited_by: invitedBy
+    })
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+/**
+ * Update project member role
+ * @param {string} memberId - Project member ID
+ * @param {string} role - New role
+ * @returns {Promise<Object>} Updated project member
+ */
+export const updateProjectMemberRole = async (memberId, role) => {
+  const { data, error } = await supabase
+    .from('project_members')
+    .update({ role })
+    .eq('id', memberId)
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+/**
+ * Remove member from project
+ * @param {string} memberId - Project member ID
+ * @returns {Promise<void>}
+ */
+export const removeProjectMember = async (memberId) => {
+  const { error } = await supabase
+    .from('project_members')
+    .delete()
+    .eq('id', memberId)
+
+  if (error) throw error
+}
+
+/**
+ * Check if user has access to project
+ * @param {string} projectId - Project ID
+ * @param {string} userId - User ID
+ * @returns {Promise<Object|null>} Project member record or null
+ */
+export const checkProjectAccess = async (projectId, userId) => {
+  const { data, error } = await supabase
+    .from('project_members')
+    .select('*')
+    .eq('project_id', projectId)
+    .eq('user_id', userId)
+    .single()
+
+  if (error && error.code !== 'PGRST116') throw error // PGRST116 is "not found"
   return data
 }

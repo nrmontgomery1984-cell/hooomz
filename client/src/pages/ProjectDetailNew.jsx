@@ -5,7 +5,7 @@ import ModernCard from '../components/UI/ModernCard'
 import FilterBar from '../components/UI/FilterBar'
 import Breadcrumbs from '../components/Layout/Breadcrumbs'
 import { Button } from '../components/UI/Button'
-import { ArrowLeft, CheckCircle2, Circle, Clock, AlertCircle, MapPin, Archive, Trash2, MoreVertical } from 'lucide-react'
+import { ArrowLeft, CheckCircle2, Circle, Clock, AlertCircle, MapPin, Archive, Trash2, MoreVertical, ArchiveRestore } from 'lucide-react'
 import TimeTracker from '../components/Projects/TimeTracker'
 import TaskDetailDialog from '../components/Projects/TaskDetailDialog'
 import { colors } from '../styles/design-tokens'
@@ -166,6 +166,21 @@ const ProjectDetailNew = () => {
     } catch (err) {
       console.error('Error archiving project:', err)
       alert('Failed to archive project')
+    }
+  }
+
+  const handleUnarchiveProject = async () => {
+    if (!confirm('Unarchive this project? It will be moved back to active projects.')) {
+      return
+    }
+    try {
+      const response = await api.put(`/projects/${projectId}`, { status: 'active' })
+      if (response.data) {
+        window.location.reload()
+      }
+    } catch (err) {
+      console.error('Error unarchiving project:', err)
+      alert('Failed to unarchive project')
     }
   }
 
@@ -343,6 +358,18 @@ const ProjectDetailNew = () => {
                         >
                           <Archive size={16} />
                           Archive Project
+                        </button>
+                      )}
+                      {project.status === 'completed' && (
+                        <button
+                          onClick={() => {
+                            setShowProjectMenu(false)
+                            handleUnarchiveProject()
+                          }}
+                          className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-3"
+                        >
+                          <ArchiveRestore size={16} />
+                          Unarchive Project
                         </button>
                       )}
                       <button

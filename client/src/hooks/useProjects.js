@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import * as projectsApi from '../services/projectsApi'
+import { supabase } from '../services/auth'
 
 /**
  * Custom hook for project management
@@ -82,6 +83,33 @@ export const useProjectScope = (projectId) => {
   useEffect(() => {
     fetchProject()
   }, [fetchProject])
+
+  // Real-time subscription for scope_items changes
+  useEffect(() => {
+    if (!projectId) return
+
+    // Subscribe to scope_items changes
+    const channel = supabase
+      .channel(`project-${projectId}-scope-items`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'scope_items'
+        },
+        (payload) => {
+          console.log('Real-time scope_items update:', payload)
+          // Refetch the entire project to get updated data
+          fetchProject()
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [projectId, fetchProject])
 
   const updateScopeItem = async (itemId, updates) => {
     const updated = await projectsApi.updateScopeItem(itemId, updates)

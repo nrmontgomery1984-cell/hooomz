@@ -232,6 +232,25 @@ export const getAllScopeItemsByProject = async (projectId) => {
  * @returns {Promise<Object>} Object with materials, tools, checklist, and photos arrays
  */
 export const getScopeItemDetails = async (itemId) => {
+  // Get the scope item with its subcategory and category info
+  const { data: itemData, error: itemError } = await supabase
+    .from('scope_items')
+    .select(`
+      *,
+      subcategory:scope_subcategories!inner(
+        id,
+        name,
+        category:scope_categories!inner(
+          id,
+          name
+        )
+      )
+    `)
+    .eq('id', itemId)
+    .single()
+
+  if (itemError) throw itemError
+
   const [materials, tools, checklist, photos] = await Promise.all([
     getScopeItemMaterials(itemId),
     getScopeItemTools(itemId),
@@ -239,7 +258,16 @@ export const getScopeItemDetails = async (itemId) => {
     getScopeItemPhotos(itemId)
   ])
 
-  return { materials, tools, checklist, photos }
+  return {
+    materials,
+    tools,
+    checklist,
+    photos,
+    category: itemData?.subcategory?.category?.name || null,
+    subcategory: itemData?.subcategory?.name || null,
+    categoryId: itemData?.subcategory?.category?.id || null,
+    subcategoryId: itemData?.subcategory?.id || null
+  }
 }
 
 // Materials

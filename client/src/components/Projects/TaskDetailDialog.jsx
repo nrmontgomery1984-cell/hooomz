@@ -91,8 +91,19 @@ const TaskDetailDialog = ({ item, isOpen, onClose, onUpdate }) => {
       <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-          <div>
+          <div className="flex-1">
             <h2 className="text-xl font-bold text-gray-900">{item.description}</h2>
+            {details.category && details.subcategory && (
+              <div className="flex items-center gap-2 mt-2">
+                <span className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-md font-medium">
+                  {details.category}
+                </span>
+                <span className="text-gray-400">→</span>
+                <span className="text-xs px-2 py-1 bg-purple-100 text-purple-700 rounded-md font-medium">
+                  {details.subcategory}
+                </span>
+              </div>
+            )}
             <p className="text-sm text-gray-500 mt-1">Task Details & Checklist</p>
           </div>
           <button

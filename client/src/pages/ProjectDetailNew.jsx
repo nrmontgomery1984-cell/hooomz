@@ -5,10 +5,11 @@ import ModernCard from '../components/UI/ModernCard'
 import FilterBar from '../components/UI/FilterBar'
 import Breadcrumbs from '../components/Layout/Breadcrumbs'
 import { Button } from '../components/UI/Button'
-import { ArrowLeft, CheckCircle2, Circle, Clock, AlertCircle, MapPin } from 'lucide-react'
+import { ArrowLeft, CheckCircle2, Circle, Clock, AlertCircle, MapPin, Archive, Trash2, MoreVertical } from 'lucide-react'
 import TimeTracker from '../components/Projects/TimeTracker'
 import TaskDetailDialog from '../components/Projects/TaskDetailDialog'
 import { colors } from '../styles/design-tokens'
+import { api } from '../services/api'
 
 /**
  * Project Detail Page - Redesigned
@@ -29,6 +30,7 @@ const ProjectDetailNew = () => {
   const [expandedCategories, setExpandedCategories] = useState({})
   const [selectedTask, setSelectedTask] = useState(null)
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false)
+  const [showProjectMenu, setShowProjectMenu] = useState(false)
 
   // Extract unique locations from scope items
   const locations = useMemo(() => {
@@ -149,6 +151,34 @@ const ProjectDetailNew = () => {
     } catch (err) {
       console.error('Error updating scope item:', err)
       alert('Failed to update task status')
+    }
+  }
+
+  const handleArchiveProject = async () => {
+    if (!confirm('Archive this project? It will be marked as completed and moved to archived projects.')) {
+      return
+    }
+    try {
+      const response = await api.put(`/projects/${projectId}`, { status: 'completed' })
+      if (response.data) {
+        navigate('/projects')
+      }
+    } catch (err) {
+      console.error('Error archiving project:', err)
+      alert('Failed to archive project')
+    }
+  }
+
+  const handleDeleteProject = async () => {
+    if (!confirm('Delete this project? This action cannot be undone.')) {
+      return
+    }
+    try {
+      await api.delete(`/projects/${projectId}`)
+      navigate('/projects')
+    } catch (err) {
+      console.error('Error deleting project:', err)
+      alert('Failed to delete project')
     }
   }
 
@@ -289,6 +319,46 @@ const ProjectDetailNew = () => {
               >
                 {project.status.replace('_', ' ').toUpperCase()}
               </span>
+
+              {/* Project Actions Menu */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowProjectMenu(!showProjectMenu)}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  title="Project actions"
+                >
+                  <MoreVertical size={20} className="text-gray-600" />
+                </button>
+
+                {showProjectMenu && (
+                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                    <div className="py-1">
+                      {project.status !== 'completed' && (
+                        <button
+                          onClick={() => {
+                            setShowProjectMenu(false)
+                            handleArchiveProject()
+                          }}
+                          className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-3"
+                        >
+                          <Archive size={16} />
+                          Archive Project
+                        </button>
+                      )}
+                      <button
+                        onClick={() => {
+                          setShowProjectMenu(false)
+                          handleDeleteProject()
+                        }}
+                        className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-3"
+                      >
+                        <Trash2 size={16} />
+                        Delete Project
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 

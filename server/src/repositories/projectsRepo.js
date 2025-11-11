@@ -219,21 +219,20 @@ export const getProjectMembers = async (projectId) => {
  * @returns {Promise<Object>} Created project member
  */
 export const addProjectMember = async (projectId, userEmail, role = 'member', invitedBy = null) => {
-  // First, find the user by email
-  const { data: users, error: userError } = await supabase
-    .from('auth.users')
-    .select('id')
-    .eq('email', userEmail)
-    .single()
+  // First, find the user by email using admin API
+  const { data: { users }, error: userError } = await supabase.auth.admin.listUsers()
 
-  if (userError) throw new Error(`User with email ${userEmail} not found`)
+  if (userError) throw new Error('Failed to fetch users: ' + userError.message)
+
+  const user = users.find(u => u.email === userEmail)
+  if (!user) throw new Error(`User with email ${userEmail} not found`)
 
   // Add user to project
   const { data, error } = await supabase
     .from('project_members')
     .insert({
       project_id: projectId,
-      user_id: users.id,
+      user_id: user.id,
       role,
       invited_by: invitedBy
     })

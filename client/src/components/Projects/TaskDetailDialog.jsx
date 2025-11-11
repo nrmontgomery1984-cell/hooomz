@@ -3,6 +3,7 @@ import { X, Wrench, Package, CheckSquare, Camera, Plus, Trash2 } from 'lucide-re
 import { Button } from '../UI/Button'
 import { colors } from '../../styles/design-tokens'
 import { api } from '../../services/api'
+import { supabase } from '../../services/auth'
 
 /**
  * Task Detail Dialog - Enhanced view with tools, materials, checklist, and photos
@@ -50,11 +51,29 @@ const TaskDetailDialog = ({ item, isOpen, onClose, onUpdate }) => {
   }
 
   const handlePhotoUpload = async (file, photoType = 'during') => {
-    // For now, we'll use a placeholder URL
-    // In production, you would upload to cloud storage (S3, Cloudinary, etc.)
     try {
+      // Generate unique filename
+      const timestamp = Date.now()
+      const fileName = `${item.id}/${timestamp}-${file.name}`
+
+      // Upload to Supabase Storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('task-photos')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        })
+
+      if (uploadError) throw uploadError
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('task-photos')
+        .getPublicUrl(fileName)
+
+      // Save photo metadata to database
       const photoData = {
-        file_url: URL.createObjectURL(file),
+        file_url: publicUrl,
         file_name: file.name,
         file_size: file.size,
         photo_type: photoType,
@@ -63,8 +82,10 @@ const TaskDetailDialog = ({ item, isOpen, onClose, onUpdate }) => {
 
       await api.post(`/projects/items/${item.id}/photos`, photoData)
       await fetchTaskDetails()
+      alert('Photo uploaded successfully!')
     } catch (error) {
       console.error('Error uploading photo:', error)
+      alert('Failed to upload photo: ' + (error.message || 'Please try again.'))
     }
   }
 

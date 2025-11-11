@@ -5,9 +5,10 @@ import ModernCard from '../components/UI/ModernCard'
 import FilterBar from '../components/UI/FilterBar'
 import Breadcrumbs from '../components/Layout/Breadcrumbs'
 import { Button } from '../components/UI/Button'
-import { ArrowLeft, CheckCircle2, Circle, Clock, AlertCircle, MapPin, Archive, Trash2, MoreVertical, ArchiveRestore } from 'lucide-react'
+import { ArrowLeft, CheckCircle2, Circle, Clock, AlertCircle, MapPin, Archive, Trash2, MoreVertical, ArchiveRestore, Users } from 'lucide-react'
 import TimeTracker from '../components/Projects/TimeTracker'
 import TaskDetailDialog from '../components/Projects/TaskDetailDialog'
+import ProjectMembersDialog from '../components/Projects/ProjectMembersDialog'
 import { colors } from '../styles/design-tokens'
 import { api } from '../services/api'
 
@@ -31,6 +32,7 @@ const ProjectDetailNew = () => {
   const [selectedTask, setSelectedTask] = useState(null)
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false)
   const [showProjectMenu, setShowProjectMenu] = useState(false)
+  const [showMembersDialog, setShowMembersDialog] = useState(false)
 
   // Extract unique locations from scope items
   const locations = useMemo(() => {
@@ -335,6 +337,16 @@ const ProjectDetailNew = () => {
                 {project.status.replace('_', ' ').toUpperCase()}
               </span>
 
+              {/* Team Button */}
+              <Button
+                variant="outline"
+                onClick={() => setShowMembersDialog(true)}
+                className="flex items-center gap-2"
+              >
+                <Users size={18} />
+                Team
+              </Button>
+
               {/* Project Actions Menu */}
               <div className="relative">
                 <button
@@ -596,6 +608,13 @@ const ProjectDetailNew = () => {
           // Refresh project data after updates
           window.location.reload()
         }}
+      />
+
+      {/* Project Members Dialog */}
+      <ProjectMembersDialog
+        projectId={projectId}
+        isOpen={showMembersDialog}
+        onClose={() => setShowMembersDialog(false)}
       />
     </div>
   )

@@ -9,6 +9,16 @@ import { ArrowLeft, CheckCircle2, Circle, Clock, AlertCircle, MapPin, Archive, T
 import TimeTracker from '../components/Projects/TimeTracker'
 import TaskDetailDialog from '../components/Projects/TaskDetailDialog'
 import ProjectMembersDialog from '../components/Projects/ProjectMembersDialog'
+import ModuleNav from '../components/Projects/ModuleNav'
+import TaskTrackerModule from '../components/Projects/modules/TaskTrackerModule'
+import TimeTrackerModule from '../components/Projects/modules/TimeTrackerModule'
+import FinancialsModule from '../components/Projects/modules/FinancialsModule'
+import DocumentsModule from '../components/Projects/modules/DocumentsModule'
+import ActivityLogModule from '../components/Projects/modules/ActivityLogModule'
+import ContactsModule from '../components/Projects/modules/ContactsModule'
+import ScheduleModule from '../components/Projects/modules/ScheduleModule'
+import CommunicationModule from '../components/Projects/modules/CommunicationModule'
+import AnalyticsModule from '../components/Projects/modules/AnalyticsModule'
 import { colors } from '../styles/design-tokens'
 import { api } from '../services/api'
 
@@ -33,6 +43,7 @@ const ProjectDetailNew = () => {
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false)
   const [showProjectMenu, setShowProjectMenu] = useState(false)
   const [showMembersDialog, setShowMembersDialog] = useState(false)
+  const [activeModule, setActiveModule] = useState('tasks')
 
   // Extract unique locations from scope items
   const locations = useMemo(() => {
@@ -416,182 +427,53 @@ const ProjectDetailNew = () => {
           </div>
         </div>
 
-        {/* Time Tracker */}
-        <div className="mb-8">
-          <TimeTracker projectId={projectId} />
-        </div>
+        {/* Module Navigation */}
+        <ModuleNav
+          activeModule={activeModule}
+          onModuleChange={setActiveModule}
+          projectId={projectId}
+        />
 
-        {/* Scope of Work Section */}
-        <div>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Scope of Work</h2>
-          </div>
-
-          {/* Filters */}
-          <div className="mb-6">
-            <FilterBar
-              searchValue={searchQuery}
-              onSearchChange={setSearchQuery}
-              filters={filterOptions}
-              activeFilters={filters}
-              onFilterChange={handleFilterChange}
-              placeholder="Search tasks..."
+        {/* Module Content */}
+        <div className="mt-6">
+          {activeModule === 'tasks' && (
+            <TaskTrackerModule
+              projectId={projectId}
+              filteredProject={filteredProject}
+              updateScopeItem={updateScopeItem}
             />
-          </div>
+          )}
 
-          {/* Scope Items */}
-          {filteredProject.categories && filteredProject.categories.length > 0 ? (
-            <div className="space-y-4">
-              {filteredProject.categories.map(category => {
-                const isExpanded = expandedCategories[category.id] !== false
-                const totalItems = category.subcategories.reduce((sum, sub) => sum + sub.items.length, 0)
-                const completedItems = category.subcategories.reduce(
-                  (sum, sub) => sum + sub.items.filter(i => i.status === 'completed').length,
-                  0
-                )
-                const progress = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0
+          {activeModule === 'time' && (
+            <TimeTrackerModule projectId={projectId} />
+          )}
 
-                return (
-                  <ModernCard key={category.id} padding="none" hover>
-                    {/* Category Header */}
-                    <div
-                      className="flex items-center justify-between cursor-pointer p-6 hover:bg-gray-50 transition-colors"
-                      onClick={() => toggleCategory(category.id)}
-                    >
-                      <div className="flex-1">
-                        <h3 className="text-lg font-bold text-gray-900 mb-1">
-                          {category.name}
-                        </h3>
-                        <p className="text-sm text-gray-600">
-                          {completedItems} of {totalItems} tasks completed
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-6">
-                        {/* Progress Circle */}
-                        <div className="flex items-center gap-3">
-                          <div className="w-24">
-                            <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                              <div
-                                className="h-full transition-all duration-300"
-                                style={{
-                                  width: `${progress}%`,
-                                  backgroundColor: colors.primary[600],
-                                }}
-                              />
-                            </div>
-                          </div>
-                          <span className="text-sm font-semibold text-gray-700 w-12 text-right">
-                            {progress}%
-                          </span>
-                        </div>
-                        <div className="text-gray-400 text-lg">
-                          {isExpanded ? '▼' : '▶'}
-                        </div>
-                      </div>
-                    </div>
+          {activeModule === 'financials' && (
+            <FinancialsModule projectId={projectId} />
+          )}
 
-                    {/* Subcategories */}
-                    {isExpanded && (
-                      <div className="border-t border-gray-100 px-6 py-4 bg-gray-50">
-                        <div className="space-y-6">
-                          {category.subcategories.map(subcategory => (
-                            <div key={subcategory.id}>
-                              <h4 className="font-semibold text-gray-800 mb-3 text-sm uppercase tracking-wide">
-                                {subcategory.name}
-                              </h4>
+          {activeModule === 'documents' && (
+            <DocumentsModule projectId={projectId} />
+          )}
 
-                              <div className="space-y-2">
-                                {subcategory.items.map(item => (
-                                  <div
-                                    key={item.id}
-                                    className="flex items-start justify-between p-4 rounded-xl border transition-all hover:shadow-sm"
-                                    style={getStatusStyles(item.status)}
-                                  >
-                                    <div className="flex items-start gap-3 flex-1">
-                                      <div className="mt-0.5">
-                                        {getStatusIcon(item.status)}
-                                      </div>
-                                      <div className="flex-1">
-                                        <p
-                                          onClick={() => {
-                                            setSelectedTask(item)
-                                            setIsTaskDialogOpen(true)
-                                          }}
-                                          className={`text-sm font-medium cursor-pointer hover:text-blue-600 transition-colors ${
-                                            item.status === 'completed' ? 'line-through text-gray-600' : 'text-gray-900'
-                                          }`}
-                                        >
-                                          {item.description}
-                                        </p>
-                                        {item.location && (
-                                          <div className="flex items-center gap-1 mt-1 text-xs text-gray-500">
-                                            <MapPin size={12} />
-                                            {item.location}
-                                          </div>
-                                        )}
-                                        {item.notes && (
-                                          <p className="text-xs text-gray-500 mt-1 italic">{item.notes}</p>
-                                        )}
-                                        {item.actual_hours > 0 && (
-                                          <div className="text-xs text-gray-600 mt-2 flex items-center gap-1">
-                                            <Clock size={12} />
-                                            {item.actual_hours.toFixed(1)} hours logged
-                                          </div>
-                                        )}
-                                      </div>
-                                    </div>
+          {activeModule === 'activity' && (
+            <ActivityLogModule projectId={projectId} />
+          )}
 
-                                    {/* Quick Actions */}
-                                    <div className="flex items-center gap-1 ml-4">
-                                      {item.status !== 'completed' && (
-                                        <button
-                                          onClick={() => handleStatusChange(item.id, 'completed')}
-                                          className="px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-white transition-colors"
-                                          style={{ color: colors.success[700] }}
-                                          title="Mark as completed"
-                                        >
-                                          ✓ Done
-                                        </button>
-                                      )}
-                                      {item.status === 'completed' && (
-                                        <button
-                                          onClick={() => handleStatusChange(item.id, 'pending')}
-                                          className="px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-white transition-colors"
-                                          style={{ color: colors.gray[700] }}
-                                          title="Reopen"
-                                        >
-                                          ↺ Reopen
-                                        </button>
-                                      )}
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </ModernCard>
-                )
-              })}
-            </div>
-          ) : (
-            <ModernCard padding="xl">
-              <div className="text-center py-12">
-                <p className="text-gray-500">No tasks match your filters</p>
-                <Button
-                  variant="ghost"
-                  onClick={() => {
-                    setFilters({ location: 'all', category: 'all', subcategory: 'all', status: 'all' })
-                    setSearchQuery('')
-                  }}
-                  className="mt-4"
-                >
-                  Clear Filters
-                </Button>
-              </div>
-            </ModernCard>
+          {activeModule === 'contacts' && (
+            <ContactsModule projectId={projectId} />
+          )}
+
+          {activeModule === 'schedule' && (
+            <ScheduleModule projectId={projectId} />
+          )}
+
+          {activeModule === 'communication' && (
+            <CommunicationModule projectId={projectId} />
+          )}
+
+          {activeModule === 'analytics' && (
+            <AnalyticsModule projectId={projectId} />
           )}
         </div>
       </div>

@@ -107,3 +107,47 @@ export const createSubcategory = async (categoryId, subcategoryData) => {
   const response = await api.post(`/projects/categories/${categoryId}/subcategories`, subcategoryData)
   return response.data.data
 }
+
+// ==================== ESTIMATES ====================
+
+export const getEstimates = async (projectId) => {
+  const response = await api.get(`/projects/${projectId}/estimates`)
+  return response.data.data
+}
+
+export const getEstimate = async (estimateId) => {
+  const response = await api.get(`/projects/estimates/${estimateId}`)
+  return response.data.data
+}
+
+export const createEstimate = async (projectId, estimateData) => {
+  const response = await api.post(`/projects/${projectId}/estimates`, estimateData)
+  return response.data.data
+}
+
+export const updateEstimate = async (estimateId, updates) => {
+  const response = await api.put(`/projects/estimates/${estimateId}`, updates)
+  return response.data.data
+}
+
+export const deleteEstimate = async (estimateId) => {
+  const response = await api.delete(`/projects/estimates/${estimateId}`)
+  return response.data
+}
+
+// ==================== ESTIMATE LINE ITEMS ====================
+
+export const createLineItem = async (estimateId, lineItemData) => {
+  const response = await api.post(`/projects/estimates/${estimateId}/line-items`, lineItemData)
+  return response.data.data
+}
+
+export const updateLineItem = async (lineItemId, updates) => {
+  const response = await api.put(`/projects/line-items/${lineItemId}`, updates)
+  return response.data.data
+}
+
+export const deleteLineItem = async (lineItemId) => {
+  const response = await api.delete(`/projects/line-items/${lineItemId}`)
+  return response.data
+}

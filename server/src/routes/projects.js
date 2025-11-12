@@ -2,6 +2,7 @@ import express from 'express'
 import * as projectsRepo from '../repositories/projectsRepo.js'
 import * as scopeRepo from '../repositories/scopeRepo.js'
 import * as timeEntriesRepo from '../repositories/timeEntriesRepo.js'
+import * as estimatesRepo from '../repositories/estimatesRepo.js'
 import { authMiddleware } from '../middleware/auth.js'
 
 const router = express.Router()
@@ -198,6 +199,18 @@ router.put('/items/:itemId', async (req, res) => {
   }
 })
 
+// Patch scope item (for partial updates like Todoist fields)
+router.patch('/items/:itemId', async (req, res) => {
+  try {
+    const { itemId } = req.params
+    const item = await scopeRepo.updateScopeItem(itemId, req.body)
+    res.json({ data: item })
+  } catch (error) {
+    console.error('Error patching scope item:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
 // Delete scope item
 router.delete('/items/:itemId', async (req, res) => {
   try {
@@ -242,10 +255,12 @@ router.post('/items/:itemId/time-entries', async (req, res) => {
 router.get('/items/:itemId/details', async (req, res) => {
   try {
     const { itemId } = req.params
+    console.log('[ROUTE /items/:itemId/details] Called with itemId:', itemId)
     const details = await scopeRepo.getScopeItemDetails(itemId)
+    console.log('[ROUTE /items/:itemId/details] Returning details with projectMembers count:', details?.projectMembers?.length || 0)
     res.json({ data: details })
   } catch (error) {
-    console.error('Error fetching scope item details:', error)
+    console.error('[ROUTE /items/:itemId/details] Error fetching scope item details:', error)
     res.status(500).json({ error: error.message })
   }
 })
@@ -322,6 +337,113 @@ router.delete('/items/photos/:photoId', async (req, res) => {
     res.json({ success: true })
   } catch (error) {
     console.error('Error deleting photo:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// ==================== ESTIMATES ====================
+
+// Get all estimates for a project
+router.get('/:projectId/estimates', async (req, res) => {
+  try {
+    const { projectId } = req.params
+    const estimates = await estimatesRepo.getEstimatesByProject(projectId)
+    res.json({ data: estimates })
+  } catch (error) {
+    console.error('Error fetching estimates:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Get a single estimate by ID
+router.get('/estimates/:estimateId', async (req, res) => {
+  try {
+    const { estimateId } = req.params
+    const estimate = await estimatesRepo.getEstimateById(estimateId)
+    res.json({ data: estimate })
+  } catch (error) {
+    console.error('Error fetching estimate:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Create a new estimate
+router.post('/:projectId/estimates', async (req, res) => {
+  try {
+    const { projectId } = req.params
+    const estimate = await estimatesRepo.createEstimate({
+      ...req.body,
+      project_id: projectId,
+      created_by: req.userId
+    })
+    res.status(201).json({ data: estimate })
+  } catch (error) {
+    console.error('Error creating estimate:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Update an estimate
+router.put('/estimates/:estimateId', async (req, res) => {
+  try {
+    const { estimateId } = req.params
+    const estimate = await estimatesRepo.updateEstimate(estimateId, req.body)
+    res.json({ data: estimate })
+  } catch (error) {
+    console.error('Error updating estimate:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Delete an estimate
+router.delete('/estimates/:estimateId', async (req, res) => {
+  try {
+    const { estimateId } = req.params
+    await estimatesRepo.deleteEstimate(estimateId)
+    res.json({ success: true })
+  } catch (error) {
+    console.error('Error deleting estimate:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// ==================== ESTIMATE LINE ITEMS ====================
+
+// Create a new line item
+router.post('/estimates/:estimateId/line-items', async (req, res) => {
+  try {
+    const { estimateId } = req.params
+    const lineItem = await estimatesRepo.createLineItem({
+      ...req.body,
+      estimate_id: estimateId
+    })
+    res.status(201).json({ data: lineItem })
+  } catch (error) {
+    console.error('Error creating line item:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Update a line item
+router.put('/line-items/:lineItemId', async (req, res) => {
+  try {
+    const { lineItemId } = req.params
+    const lineItem = await estimatesRepo.updateLineItem(lineItemId, req.body)
+    res.json({ data: lineItem })
+  } catch (error) {
+    console.error('Error updating line item:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Delete a line item
+router.delete('/line-items/:lineItemId', async (req, res) => {
+  try {
+    const { lineItemId } = req.params
+    await estimatesRepo.deleteLineItem(lineItemId)
+    res.json({ success: true })
+  } catch (error) {
+    console.error('Error deleting line item:', error)
     res.status(500).json({ error: error.message })
   }
 })

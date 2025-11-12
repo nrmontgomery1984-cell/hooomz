@@ -12,6 +12,7 @@ import ProjectMembersDialog from '../components/Projects/ProjectMembersDialog'
 import ModuleNav from '../components/Projects/ModuleNav'
 import TaskTrackerModule from '../components/Projects/modules/TaskTrackerModule'
 import TimeTrackerModule from '../components/Projects/modules/TimeTrackerModule'
+import EstimateModule from '../components/Projects/modules/EstimateModule'
 import FinancialsModule from '../components/Projects/modules/FinancialsModule'
 import DocumentsModule from '../components/Projects/modules/DocumentsModule'
 import ActivityLogModule from '../components/Projects/modules/ActivityLogModule'
@@ -446,6 +447,10 @@ const ProjectDetailNew = () => {
 
           {activeModule === 'time' && (
             <TimeTrackerModule projectId={projectId} />
+          )}
+
+          {activeModule === 'estimates' && (
+            <EstimateModule projectId={projectId} />
           )}
 
           {activeModule === 'financials' && (

@@ -384,18 +384,25 @@ const TaskTrackerModule = ({ projectId, filteredProject, updateScopeItem }) => {
           </ModernCard>
         ) : (
           displayedProject.categories.map((category) => (
-            <div key={category.id}>
-              {category.subcategories.map((subcategory) => {
-                if (subcategory.items.length === 0) return null
+            <ModernCard key={category.id} className="mb-6">
+              {/* Category Header */}
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-3 rounded-t-lg border-b border-blue-200 -m-4 mb-4">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900">{category.name}</h2>
+              </div>
 
-                return (
-                  <ModernCard key={subcategory.id} className="mb-4">
-                    <h3 className="text-base sm:text-lg font-semibold mb-3">
-                      {category.name} › {subcategory.name}
-                    </h3>
+              {/* Subcategories */}
+              <div className="space-y-4">
+                {category.subcategories.map((subcategory) => {
+                  if (subcategory.items.length === 0) return null
 
-                    <div className="space-y-2">
-                      {subcategory.items.map((item) => (
+                  return (
+                    <div key={subcategory.id}>
+                      <h3 className="text-base sm:text-lg font-semibold mb-3 text-gray-700">
+                        {subcategory.name}
+                      </h3>
+
+                      <div className="space-y-2 pl-4">
+                        {subcategory.items.map((item) => (
                         <div
                           key={item.id}
                           className="flex flex-col sm:flex-row sm:items-center justify-between p-2 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors gap-2"
@@ -519,11 +526,12 @@ const TaskTrackerModule = ({ projectId, filteredProject, updateScopeItem }) => {
                           </div>
                         </div>
                       ))}
+                      </div>
                     </div>
-                  </ModernCard>
-                )
-              })}
-            </div>
+                  )
+                })}
+              </div>
+            </ModernCard>
           ))
         )}
       </div>

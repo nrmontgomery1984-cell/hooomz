@@ -123,11 +123,11 @@ const TimeTrackerModule = ({ projectId }) => {
   const isAdmin = userRole === 'admin' || userRole === 'owner'
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Module Header */}
       <div>
-        <h2 className="text-2xl font-bold text-gray-900">Time Tracker</h2>
-        <p className="text-gray-600 mt-1">Track labor hours and manage time entries</p>
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Time Tracker</h2>
+        <p className="text-sm text-gray-600 mt-0.5">Track labor hours and manage time entries</p>
       </div>
 
       {/* Time Statistics */}
@@ -135,27 +135,27 @@ const TimeTrackerModule = ({ projectId }) => {
         <>
           {/* Member Stats */}
           {(userRole === 'member' || userRole === 'viewer') && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Card className="p-6">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-blue-100 rounded-lg">
-                    <Clock size={24} className="text-blue-600" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+              <Card className="p-4 sm:p-6">
+                <div className="flex items-center gap-3 sm:gap-4">
+                  <div className="p-2 sm:p-3 bg-blue-100 rounded-lg flex-shrink-0">
+                    <Clock size={20} className="sm:w-6 sm:h-6 text-blue-600" />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600">Today</p>
-                    <p className="text-3xl font-bold text-gray-900">{stats.today.toFixed(1)}h</p>
+                    <p className="text-xs sm:text-sm text-gray-600">Today</p>
+                    <p className="text-2xl sm:text-3xl font-bold text-gray-900">{stats.today.toFixed(1)}h</p>
                   </div>
                 </div>
               </Card>
 
-              <Card className="p-6">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-green-100 rounded-lg">
-                    <Calendar size={24} className="text-green-600" />
+              <Card className="p-4 sm:p-6">
+                <div className="flex items-center gap-3 sm:gap-4">
+                  <div className="p-2 sm:p-3 bg-green-100 rounded-lg flex-shrink-0">
+                    <Calendar size={20} className="sm:w-6 sm:h-6 text-green-600" />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600">This Week</p>
-                    <p className="text-3xl font-bold text-gray-900">{stats.week.toFixed(1)}h</p>
+                    <p className="text-xs sm:text-sm text-gray-600">This Week</p>
+                    <p className="text-2xl sm:text-3xl font-bold text-gray-900">{stats.week.toFixed(1)}h</p>
                   </div>
                 </div>
               </Card>
@@ -164,18 +164,18 @@ const TimeTrackerModule = ({ projectId }) => {
 
           {/* Admin/Manager Stats with Filters */}
           {isAdmin && (
-            <Card className="p-6">
-              <div className="space-y-4">
+            <Card className="p-4 sm:p-6">
+              <div className="space-y-3 sm:space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-gray-900">Time Analytics</h3>
-                  <div className="flex items-center gap-2">
-                    <TrendingUp size={20} className="text-blue-600" />
-                    <span className="text-3xl font-bold text-gray-900">{stats.filtered.toFixed(1)}h</span>
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900">Time Analytics</h3>
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <TrendingUp size={18} className="sm:w-5 sm:h-5 text-blue-600" />
+                    <span className="text-2xl sm:text-3xl font-bold text-gray-900">{stats.filtered.toFixed(1)}h</span>
                   </div>
                 </div>
 
                 {/* Filters */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
                   {/* Employee Filter */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">

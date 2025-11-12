@@ -231,23 +231,23 @@ const TaskTrackerModule = ({ projectId, filteredProject, updateScopeItem }) => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Module Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Task Tracker</h2>
-          <p className="text-gray-600 mt-1">Scope of work, checklists, materials, and tools</p>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Task Tracker</h2>
+          <p className="text-sm text-gray-600 mt-0.5">Scope of work, checklists, materials, and tools</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <Button
             onClick={() => setShowFilters(!showFilters)}
             variant="outline"
-            className="flex items-center gap-2"
+            className="flex items-center gap-1.5 text-sm"
           >
-            <Filter size={18} />
-            Filters
+            <Filter size={16} />
+            <span className="hidden sm:inline">Filters</span>
             {activeFilterCount > 0 && (
-              <span className="ml-1 px-2 py-0.5 bg-blue-600 text-white text-xs rounded-full">
+              <span className="ml-1 px-1.5 py-0.5 bg-blue-600 text-white text-xs rounded-full">
                 {activeFilterCount}
               </span>
             )}
@@ -255,17 +255,17 @@ const TaskTrackerModule = ({ projectId, filteredProject, updateScopeItem }) => {
           <Button
             onClick={() => setHideCompleted(!hideCompleted)}
             variant="outline"
-            className="flex items-center gap-2"
+            className="flex items-center gap-1.5 text-sm"
           >
-            {hideCompleted ? <EyeOff size={18} /> : <Eye size={18} />}
-            {hideCompleted ? 'Show' : 'Hide'} Completed
+            {hideCompleted ? <EyeOff size={16} /> : <Eye size={16} />}
+            <span className="hidden sm:inline">{hideCompleted ? 'Show' : 'Hide'} Completed</span>
           </Button>
           <Button
             onClick={() => setIsAddTaskDialogOpen(true)}
-            className="flex items-center gap-2"
+            className="flex items-center gap-1.5 text-sm"
           >
-            <Plus size={20} />
-            Add New Task
+            <Plus size={18} />
+            <span className="hidden sm:inline">Add New Task</span>
           </Button>
         </div>
       </div>
@@ -390,7 +390,7 @@ const TaskTrackerModule = ({ projectId, filteredProject, updateScopeItem }) => {
 
                 return (
                   <ModernCard key={subcategory.id} className="mb-4">
-                    <h3 className="text-lg font-semibold mb-4">
+                    <h3 className="text-base sm:text-lg font-semibold mb-3">
                       {category.name} › {subcategory.name}
                     </h3>
 
@@ -398,11 +398,11 @@ const TaskTrackerModule = ({ projectId, filteredProject, updateScopeItem }) => {
                       {subcategory.items.map((item) => (
                         <div
                           key={item.id}
-                          className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                          className="flex flex-col sm:flex-row sm:items-center justify-between p-2 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors gap-2"
                         >
-                          <div className="flex items-center gap-3 flex-1">
+                          <div className="flex items-start sm:items-center gap-2 sm:gap-3 flex-1">
                             {getStatusIcon(item.status)}
-                            <div className="flex-1">
+                            <div className="flex-1 min-w-0">
                               {editingTask === item.id ? (
                                 // Edit Mode
                                 <div className="space-y-2">
@@ -434,49 +434,49 @@ const TaskTrackerModule = ({ projectId, filteredProject, updateScopeItem }) => {
                                   }}
                                   className="cursor-pointer"
                                 >
-                                  <p className="font-medium text-gray-900">{item.description}</p>
-                                  <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
+                                  <p className="text-sm sm:text-base font-medium text-gray-900 break-words">{item.description}</p>
+                                  <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-1 text-xs">
                                     {item.location && (
-                                      <span className="px-2 py-1 bg-blue-50 text-blue-700 rounded">
+                                      <span className="px-1.5 py-0.5 bg-blue-50 text-blue-700 rounded text-xs">
                                         📍 {item.location}
                                       </span>
                                     )}
                                     {item.due_date && (
-                                      <span className="px-2 py-1 bg-orange-50 text-orange-700 rounded">
+                                      <span className="px-1.5 py-0.5 bg-orange-50 text-orange-700 rounded text-xs">
                                         📅 {new Date(item.due_date).toLocaleDateString()}
                                       </span>
                                     )}
                                     {item.duration_minutes && (
-                                      <span className="px-2 py-1 bg-purple-50 text-purple-700 rounded">
+                                      <span className="px-1.5 py-0.5 bg-purple-50 text-purple-700 rounded text-xs">
                                         ⏱️ {item.duration_minutes}min
                                       </span>
                                     )}
                                   </div>
                                   {item.notes && (
-                                    <p className="text-sm text-gray-500 mt-1">{item.notes}</p>
+                                    <p className="text-xs sm:text-sm text-gray-500 mt-1 line-clamp-2">{item.notes}</p>
                                   )}
                                 </div>
                               )}
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
                             {editingTask === item.id ? (
                               // Edit Mode Buttons
                               <>
                                 <button
                                   onClick={() => saveEditing(item.id)}
-                                  className="p-2 rounded-lg text-green-700 hover:bg-green-100 border border-green-300 transition-all"
+                                  className="p-1.5 sm:p-2 rounded-lg text-green-700 hover:bg-green-100 border border-green-300 transition-all"
                                   title="Save changes"
                                 >
-                                  <Check size={18} />
+                                  <Check size={16} className="sm:w-[18px] sm:h-[18px]" />
                                 </button>
                                 <button
                                   onClick={cancelEditing}
-                                  className="p-2 rounded-lg text-gray-700 hover:bg-gray-100 border border-gray-300 transition-all"
+                                  className="p-1.5 sm:p-2 rounded-lg text-gray-700 hover:bg-gray-100 border border-gray-300 transition-all"
                                   title="Cancel"
                                 >
-                                  <XIcon size={18} />
+                                  <XIcon size={16} className="sm:w-[18px] sm:h-[18px]" />
                                 </button>
                               </>
                             ) : (
@@ -487,10 +487,10 @@ const TaskTrackerModule = ({ projectId, filteredProject, updateScopeItem }) => {
                                     e.stopPropagation()
                                     startEditing(item)
                                   }}
-                                  className="p-2 rounded-lg text-blue-700 hover:bg-blue-100 border border-blue-300 transition-all"
+                                  className="p-1.5 sm:p-2 rounded-lg text-blue-700 hover:bg-blue-100 border border-blue-300 transition-all"
                                   title="Edit task"
                                 >
-                                  <Edit2 size={16} />
+                                  <Edit2 size={14} className="sm:w-4 sm:h-4" />
                                 </button>
                                 {item.status !== 'completed' && (
                                   <button
@@ -498,9 +498,9 @@ const TaskTrackerModule = ({ projectId, filteredProject, updateScopeItem }) => {
                                       e.stopPropagation()
                                       handleStatusChange(item.id, 'completed')
                                     }}
-                                    className="px-4 py-2 rounded-lg text-xs font-semibold bg-green-100 text-green-700 hover:bg-green-200 border border-green-300 transition-all shadow-sm"
+                                    className="px-2 py-1 sm:px-4 sm:py-2 rounded-lg text-xs font-semibold bg-green-100 text-green-700 hover:bg-green-200 border border-green-300 transition-all shadow-sm whitespace-nowrap"
                                   >
-                                    ✓ Done
+                                    ✓ <span className="hidden sm:inline">Done</span>
                                   </button>
                                 )}
                                 {item.status === 'completed' && (
@@ -509,9 +509,9 @@ const TaskTrackerModule = ({ projectId, filteredProject, updateScopeItem }) => {
                                       e.stopPropagation()
                                       handleStatusChange(item.id, 'pending')
                                     }}
-                                    className="px-4 py-2 rounded-lg text-xs font-semibold bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300 transition-all shadow-sm"
+                                    className="px-2 py-1 sm:px-4 sm:py-2 rounded-lg text-xs font-semibold bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300 transition-all shadow-sm whitespace-nowrap"
                                   >
-                                    ↺ Reopen
+                                    ↺ <span className="hidden sm:inline">Reopen</span>
                                   </button>
                                 )}
                               </>

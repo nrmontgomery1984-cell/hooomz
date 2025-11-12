@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Card } from '../UI/Card'
 import { Button } from '../UI/Button'
-import { Play, Square, Clock, Plus } from 'lucide-react'
+import { Play, Square, Clock, Plus, Briefcase } from 'lucide-react'
 import { useTimeTracking } from '../../hooks/useProjects'
 import * as projectsApi from '../../services/projectsApi'
 import { api } from '../../services/api'
@@ -10,7 +10,9 @@ import { api } from '../../services/api'
  * TimeTracker Component
  * Hierarchical category/subcategory/task selection with quick task creation
  */
-const TimeTracker = ({ projectId }) => {
+const TimeTracker = ({ projectId: initialProjectId }) => {
+  const [selectedProjectId, setSelectedProjectId] = useState(initialProjectId || '')
+  const [projects, setProjects] = useState([])
   const [workerName, setWorkerName] = useState(localStorage.getItem('workerName') || '')
   const [selectedCategory, setSelectedCategory] = useState('')
   const [selectedSubcategory, setSelectedSubcategory] = useState('')
@@ -27,23 +29,55 @@ const TimeTracker = ({ projectId }) => {
     return saved ? JSON.parse(saved) : ['Nathan', 'Nishant']
   })
 
-  const { activeEntry, startTimer, stopTimer, checkActiveEntry } = useTimeTracking(projectId)
+  // Use the selected project ID for time tracking
+  const { activeEntry, startTimer, stopTimer, checkActiveEntry } = useTimeTracking(selectedProjectId)
+
+  // Load all projects for the dropdown
+  useEffect(() => {
+    const loadProjects = async () => {
+      try {
+        const response = await api.get('/projects')
+        setProjects(response.data.data || [])
+      } catch (err) {
+        console.error('Error loading projects:', err)
+      }
+    }
+    loadProjects()
+  }, [])
+
+  // Update selected project when initialProjectId changes
+  useEffect(() => {
+    if (initialProjectId) {
+      setSelectedProjectId(initialProjectId)
+    }
+  }, [initialProjectId])
 
   // Load project scope with hierarchy
   useEffect(() => {
     const loadProjectScope = async () => {
       try {
-        const response = await api.get(`/projects/${projectId}/scope`)
+        const response = await api.get(`/projects/${selectedProjectId}/scope`)
         setProjectScope(response.data.data)
+        // Reset selections when project changes
+        setSelectedCategory('')
+        setSelectedSubcategory('')
+        setSelectedItemId('')
       } catch (err) {
         console.error('Error loading project scope:', err)
+        setProjectScope(null)
       }
     }
 
-    if (projectId) {
+    if (selectedProjectId) {
       loadProjectScope()
+    } else {
+      // Clear project scope when no project is selected
+      setProjectScope(null)
+      setSelectedCategory('')
+      setSelectedSubcategory('')
+      setSelectedItemId('')
     }
-  }, [projectId])
+  }, [selectedProjectId])
 
   // Check for active entry on mount
   useEffect(() => {
@@ -74,6 +108,11 @@ const TimeTracker = ({ projectId }) => {
   }, [activeEntry])
 
   const handleStartTimer = async () => {
+    if (!selectedProjectId) {
+      alert('Please select a project')
+      return
+    }
+
     if (!workerName.trim()) {
       alert('Please enter your name')
       return
@@ -205,12 +244,15 @@ const TimeTracker = ({ projectId }) => {
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
   }
 
-  // Get available categories
-  const categories = projectScope?.categories || []
+  // Get available categories - only show categories that have tasks
+  const categories = (projectScope?.categories || []).filter(cat => {
+    // Check if this category has any subcategories with tasks
+    return cat.subcategories?.some(sub => sub.items && sub.items.length > 0)
+  })
 
-  // Get subcategories for selected category
+  // Get subcategories for selected category - only show subcategories that have tasks
   const subcategories = selectedCategory
-    ? categories.find(c => c.id === selectedCategory)?.subcategories || []
+    ? (categories.find(c => c.id === selectedCategory)?.subcategories || []).filter(sub => sub.items && sub.items.length > 0)
     : []
 
   // Get tasks for selected subcategory
@@ -257,6 +299,28 @@ const TimeTracker = ({ projectId }) => {
       ) : (
         /* Start Timer Form */
         <div className="space-y-4">
+          {/* Project Selection - Only show if not already in a project context */}
+          {!initialProjectId && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                <Briefcase size={16} className="inline mr-1" />
+                Project
+              </label>
+              <select
+                value={selectedProjectId}
+                onChange={(e) => setSelectedProjectId(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              >
+                <option value="">-- Select project --</option>
+                {projects.map(project => (
+                  <option key={project.id} value={project.id}>
+                    {project.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
           {/* Worker Name */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -316,27 +380,33 @@ const TimeTracker = ({ projectId }) => {
           </div>
 
           {/* Category Selection */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Category
-            </label>
-            <select
-              value={selectedCategory}
-              onChange={(e) => {
-                setSelectedCategory(e.target.value)
-                setSelectedSubcategory('')
-                setSelectedItemId('')
-              }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-            >
-              <option value="">-- Select category --</option>
-              {categories.map(category => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-          </div>
+          {selectedProjectId && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Category
+              </label>
+              <select
+                value={selectedCategory}
+                onChange={(e) => {
+                  setSelectedCategory(e.target.value)
+                  setSelectedSubcategory('')
+                  setSelectedItemId('')
+                }}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                disabled={!projectScope}
+              >
+                <option value="">-- Select category --</option>
+                {categories.map(category => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+              {!projectScope && (
+                <p className="text-xs text-gray-500 mt-1">Loading categories...</p>
+              )}
+            </div>
+          )}
 
           {/* Subcategory Selection */}
           {selectedCategory && (

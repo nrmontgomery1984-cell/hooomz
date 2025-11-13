@@ -8,6 +8,20 @@ import supabase from '../utils/supabase.js'
 // ==================== EMPLOYEES ====================
 
 /**
+ * Sanitize employee data - convert empty strings to null for numeric fields
+ * @param {Object} data - Employee data
+ * @returns {Object} Sanitized employee data
+ */
+const sanitizeEmployeeData = (data) => {
+  const sanitized = { ...data }
+
+  // Convert empty strings to null for numeric fields
+  if (sanitized.hourly_rate === '') sanitized.hourly_rate = null
+
+  return sanitized
+}
+
+/**
  * Get all employees
  * @param {boolean} activeOnly - Filter for active employees only
  * @returns {Promise<Array>} Array of employees
@@ -70,9 +84,11 @@ export const getEmployeeByEmail = async (email) => {
  * @returns {Promise<Object>} Created employee
  */
 export const createEmployee = async (employeeData) => {
+  const sanitizedData = sanitizeEmployeeData(employeeData)
+
   const { data, error } = await supabase
     .from('employees')
-    .insert(employeeData)
+    .insert(sanitizedData)
     .select()
     .single()
 
@@ -87,10 +103,12 @@ export const createEmployee = async (employeeData) => {
  * @returns {Promise<Object>} Updated employee
  */
 export const updateEmployee = async (employeeId, updates) => {
+  const sanitizedUpdates = sanitizeEmployeeData(updates)
+
   const { data, error } = await supabase
     .from('employees')
     .update({
-      ...updates,
+      ...sanitizedUpdates,
       updated_at: new Date().toISOString()
     })
     .eq('id', employeeId)

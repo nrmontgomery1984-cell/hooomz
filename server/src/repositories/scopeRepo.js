@@ -232,6 +232,8 @@ export const getAllScopeItemsByProject = async (projectId) => {
  * @returns {Promise<Object>} Object with materials, tools, checklist, and photos arrays
  */
 export const getScopeItemDetails = async (itemId) => {
+  console.log('[getScopeItemDetails] START - itemId:', itemId)
+
   // Get the scope item with its subcategory and category info
   const { data: itemData, error: itemError } = await supabase
     .from('scope_items')
@@ -242,14 +244,87 @@ export const getScopeItemDetails = async (itemId) => {
         name,
         category:scope_categories!inner(
           id,
-          name
+          name,
+          project_id
         )
       )
     `)
     .eq('id', itemId)
     .single()
 
-  if (itemError) throw itemError
+  if (itemError) {
+    console.error('[getScopeItemDetails] Error fetching item:', itemError)
+    throw itemError
+  }
+
+  // Get project members for assignee dropdown
+  const projectId = itemData?.subcategory?.category?.project_id
+  console.log('[getScopeItemDetails] Extracted projectId:', projectId)
+
+  let projectMembers = []
+
+  if (projectId) {
+    console.log('[getScopeItemDetails] Fetching project members for project:', projectId)
+
+    // Get project members
+    const { data: membersData, error: membersError } = await supabase
+      .from('project_members')
+      .select('id, user_id, role')
+      .eq('project_id', projectId)
+      .order('created_at')
+
+    console.log('[getScopeItemDetails] Project members query result:', {
+      error: membersError,
+      dataLength: membersData?.length || 0,
+      data: membersData
+    })
+
+    if (!membersError && membersData && membersData.length > 0) {
+      console.log('[getScopeItemDetails] Fetching all users from auth.users...')
+
+      // Get user details from auth.users for all members
+      const { data: { users }, error: usersError } = await supabase.auth.admin.listUsers()
+
+      console.log('[getScopeItemDetails] Users query result:', {
+        error: usersError,
+        usersCount: users?.length || 0
+      })
+
+      if (!usersError && users) {
+        // Map members to include user email and name
+        projectMembers = membersData.map(member => {
+          const user = users.find(u => u.id === member.user_id)
+          console.log('[getScopeItemDetails] Mapping member:', {
+            member_user_id: member.user_id,
+            found_user: !!user,
+            user_email: user?.email
+          })
+
+          return {
+            id: member.id,
+            user_id: member.user_id,
+            role: member.role,
+            email: user?.email || 'Unknown',
+            name: user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Team Member'
+          }
+        })
+
+        console.log('[getScopeItemDetails] FINAL project members:', JSON.stringify({
+          projectId,
+          membersCount: projectMembers.length,
+          members: projectMembers
+        }))
+      } else if (usersError) {
+        console.error('[getScopeItemDetails] Error fetching users:', usersError)
+      }
+    } else if (membersError) {
+      console.error('[getScopeItemDetails] Error fetching members:', membersError)
+    } else {
+      console.log('[getScopeItemDetails] No project members found for project:', projectId)
+    }
+  } else {
+    console.log('[getScopeItemDetails] No projectId found in itemData')
+  }
 
   const [materials, tools, checklist, photos] = await Promise.all([
     getScopeItemMaterials(itemId),
@@ -263,6 +338,7 @@ export const getScopeItemDetails = async (itemId) => {
     tools,
     checklist,
     photos,
+    projectMembers,
     category: itemData?.subcategory?.category?.name || null,
     subcategory: itemData?.subcategory?.name || null,
     categoryId: itemData?.subcategory?.category?.id || null,

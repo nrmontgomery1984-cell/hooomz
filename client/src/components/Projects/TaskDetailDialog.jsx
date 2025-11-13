@@ -1,22 +1,37 @@
 import { useState, useEffect } from 'react'
-import { X, Wrench, Package, CheckSquare, Camera, Plus, Trash2 } from 'lucide-react'
+import { X, Wrench, Package, CheckSquare, Camera, Plus, Trash2, Info, Flag, User, Calendar, Tag, MapPin, Clock } from 'lucide-react'
 import { Button } from '../UI/Button'
 import { colors } from '../../styles/design-tokens'
 import { api } from '../../services/api'
 import { supabase } from '../../services/auth'
+import { useAuth } from '../../context/AuthContext'
 
 /**
- * Task Detail Dialog - Enhanced view with tools, materials, checklist, and photos
- * Based on Atul Gawande's Checklist Manifesto principles
+ * Task Detail Dialog - Enhanced Todoist-style view
+ * Hierarchy: Subtasks → Task → Subcategory → Category → Project
+ * Based on Atul Gawande's Checklist Manifesto + Todoist UX
  */
 const TaskDetailDialog = ({ item, isOpen, onClose, onUpdate }) => {
-  const [activeTab, setActiveTab] = useState('checklist')
+  const { user } = useAuth()
+  const [activeTab, setActiveTab] = useState('details')
   const [loading, setLoading] = useState(false)
   const [details, setDetails] = useState({
     tools: [],
     materials: [],
     checklist: [],
-    photos: []
+    photos: [],
+    subtasks: [],
+    comments: [],
+    projectMembers: []
+  })
+  const [taskData, setTaskData] = useState({
+    priority: 4,
+    assignee_id: null,
+    labels: [],
+    due_date: null,
+    location: '',
+    duration_minutes: null,
+    reminder_date: null
   })
 
   // Fetch task details when dialog opens
@@ -31,10 +46,31 @@ const TaskDetailDialog = ({ item, isOpen, onClose, onUpdate }) => {
       setLoading(true)
       const response = await api.get(`/projects/items/${item.id}/details`)
       setDetails(response.data.data)
+
+      // Load Todoist-style fields from item
+      setTaskData({
+        priority: item.priority || 4,
+        assignee_id: item.assignee_id || null,
+        labels: item.labels || [],
+        due_date: item.due_date || null,
+        location: item.location || '',
+        duration_minutes: item.duration_minutes || null,
+        reminder_date: item.reminder_date || null
+      })
     } catch (error) {
       console.error('Error fetching task details:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const updateTaskField = async (field, value) => {
+    try {
+      await api.patch(`/projects/items/${item.id}`, { [field]: value })
+      setTaskData(prev => ({ ...prev, [field]: value }))
+    } catch (error) {
+      console.error(`Error updating ${field}:`, error)
+      alert(`Failed to update ${field}`)
     }
   }
 
@@ -101,11 +137,22 @@ const TaskDetailDialog = ({ item, isOpen, onClose, onUpdate }) => {
   if (!isOpen) return null
 
   const tabs = [
+    { id: 'details', label: 'Details', icon: Info },
     { id: 'checklist', label: 'Checklist', icon: CheckSquare, count: details.checklist.length },
     { id: 'materials', label: 'Materials', icon: Package, count: details.materials.length },
     { id: 'tools', label: 'Tools', icon: Wrench, count: details.tools.length },
     { id: 'photos', label: 'Photos', icon: Camera, count: details.photos.length },
   ]
+
+  // Priority color mapping (Todoist style)
+  const getPriorityColor = (priority) => {
+    switch (priority) {
+      case 1: return { bg: 'bg-red-100', text: 'text-red-700', border: 'border-red-300', label: 'Urgent' }
+      case 2: return { bg: 'bg-orange-100', text: 'text-orange-700', border: 'border-orange-300', label: 'High' }
+      case 3: return { bg: 'bg-yellow-100', text: 'text-yellow-700', border: 'border-yellow-300', label: 'Medium' }
+      default: return { bg: 'bg-gray-100', text: 'text-gray-700', border: 'border-gray-300', label: 'Normal' }
+    }
+  }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
@@ -174,6 +221,17 @@ const TaskDetailDialog = ({ item, isOpen, onClose, onUpdate }) => {
             </div>
           ) : (
             <>
+              {/* Details Tab - Todoist-style fields */}
+              {activeTab === 'details' && (
+                <DetailsTab
+                  taskData={taskData}
+                  item={item}
+                  details={details}
+                  onUpdateField={updateTaskField}
+                  getPriorityColor={getPriorityColor}
+                />
+              )}
+
               {/* Checklist Tab */}
               {activeTab === 'checklist' && (
                 <ChecklistTab
@@ -220,6 +278,177 @@ const TaskDetailDialog = ({ item, isOpen, onClose, onUpdate }) => {
           </Button>
         </div>
       </div>
+    </div>
+  )
+}
+
+// Details Tab Component (Todoist-style fields)
+const DetailsTab = ({ taskData, item, details, onUpdateField, getPriorityColor }) => {
+  const priorityColors = getPriorityColor(taskData.priority)
+
+  return (
+    <div className="space-y-6">
+      {/* Hierarchy Breadcrumb */}
+      <div className="bg-blue-50 rounded-lg p-4">
+        <h3 className="text-xs font-semibold text-gray-600 uppercase mb-2">Task Hierarchy</h3>
+        <div className="flex items-center gap-2 text-sm flex-wrap">
+          <span className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-md font-medium">
+            Project
+          </span>
+          <span className="text-gray-400">→</span>
+          <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-md font-medium">
+            {details.category || 'Category'}
+          </span>
+          <span className="text-gray-400">→</span>
+          <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-md font-medium">
+            {details.subcategory || 'Subcategory'}
+          </span>
+          <span className="text-gray-400">→</span>
+          <span className="px-3 py-1 bg-green-100 text-green-700 rounded-md font-medium">
+            This Task
+          </span>
+        </div>
+        <p className="text-xs text-gray-500 mt-2">
+          Tasks can have subtasks (checklist items), and roll up to subcategories and categories
+        </p>
+      </div>
+
+      {/* Priority */}
+      <div>
+        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+          <Flag size={16} />
+          Priority
+        </label>
+        <div className="grid grid-cols-4 gap-2">
+          {[1, 2, 3, 4].map(priority => {
+            const colors = getPriorityColor(priority)
+            const isSelected = taskData.priority === priority
+            return (
+              <button
+                key={priority}
+                onClick={() => onUpdateField('priority', priority)}
+                className={`px-4 py-3 rounded-lg border-2 transition-all ${
+                  isSelected
+                    ? `${colors.bg} ${colors.border} ${colors.text} font-semibold`
+                    : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300'
+                }`}
+              >
+                <Flag size={16} className={`mx-auto mb-1 ${isSelected ? colors.text : ''}`} />
+                <span className="text-xs block">{colors.label}</span>
+              </button>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* Due Date */}
+      <div>
+        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+          <Calendar size={16} />
+          Due Date
+        </label>
+        <input
+          type="date"
+          value={taskData.due_date || ''}
+          onChange={(e) => onUpdateField('due_date', e.target.value)}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        />
+      </div>
+
+      {/* Assignee */}
+      <div>
+        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+          <User size={16} />
+          Assigned To
+        </label>
+        <select
+          value={taskData.assignee_id || ''}
+          onChange={(e) => onUpdateField('assignee_id', e.target.value || null)}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        >
+          <option value="">Unassigned</option>
+          {details.projectMembers?.map(member => (
+            <option key={member.user_id} value={member.user_id}>
+              {member.name || member.email || 'Team Member'}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Location */}
+      <div>
+        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+          <MapPin size={16} />
+          Location / Room
+        </label>
+        <input
+          type="text"
+          value={taskData.location || ''}
+          onChange={(e) => onUpdateField('location', e.target.value)}
+          placeholder="e.g., Kitchen, Master Bedroom, Garage"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        />
+      </div>
+
+      {/* Duration Estimate */}
+      <div>
+        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+          <Clock size={16} />
+          Estimated Duration (minutes)
+        </label>
+        <input
+          type="number"
+          value={taskData.duration_minutes || ''}
+          onChange={(e) => onUpdateField('duration_minutes', parseInt(e.target.value) || null)}
+          placeholder="e.g., 120"
+          min="0"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        />
+      </div>
+
+      {/* Labels/Tags */}
+      <div>
+        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+          <Tag size={16} />
+          Labels
+        </label>
+        <input
+          type="text"
+          value={(taskData.labels || []).join(', ')}
+          onChange={(e) => {
+            const labels = e.target.value.split(',').map(l => l.trim()).filter(Boolean)
+            onUpdateField('labels', labels)
+          }}
+          placeholder="e.g., electrical, urgent, inspection-required"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        />
+        <p className="text-xs text-gray-500 mt-1">Separate multiple labels with commas</p>
+        {taskData.labels && taskData.labels.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-2">
+            {taskData.labels.map((label, idx) => (
+              <span key={idx} className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
+                {label}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Time Logged */}
+      {item.actual_hours > 0 && (
+        <div className="bg-green-50 rounded-lg p-4">
+          <div className="flex items-center gap-2 text-green-800 font-semibold mb-1">
+            <Clock size={18} />
+            Time Logged
+          </div>
+          <p className="text-2xl font-bold text-green-900">
+            {item.actual_hours.toFixed(1)} hours
+          </p>
+          <p className="text-xs text-green-700 mt-1">
+            Tracked across all time entries for this task
+          </p>
+        </div>
+      )}
     </div>
   )
 }

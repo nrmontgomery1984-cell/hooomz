@@ -198,16 +198,13 @@ export const getWorkers = async () => {
 export const getProjectMembers = async (projectId) => {
   const { data, error } = await supabase
     .from('project_members')
-    .select(`
-      *,
-      user:auth.users(id, email, raw_user_meta_data)
-    `)
+    .select('*')
     .eq('project_id', projectId)
     .order('role')
     .order('joined_at')
 
   if (error) throw error
-  return data
+  return data || []
 }
 
 /**

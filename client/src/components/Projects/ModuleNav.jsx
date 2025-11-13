@@ -8,7 +8,8 @@ import {
   Calendar,
   MessageSquare,
   BarChart3,
-  Receipt
+  Receipt,
+  UserCheck
 } from 'lucide-react'
 
 /**
@@ -34,6 +35,12 @@ const ModuleNav = ({ activeModule, onModuleChange, projectId }) => {
       label: 'Estimates',
       icon: Receipt,
       description: 'Quotes, estimates, and scope conversion'
+    },
+    {
+      id: 'employees',
+      label: 'Employees',
+      icon: UserCheck,
+      description: 'Employee management and time off requests'
     },
     {
       id: 'financials',

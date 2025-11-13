@@ -15,6 +15,7 @@ import maintenanceRouter from './routes/maintenance.js'
 import contractorsRouter from './routes/contractors.js'
 import realtorsRouter from './routes/realtors.js'
 import projectsRouter from './routes/projects.js'
+import employeesRouter from './routes/employees.js'
 
 // Import middleware
 import { errorHandler } from './middleware/errorHandler.js'
@@ -67,6 +68,7 @@ app.use('/api/homes', homesRouter)
 app.use('/api/contractors', contractorsRouter)
 app.use('/api/realtors', realtorsRouter)
 app.use('/api/projects', projectsRouter)
+app.use('/api/employees', employeesRouter)
 // Generic /api mounts for nested home resources (must come AFTER specific routes)
 app.use('/api', roomsRouter)  // Mount at /api so routes can be /api/homes/:homeId/rooms
 app.use('/api', materialsRouter)  // Mount at /api so routes can be /api/homes/:homeId/materials

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Users, Plus, Search, Phone, Mail, Calendar, AlertCircle, Check, X as XIcon } from 'lucide-react'
 import { ModernCard } from '../../UI/ModernCard'
 import { Button } from '../../UI/Button'
-import EmployeeDetailDialog from '../EmployeeDetailDialog'
+import EmployeeDetailDialog from '../EmployeeDetailDialog.jsx'
 import { api } from '../../../services/api'
 
 const EmployeesModule = () => {

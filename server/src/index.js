@@ -85,11 +85,17 @@ app.use((req, res) => {
 app.use(errorHandler)
 
 // Start server - listen on all network interfaces for mobile access
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🏠 Hooomz Profile API server running on port ${PORT}`)
-  console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`)
-  console.log(`🔗 Client URL: ${process.env.CLIENT_URL || 'http://localhost:5173'}`)
-  console.log(`✅ Server ready at http://localhost:${PORT}`)
-  console.log(`📱 Network access: http://10.0.0.77:${PORT}`)
-})
+// Only start the server if not running in Vercel serverless environment
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🏠 Hooomz Profile API server running on port ${PORT}`)
+    console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`)
+    console.log(`🔗 Client URL: ${process.env.CLIENT_URL || 'http://localhost:5173'}`)
+    console.log(`✅ Server ready at http://localhost:${PORT}`)
+    console.log(`📱 Network access: http://10.0.0.77:${PORT}`)
+  })
+}
+
+// Export the Express app for Vercel serverless functions
+export default app
 

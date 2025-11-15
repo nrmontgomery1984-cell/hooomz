@@ -159,7 +159,7 @@ const TaskInstancesModule = ({ projectId }) => {
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <List size={24} color={colors.primary.main} />
               <div>
-                <h2 style={{ fontSize: '18px', fontWeight: 600, margin: 0 }}>Task Instances</h2>
+                <h2 style={{ fontSize: '18px', fontWeight: 600, margin: 0 }}>Tasks</h2>
                 <p style={{ fontSize: '14px', color: colors.text.secondary, margin: 0 }}>
                   {pagination.total} deployed tasks
                 </p>
@@ -247,9 +247,9 @@ const TaskInstancesModule = ({ projectId }) => {
         <ModernCard>
           <div style={{ padding: '48px', textAlign: 'center' }}>
             <List size={48} color={colors.text.tertiary} style={{ margin: '0 auto 16px' }} />
-            <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '8px' }}>No Task Instances</h3>
+            <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '8px' }}>No Tasks</h3>
             <p style={{ color: colors.text.secondary, marginBottom: '24px' }}>
-              Deploy quantum tasks to create instances at specific locations
+              Deploy quantum tasks to create tasks at specific locations
             </p>
           </div>
         </ModernCard>

@@ -42,7 +42,7 @@ const ModuleNav = ({ activeModule, onModuleChange, projectId }) => {
     },
     {
       id: 'instances',
-      label: 'Instances',
+      label: 'Tasks',
       icon: CheckSquare,
       description: 'Deployed tasks'
     },

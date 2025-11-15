@@ -5,6 +5,7 @@ import { colors } from '../../styles/design-tokens'
 import { api } from '../../services/api'
 import { supabase } from '../../services/auth'
 import { useAuth } from '../../context/AuthContext'
+import { detectCategoryFromDescription } from '../../utils/constructionCategories'
 
 /**
  * Task Detail Dialog - Enhanced Todoist-style view
@@ -73,7 +74,8 @@ const TaskDetailDialog = ({ item, isOpen, onClose, onUpdate }) => {
         due_date: formatDateForInput(item.due_date),
         location: autoDetectedLocation,
         duration_minutes: item.duration_minutes || null,
-        reminder_date: formatDateForInput(item.reminder_date)
+        reminder_date: formatDateForInput(item.reminder_date),
+        subcategory_id: item.subcategory_id || detailsData.subcategoryId || null
       })
     } catch (error) {
       console.error('Error fetching task details:', error)
@@ -135,9 +137,15 @@ const TaskDetailDialog = ({ item, isOpen, onClose, onUpdate }) => {
           // Extract just the date part to avoid timezone issues
           valueToSend = value.split('T')[0]
         }
+
+        console.log(`[DATE DEBUG] Field: ${field}, Original value: ${value}, Sending: ${valueToSend}`)
       }
 
-      await api.patch(`/projects/items/${item.id}`, { [field]: valueToSend })
+      const response = await api.patch(`/projects/items/${item.id}`, { [field]: valueToSend })
+
+      if (field === 'due_date' || field === 'reminder_date') {
+        console.log(`[DATE DEBUG] Response from server:`, response.data)
+      }
 
       // Update local state with the clean value
       setTaskData(prev => ({ ...prev, [field]: valueToSend }))

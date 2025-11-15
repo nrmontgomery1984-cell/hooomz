@@ -10,17 +10,12 @@ import TimeTracker from '../components/Projects/TimeTracker'
 import TaskDetailDialog from '../components/Projects/TaskDetailDialog'
 import ProjectMembersDialog from '../components/Projects/ProjectMembersDialog'
 import ModuleNav from '../components/Projects/ModuleNav'
-import TaskTrackerModule from '../components/Projects/modules/TaskTrackerModule'
+import BuildingStructureModule from '../components/Projects/modules/BuildingStructureModule'
+import TaskTemplatesModule from '../components/Projects/modules/TaskTemplatesModule'
+import TaskInstancesModule from '../components/Projects/modules/TaskInstancesModule'
+import ChangeOrdersModule from '../components/Projects/modules/ChangeOrdersModule'
 import TimeTrackerModule from '../components/Projects/modules/TimeTrackerModule'
 import EstimateModule from '../components/Projects/modules/EstimateModule'
-import EmployeesModule from '../components/Projects/modules/EmployeesModule'
-import FinancialsModule from '../components/Projects/modules/FinancialsModule'
-import DocumentsModule from '../components/Projects/modules/DocumentsModule'
-import ActivityLogModule from '../components/Projects/modules/ActivityLogModule'
-import ContactsModule from '../components/Projects/modules/ContactsModule'
-import ScheduleModule from '../components/Projects/modules/ScheduleModule'
-import CommunicationModule from '../components/Projects/modules/CommunicationModule'
-import AnalyticsModule from '../components/Projects/modules/AnalyticsModule'
 import { colors } from '../styles/design-tokens'
 import { api } from '../services/api'
 
@@ -45,7 +40,7 @@ const ProjectDetailNew = () => {
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false)
   const [showProjectMenu, setShowProjectMenu] = useState(false)
   const [showMembersDialog, setShowMembersDialog] = useState(false)
-  const [activeModule, setActiveModule] = useState('tasks')
+  const [activeModule, setActiveModule] = useState('estimates')
 
   // Extract unique locations from scope items
   const locations = useMemo(() => {
@@ -438,52 +433,28 @@ const ProjectDetailNew = () => {
 
         {/* Module Content */}
         <div className="mt-6">
-          {activeModule === 'tasks' && (
-            <TaskTrackerModule
-              projectId={projectId}
-              filteredProject={filteredProject}
-              updateScopeItem={updateScopeItem}
-            />
-          )}
-
-          {activeModule === 'time' && (
-            <TimeTrackerModule projectId={projectId} />
-          )}
-
           {activeModule === 'estimates' && (
             <EstimateModule projectId={projectId} />
           )}
 
-          {activeModule === 'employees' && (
-            <EmployeesModule />
+          {activeModule === 'building' && (
+            <BuildingStructureModule projectId={projectId} />
           )}
 
-          {activeModule === 'financials' && (
-            <FinancialsModule projectId={projectId} />
+          {activeModule === 'templates' && (
+            <TaskTemplatesModule projectId={projectId} />
           )}
 
-          {activeModule === 'documents' && (
-            <DocumentsModule projectId={projectId} />
+          {activeModule === 'instances' && (
+            <TaskInstancesModule projectId={projectId} />
           )}
 
-          {activeModule === 'activity' && (
-            <ActivityLogModule projectId={projectId} />
+          {activeModule === 'change-orders' && (
+            <ChangeOrdersModule projectId={projectId} />
           )}
 
-          {activeModule === 'contacts' && (
-            <ContactsModule projectId={projectId} />
-          )}
-
-          {activeModule === 'schedule' && (
-            <ScheduleModule projectId={projectId} />
-          )}
-
-          {activeModule === 'communication' && (
-            <CommunicationModule projectId={projectId} />
-          )}
-
-          {activeModule === 'analytics' && (
-            <AnalyticsModule projectId={projectId} />
+          {activeModule === 'time' && (
+            <TimeTrackerModule projectId={projectId} />
           )}
         </div>
       </div>

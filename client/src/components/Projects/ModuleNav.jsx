@@ -9,7 +9,11 @@ import {
   MessageSquare,
   BarChart3,
   Receipt,
-  UserCheck
+  UserCheck,
+  Building2,
+  Zap,
+  List,
+  FileEdit
 } from 'lucide-react'
 
 /**
@@ -19,70 +23,40 @@ import {
 const ModuleNav = ({ activeModule, onModuleChange, projectId }) => {
   const modules = [
     {
-      id: 'tasks',
-      label: 'Task Tracker',
-      icon: CheckSquare,
-      description: 'Scope, checklists, materials, tools'
-    },
-    {
-      id: 'time',
-      label: 'Time Tracker',
-      icon: Clock,
-      description: 'Time entries and labor tracking'
-    },
-    {
       id: 'estimates',
       label: 'Estimates',
       icon: Receipt,
-      description: 'Quotes, estimates, and scope conversion'
+      description: 'Quotes and estimates'
     },
     {
-      id: 'employees',
-      label: 'Employees',
-      icon: UserCheck,
-      description: 'Employee management and time off requests'
+      id: 'building',
+      label: 'Building',
+      icon: Building2,
+      description: 'Locations and structure'
     },
     {
-      id: 'financials',
-      label: 'Financials',
-      icon: DollarSign,
-      description: 'Invoices, quotes, estimates, expenses'
+      id: 'templates',
+      label: 'Templates',
+      icon: List,
+      description: 'Task templates'
     },
     {
-      id: 'documents',
-      label: 'Documents',
-      icon: FileText,
-      description: 'Permits, contracts, plans, change orders'
+      id: 'instances',
+      label: 'Instances',
+      icon: CheckSquare,
+      description: 'Deployed tasks'
     },
     {
-      id: 'activity',
-      label: 'Activity Log',
-      icon: ClipboardList,
-      description: 'Site visits, inspections, deliveries'
+      id: 'change-orders',
+      label: 'Change Orders',
+      icon: FileEdit,
+      description: 'Scope changes'
     },
     {
-      id: 'contacts',
-      label: 'Contacts',
-      icon: Users,
-      description: 'Team, contractors, professionals'
-    },
-    {
-      id: 'schedule',
-      label: 'Schedule',
-      icon: Calendar,
-      description: 'Timeline, milestones, deadlines'
-    },
-    {
-      id: 'communication',
-      label: 'Communication',
-      icon: MessageSquare,
-      description: 'Messages, updates, notifications'
-    },
-    {
-      id: 'analytics',
-      label: 'Analytics',
-      icon: BarChart3,
-      description: 'Reports, dashboards, insights'
+      id: 'time',
+      label: 'Time',
+      icon: Clock,
+      description: 'Time tracking'
     }
   ]
 

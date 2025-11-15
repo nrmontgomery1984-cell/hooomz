@@ -8,7 +8,8 @@ import {
   User,
   ChevronDown,
   Home,
-  Hammer
+  Hammer,
+  Users
 } from 'lucide-react'
 import { colors } from '../../styles/design-tokens'
 
@@ -29,10 +30,12 @@ const ModernLayout = ({ children }) => {
     { label: 'Dashboard', path: '/dashboard' },
     { label: 'Contractor Input', path: '/contractor' },
     { label: 'Realtor Intake', path: '/realtor' },
+    { label: 'Contacts', path: '/contacts' },
   ]
 
   const buildzNav = [
     { label: 'Projects', path: '/projects' },
+    { label: 'Contacts', path: '/contacts' },
   ]
 
   const navItems = isBuildz ? buildzNav : hooomzNav

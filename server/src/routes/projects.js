@@ -3,6 +3,11 @@ import * as projectsRepo from '../repositories/projectsRepo.js'
 import * as scopeRepo from '../repositories/scopeRepo.js'
 import * as timeEntriesRepo from '../repositories/timeEntriesRepo.js'
 import * as estimatesRepo from '../repositories/estimatesRepo.js'
+import * as loopRepo from '../repositories/loopRepo.js'
+import * as taskTemplateRepo from '../repositories/taskTemplateRepo.js'
+import * as taskInstanceRepo from '../repositories/taskInstanceRepo.js'
+import * as phaseRepo from '../repositories/phaseRepo.js'
+import * as changeOrderRepo from '../repositories/changeOrderRepo.js'
 import { authMiddleware } from '../middleware/auth.js'
 
 const router = express.Router()
@@ -581,6 +586,801 @@ router.delete('/:projectId', async (req, res) => {
     res.json({ success: true })
   } catch (error) {
     console.error('Error deleting project:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// ==================== NESTED LOOP ARCHITECTURE ====================
+
+// ==================== LOOP CONTEXTS & ITERATIONS ====================
+
+// Get loop contexts for a project
+router.get('/:projectId/loop-contexts', async (req, res) => {
+  try {
+    const { projectId } = req.params
+    const contexts = await loopRepo.getProjectLoopContexts(projectId)
+    res.json({ data: contexts })
+  } catch (error) {
+    console.error('Error fetching loop contexts:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Create loop context
+router.post('/:projectId/loop-contexts', async (req, res) => {
+  try {
+    const { projectId } = req.params
+    const context = await loopRepo.createLoopContext(projectId, req.body)
+    res.status(201).json({ data: context })
+  } catch (error) {
+    console.error('Error creating loop context:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Get building structure (hierarchical)
+router.get('/:projectId/building-structure', async (req, res) => {
+  try {
+    const { projectId } = req.params
+    const structure = await loopRepo.getBuildingStructure(projectId)
+    res.json({ data: structure })
+  } catch (error) {
+    console.error('Error fetching building structure:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Get all rooms for a project
+router.get('/:projectId/rooms', async (req, res) => {
+  try {
+    const { projectId } = req.params
+    const rooms = await loopRepo.getAllRooms(projectId)
+    res.json({ data: rooms })
+  } catch (error) {
+    console.error('Error fetching rooms:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Get iterations for a loop context
+router.get('/loop-contexts/:contextId/iterations', async (req, res) => {
+  try {
+    const { contextId } = req.params
+    const iterations = await loopRepo.getLoopIterations(contextId)
+    res.json({ data: iterations })
+  } catch (error) {
+    console.error('Error fetching loop iterations:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Create loop iteration
+router.post('/loop-contexts/:contextId/iterations', async (req, res) => {
+  try {
+    const { contextId } = req.params
+    const iteration = await loopRepo.createLoopIteration(contextId, req.body)
+    res.status(201).json({ data: iteration })
+  } catch (error) {
+    console.error('Error creating loop iteration:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Update loop iteration
+router.put('/loop-iterations/:iterationId', async (req, res) => {
+  try {
+    const { iterationId } = req.params
+    const iteration = await loopRepo.updateLoopIteration(iterationId, req.body)
+    res.json({ data: iteration })
+  } catch (error) {
+    console.error('Error updating loop iteration:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Delete loop iteration
+router.delete('/loop-iterations/:iterationId', async (req, res) => {
+  try {
+    const { iterationId } = req.params
+    await loopRepo.deleteLoopIteration(iterationId)
+    res.json({ success: true })
+  } catch (error) {
+    console.error('Error deleting loop iteration:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// ==================== PHASES ====================
+
+// Get global phases
+router.get('/phases/global', async (req, res) => {
+  try {
+    const phases = await phaseRepo.getGlobalPhases()
+    res.json({ data: phases })
+  } catch (error) {
+    console.error('Error fetching global phases:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Get phases for a project (global + custom)
+router.get('/:projectId/phases', async (req, res) => {
+  try {
+    const { projectId } = req.params
+    const phases = await phaseRepo.getProjectPhases(projectId)
+    res.json({ data: phases })
+  } catch (error) {
+    console.error('Error fetching project phases:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Create custom phase for project
+router.post('/:projectId/phases', async (req, res) => {
+  try {
+    const { projectId } = req.params
+    const phase = await phaseRepo.createProjectPhase(projectId, req.body)
+    res.status(201).json({ data: phase })
+  } catch (error) {
+    console.error('Error creating phase:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Update phase
+router.put('/phases/:phaseId', async (req, res) => {
+  try {
+    const { phaseId } = req.params
+    const phase = await phaseRepo.updatePhase(phaseId, req.body)
+    res.json({ data: phase })
+  } catch (error) {
+    console.error('Error updating phase:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Delete phase
+router.delete('/phases/:phaseId', async (req, res) => {
+  try {
+    const { phaseId } = req.params
+    await phaseRepo.deletePhase(phaseId)
+    res.json({ success: true })
+  } catch (error) {
+    console.error('Error deleting phase:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Get phase statistics for project
+router.get('/:projectId/phase-stats', async (req, res) => {
+  try {
+    const { projectId } = req.params
+    const stats = await phaseRepo.getPhaseStats(projectId)
+    res.json({ data: stats })
+  } catch (error) {
+    console.error('Error fetching phase stats:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// ==================== TASK TEMPLATES ====================
+
+// Get task templates for a project
+router.get('/:projectId/task-templates', async (req, res) => {
+  try {
+    const { projectId } = req.params
+    const templates = await taskTemplateRepo.getProjectTemplates(projectId)
+    res.json({ data: templates })
+  } catch (error) {
+    console.error('Error fetching task templates:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Get quantum tasks (undeployed templates)
+router.get('/:projectId/quantum-tasks', async (req, res) => {
+  try {
+    const { projectId } = req.params
+    const quantumTasks = await taskTemplateRepo.getQuantumTasks(projectId)
+    res.json({ data: quantumTasks })
+  } catch (error) {
+    console.error('Error fetching quantum tasks:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Get single template
+router.get('/task-templates/:templateId', async (req, res) => {
+  try {
+    const { templateId } = req.params
+    const template = await taskTemplateRepo.getTemplateById(templateId)
+    res.json({ data: template })
+  } catch (error) {
+    console.error('Error fetching template:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Get template with full details
+router.get('/task-templates/:templateId/details', async (req, res) => {
+  try {
+    const { templateId } = req.params
+    const details = await taskTemplateRepo.getTemplateWithDetails(templateId)
+    res.json({ data: details })
+  } catch (error) {
+    console.error('Error fetching template details:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Create task template
+router.post('/:projectId/task-templates', async (req, res) => {
+  try {
+    const { projectId } = req.params
+    const template = await taskTemplateRepo.createTemplate(projectId, req.body)
+    res.status(201).json({ data: template })
+  } catch (error) {
+    console.error('Error creating task template:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Update task template
+router.put('/task-templates/:templateId', async (req, res) => {
+  try {
+    const { templateId } = req.params
+    const template = await taskTemplateRepo.updateTemplate(templateId, req.body)
+    res.json({ data: template })
+  } catch (error) {
+    console.error('Error updating task template:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Delete task template
+router.delete('/task-templates/:templateId', async (req, res) => {
+  try {
+    const { templateId } = req.params
+    await taskTemplateRepo.deleteTemplate(templateId)
+    res.json({ success: true })
+  } catch (error) {
+    console.error('Error deleting task template:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Deploy template to specific iterations
+router.post('/task-templates/:templateId/deploy', async (req, res) => {
+  try {
+    const { templateId } = req.params
+    const { iteration_ids } = req.body
+    const instances = await taskInstanceRepo.deployTemplate(templateId, iteration_ids)
+    res.status(201).json({ data: instances })
+  } catch (error) {
+    console.error('Error deploying template:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Deploy template to all matching iterations
+router.post('/task-templates/:templateId/deploy-all', async (req, res) => {
+  try {
+    const { templateId } = req.params
+    const result = await taskInstanceRepo.deployTemplateToAll(templateId)
+    res.status(201).json({ data: result })
+  } catch (error) {
+    console.error('Error deploying template to all:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// ==================== TEMPLATE MATERIALS ====================
+
+// Add material to template
+router.post('/task-templates/:templateId/materials', async (req, res) => {
+  try {
+    const { templateId } = req.params
+    const material = await taskTemplateRepo.addMaterial(templateId, req.body)
+    res.status(201).json({ data: material })
+  } catch (error) {
+    console.error('Error adding material:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Update template material
+router.put('/template-materials/:materialId', async (req, res) => {
+  try {
+    const { materialId } = req.params
+    const material = await taskTemplateRepo.updateMaterial(materialId, req.body)
+    res.json({ data: material })
+  } catch (error) {
+    console.error('Error updating material:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Delete template material
+router.delete('/template-materials/:materialId', async (req, res) => {
+  try {
+    const { materialId } = req.params
+    await taskTemplateRepo.deleteMaterial(materialId)
+    res.json({ success: true })
+  } catch (error) {
+    console.error('Error deleting material:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// ==================== TEMPLATE TOOLS ====================
+
+// Add tool to template
+router.post('/task-templates/:templateId/tools', async (req, res) => {
+  try {
+    const { templateId } = req.params
+    const tool = await taskTemplateRepo.addTool(templateId, req.body)
+    res.status(201).json({ data: tool })
+  } catch (error) {
+    console.error('Error adding tool:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Update template tool
+router.put('/template-tools/:toolId', async (req, res) => {
+  try {
+    const { toolId } = req.params
+    const tool = await taskTemplateRepo.updateTool(toolId, req.body)
+    res.json({ data: tool })
+  } catch (error) {
+    console.error('Error updating tool:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Delete template tool
+router.delete('/template-tools/:toolId', async (req, res) => {
+  try {
+    const { toolId } = req.params
+    await taskTemplateRepo.deleteTool(toolId)
+    res.json({ success: true })
+  } catch (error) {
+    console.error('Error deleting tool:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// ==================== PHASE CHECKLISTS ====================
+
+// Get phase checklist for a template
+router.get('/task-templates/:templateId/checklists', async (req, res) => {
+  try {
+    const { templateId } = req.params
+    const checklists = await phaseRepo.getTemplateChecklists(templateId)
+    res.json({ data: checklists })
+  } catch (error) {
+    console.error('Error fetching checklists:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Create phase checklist item
+router.post('/task-templates/:templateId/checklists', async (req, res) => {
+  try {
+    const { templateId } = req.params
+    const { phase_id, ...checklistData } = req.body
+    const checklist = await phaseRepo.createPhaseChecklist(phase_id, templateId, checklistData)
+    res.status(201).json({ data: checklist })
+  } catch (error) {
+    console.error('Error creating checklist item:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Update phase checklist item
+router.put('/phase-checklists/:checklistId', async (req, res) => {
+  try {
+    const { checklistId } = req.params
+    const checklist = await phaseRepo.updatePhaseChecklistItem(checklistId, req.body)
+    res.json({ data: checklist })
+  } catch (error) {
+    console.error('Error updating checklist item:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Delete phase checklist item
+router.delete('/phase-checklists/:checklistId', async (req, res) => {
+  try {
+    const { checklistId } = req.params
+    await phaseRepo.deletePhaseChecklistItem(checklistId)
+    res.json({ success: true })
+  } catch (error) {
+    console.error('Error deleting checklist item:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// ==================== TASK INSTANCES ====================
+
+// Get task instances for a project
+router.get('/:projectId/task-instances', async (req, res) => {
+  try {
+    const { projectId } = req.params
+    const { phase_id, iteration_id, category_id, status, assignee_id, page, limit, sortBy, sortOrder } = req.query
+
+    const filters = {}
+    if (phase_id) filters.phase_id = phase_id
+    if (iteration_id) filters.iteration_id = iteration_id
+    if (category_id) filters.category_id = category_id
+    if (status) filters.status = status
+    if (assignee_id) filters.assignee_id = assignee_id
+
+    const pagination = {}
+    if (page) pagination.page = parseInt(page)
+    if (limit) pagination.limit = parseInt(limit)
+    if (sortBy) pagination.sortBy = sortBy
+    if (sortOrder) pagination.sortOrder = sortOrder
+
+    const result = await taskInstanceRepo.getProjectInstances(projectId, filters, pagination)
+    res.json(result)
+  } catch (error) {
+    console.error('Error fetching task instances:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Get instances by phase
+router.get('/:projectId/task-instances/by-phase/:phaseId', async (req, res) => {
+  try {
+    const { projectId, phaseId } = req.params
+    const instances = await taskInstanceRepo.getInstancesByPhase(projectId, phaseId)
+    res.json({ data: instances })
+  } catch (error) {
+    console.error('Error fetching instances by phase:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Get instances by location
+router.get('/:projectId/task-instances/by-location', async (req, res) => {
+  try {
+    const { projectId } = req.params
+    const { location_path } = req.query
+    const instances = await taskInstanceRepo.getInstancesByLocation(projectId, location_path)
+    res.json({ data: instances })
+  } catch (error) {
+    console.error('Error fetching instances by location:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Get instances by category
+router.get('/:projectId/task-instances/by-category/:categoryId', async (req, res) => {
+  try {
+    const { projectId, categoryId } = req.params
+    const instances = await taskInstanceRepo.getInstancesByCategory(projectId, categoryId)
+    res.json({ data: instances })
+  } catch (error) {
+    console.error('Error fetching instances by category:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Get single task instance
+router.get('/task-instances/:instanceId', async (req, res) => {
+  try {
+    const { instanceId } = req.params
+    const instance = await taskInstanceRepo.getInstanceById(instanceId)
+    res.json({ data: instance })
+  } catch (error) {
+    console.error('Error fetching task instance:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Get task instance with full details
+router.get('/task-instances/:instanceId/details', async (req, res) => {
+  try {
+    const { instanceId } = req.params
+    const details = await taskInstanceRepo.getInstanceDetails(instanceId)
+    res.json({ data: details })
+  } catch (error) {
+    console.error('Error fetching instance details:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Update task instance
+router.put('/task-instances/:instanceId', async (req, res) => {
+  try {
+    const { instanceId } = req.params
+    const instance = await taskInstanceRepo.updateInstance(instanceId, req.body)
+    res.json({ data: instance })
+  } catch (error) {
+    console.error('Error updating task instance:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Delete task instance
+router.delete('/task-instances/:instanceId', async (req, res) => {
+  try {
+    const { instanceId } = req.params
+    await taskInstanceRepo.deleteInstance(instanceId)
+    res.json({ success: true })
+  } catch (error) {
+    console.error('Error deleting task instance:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// ==================== TASK CHECKLIST ITEMS ====================
+
+// Toggle checklist item completion
+router.post('/task-checklist-items/:checklistItemId/toggle', async (req, res) => {
+  try {
+    const { checklistItemId } = req.params
+    const userId = req.user?.id || req.body.user_id
+    const item = await taskInstanceRepo.toggleChecklistItem(checklistItemId, userId)
+    res.json({ data: item })
+  } catch (error) {
+    console.error('Error toggling checklist item:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// ==================== INSTANCE MATERIALS ====================
+
+// Add material to task instance
+router.post('/task-instances/:instanceId/materials', async (req, res) => {
+  try {
+    const { instanceId } = req.params
+    const userId = req.user?.id || req.body.user_id
+    const material = await taskInstanceRepo.addInstanceMaterial(instanceId, req.body, userId)
+    res.status(201).json({ data: material })
+  } catch (error) {
+    console.error('Error adding instance material:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Update instance material
+router.put('/instance-materials/:materialId', async (req, res) => {
+  try {
+    const { materialId } = req.params
+    const material = await taskInstanceRepo.updateInstanceMaterial(materialId, req.body)
+    res.json({ data: material })
+  } catch (error) {
+    console.error('Error updating instance material:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Delete instance material
+router.delete('/instance-materials/:materialId', async (req, res) => {
+  try {
+    const { materialId } = req.params
+    await taskInstanceRepo.deleteInstanceMaterial(materialId)
+    res.json({ success: true })
+  } catch (error) {
+    console.error('Error deleting instance material:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// ==================== CHANGE ORDERS ====================
+
+// Get change orders for a project
+router.get('/:projectId/change-orders', async (req, res) => {
+  try {
+    const { projectId } = req.params
+    const { status, source, instance_id, page, limit, sortBy, sortOrder } = req.query
+
+    const filters = {}
+    if (status) filters.status = status
+    if (source) filters.source = source
+    if (instance_id) filters.instance_id = instance_id
+
+    const pagination = {}
+    if (page) pagination.page = parseInt(page)
+    if (limit) pagination.limit = parseInt(limit)
+    if (sortBy) pagination.sortBy = sortBy
+    if (sortOrder) pagination.sortOrder = sortOrder
+
+    const result = await changeOrderRepo.getProjectChangeOrders(projectId, filters, pagination)
+    res.json(result)
+  } catch (error) {
+    console.error('Error fetching change orders:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Get change order summary
+router.get('/:projectId/change-orders/summary', async (req, res) => {
+  try {
+    const { projectId } = req.params
+    const summary = await changeOrderRepo.getChangeOrderSummary(projectId)
+    res.json({ data: summary })
+  } catch (error) {
+    console.error('Error fetching change order summary:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Get single change order
+router.get('/change-orders/:coId', async (req, res) => {
+  try {
+    const { coId } = req.params
+    const co = await changeOrderRepo.getChangeOrderById(coId)
+    res.json({ data: co })
+  } catch (error) {
+    console.error('Error fetching change order:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Create change order
+router.post('/:projectId/change-orders', async (req, res) => {
+  try {
+    const { projectId } = req.params
+    const userId = req.user?.id || req.body.created_by
+    const co = await changeOrderRepo.createChangeOrder(projectId, req.body, userId)
+    res.status(201).json({ data: co })
+  } catch (error) {
+    console.error('Error creating change order:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Update change order
+router.put('/change-orders/:coId', async (req, res) => {
+  try {
+    const { coId } = req.params
+    const co = await changeOrderRepo.updateChangeOrder(coId, req.body)
+    res.json({ data: co })
+  } catch (error) {
+    console.error('Error updating change order:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Approve change order
+router.post('/change-orders/:coId/approve', async (req, res) => {
+  try {
+    const { coId } = req.params
+    const userId = req.user?.id || req.body.user_id
+    const { notes } = req.body
+    const co = await changeOrderRepo.approveChangeOrder(coId, userId, notes)
+    res.json({ data: co })
+  } catch (error) {
+    console.error('Error approving change order:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Reject change order
+router.post('/change-orders/:coId/reject', async (req, res) => {
+  try {
+    const { coId } = req.params
+    const userId = req.user?.id || req.body.user_id
+    const { reason } = req.body
+    const co = await changeOrderRepo.rejectChangeOrder(coId, userId, reason)
+    res.json({ data: co })
+  } catch (error) {
+    console.error('Error rejecting change order:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Delete change order
+router.delete('/change-orders/:coId', async (req, res) => {
+  try {
+    const { coId } = req.params
+    await changeOrderRepo.deleteChangeOrder(coId)
+    res.json({ success: true })
+  } catch (error) {
+    console.error('Error deleting change order:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// ==================== UNCAPTURED LABOUR ====================
+
+// Get uncaptured labour log for a project
+router.get('/:projectId/uncaptured-labour', async (req, res) => {
+  try {
+    const { projectId } = req.params
+    const { status, instance_id, page, limit, sortBy, sortOrder } = req.query
+
+    const filters = {}
+    if (status) filters.status = status
+    if (instance_id) filters.instance_id = instance_id
+
+    const pagination = {}
+    if (page) pagination.page = parseInt(page)
+    if (limit) pagination.limit = parseInt(limit)
+    if (sortBy) pagination.sortBy = sortBy
+    if (sortOrder) pagination.sortOrder = sortOrder
+
+    const result = await changeOrderRepo.getUncapturedLabour(projectId, filters, pagination)
+    res.json(result)
+  } catch (error) {
+    console.error('Error fetching uncaptured labour:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Get uncaptured labour summary
+router.get('/:projectId/uncaptured-labour/summary', async (req, res) => {
+  try {
+    const { projectId } = req.params
+    const summary = await changeOrderRepo.getUncapturedLabourSummary(projectId)
+    res.json({ data: summary })
+  } catch (error) {
+    console.error('Error fetching uncaptured labour summary:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Log uncaptured labour
+router.post('/:projectId/uncaptured-labour', async (req, res) => {
+  try {
+    const { projectId } = req.params
+    const userId = req.user?.id || req.body.logged_by
+    const log = await changeOrderRepo.logUncapturedLabour(projectId, req.body, userId)
+    res.status(201).json({ data: log })
+  } catch (error) {
+    console.error('Error logging uncaptured labour:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Update uncaptured labour entry
+router.put('/uncaptured-labour/:logId', async (req, res) => {
+  try {
+    const { logId } = req.params
+    const log = await changeOrderRepo.updateUncapturedLabour(logId, req.body)
+    res.json({ data: log })
+  } catch (error) {
+    console.error('Error updating uncaptured labour:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Convert uncaptured labour to change order
+router.post('/uncaptured-labour/:logId/convert-to-co', async (req, res) => {
+  try {
+    const { logId } = req.params
+    const userId = req.user?.id || req.body.user_id
+    const co = await changeOrderRepo.convertUncapturedLabourToCO(logId, userId)
+    res.status(201).json({ data: co })
+  } catch (error) {
+    console.error('Error converting to change order:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Delete uncaptured labour entry
+router.delete('/uncaptured-labour/:logId', async (req, res) => {
+  try {
+    const { logId } = req.params
+    await changeOrderRepo.deleteUncapturedLabour(logId)
+    res.json({ success: true })
+  } catch (error) {
+    console.error('Error deleting uncaptured labour:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Get combined financial impact (COs + uncaptured labour)
+router.get('/:projectId/financial-impact', async (req, res) => {
+  try {
+    const { projectId } = req.params
+    const impact = await changeOrderRepo.getProjectFinancialImpact(projectId)
+    res.json({ data: impact })
+  } catch (error) {
+    console.error('Error fetching financial impact:', error)
     res.status(500).json({ error: error.message })
   }
 })

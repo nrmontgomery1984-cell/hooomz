@@ -45,7 +45,8 @@
       "Bash($_ })",
       "Bash(Stop-Process -Force)",
       "Bash(vercel --version:*)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(Get-Content \"c:\\Users\\NRMon\\Documents\\hooomz\\server\\server-output.log\" -Tail 50)"
     ],
     "deny": [],
     "ask": []

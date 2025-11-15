@@ -14,6 +14,7 @@ import ContractorInput from './pages/ContractorInput'
 import RealtorIntake from './pages/RealtorIntake'
 import Projects from './pages/ProjectsNew'
 import ProjectDetail from './pages/ProjectDetailNew'
+import Contacts from './pages/Contacts'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Settings from './pages/Settings'
@@ -40,6 +41,7 @@ function App() {
           <Route path="/realtor" element={<ModernLayout><RealtorIntake /></ModernLayout>} />
           <Route path="/projects" element={<ModernLayout><Projects /></ModernLayout>} />
           <Route path="/projects/:projectId" element={<ModernLayout><ProjectDetail /></ModernLayout>} />
+          <Route path="/contacts" element={<ModernLayout><Contacts /></ModernLayout>} />
           <Route path="/settings" element={<ModernLayout><Settings /></ModernLayout>} />
         </Routes>
       </Router>

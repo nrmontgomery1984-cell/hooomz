@@ -48,8 +48,12 @@ const TaskDetailDialog = ({ item, isOpen, onClose, onUpdate }) => {
       const detailsData = response.data.data
       setDetails(detailsData)
 
-      // Auto-fill location with subcategory (room) name if location is empty
-      const autoLocation = item.location || detailsData.subcategory || ''
+      // Smart location detection - auto-fill if we can detect a room
+      const autoDetectedLocation = item.location || detectLocationFromContext(
+        item.description,
+        detailsData.subcategory,
+        detailsData.category
+      )
 
       // Load Todoist-style fields from item
       setTaskData({
@@ -57,7 +61,7 @@ const TaskDetailDialog = ({ item, isOpen, onClose, onUpdate }) => {
         assignee_id: item.assignee_id || null,
         labels: item.labels || [],
         due_date: item.due_date || null,
-        location: autoLocation,
+        location: autoDetectedLocation,
         duration_minutes: item.duration_minutes || null,
         reminder_date: item.reminder_date || null
       })
@@ -66,6 +70,47 @@ const TaskDetailDialog = ({ item, isOpen, onClose, onUpdate }) => {
     } finally {
       setLoading(false)
     }
+  }
+
+  // Smart location detection helper
+  const detectLocationFromContext = (description, subcategory, category) => {
+    if (!description && !subcategory) return ''
+
+    // Common room keywords to search for
+    const roomKeywords = [
+      'master bedroom', 'master bath', 'master bathroom',
+      'bedroom', 'bathroom', 'kitchen', 'living room', 'dining room',
+      'hallway', 'basement', 'attic', 'garage', 'laundry',
+      'office', 'den', 'family room', 'entry', 'foyer',
+      'closet', 'pantry', 'mudroom', 'utility room',
+      'powder room', 'guest room', 'storage'
+    ]
+
+    const textToSearch = `${description || ''} ${subcategory || ''}`.toLowerCase()
+
+    // Try to find a room keyword in the description or subcategory
+    for (const room of roomKeywords) {
+      if (textToSearch.includes(room)) {
+        // Capitalize first letter of each word
+        return room.split(' ').map(word =>
+          word.charAt(0).toUpperCase() + word.slice(1)
+        ).join(' ')
+      }
+    }
+
+    // If subcategory looks like a room name (common in punch lists), use it
+    // Only if it's not a work type (plumbing, electrical, etc.)
+    const workTypes = ['plumbing', 'electrical', 'hvac', 'framing', 'drywall',
+                       'flooring', 'roofing', 'siding', 'trim', 'paint']
+    const subLower = (subcategory || '').toLowerCase()
+
+    if (subcategory && !workTypes.some(type => subLower.includes(type))) {
+      // Subcategory might be a room name
+      return subcategory
+    }
+
+    // No clear location detected
+    return ''
   }
 
   const updateTaskField = async (field, value) => {

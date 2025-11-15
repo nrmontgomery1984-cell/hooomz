@@ -338,6 +338,19 @@ export const getScopeItemDetails = async (itemId) => {
     getScopeItemPhotos(itemId)
   ])
 
+  // Get all categories and subcategories for the project so user can change task's category/subcategory
+  let allCategories = []
+  let allSubcategories = []
+
+  if (projectId) {
+    allCategories = await getCategoriesByProject(projectId)
+
+    // Get all subcategories for all categories
+    const subcategoryPromises = allCategories.map(cat => getSubcategoriesByCategory(cat.id))
+    const subcategoriesArrays = await Promise.all(subcategoryPromises)
+    allSubcategories = subcategoriesArrays.flat()
+  }
+
   return {
     materials,
     tools,
@@ -347,7 +360,9 @@ export const getScopeItemDetails = async (itemId) => {
     category: itemData?.subcategory?.category?.name || null,
     subcategory: itemData?.subcategory?.name || null,
     categoryId: itemData?.subcategory?.category?.id || null,
-    subcategoryId: itemData?.subcategory?.id || null
+    subcategoryId: itemData?.subcategory?.id || null,
+    allCategories,
+    allSubcategories
   }
 }
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { X, Wrench, Package, CheckSquare, Camera, Plus, Trash2, Info, Flag, User, Calendar, Tag, MapPin, Clock } from 'lucide-react'
+import { X, Wrench, Package, CheckSquare, Camera, Plus, Trash2, Info, Flag, User, Calendar, Tag, MapPin, Clock, FolderTree, Layers } from 'lucide-react'
 import { Button } from '../UI/Button'
 import { colors } from '../../styles/design-tokens'
 import { api } from '../../services/api'
@@ -22,7 +22,9 @@ const TaskDetailDialog = ({ item, isOpen, onClose, onUpdate }) => {
     photos: [],
     subtasks: [],
     comments: [],
-    projectMembers: []
+    projectMembers: [],
+    allCategories: [],
+    allSubcategories: []
   })
   const [taskData, setTaskData] = useState({
     priority: 4,
@@ -31,7 +33,8 @@ const TaskDetailDialog = ({ item, isOpen, onClose, onUpdate }) => {
     due_date: null,
     location: '',
     duration_minutes: null,
-    reminder_date: null
+    reminder_date: null,
+    subcategory_id: null
   })
 
   // Fetch task details when dialog opens
@@ -122,8 +125,25 @@ const TaskDetailDialog = ({ item, isOpen, onClose, onUpdate }) => {
 
   const updateTaskField = async (field, value) => {
     try {
-      await api.patch(`/projects/items/${item.id}`, { [field]: value })
-      setTaskData(prev => ({ ...prev, [field]: value }))
+      // For date fields, ensure we send and store just the date part (YYYY-MM-DD)
+      let valueToSend = value
+      if (field === 'due_date' || field === 'reminder_date') {
+        // If value is empty, send null
+        if (!value) {
+          valueToSend = null
+        } else {
+          // Extract just the date part to avoid timezone issues
+          valueToSend = value.split('T')[0]
+        }
+      }
+
+      await api.patch(`/projects/items/${item.id}`, { [field]: valueToSend })
+
+      // Update local state with the clean value
+      setTaskData(prev => ({ ...prev, [field]: valueToSend }))
+
+      // Refresh the full task details to ensure we have the latest data
+      await fetchTaskDetails()
     } catch (error) {
       console.error(`Error updating ${field}:`, error)
       alert(`Failed to update ${field}`)
@@ -395,6 +415,73 @@ const DetailsTab = ({ taskData, item, details, onUpdateField, getPriorityColor }
             )
           })}
         </div>
+      </div>
+
+      {/* Category & Subcategory */}
+      <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
+        <h3 className="text-sm font-semibold text-purple-800 mb-3 flex items-center gap-2">
+          <Layers size={16} />
+          Move Task to Different Category/Subcategory
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {/* Category Dropdown */}
+          <div>
+            <label className="text-xs font-medium text-gray-700 mb-1 block">
+              Category
+            </label>
+            <select
+              value={details.categoryId || ''}
+              onChange={(e) => {
+                // When category changes, we need to update the task's subcategory
+                // For now, just show a message - we'll need to select a subcategory first
+                const newCategoryId = e.target.value
+                if (!newCategoryId) return
+
+                // Find subcategories for this category
+                const availableSubcategories = details.allSubcategories?.filter(
+                  sub => sub.category_id === newCategoryId
+                ) || []
+
+                if (availableSubcategories.length > 0) {
+                  // Auto-select first subcategory
+                  onUpdateField('subcategory_id', availableSubcategories[0].id)
+                }
+              }}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+            >
+              <option value="">Select Category...</option>
+              {details.allCategories?.map(category => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Subcategory Dropdown */}
+          <div>
+            <label className="text-xs font-medium text-gray-700 mb-1 block">
+              Subcategory
+            </label>
+            <select
+              value={details.subcategoryId || ''}
+              onChange={(e) => onUpdateField('subcategory_id', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+            >
+              <option value="">Select Subcategory...</option>
+              {details.allSubcategories
+                ?.filter(sub => sub.category_id === details.categoryId)
+                .map(subcategory => (
+                  <option key={subcategory.id} value={subcategory.id}>
+                    {subcategory.name}
+                  </option>
+                ))}
+            </select>
+          </div>
+        </div>
+        <p className="text-xs text-purple-700 mt-2">
+          Moving a task will reorganize it under a different category and subcategory
+        </p>
       </div>
 
       {/* Due Date */}

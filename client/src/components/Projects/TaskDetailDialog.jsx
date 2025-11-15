@@ -45,7 +45,11 @@ const TaskDetailDialog = ({ item, isOpen, onClose, onUpdate }) => {
     try {
       setLoading(true)
       const response = await api.get(`/projects/items/${item.id}/details`)
-      setDetails(response.data.data)
+      const detailsData = response.data.data
+      setDetails(detailsData)
+
+      // Auto-fill location with subcategory (room) name if location is empty
+      const autoLocation = item.location || detailsData.subcategory || ''
 
       // Load Todoist-style fields from item
       setTaskData({
@@ -53,7 +57,7 @@ const TaskDetailDialog = ({ item, isOpen, onClose, onUpdate }) => {
         assignee_id: item.assignee_id || null,
         labels: item.labels || [],
         due_date: item.due_date || null,
-        location: item.location || '',
+        location: autoLocation,
         duration_minutes: item.duration_minutes || null,
         reminder_date: item.reminder_date || null
       })

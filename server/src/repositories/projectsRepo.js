@@ -221,7 +221,8 @@ export const addProjectMember = async (projectId, userEmail, role = 'member', in
 
   if (userError) throw new Error('Failed to fetch users: ' + userError.message)
 
-  const user = users.find(u => u.email === userEmail)
+  // Case-insensitive email search
+  const user = users.find(u => u.email.toLowerCase() === userEmail.toLowerCase())
   if (!user) throw new Error(`User with email ${userEmail} not found`)
 
   // Add user to project

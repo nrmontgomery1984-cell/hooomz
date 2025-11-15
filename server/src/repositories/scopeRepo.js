@@ -142,6 +142,11 @@ export const updateScopeItem = async (itemId, updates) => {
     updated_at: new Date().toISOString()
   }
 
+  // Convert empty string to null for UUID fields
+  if (updateData.assignee_id === '') {
+    updateData.assignee_id = null
+  }
+
   // If status is being set to completed, add completed_at timestamp
   if (updates.status === 'completed' && !updates.completed_at) {
     updateData.completed_at = new Date().toISOString()

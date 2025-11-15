@@ -16,6 +16,7 @@ import contractorsRouter from './routes/contractors.js'
 import realtorsRouter from './routes/realtors.js'
 import projectsRouter from './routes/projects.js'
 import employeesRouter from './routes/employees.js'
+import contactsRouter from './routes/contacts.js'
 
 // Import middleware
 import { errorHandler } from './middleware/errorHandler.js'
@@ -29,6 +30,8 @@ const PORT = process.env.PORT || 8080
 const allowedOrigins = [
   'http://localhost:5173',
   'http://10.0.0.77:5173',
+  'http://172.30.3.78:5173',
+  'https://hooomz-client-8l77.vercel.app',
   process.env.CLIENT_URL
 ].filter(Boolean)
 
@@ -45,7 +48,7 @@ app.use(cors({
     }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   exposedHeaders: ['Content-Type', 'Authorization']
 }))
@@ -69,6 +72,7 @@ app.use('/api/contractors', contractorsRouter)
 app.use('/api/realtors', realtorsRouter)
 app.use('/api/projects', projectsRouter)
 app.use('/api/employees', employeesRouter)
+app.use('/api/contacts', contactsRouter)
 // Generic /api mounts for nested home resources (must come AFTER specific routes)
 app.use('/api', roomsRouter)  // Mount at /api so routes can be /api/homes/:homeId/rooms
 app.use('/api', materialsRouter)  // Mount at /api so routes can be /api/homes/:homeId/materials
@@ -92,7 +96,7 @@ if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
     console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`)
     console.log(`🔗 Client URL: ${process.env.CLIENT_URL || 'http://localhost:5173'}`)
     console.log(`✅ Server ready at http://localhost:${PORT}`)
-    console.log(`📱 Network access: http://10.0.0.77:${PORT}`)
+    console.log(`📱 Network access: http://172.30.3.78:${PORT}`)
   })
 }
 

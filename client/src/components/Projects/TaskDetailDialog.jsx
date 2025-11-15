@@ -56,14 +56,21 @@ const TaskDetailDialog = ({ item, isOpen, onClose, onUpdate }) => {
       )
 
       // Load Todoist-style fields from item
+      // Format dates to YYYY-MM-DD to avoid timezone issues
+      const formatDateForInput = (dateString) => {
+        if (!dateString) return ''
+        // Extract just the date part (YYYY-MM-DD) to avoid timezone conversion
+        return dateString.split('T')[0]
+      }
+
       setTaskData({
         priority: item.priority || 4,
         assignee_id: item.assignee_id || null,
         labels: item.labels || [],
-        due_date: item.due_date || null,
+        due_date: formatDateForInput(item.due_date),
         location: autoDetectedLocation,
         duration_minutes: item.duration_minutes || null,
-        reminder_date: item.reminder_date || null
+        reminder_date: formatDateForInput(item.reminder_date)
       })
     } catch (error) {
       console.error('Error fetching task details:', error)

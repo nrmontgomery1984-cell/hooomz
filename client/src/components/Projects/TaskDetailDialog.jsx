@@ -6,6 +6,7 @@ import { api } from '../../services/api'
 import { supabase } from '../../services/auth'
 import { useAuth } from '../../context/AuthContext'
 import { detectCategoryFromDescription } from '../../utils/constructionCategories'
+import { LOCATION_OPTIONS } from '../../utils/locationOptions'
 
 /**
  * Task Detail Dialog - Enhanced Todoist-style view
@@ -532,13 +533,16 @@ const DetailsTab = ({ taskData, item, details, onUpdateField, getPriorityColor }
           <MapPin size={16} />
           Location / Room
         </label>
-        <input
-          type="text"
+        <select
           value={taskData.location || ''}
           onChange={(e) => onUpdateField('location', e.target.value)}
-          placeholder="e.g., Kitchen, Master Bedroom, Garage"
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-        />
+        >
+          <option value="">Select a location...</option>
+          {LOCATION_OPTIONS.map(location => (
+            <option key={location} value={location}>{location}</option>
+          ))}
+        </select>
       </div>
 
       {/* Duration Estimate */}

@@ -544,7 +544,11 @@ const DetailsTab = ({ taskData, item, details, onUpdateField, getPriorityColor }
         </label>
         <select
           value={taskData.location || ''}
-          onChange={(e) => onUpdateField('location', e.target.value)}
+          onChange={(e) => {
+            e.stopPropagation()
+            onUpdateField('location', e.target.value)
+          }}
+          onClick={(e) => e.stopPropagation()}
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         >
           <option value="">Select a location...</option>

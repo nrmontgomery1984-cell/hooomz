@@ -398,7 +398,11 @@ const AddTaskDialog = ({ isOpen, onClose, projectId, onTaskCreated }) => {
             </label>
             <select
               value={formData.location}
-              onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+              onChange={(e) => {
+                e.stopPropagation()
+                setFormData({ ...formData, location: e.target.value })
+              }}
+              onClick={(e) => e.stopPropagation()}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">Select a location...</option>

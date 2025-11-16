@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
-import { List, Filter, CheckCircle2, Circle, Clock, AlertCircle, MapPin, User, Calendar } from 'lucide-react'
+import { List, Filter, CheckCircle2, Circle, Clock, AlertCircle, MapPin, User, Calendar, Plus } from 'lucide-react'
 import { Button } from '../../UI/Button'
 import ModernCard from '../../UI/ModernCard'
 import * as projectsApi from '../../../services/projectsApi'
 import { colors } from '../../../styles/design-tokens'
 import TaskDetailDialog from '../TaskDetailDialog'
+import AddTaskDialog from '../AddTaskDialog'
 
 /**
  * TaskInstancesModule
@@ -17,6 +18,7 @@ const TaskInstancesModule = ({ projectId }) => {
   const [error, setError] = useState(null)
   const [selectedInstance, setSelectedInstance] = useState(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isAddTaskDialogOpen, setIsAddTaskDialogOpen] = useState(false)
 
   const [filters, setFilters] = useState({
     status: '',
@@ -166,9 +168,15 @@ const TaskInstancesModule = ({ projectId }) => {
               </div>
             </div>
 
-            <Button onClick={loadInstances} variant="outline" size="sm">
-              Refresh
-            </Button>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <Button onClick={() => setIsAddTaskDialogOpen(true)} variant="primary" size="sm">
+                <Plus size={16} style={{ marginRight: '6px' }} />
+                Add Task
+              </Button>
+              <Button onClick={loadInstances} variant="outline" size="sm">
+                Refresh
+              </Button>
+            </div>
           </div>
 
           {/* Filters */}
@@ -375,6 +383,14 @@ const TaskInstancesModule = ({ projectId }) => {
           onUpdate={(updates) => handleUpdateInstance(selectedInstance.id, updates)}
         />
       )}
+
+      {/* Add Task Dialog */}
+      <AddTaskDialog
+        isOpen={isAddTaskDialogOpen}
+        onClose={() => setIsAddTaskDialogOpen(false)}
+        projectId={projectId}
+        onTaskCreated={loadInstances}
+      />
     </div>
   )
 }

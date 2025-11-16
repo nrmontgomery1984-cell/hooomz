@@ -13,7 +13,6 @@ import AddTaskDialog from '../AddTaskDialog'
  */
 const TaskInstancesModule = ({ projectId }) => {
   const [instances, setInstances] = useState([])
-  const [phases, setPhases] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [selectedInstance, setSelectedInstance] = useState(null)
@@ -22,7 +21,6 @@ const TaskInstancesModule = ({ projectId }) => {
 
   const [filters, setFilters] = useState({
     status: '',
-    phase: '',
     priority: '',
     search: ''
   })
@@ -35,40 +33,46 @@ const TaskInstancesModule = ({ projectId }) => {
   })
 
   useEffect(() => {
-    loadPhases()
-  }, [projectId])
-
-  useEffect(() => {
     loadInstances()
-  }, [projectId, filters, pagination.page])
-
-  const loadPhases = async () => {
-    try {
-      const data = await projectsApi.getProjectPhases(projectId)
-      setPhases(data)
-    } catch (err) {
-      console.error('Error loading phases:', err)
-    }
-  }
+  }, [projectId, filters])
 
   const loadInstances = async () => {
     try {
       setLoading(true)
-      const result = await projectsApi.getTaskInstances(projectId, {
-        ...filters,
-        page: pagination.page,
-        limit: pagination.limit
-      })
+      // Get all scope items for the project
+      const items = await projectsApi.getAllScopeItems(projectId)
 
-      setInstances(result.data || [])
+      // Apply filters
+      let filteredItems = items || []
+
+      // Search filter
+      if (filters.search) {
+        const searchLower = filters.search.toLowerCase()
+        filteredItems = filteredItems.filter(item =>
+          item.description?.toLowerCase().includes(searchLower) ||
+          item.location?.toLowerCase().includes(searchLower)
+        )
+      }
+
+      // Status filter
+      if (filters.status) {
+        filteredItems = filteredItems.filter(item => item.status === filters.status)
+      }
+
+      // Priority filter
+      if (filters.priority) {
+        filteredItems = filteredItems.filter(item => item.priority === filters.priority)
+      }
+
+      setInstances(filteredItems)
       setPagination(prev => ({
         ...prev,
-        total: result.pagination?.total || 0,
-        hasMore: result.pagination?.hasMore || false
+        total: filteredItems.length,
+        hasMore: false
       }))
       setError(null)
     } catch (err) {
-      console.error('Error loading task instances:', err)
+      console.error('Error loading tasks:', err)
       setError(err.message)
     } finally {
       setLoading(false)
@@ -82,21 +86,11 @@ const TaskInstancesModule = ({ projectId }) => {
 
   const handleInstanceClick = async (instance) => {
     try {
-      const details = await projectsApi.getTaskInstance(instance.id)
-      setSelectedInstance(details)
+      // Scope items don't need additional loading, just open dialog
+      setSelectedInstance(instance)
       setIsDialogOpen(true)
     } catch (err) {
-      alert(`Error loading instance details: ${err.message}`)
-    }
-  }
-
-  const handleUpdateInstance = async (instanceId, updates) => {
-    try {
-      await projectsApi.updateTaskInstance(instanceId, updates)
-      await loadInstances()
-      setIsDialogOpen(false)
-    } catch (err) {
-      alert(`Error updating instance: ${err.message}`)
+      alert(`Error loading task details: ${err.message}`)
     }
   }
 
@@ -163,7 +157,7 @@ const TaskInstancesModule = ({ projectId }) => {
               <div>
                 <h2 style={{ fontSize: '18px', fontWeight: 600, margin: 0 }}>Tasks</h2>
                 <p style={{ fontSize: '14px', color: colors.text.secondary, margin: 0 }}>
-                  {pagination.total} deployed tasks
+                  {pagination.total} tasks
                 </p>
               </div>
             </div>
@@ -213,23 +207,6 @@ const TaskInstancesModule = ({ projectId }) => {
               <option value="blocked">Blocked</option>
             </select>
 
-            {/* Phase Filter */}
-            <select
-              value={filters.phase}
-              onChange={(e) => handleFilterChange('phase', e.target.value)}
-              style={{
-                padding: '8px 12px',
-                borderRadius: '6px',
-                border: `1px solid ${colors.border.light}`,
-                fontSize: '14px'
-              }}
-            >
-              <option value="">All Phases</option>
-              {phases.map(phase => (
-                <option key={phase.id} value={phase.id}>{phase.name}</option>
-              ))}
-            </select>
-
             {/* Priority Filter */}
             <select
               value={filters.priority}
@@ -257,7 +234,7 @@ const TaskInstancesModule = ({ projectId }) => {
             <List size={48} color={colors.text.tertiary} style={{ margin: '0 auto 16px' }} />
             <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '8px' }}>No Tasks</h3>
             <p style={{ color: colors.text.secondary, marginBottom: '24px' }}>
-              Deploy quantum tasks to create tasks at specific locations
+              Click "Add Task" above to create your first task
             </p>
           </div>
         </ModernCard>
@@ -284,11 +261,11 @@ const TaskInstancesModule = ({ projectId }) => {
                     </div>
 
                     {/* Location */}
-                    {instance.location_path && (
+                    {instance.location && (
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
                         <MapPin size={14} color={colors.text.secondary} />
                         <span style={{ fontSize: '14px', color: colors.text.secondary }}>
-                          {instance.location_path}
+                          {instance.location}
                         </span>
                       </div>
                     )}
@@ -301,8 +278,11 @@ const TaskInstancesModule = ({ projectId }) => {
                       {instance.actual_hours && (
                         <span>{instance.actual_hours}h actual</span>
                       )}
-                      {instance.phase?.name && (
-                        <span>{instance.phase.name}</span>
+                      {instance.category_name && (
+                        <span>{instance.category_name}</span>
+                      )}
+                      {instance.subcategory_name && (
+                        <span> &gt; {instance.subcategory_name}</span>
                       )}
                     </div>
                   </div>
@@ -377,10 +357,13 @@ const TaskInstancesModule = ({ projectId }) => {
       {/* Task Detail Dialog */}
       {selectedInstance && (
         <TaskDetailDialog
+          item={selectedInstance}
           isOpen={isDialogOpen}
-          onClose={() => setIsDialogOpen(false)}
-          task={selectedInstance}
-          onUpdate={(updates) => handleUpdateInstance(selectedInstance.id, updates)}
+          onClose={() => {
+            setIsDialogOpen(false)
+            setSelectedInstance(null)
+          }}
+          onUpdate={loadInstances}
         />
       )}
 

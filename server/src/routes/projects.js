@@ -522,8 +522,23 @@ router.post('/:projectId/categories', async (req, res) => {
 // Get all items for a project (for time tracker dropdown)
 router.get('/:projectId/items', async (req, res) => {
   try {
+    console.log('🚀🚀🚀 API CALLED: GET /:projectId/items 🚀🚀🚀')
     const { projectId } = req.params
+    console.log('🔑 Project ID:', projectId)
     const items = await scopeRepo.getAllScopeItemsByProject(projectId)
+
+    // Debug logging
+    console.log('[GET /:projectId/items] Returning items count:', items.length)
+    if (items.length > 0) {
+      console.log('[GET /:projectId/items] First item sample:', {
+        id: items[0].id,
+        description: items[0].description,
+        assignee_id: items[0].assignee_id,
+        assignee_name: items[0].assignee_name,
+        assignee_email: items[0].assignee_email
+      })
+    }
+
     res.json({ data: items })
   } catch (error) {
     console.error('Error fetching project items:', error)

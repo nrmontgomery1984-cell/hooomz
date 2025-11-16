@@ -226,7 +226,56 @@ export const getAllScopeItemsByProject = async (projectId) => {
     .order('display_order')
 
   if (error) throw error
-  return data || []
+
+  const items = data || []
+
+  // Get user information for all assignees
+  const assigneeIds = [...new Set(items.map(item => item.assignee_id).filter(Boolean))]
+  console.log('[getAllScopeItemsByProject] Found assigneeIds:', assigneeIds)
+
+  if (assigneeIds.length > 0) {
+    console.log('[getAllScopeItemsByProject] Fetching users from Supabase admin API...')
+    const { data: usersData, error: usersError } = await supabase.auth.admin.listUsers()
+
+    console.log('[getAllScopeItemsByProject] Users API response:', {
+      error: usersError,
+      usersCount: usersData?.users?.length || 0
+    })
+
+    if (!usersError && usersData?.users) {
+      // Map user data to items
+      const usersMap = new Map(usersData.users.map(u => [u.id, u]))
+      console.log('[getAllScopeItemsByProject] Created usersMap with', usersMap.size, 'users')
+
+      const enrichedItems = items.map(item => {
+        if (item.assignee_id && usersMap.has(item.assignee_id)) {
+          const user = usersMap.get(item.assignee_id)
+          const enriched = {
+            ...item,
+            assignee_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Unknown',
+            assignee_email: user.email
+          }
+          console.log('[getAllScopeItemsByProject] Enriched item:', {
+            id: item.id,
+            assignee_id: item.assignee_id,
+            assignee_name: enriched.assignee_name
+          })
+          return enriched
+        }
+        return item
+      })
+
+      console.log('[getAllScopeItemsByProject] Returning', enrichedItems.length, 'enriched items')
+      return enrichedItems
+    } else if (usersError) {
+      console.error('[getAllScopeItemsByProject] Error fetching users:', usersError)
+    }
+  } else {
+    console.log('[getAllScopeItemsByProject] No assignees found in items')
+  }
+
+  console.log('[getAllScopeItemsByProject] Returning', items.length, 'items without enrichment')
+  return items
 }
 
 // ==================== SCOPE ITEM DETAILS (Tools, Materials, Checklist, Photos) ====================

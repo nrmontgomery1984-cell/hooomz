@@ -45,19 +45,35 @@ const TaskInstancesModule = ({ projectId }) => {
 
   const loadInstances = async () => {
     try {
+      console.log('🔄 [loadInstances] Starting to load items for project:', projectId)
       setLoading(true)
       // Get all scope items for the project
       const items = await projectsApi.getAllScopeItems(projectId)
+      console.log('📦 [loadInstances] Received items:', items.length, 'first item:', items[0])
 
       // Extract unique categories, locations, and assignees for filter dropdowns
       const uniqueCategories = [...new Set(items.map(item => item.category_name).filter(Boolean))]
       const uniqueLocations = [...new Set(items.map(item => item.location).filter(Boolean))].sort()
-      const uniqueAssignees = [...new Set(items.map(item => item.assignee_id).filter(Boolean))]
+
+      // Extract unique assignees with their names
+      const assigneeMap = new Map()
+      items.forEach(item => {
+        if (item.assignee_id && item.assignee_name) {
+          assigneeMap.set(item.assignee_id, item.assignee_name)
+        }
+      })
+      const uniqueAssignees = Array.from(assigneeMap.entries()).map(([id, name]) => ({ id, name }))
+
+      // Debug: Alert to show what we extracted
+      if (uniqueAssignees.length > 0) {
+        console.log('✅ Found assignees:', uniqueAssignees)
+      } else {
+        console.log('⚠️ No assignees found. First item:', items[0])
+      }
 
       setCategories(uniqueCategories.sort())
       setLocations(uniqueLocations)
-      // For team members, we'll need their names - for now just use IDs
-      setTeamMembers(uniqueAssignees)
+      setTeamMembers(uniqueAssignees.sort((a, b) => a.name.localeCompare(b.name)))
 
       // Apply filters
       let filteredItems = items || []
@@ -319,8 +335,8 @@ const TaskInstancesModule = ({ projectId }) => {
             >
               <option value="">All Assignees</option>
               <option value="unassigned">Unassigned</option>
-              {teamMembers.map(memberId => (
-                <option key={memberId} value={memberId}>User {memberId.substring(0, 8)}</option>
+              {Array.isArray(teamMembers) && teamMembers.map(member => (
+                <option key={member.id} value={member.id}>{member.name}</option>
               ))}
             </select>
 
@@ -355,86 +371,85 @@ const TaskInstancesModule = ({ projectId }) => {
       ) : (
         <>
           {instances.map(instance => (
-            <ModernCard key={instance.id} onClick={() => handleInstanceClick(instance)} style={{ cursor: 'pointer' }}>
-              <div
-                style={{
-                  padding: '16px',
-                  transition: 'background-color 0.2s ease'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.background.secondary}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <div style={{ flex: 1 }}>
-                    {/* Task Name */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                      {getStatusIcon(instance.status)}
-                      <h3 style={{ fontSize: '16px', fontWeight: 600, margin: 0 }}>
-                        {instance.description || instance.template?.name}
-                      </h3>
-                    </div>
+            <div
+              key={instance.id}
+              onClick={() => handleInstanceClick(instance)}
+              style={{
+                cursor: 'pointer',
+                padding: '14px',
+                marginBottom: '8px',
+                border: `1px solid ${colors.border.light}`,
+                borderRadius: '8px',
+                backgroundColor: 'white',
+                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.06)',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.1)'
+                e.currentTarget.style.borderColor = colors.primary.main
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.06)'
+                e.currentTarget.style.borderColor = colors.border.light
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div style={{ flex: 1 }}>
+                  {/* Task Name */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
+                    {getStatusIcon(instance.status)}
+                    <h3 style={{ fontSize: '15px', fontWeight: 600, margin: 0, color: colors.text.primary }}>
+                      {instance.description || instance.template?.name}
+                    </h3>
+                  </div>
 
-                    {/* Location */}
+                  {/* Metadata - Compact display */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '13px', color: colors.text.secondary, marginLeft: '26px' }}>
                     {instance.location && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                        <MapPin size={14} color={colors.text.secondary} />
-                        <span style={{ fontSize: '14px', color: colors.text.secondary }}>
-                          {instance.location}
-                        </span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <MapPin size={13} />
+                        <span>{instance.location}</span>
                       </div>
                     )}
-
-                    {/* Metadata */}
-                    <div style={{ display: 'flex', gap: '16px', fontSize: '12px', color: colors.text.secondary }}>
-                      {instance.estimated_hours && (
-                        <span>{instance.estimated_hours}h estimated</span>
-                      )}
-                      {instance.actual_hours && (
-                        <span>{instance.actual_hours}h actual</span>
-                      )}
-                      {instance.category_name && (
-                        <span>{instance.category_name}</span>
-                      )}
-                      {instance.subcategory_name && (
-                        <span> &gt; {instance.subcategory_name}</span>
-                      )}
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' }}>
-                    {/* Priority Badge */}
-                    <div
-                      style={{
-                        padding: '4px 12px',
-                        borderRadius: '12px',
-                        backgroundColor: getPriorityColor(instance.priority) + '20',
-                        color: getPriorityColor(instance.priority),
-                        fontSize: '12px',
-                        fontWeight: 600,
-                        textTransform: 'capitalize'
-                      }}
-                    >
-                      {instance.priority || 'medium'}
-                    </div>
-
-                    {/* Status Badge */}
-                    <div
-                      style={{
-                        padding: '4px 12px',
-                        borderRadius: '12px',
-                        backgroundColor: getStatusColor(instance.status) + '20',
-                        color: getStatusColor(instance.status),
-                        fontSize: '12px',
-                        fontWeight: 600,
-                        textTransform: 'capitalize'
-                      }}
-                    >
-                      {instance.status?.replace('_', ' ')}
-                    </div>
+                    {instance.category_name && (
+                      <span>{instance.category_name}</span>
+                    )}
+                    {instance.assignee_name && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <User size={13} />
+                        <span>{instance.assignee_name}</span>
+                      </div>
+                    )}
+                    {instance.due_date && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <Calendar size={13} />
+                        <span>{new Date(instance.due_date).toLocaleDateString()}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  {/* Priority Badge */}
+                  {instance.priority && (
+                    <div
+                      style={{
+                        padding: '3px 10px',
+                        borderRadius: '10px',
+                        backgroundColor: getPriorityColor(instance.priority) + '15',
+                        color: getPriorityColor(instance.priority),
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.5px'
+                      }}
+                    >
+                      P{instance.priority}
+                    </div>
+                  )}
+                </div>
               </div>
-            </ModernCard>
+            </div>
           ))}
 
           {/* Pagination */}

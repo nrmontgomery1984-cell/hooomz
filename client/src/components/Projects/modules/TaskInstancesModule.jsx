@@ -18,11 +18,18 @@ const TaskInstancesModule = ({ projectId }) => {
   const [selectedInstance, setSelectedInstance] = useState(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isAddTaskDialogOpen, setIsAddTaskDialogOpen] = useState(false)
+  const [categories, setCategories] = useState([])
+  const [locations, setLocations] = useState([])
+  const [teamMembers, setTeamMembers] = useState([])
 
   const [filters, setFilters] = useState({
     status: '',
     priority: '',
-    search: ''
+    search: '',
+    location: '',
+    category: '',
+    assignee: '',
+    dueDate: ''
   })
 
   const [pagination, setPagination] = useState({
@@ -42,6 +49,16 @@ const TaskInstancesModule = ({ projectId }) => {
       // Get all scope items for the project
       const items = await projectsApi.getAllScopeItems(projectId)
 
+      // Extract unique categories, locations, and assignees for filter dropdowns
+      const uniqueCategories = [...new Set(items.map(item => item.category_name).filter(Boolean))]
+      const uniqueLocations = [...new Set(items.map(item => item.location).filter(Boolean))].sort()
+      const uniqueAssignees = [...new Set(items.map(item => item.assignee_id).filter(Boolean))]
+
+      setCategories(uniqueCategories.sort())
+      setLocations(uniqueLocations)
+      // For team members, we'll need their names - for now just use IDs
+      setTeamMembers(uniqueAssignees)
+
       // Apply filters
       let filteredItems = items || []
 
@@ -50,7 +67,9 @@ const TaskInstancesModule = ({ projectId }) => {
         const searchLower = filters.search.toLowerCase()
         filteredItems = filteredItems.filter(item =>
           item.description?.toLowerCase().includes(searchLower) ||
-          item.location?.toLowerCase().includes(searchLower)
+          item.location?.toLowerCase().includes(searchLower) ||
+          item.category_name?.toLowerCase().includes(searchLower) ||
+          item.subcategory_name?.toLowerCase().includes(searchLower)
         )
       }
 
@@ -62,6 +81,34 @@ const TaskInstancesModule = ({ projectId }) => {
       // Priority filter
       if (filters.priority) {
         filteredItems = filteredItems.filter(item => item.priority === filters.priority)
+      }
+
+      // Location filter
+      if (filters.location) {
+        filteredItems = filteredItems.filter(item => item.location === filters.location)
+      }
+
+      // Category filter
+      if (filters.category) {
+        filteredItems = filteredItems.filter(item => item.category_name === filters.category)
+      }
+
+      // Assignee filter
+      if (filters.assignee) {
+        if (filters.assignee === 'unassigned') {
+          filteredItems = filteredItems.filter(item => !item.assignee_id)
+        } else {
+          filteredItems = filteredItems.filter(item => item.assignee_id === filters.assignee)
+        }
+      }
+
+      // Due date filter
+      if (filters.dueDate) {
+        filteredItems = filteredItems.filter(item => {
+          if (!item.due_date) return false
+          const itemDate = item.due_date.split('T')[0]
+          return itemDate === filters.dueDate
+        })
       }
 
       setInstances(filteredItems)
@@ -219,10 +266,77 @@ const TaskInstancesModule = ({ projectId }) => {
               }}
             >
               <option value="">All Priorities</option>
-              <option value="high">High</option>
-              <option value="medium">Medium</option>
-              <option value="low">Low</option>
+              <option value="1">Urgent</option>
+              <option value="2">High</option>
+              <option value="3">Medium</option>
+              <option value="4">Normal</option>
             </select>
+
+            {/* Location Filter */}
+            <select
+              value={filters.location}
+              onChange={(e) => handleFilterChange('location', e.target.value)}
+              style={{
+                padding: '8px 12px',
+                borderRadius: '6px',
+                border: `1px solid ${colors.border.light}`,
+                fontSize: '14px'
+              }}
+            >
+              <option value="">All Locations</option>
+              {locations.map(location => (
+                <option key={location} value={location}>{location}</option>
+              ))}
+            </select>
+
+            {/* Category Filter */}
+            <select
+              value={filters.category}
+              onChange={(e) => handleFilterChange('category', e.target.value)}
+              style={{
+                padding: '8px 12px',
+                borderRadius: '6px',
+                border: `1px solid ${colors.border.light}`,
+                fontSize: '14px'
+              }}
+            >
+              <option value="">All Categories</option>
+              {categories.map(category => (
+                <option key={category} value={category}>{category}</option>
+              ))}
+            </select>
+
+            {/* Assignee Filter */}
+            <select
+              value={filters.assignee}
+              onChange={(e) => handleFilterChange('assignee', e.target.value)}
+              style={{
+                padding: '8px 12px',
+                borderRadius: '6px',
+                border: `1px solid ${colors.border.light}`,
+                fontSize: '14px'
+              }}
+            >
+              <option value="">All Assignees</option>
+              <option value="unassigned">Unassigned</option>
+              {teamMembers.map(memberId => (
+                <option key={memberId} value={memberId}>User {memberId.substring(0, 8)}</option>
+              ))}
+            </select>
+
+            {/* Due Date Filter */}
+            <input
+              type="date"
+              value={filters.dueDate}
+              onChange={(e) => handleFilterChange('dueDate', e.target.value)}
+              placeholder="Due date..."
+              style={{
+                padding: '8px 12px',
+                borderRadius: '6px',
+                border: `1px solid ${colors.border.light}`,
+                fontSize: '14px'
+              }}
+            />
           </div>
         </div>
       </ModernCard>

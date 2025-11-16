@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
 import { Button } from '../UI/Button'
 import { api } from '../../services/api'
+import { LOCATION_OPTIONS, LOCATION_KEYWORDS } from '../../utils/locationOptions'
 
 /**
  * Add New Task Dialog
@@ -51,22 +52,12 @@ const AddTaskDialog = ({ isOpen, onClose, projectId, onTaskCreated }) => {
     let bestMatch = null
     let bestScore = 0
 
-    // Common room/location keywords
-    const locationKeywords = [
-      'kitchen', 'bathroom', 'bedroom', 'master bedroom', 'guest bedroom',
-      'living room', 'dining room', 'family room', 'garage', 'basement',
-      'attic', 'laundry', 'office', 'hallway', 'closet', 'pantry',
-      'exterior', 'interior', 'front yard', 'back yard', 'patio', 'deck',
-      'roof', 'driveway', 'porch', 'foyer', 'entry'
-    ]
-
-    // Extract location from description (check longest matches first)
+    // Extract location from description (using shared location keywords)
     let detectedLocation = ''
-    const sortedLocationKeywords = [...locationKeywords].sort((a, b) => b.length - a.length)
-    for (const loc of sortedLocationKeywords) {
-      if (lowerDesc.includes(loc)) {
-        detectedLocation = loc.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
-        break // Take first (longest) match
+    for (const loc of LOCATION_KEYWORDS) {
+      if (lowerDesc.includes(loc.toLowerCase())) {
+        detectedLocation = loc
+        break // Take first (longest) match since keywords are pre-sorted by length
       }
     }
 
@@ -411,58 +402,13 @@ const AddTaskDialog = ({ isOpen, onClose, projectId, onTaskCreated }) => {
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">Select a location...</option>
-              <optgroup label="Interior - Main Floor">
-                <option value="Kitchen">Kitchen</option>
-                <option value="Living Room">Living Room</option>
-                <option value="Dining Room">Dining Room</option>
-                <option value="Family Room">Family Room</option>
-                <option value="Foyer">Foyer</option>
-                <option value="Office">Office</option>
-                <option value="Laundry">Laundry</option>
-                <option value="Mudroom">Mudroom</option>
-                <option value="Powder Room">Powder Room</option>
-                <option value="Pantry">Pantry</option>
-              </optgroup>
-              <optgroup label="Interior - Upper Floor">
-                <option value="Master Bedroom">Master Bedroom</option>
-                <option value="Master Bathroom">Master Bathroom</option>
-                <option value="Bedroom 2">Bedroom 2</option>
-                <option value="Bedroom 3">Bedroom 3</option>
-                <option value="Bedroom 4">Bedroom 4</option>
-                <option value="Guest Bedroom">Guest Bedroom</option>
-                <option value="Bathroom 2">Bathroom 2</option>
-                <option value="Bathroom 3">Bathroom 3</option>
-                <option value="Hallway">Hallway</option>
-              </optgroup>
-              <optgroup label="Interior - Basement">
-                <option value="Basement">Basement</option>
-                <option value="Rec Room">Rec Room</option>
-                <option value="Basement Bedroom">Basement Bedroom</option>
-                <option value="Basement Bathroom">Basement Bathroom</option>
-                <option value="Storage Room">Storage Room</option>
-                <option value="Mechanical Room">Mechanical Room</option>
-              </optgroup>
-              <optgroup label="Interior - Other">
-                <option value="Attic">Attic</option>
-                <option value="Stairway">Stairway</option>
-                <option value="Closet">Closet</option>
-                <option value="Walk-in Closet">Walk-in Closet</option>
-              </optgroup>
-              <optgroup label="Exterior">
-                <option value="Front Yard">Front Yard</option>
-                <option value="Back Yard">Back Yard</option>
-                <option value="Side Yard">Side Yard</option>
-                <option value="Driveway">Driveway</option>
-                <option value="Garage">Garage</option>
-                <option value="Deck">Deck</option>
-                <option value="Patio">Patio</option>
-                <option value="Porch">Porch</option>
-                <option value="Roof">Roof</option>
-                <option value="Exterior - Front">Exterior - Front</option>
-                <option value="Exterior - Rear">Exterior - Rear</option>
-                <option value="Exterior - Left">Exterior - Left</option>
-                <option value="Exterior - Right">Exterior - Right</option>
-              </optgroup>
+              {Object.entries(LOCATION_OPTIONS).map(([group, locations]) => (
+                <optgroup key={group} label={group}>
+                  {locations.map(location => (
+                    <option key={location} value={location}>{location}</option>
+                  ))}
+                </optgroup>
+              ))}
             </select>
             <p className="text-xs text-gray-500 mt-1">
               This will be auto-populated when detected in your description

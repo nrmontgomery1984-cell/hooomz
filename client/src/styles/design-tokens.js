@@ -89,6 +89,13 @@ export const colors = {
     tertiary: '#6B7280',
     inverse: '#FFFFFF',
   },
+
+  // Status colors (for backward compatibility)
+  status: {
+    success: '#16A34A',
+    warning: '#F59E0B',
+    error: '#DC2626',
+  },
 }
 
 export const spacing = {

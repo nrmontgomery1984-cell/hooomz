@@ -352,6 +352,7 @@ export const getScopeItemDetails = async (itemId) => {
   }
 
   return {
+    item: itemData, // Include the full item data with latest values
     materials,
     tools,
     checklist,

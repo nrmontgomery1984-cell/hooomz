@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { X, Wrench, Package, CheckSquare, Camera, Plus, Trash2, Info, Flag, User, Calendar, Tag, MapPin, Clock, FolderTree, Layers } from 'lucide-react'
+import { X, Wrench, Package, CheckSquare, Camera, Plus, Trash2, Info, Flag, User, Calendar, Tag, MapPin, Clock, FolderTree, Layers, CheckCircle2, Circle, AlertCircle } from 'lucide-react'
 import { Button } from '../UI/Button'
 import { colors } from '../../styles/design-tokens'
 import { api } from '../../services/api'
@@ -54,9 +54,12 @@ const TaskDetailDialog = ({ item, isOpen, onClose, onUpdate }) => {
       const detailsData = response.data.data
       setDetails(detailsData)
 
+      // Get the item data from the server response (most up-to-date)
+      const itemData = detailsData.item || item
+
       // Smart location detection - auto-fill if we can detect a room
-      const autoDetectedLocation = item.location || detectLocationFromContext(
-        item.description,
+      const autoDetectedLocation = itemData.location || detectLocationFromContext(
+        itemData.description,
         detailsData.subcategory,
         detailsData.category
       )
@@ -70,15 +73,15 @@ const TaskDetailDialog = ({ item, isOpen, onClose, onUpdate }) => {
       }
 
       setTaskData({
-        description: item.description || '',
-        priority: item.priority || 4,
-        assignee_id: item.assignee_id || null,
-        labels: item.labels || [],
-        due_date: formatDateForInput(item.due_date),
+        description: itemData.description || '',
+        priority: itemData.priority || 4,
+        assignee_id: itemData.assignee_id || null,
+        labels: itemData.labels || [],
+        due_date: formatDateForInput(itemData.due_date),
         location: autoDetectedLocation,
-        duration_minutes: item.duration_minutes || null,
-        reminder_date: formatDateForInput(item.reminder_date),
-        subcategory_id: item.subcategory_id || detailsData.subcategoryId || null
+        duration_minutes: itemData.duration_minutes || null,
+        reminder_date: formatDateForInput(itemData.reminder_date),
+        subcategory_id: itemData.subcategory_id || detailsData.subcategoryId || null
       })
     } catch (error) {
       console.error('Error fetching task details:', error)
@@ -429,6 +432,46 @@ const DetailsTab = ({ taskData, item, details, onUpdateField, getPriorityColor }
               >
                 <Flag size={16} className={`mx-auto mb-1 ${isSelected ? colors.text : ''}`} />
                 <span className="text-xs block">{colors.label}</span>
+              </button>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* Status / Completion */}
+      <div>
+        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+          <CheckCircle2 size={16} />
+          Status
+        </label>
+        <div className="grid grid-cols-4 gap-2">
+          {[
+            { value: 'pending', label: 'Pending', icon: Circle, color: 'gray' },
+            { value: 'in_progress', label: 'In Progress', icon: Clock, color: 'yellow' },
+            { value: 'completed', label: 'Completed', icon: CheckCircle2, color: 'green' },
+            { value: 'blocked', label: 'Blocked', icon: AlertCircle, color: 'red' }
+          ].map(status => {
+            const isSelected = (item.status || 'pending') === status.value
+            const Icon = status.icon
+            const colorClasses = {
+              gray: { bg: 'bg-gray-100', border: 'border-gray-300', text: 'text-gray-700' },
+              yellow: { bg: 'bg-yellow-100', border: 'border-yellow-300', text: 'text-yellow-700' },
+              green: { bg: 'bg-green-100', border: 'border-green-300', text: 'text-green-700' },
+              red: { bg: 'bg-red-100', border: 'border-red-300', text: 'text-red-700' }
+            }[status.color]
+
+            return (
+              <button
+                key={status.value}
+                onClick={() => onUpdateField('status', status.value)}
+                className={`px-4 py-3 rounded-lg border-2 transition-all ${
+                  isSelected
+                    ? `${colorClasses.bg} ${colorClasses.border} ${colorClasses.text} font-semibold`
+                    : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300'
+                }`}
+              >
+                <Icon size={16} className={`mx-auto mb-1 ${isSelected ? colorClasses.text : ''}`} />
+                <span className="text-xs block">{status.label}</span>
               </button>
             )
           })}

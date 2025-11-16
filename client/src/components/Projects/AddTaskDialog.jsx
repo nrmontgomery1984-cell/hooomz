@@ -402,12 +402,8 @@ const AddTaskDialog = ({ isOpen, onClose, projectId, onTaskCreated }) => {
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">Select a location...</option>
-              {Object.entries(LOCATION_OPTIONS).map(([group, locations]) => (
-                <optgroup key={group} label={group}>
-                  {locations.map(location => (
-                    <option key={location} value={location}>{location}</option>
-                  ))}
-                </optgroup>
+              {LOCATION_OPTIONS.map(location => (
+                <option key={location} value={location}>{location}</option>
               ))}
             </select>
             <p className="text-xs text-gray-500 mt-1">

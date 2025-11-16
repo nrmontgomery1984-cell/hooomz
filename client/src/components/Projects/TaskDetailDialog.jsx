@@ -29,6 +29,7 @@ const TaskDetailDialog = ({ item, isOpen, onClose, onUpdate }) => {
     allSubcategories: []
   })
   const [taskData, setTaskData] = useState({
+    description: '',
     priority: 4,
     assignee_id: null,
     labels: [],
@@ -69,6 +70,7 @@ const TaskDetailDialog = ({ item, isOpen, onClose, onUpdate }) => {
       }
 
       setTaskData({
+        description: item.description || '',
         priority: item.priority || 4,
         assignee_id: item.assignee_id || null,
         labels: item.labels || [],
@@ -245,7 +247,14 @@ const TaskDetailDialog = ({ item, isOpen, onClose, onUpdate }) => {
         {/* Header */}
         <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
           <div className="flex-1">
-            <h2 className="text-xl font-bold text-gray-900">{item.description}</h2>
+            <input
+              type="text"
+              value={taskData.description}
+              onChange={(e) => setTaskData(prev => ({ ...prev, description: e.target.value }))}
+              onBlur={() => updateTaskField('description', taskData.description)}
+              className="text-xl font-bold text-gray-900 w-full border-none focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-2 py-1"
+              placeholder="Task name..."
+            />
             {details.category && details.subcategory && (
               <div className="flex items-center gap-2 mt-2">
                 <span className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-md font-medium">

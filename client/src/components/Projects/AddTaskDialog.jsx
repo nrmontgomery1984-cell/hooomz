@@ -405,13 +405,65 @@ const AddTaskDialog = ({ isOpen, onClose, projectId, onTaskCreated }) => {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Location / Room (Optional)
             </label>
-            <input
-              type="text"
+            <select
               value={formData.location}
               onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-              placeholder="e.g., Kitchen, Master Bedroom, Exterior"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
+            >
+              <option value="">Select a location...</option>
+              <optgroup label="Interior - Main Floor">
+                <option value="Kitchen">Kitchen</option>
+                <option value="Living Room">Living Room</option>
+                <option value="Dining Room">Dining Room</option>
+                <option value="Family Room">Family Room</option>
+                <option value="Foyer">Foyer</option>
+                <option value="Office">Office</option>
+                <option value="Laundry">Laundry</option>
+                <option value="Mudroom">Mudroom</option>
+                <option value="Powder Room">Powder Room</option>
+                <option value="Pantry">Pantry</option>
+              </optgroup>
+              <optgroup label="Interior - Upper Floor">
+                <option value="Master Bedroom">Master Bedroom</option>
+                <option value="Master Bathroom">Master Bathroom</option>
+                <option value="Bedroom 2">Bedroom 2</option>
+                <option value="Bedroom 3">Bedroom 3</option>
+                <option value="Bedroom 4">Bedroom 4</option>
+                <option value="Guest Bedroom">Guest Bedroom</option>
+                <option value="Bathroom 2">Bathroom 2</option>
+                <option value="Bathroom 3">Bathroom 3</option>
+                <option value="Hallway">Hallway</option>
+              </optgroup>
+              <optgroup label="Interior - Basement">
+                <option value="Basement">Basement</option>
+                <option value="Rec Room">Rec Room</option>
+                <option value="Basement Bedroom">Basement Bedroom</option>
+                <option value="Basement Bathroom">Basement Bathroom</option>
+                <option value="Storage Room">Storage Room</option>
+                <option value="Mechanical Room">Mechanical Room</option>
+              </optgroup>
+              <optgroup label="Interior - Other">
+                <option value="Attic">Attic</option>
+                <option value="Stairway">Stairway</option>
+                <option value="Closet">Closet</option>
+                <option value="Walk-in Closet">Walk-in Closet</option>
+              </optgroup>
+              <optgroup label="Exterior">
+                <option value="Front Yard">Front Yard</option>
+                <option value="Back Yard">Back Yard</option>
+                <option value="Side Yard">Side Yard</option>
+                <option value="Driveway">Driveway</option>
+                <option value="Garage">Garage</option>
+                <option value="Deck">Deck</option>
+                <option value="Patio">Patio</option>
+                <option value="Porch">Porch</option>
+                <option value="Roof">Roof</option>
+                <option value="Exterior - Front">Exterior - Front</option>
+                <option value="Exterior - Rear">Exterior - Rear</option>
+                <option value="Exterior - Left">Exterior - Left</option>
+                <option value="Exterior - Right">Exterior - Right</option>
+              </optgroup>
+            </select>
             <p className="text-xs text-gray-500 mt-1">
               This will be auto-populated when detected in your description
             </p>

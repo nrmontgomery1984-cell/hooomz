@@ -26,7 +26,8 @@ const TaskTrackerModule = ({ projectId, filteredProject, updateScopeItem }) => {
     dueDate: '',
     duration: '',
     location: '',
-    search: ''
+    search: '',
+    label: ''
   })
   const [editingTask, setEditingTask] = useState(null)
   const [editedDescription, setEditedDescription] = useState('')
@@ -102,12 +103,13 @@ const TaskTrackerModule = ({ projectId, filteredProject, updateScopeItem }) => {
 
   // Extract unique values for filter dropdowns
   const filterOptions = useMemo(() => {
-    if (!filteredProject?.categories) return { categories: [], locations: [], assignees: [], durations: [] }
+    if (!filteredProject?.categories) return { categories: [], locations: [], assignees: [], durations: [], labels: [] }
 
     const categories = filteredProject.categories.map(c => ({ value: c.id, label: c.name }))
     const locationSet = new Set()
     const assigneeSet = new Set()
     const durationSet = new Set()
+    const labelSet = new Set()
 
     filteredProject.categories.forEach(cat => {
       cat.subcategories.forEach(sub => {
@@ -120,6 +122,9 @@ const TaskTrackerModule = ({ projectId, filteredProject, updateScopeItem }) => {
             else if (item.duration_minutes <= 120) durationSet.add('61-120')
             else durationSet.add('120+')
           }
+          if (item.labels && Array.isArray(item.labels)) {
+            item.labels.forEach(label => labelSet.add(label))
+          }
         })
       })
     })
@@ -128,7 +133,8 @@ const TaskTrackerModule = ({ projectId, filteredProject, updateScopeItem }) => {
       categories,
       locations: Array.from(locationSet).map(l => ({ value: l, label: l })),
       assignees: Array.from(assigneeSet).map(a => ({ value: a, label: 'Team Member' })), // TODO: Fetch actual names
-      durations: Array.from(durationSet).map(d => ({ value: d, label: `${d} minutes` }))
+      durations: Array.from(durationSet).map(d => ({ value: d, label: `${d} minutes` })),
+      labels: Array.from(labelSet).sort().map(l => ({ value: l, label: l }))
     }
   }, [filteredProject])
 
@@ -137,7 +143,7 @@ const TaskTrackerModule = ({ projectId, filteredProject, updateScopeItem }) => {
     if (!filteredProject?.categories) return filteredProject
 
     const hasActiveFilters = filters.search || filters.category || filters.assignee ||
-                            filters.dueDate || filters.duration || filters.location || hideCompleted
+                            filters.dueDate || filters.duration || filters.location || filters.label || hideCompleted
 
     if (!hasActiveFilters) return filteredProject
 
@@ -175,6 +181,13 @@ const TaskTrackerModule = ({ projectId, filteredProject, updateScopeItem }) => {
               if (filters.duration === '31-60' && (mins <= 30 || mins > 60)) return false
               if (filters.duration === '61-120' && (mins <= 60 || mins > 120)) return false
               if (filters.duration === '120+' && mins <= 120) return false
+            }
+
+            // Label filter
+            if (filters.label) {
+              if (!item.labels || !Array.isArray(item.labels) || !item.labels.includes(filters.label)) {
+                return false
+              }
             }
 
             return true
@@ -356,6 +369,23 @@ const TaskTrackerModule = ({ projectId, filteredProject, updateScopeItem }) => {
               </select>
             </div>
 
+            {/* Label */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Label
+              </label>
+              <select
+                value={filters.label}
+                onChange={(e) => setFilters({ ...filters, label: e.target.value })}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="">All Labels</option>
+                {filterOptions.labels.map(label => (
+                  <option key={label.value} value={label.value}>{label.label}</option>
+                ))}
+              </select>
+            </div>
+
             {/* Clear Filters Button */}
             <div className="flex items-end">
               <Button
@@ -466,6 +496,11 @@ const TaskTrackerModule = ({ projectId, filteredProject, updateScopeItem }) => {
                                         ⏱️ {item.duration_minutes}min
                                       </span>
                                     )}
+                                    {item.labels && item.labels.length > 0 && item.labels.map((label, idx) => (
+                                      <span key={idx} className="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                                        🏷️ {label}
+                                      </span>
+                                    ))}
                                   </div>
                                   {item.notes && (
                                     <p className="text-xs sm:text-sm text-gray-500 mt-1 line-clamp-2">{item.notes}</p>

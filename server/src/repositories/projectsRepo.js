@@ -158,6 +158,18 @@ export const getProjectWithScope = async (projectId) => {
 
   if (itemsError) throw itemsError
 
+  // Separate parent tasks and subtasks
+  const parentTasks = items.filter(item => !item.parent_task_id)
+  const subtasksByParent = items.reduce((acc, item) => {
+    if (item.parent_task_id) {
+      if (!acc[item.parent_task_id]) {
+        acc[item.parent_task_id] = []
+      }
+      acc[item.parent_task_id].push(item)
+    }
+    return acc
+  }, {})
+
   // Organize the data hierarchically
   const organizedCategories = categories.map(category => ({
     ...category,
@@ -165,7 +177,12 @@ export const getProjectWithScope = async (projectId) => {
       .filter(sub => sub.category_id === category.id)
       .map(sub => ({
         ...sub,
-        items: items.filter(item => item.subcategory_id === sub.id)
+        items: parentTasks
+          .filter(item => item.subcategory_id === sub.id)
+          .map(item => ({
+            ...item,
+            subtasks: subtasksByParent[item.id] || []
+          }))
       }))
   }))
 

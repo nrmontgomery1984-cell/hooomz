@@ -228,6 +228,7 @@ const TaskDetailDialog = ({ item, isOpen, onClose, onUpdate }) => {
 
   const tabs = [
     { id: 'details', label: 'Details', icon: Info },
+    { id: 'subtasks', label: 'Subtasks', icon: FolderTree, count: details.subtasks.length },
     { id: 'checklist', label: 'Checklist', icon: CheckSquare, count: details.checklist.length },
     { id: 'materials', label: 'Materials', icon: Package, count: details.materials.length },
     { id: 'tools', label: 'Tools', icon: Wrench, count: details.tools.length },
@@ -326,6 +327,16 @@ const TaskDetailDialog = ({ item, isOpen, onClose, onUpdate }) => {
                   details={details}
                   onUpdateField={updateTaskField}
                   getPriorityColor={getPriorityColor}
+                />
+              )}
+
+              {/* Subtasks Tab */}
+              {activeTab === 'subtasks' && (
+                <SubtasksTab
+                  subtasks={details.subtasks}
+                  parentTaskId={item.id}
+                  subcategoryId={item.subcategory_id}
+                  onRefresh={fetchTaskDetails}
                 />
               )}
 
@@ -836,6 +847,128 @@ const ToolsTab = ({ tools }) => {
           <Wrench size={48} className="mx-auto mb-4 opacity-30" />
           <p>No tools listed</p>
           <p className="text-sm mt-1">Add tools required for this task</p>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// Subtasks Tab
+const SubtasksTab = ({ subtasks, parentTaskId, subcategoryId, onRefresh }) => {
+  const [newSubtaskDescription, setNewSubtaskDescription] = useState('')
+  const [isAdding, setIsAdding] = useState(false)
+
+  const createSubtask = async () => {
+    if (!newSubtaskDescription.trim()) return
+
+    try {
+      setIsAdding(true)
+      await api.post(`/projects/subcategories/${subcategoryId}/items`, {
+        description: newSubtaskDescription,
+        parent_task_id: parentTaskId,
+        status: 'pending'
+      })
+      setNewSubtaskDescription('')
+      onRefresh()
+    } catch (error) {
+      console.error('Error creating subtask:', error)
+      alert('Failed to create subtask')
+    } finally {
+      setIsAdding(false)
+    }
+  }
+
+  const toggleSubtaskStatus = async (subtaskId, currentStatus) => {
+    const newStatus = currentStatus === 'completed' ? 'pending' : 'completed'
+    try {
+      await api.put(`/projects/items/${subtaskId}`, { status: newStatus })
+      onRefresh()
+    } catch (error) {
+      console.error('Error updating subtask:', error)
+    }
+  }
+
+  const deleteSubtask = async (subtaskId) => {
+    if (!confirm('Delete this subtask?')) return
+
+    try {
+      await api.delete(`/projects/items/${subtaskId}`)
+      onRefresh()
+    } catch (error) {
+      console.error('Error deleting subtask:', error)
+    }
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* Add Subtask */}
+      <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+        <h3 className="text-sm font-semibold text-blue-800 mb-3 flex items-center gap-2">
+          <FolderTree size={16} />
+          Add Subtask
+        </h3>
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={newSubtaskDescription}
+            onChange={(e) => setNewSubtaskDescription(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && createSubtask()}
+            placeholder="Enter subtask description..."
+            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            disabled={isAdding}
+          />
+          <Button
+            onClick={createSubtask}
+            disabled={!newSubtaskDescription.trim() || isAdding}
+            className="whitespace-nowrap"
+          >
+            <Plus size={18} />
+            Add
+          </Button>
+        </div>
+      </div>
+
+      {/* Subtasks List */}
+      {subtasks.length > 0 ? (
+        <div className="space-y-2">
+          {subtasks.map(subtask => (
+            <div
+              key={subtask.id}
+              className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <button
+                onClick={() => toggleSubtaskStatus(subtask.id, subtask.status)}
+                className="flex-shrink-0"
+              >
+                {subtask.status === 'completed' ? (
+                  <CheckCircle2 size={20} className="text-green-600" />
+                ) : (
+                  <Circle size={20} className="text-gray-400" />
+                )}
+              </button>
+              <div className="flex-1">
+                <p className={`text-sm ${subtask.status === 'completed' ? 'line-through text-gray-500' : 'text-gray-900'}`}>
+                  {subtask.description}
+                </p>
+                {subtask.notes && (
+                  <p className="text-xs text-gray-500 mt-1">{subtask.notes}</p>
+                )}
+              </div>
+              <button
+                onClick={() => deleteSubtask(subtask.id)}
+                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                title="Delete subtask"
+              >
+                <Trash2 size={16} />
+              </button>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-12 text-gray-500">
+          <FolderTree size={48} className="mx-auto mb-4 opacity-30" />
+          <p>No subtasks yet</p>
+          <p className="text-sm mt-1">Break down this task into smaller subtasks</p>
         </div>
       )}
     </div>

@@ -380,6 +380,19 @@ export const getScopeItemDetails = async (itemId) => {
     console.log('[getScopeItemDetails] No projectId found in itemData')
   }
 
+  // Fetch subtasks (child tasks where parent_task_id = this itemId)
+  const { data: subtasksData, error: subtasksError } = await supabase
+    .from('scope_items')
+    .select('*')
+    .eq('parent_task_id', itemId)
+    .order('display_order')
+
+  if (subtasksError) {
+    console.error('[getScopeItemDetails] Error fetching subtasks:', subtasksError)
+  }
+
+  const subtasks = subtasksData || []
+
   const [materials, tools, checklist, photos] = await Promise.all([
     getScopeItemMaterials(itemId),
     getScopeItemTools(itemId),
@@ -406,6 +419,7 @@ export const getScopeItemDetails = async (itemId) => {
     tools,
     checklist,
     photos,
+    subtasks,
     projectMembers,
     category: itemData?.subcategory?.category?.name || null,
     subcategory: itemData?.subcategory?.name || null,

@@ -403,10 +403,11 @@ const TaskTrackerModule = ({ projectId, filteredProject, updateScopeItem }) => {
 
                       <div className="space-y-2 pl-4">
                         {subcategory.items.map((item) => (
-                        <div
-                          key={item.id}
-                          className="flex flex-col sm:flex-row sm:items-center justify-between p-2 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors gap-2"
-                        >
+                        <div key={item.id} className="space-y-2">
+                          {/* Parent Task */}
+                          <div
+                            className="flex flex-col sm:flex-row sm:items-center justify-between p-2 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors gap-2"
+                          >
                           <div className="flex items-start sm:items-center gap-2 sm:gap-3 flex-1">
                             {getStatusIcon(item.status)}
                             <div className="flex-1 min-w-0">
@@ -441,7 +442,14 @@ const TaskTrackerModule = ({ projectId, filteredProject, updateScopeItem }) => {
                                   }}
                                   className="cursor-pointer"
                                 >
-                                  <p className="text-sm sm:text-base font-medium text-gray-900 break-words">{item.description}</p>
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <p className="text-sm sm:text-base font-medium text-gray-900 break-words">{item.description}</p>
+                                    {item.subtasks && item.subtasks.length > 0 && (
+                                      <span className="px-2 py-0.5 bg-blue-600 text-white rounded-full text-xs font-semibold">
+                                        {item.subtasks.filter(s => s.status === 'completed').length}/{item.subtasks.length} subtasks
+                                      </span>
+                                    )}
+                                  </div>
                                   <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-1 text-xs">
                                     {item.location && (
                                       <span className="px-1.5 py-0.5 bg-blue-50 text-blue-700 rounded text-xs">
@@ -525,6 +533,35 @@ const TaskTrackerModule = ({ projectId, filteredProject, updateScopeItem }) => {
                             )}
                           </div>
                         </div>
+
+                        {/* Subtasks */}
+                        {item.subtasks && item.subtasks.length > 0 && (
+                          <div className="ml-8 sm:ml-12 space-y-2 border-l-2 border-blue-200 pl-4">
+                            {item.subtasks.map(subtask => (
+                              <div
+                                key={subtask.id}
+                                className="flex items-center gap-2 p-2 bg-blue-50 border border-blue-200 rounded-lg text-sm"
+                              >
+                                {getStatusIcon(subtask.status)}
+                                <span className={subtask.status === 'completed' ? 'line-through text-gray-500' : 'text-gray-700'}>
+                                  {subtask.description}
+                                </span>
+                                {subtask.status !== 'completed' && (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      handleStatusChange(subtask.id, 'completed')
+                                    }}
+                                    className="ml-auto px-2 py-1 rounded text-xs bg-green-100 text-green-700 hover:bg-green-200 border border-green-300"
+                                  >
+                                    ✓
+                                  </button>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                       ))}
                       </div>
                     </div>

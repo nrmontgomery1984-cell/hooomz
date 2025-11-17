@@ -9,7 +9,9 @@ import {
   ChevronDown,
   Home,
   Hammer,
-  Users
+  Users,
+  CheckSquare,
+  Clock
 } from 'lucide-react'
 import { colors } from '../../styles/design-tokens'
 
@@ -23,7 +25,9 @@ const ModernLayout = ({ children }) => {
   const location = useLocation()
   const [showUserMenu, setShowUserMenu] = useState(false)
 
-  const isBuildz = location.pathname.startsWith('/projects')
+  const isBuildz = location.pathname.startsWith('/projects') ||
+                   location.pathname.startsWith('/tasks') ||
+                   location.pathname.startsWith('/time')
 
   // Navigation items based on current app
   const hooomzNav = [
@@ -34,8 +38,10 @@ const ModernLayout = ({ children }) => {
   ]
 
   const buildzNav = [
-    { label: 'Projects', path: '/projects' },
-    { label: 'Contacts', path: '/contacts' },
+    { label: 'Projects', path: '/projects', icon: Hammer },
+    { label: 'Tasks', path: '/tasks', icon: CheckSquare },
+    { label: 'Time', path: '/time', icon: Clock },
+    { label: 'Contacts', path: '/contacts', icon: Users },
   ]
 
   const navItems = isBuildz ? buildzNav : hooomzNav
@@ -63,17 +69,19 @@ const ModernLayout = ({ children }) => {
                 {navItems.map((item) => {
                   const isActive = location.pathname === item.path ||
                                   (item.path !== '/' && location.pathname.startsWith(item.path))
+                  const Icon = item.icon
 
                   return (
                     <Link
                       key={item.path}
                       to={item.path}
-                      className="px-4 py-2 rounded-lg text-sm font-medium transition-all"
+                      className="px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2"
                       style={{
                         backgroundColor: isActive ? colors.gray[100] : 'transparent',
                         color: isActive ? colors.gray[900] : colors.gray[600],
                       }}
                     >
+                      {Icon && <Icon size={18} />}
                       {item.label}
                     </Link>
                   )

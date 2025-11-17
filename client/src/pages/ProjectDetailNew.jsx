@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useProjectScope } from '../hooks/useProjects'
 import ModernCard from '../components/UI/ModernCard'
@@ -22,6 +22,7 @@ import { api } from '../services/api'
 /**
  * Project Detail Page - Redesigned
  * Modern UI with filtering by location, category, and subcategory
+ * Now includes navigation memory to remember last visited module per project
  */
 const ProjectDetailNew = () => {
   const { projectId } = useParams()
@@ -40,7 +41,21 @@ const ProjectDetailNew = () => {
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false)
   const [showProjectMenu, setShowProjectMenu] = useState(false)
   const [showMembersDialog, setShowMembersDialog] = useState(false)
-  const [activeModule, setActiveModule] = useState('estimates')
+
+  // Initialize activeModule from localStorage (navigation memory)
+  const [activeModule, setActiveModule] = useState(() => {
+    const savedModule = localStorage.getItem(`lastVisitedModule_${projectId}`)
+    // Default to 'instances' (tasks) instead of 'estimates' if no saved preference
+    return savedModule || 'instances'
+  })
+
+  // Save activeModule preference and track last active project
+  useEffect(() => {
+    if (activeModule && projectId) {
+      localStorage.setItem(`lastVisitedModule_${projectId}`, activeModule)
+      localStorage.setItem('lastActiveProject', projectId)
+    }
+  }, [activeModule, projectId])
 
   // Extract unique locations from scope items
   const locations = useMemo(() => {

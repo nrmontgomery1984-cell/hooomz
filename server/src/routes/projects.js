@@ -1455,4 +1455,51 @@ router.delete('/:projectId/members/:memberId', async (req, res) => {
   }
 })
 
+// ==================== COMMENTS ====================
+
+// Create comment on scope item
+router.post('/items/:itemId/comments', async (req, res) => {
+  try {
+    const { itemId } = req.params
+    const { content, user_id } = req.body
+
+    const comment = await scopeRepo.createScopeItemComment({
+      scope_item_id: itemId,
+      user_id,
+      content
+    })
+
+    res.json({ data: comment })
+  } catch (error) {
+    console.error('Error creating comment:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Update comment
+router.put('/comments/:commentId', async (req, res) => {
+  try {
+    const { commentId } = req.params
+    const updates = req.body
+
+    const comment = await scopeRepo.updateScopeItemComment(commentId, updates)
+    res.json({ data: comment })
+  } catch (error) {
+    console.error('Error updating comment:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Delete comment
+router.delete('/comments/:commentId', async (req, res) => {
+  try {
+    const { commentId } = req.params
+    await scopeRepo.deleteScopeItemComment(commentId)
+    res.json({ success: true })
+  } catch (error) {
+    console.error('Error deleting comment:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
 export default router

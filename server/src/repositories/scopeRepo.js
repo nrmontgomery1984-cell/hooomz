@@ -93,7 +93,7 @@ export const updateSubcategory = async (subcategoryId, updates) => {
 }
 
 export const deleteSubcategory = async (subcategoryId) => {
-  const { error } = await supabase
+  const { error} = await supabase
     .from('scope_subcategories')
     .delete()
     .eq('id', subcategoryId)
@@ -148,8 +148,10 @@ export const updateScopeItem = async (itemId, updates) => {
   }
 
   // If status is being set to completed, add completed_at timestamp
-  if (updates.status === 'completed' && !updates.completed_at) {
+  if (updateData.status === 'completed') {
     updateData.completed_at = new Date().toISOString()
+  } else if (updateData.status && updateData.status !== 'completed') {
+    updateData.completed_at = null
   }
 
   const { data, error } = await supabase
@@ -174,104 +176,96 @@ export const deleteScopeItem = async (itemId) => {
 
 /**
  * Get all scope items for a project (across all categories/subcategories)
- * Used for time tracker dropdown
  * @param {string} projectId - Project ID
- * @returns {Promise<Array>} Array of scope items with category/subcategory info
+ * @returns {Promise<Array>} Array of scope items with enriched user data
  */
 export const getAllScopeItemsByProject = async (projectId) => {
-  // First get all categories for this project
+  console.log('[getAllScopeItemsByProject] START - projectId:', projectId)
+
+  // First, get all categories for this project
   const { data: categories, error: catError } = await supabase
     .from('scope_categories')
     .select('id')
     .eq('project_id', projectId)
 
-  if (catError) throw catError
+  if (catError) {
+    console.error('[getAllScopeItemsByProject] Error fetching categories:', catError)
+    throw catError
+  }
+
+  console.log('[getAllScopeItemsByProject] Found', categories?.length || 0, 'categories')
 
   if (!categories || categories.length === 0) {
+    console.log('[getAllScopeItemsByProject] No categories found, returning empty array')
     return []
   }
 
   const categoryIds = categories.map(c => c.id)
 
-  // Then get all subcategories for these categories
+  // Get all subcategories for these categories
   const { data: subcategories, error: subError } = await supabase
     .from('scope_subcategories')
     .select('id')
     .in('category_id', categoryIds)
 
-  if (subError) throw subError
+  if (subError) {
+    console.error('[getAllScopeItemsByProject] Error fetching subcategories:', subError)
+    throw subError
+  }
+
+  console.log('[getAllScopeItemsByProject] Found', subcategories?.length || 0, 'subcategories')
 
   if (!subcategories || subcategories.length === 0) {
+    console.log('[getAllScopeItemsByProject] No subcategories found, returning empty array')
     return []
   }
 
   const subcategoryIds = subcategories.map(s => s.id)
 
-  // Finally get all scope items with full nested data
-  const { data, error } = await supabase
+  // Get all scope items for these subcategories
+  const { data: items, error: itemsError } = await supabase
     .from('scope_items')
-    .select(`
-      *,
-      subcategory:scope_subcategories (
-        id,
-        name,
-        category:scope_categories (
-          id,
-          name,
-          project_id
-        )
-      )
-    `)
+    .select('*')
     .in('subcategory_id', subcategoryIds)
-    .order('display_order')
+    .order('created_at', { ascending: false })
 
-  if (error) throw error
+  if (itemsError) {
+    console.error('[getAllScopeItemsByProject] Error fetching items:', itemsError)
+    throw itemsError
+  }
 
-  const items = data || []
+  console.log('[getAllScopeItemsByProject] Found', items?.length || 0, 'scope items')
 
-  // Get user information for all assignees
-  const assigneeIds = [...new Set(items.map(item => item.assignee_id).filter(Boolean))]
-  console.log('[getAllScopeItemsByProject] Found assigneeIds:', assigneeIds)
+  // Fetch user details for assignees
+  if (items && items.length > 0) {
+    const assigneeIds = [...new Set(items.map(item => item.assignee_id).filter(Boolean))]
+    console.log('[getAllScopeItemsByProject] Unique assignees:', assigneeIds.length)
 
-  if (assigneeIds.length > 0) {
-    console.log('[getAllScopeItemsByProject] Fetching users from Supabase admin API...')
-    const { data: usersData, error: usersError } = await supabase.auth.admin.listUsers()
+    if (assigneeIds.length > 0) {
+      const { data: { users }, error: usersError } = await supabase.auth.admin.listUsers()
 
-    console.log('[getAllScopeItemsByProject] Users API response:', {
-      error: usersError,
-      usersCount: usersData?.users?.length || 0
-    })
+      if (!usersError && users) {
+        console.log('[getAllScopeItemsByProject] Fetched', users.length, 'total users')
 
-    if (!usersError && usersData?.users) {
-      // Map user data to items
-      const usersMap = new Map(usersData.users.map(u => [u.id, u]))
-      console.log('[getAllScopeItemsByProject] Created usersMap with', usersMap.size, 'users')
+        const enrichedItems = items.map(item => {
+          if (!item.assignee_id) return item
 
-      const enrichedItems = items.map(item => {
-        if (item.assignee_id && usersMap.has(item.assignee_id)) {
-          const user = usersMap.get(item.assignee_id)
-          const enriched = {
+          const user = users.find(u => u.id === item.assignee_id)
+          return {
             ...item,
-            assignee_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Unknown',
-            assignee_email: user.email
+            assignee_name: user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Team Member',
+            assignee_email: user?.email || 'Unknown'
           }
-          console.log('[getAllScopeItemsByProject] Enriched item:', {
-            id: item.id,
-            assignee_id: item.assignee_id,
-            assignee_name: enriched.assignee_name
-          })
-          return enriched
-        }
-        return item
-      })
+        })
 
-      console.log('[getAllScopeItemsByProject] Returning', enrichedItems.length, 'enriched items')
-      return enrichedItems
-    } else if (usersError) {
-      console.error('[getAllScopeItemsByProject] Error fetching users:', usersError)
+        console.log('[getAllScopeItemsByProject] Returning', enrichedItems.length, 'enriched items')
+        return enrichedItems
+      } else if (usersError) {
+        console.error('[getAllScopeItemsByProject] Error fetching users:', usersError)
+      }
+    } else {
+      console.log('[getAllScopeItemsByProject] No assignees found in items')
     }
-  } else {
-    console.log('[getAllScopeItemsByProject] No assignees found in items')
   }
 
   console.log('[getAllScopeItemsByProject] Returning', items.length, 'items without enrichment')
@@ -281,9 +275,9 @@ export const getAllScopeItemsByProject = async (projectId) => {
 // ==================== SCOPE ITEM DETAILS (Tools, Materials, Checklist, Photos) ====================
 
 /**
- * Get full details for a scope item (tools, materials, checklist, photos)
+ * Get full details for a scope item (tools, materials, checklist, photos, subtasks, comments)
  * @param {string} itemId - Scope item ID
- * @returns {Promise<Object>} Object with materials, tools, checklist, and photos arrays
+ * @returns {Promise<Object>} Object with materials, tools, checklist, photos, subtasks, and comments arrays
  */
 export const getScopeItemDetails = async (itemId) => {
   console.log('[getScopeItemDetails] START - itemId:', itemId)
@@ -393,11 +387,12 @@ export const getScopeItemDetails = async (itemId) => {
 
   const subtasks = subtasksData || []
 
-  const [materials, tools, checklist, photos] = await Promise.all([
+  const [materials, tools, checklist, photos, comments] = await Promise.all([
     getScopeItemMaterials(itemId),
     getScopeItemTools(itemId),
     getScopeItemChecklist(itemId),
-    getScopeItemPhotos(itemId)
+    getScopeItemPhotos(itemId),
+    getScopeItemComments(itemId)
   ])
 
   // Get all categories and subcategories for the project so user can change task's category/subcategory
@@ -420,6 +415,7 @@ export const getScopeItemDetails = async (itemId) => {
     checklist,
     photos,
     subtasks,
+    comments,
     projectMembers,
     category: itemData?.subcategory?.category?.name || null,
     subcategory: itemData?.subcategory?.name || null,
@@ -496,7 +492,7 @@ export const updateScopeItemTools = async (itemId, tools) => {
       display_order: t.display_order || index
     }))
 
-    const { data, error} = await supabase
+    const { data, error } = await supabase
       .from('scope_item_tools')
       .insert(toolsWithItemId)
       .select()
@@ -547,20 +543,20 @@ export const updateScopeItemChecklist = async (itemId, checklist) => {
   return []
 }
 
-export const toggleChecklistItem = async (checklistItemId, isCompleted) => {
-  const updateData = {
-    is_completed: isCompleted
-  }
+export const toggleChecklistItem = async (checklistItemId) => {
+  // Get current state
+  const { data: currentItem, error: fetchError } = await supabase
+    .from('scope_item_checklist')
+    .select('is_checked')
+    .eq('id', checklistItemId)
+    .single()
 
-  if (isCompleted) {
-    updateData.completed_at = new Date().toISOString()
-  } else {
-    updateData.completed_at = null
-  }
+  if (fetchError) throw fetchError
 
+  // Toggle the state
   const { data, error } = await supabase
     .from('scope_item_checklist')
-    .update(updateData)
+    .update({ is_checked: !currentItem.is_checked })
     .eq('id', checklistItemId)
     .select()
     .single()
@@ -581,10 +577,13 @@ export const getScopeItemPhotos = async (itemId) => {
   return data || []
 }
 
-export const addScopeItemPhoto = async (photoData) => {
+export const createScopeItemPhoto = async (photoData) => {
   const { data, error } = await supabase
     .from('scope_item_photos')
-    .insert(photoData)
+    .insert({
+      ...photoData,
+      created_at: new Date().toISOString()
+    })
     .select()
     .single()
 
@@ -597,6 +596,96 @@ export const deleteScopeItemPhoto = async (photoId) => {
     .from('scope_item_photos')
     .delete()
     .eq('id', photoId)
+
+  if (error) throw error
+}
+
+// ==================== COMMENTS ====================
+
+/**
+ * Get comments for a scope item
+ * @param {string} itemId - Scope item ID
+ * @returns {Promise<Array>} Array of comments with user details
+ */
+export const getScopeItemComments = async (itemId) => {
+  const { data, error } = await supabase
+    .from('scope_item_comments')
+    .select('*')
+    .eq('scope_item_id', itemId)
+    .order('created_at', { ascending: true })
+
+  if (error) throw error
+
+  // Fetch user details for comments
+  if (data && data.length > 0) {
+    const userIds = [...new Set(data.map(c => c.user_id))]
+    const { data: { users }, error: usersError } = await supabase.auth.admin.listUsers()
+
+    if (!usersError && users) {
+      return data.map(comment => {
+        const user = users.find(u => u.id === comment.user_id)
+        return {
+          ...comment,
+          user_email: user?.email || 'Unknown',
+          user_name: user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Team Member'
+        }
+      })
+    }
+  }
+
+  return data || []
+}
+
+/**
+ * Create a comment on a scope item
+ * @param {Object} commentData - Comment data {scope_item_id, user_id, content}
+ * @returns {Promise<Object>} Created comment
+ */
+export const createScopeItemComment = async (commentData) => {
+  const { data, error } = await supabase
+    .from('scope_item_comments')
+    .insert({
+      ...commentData,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    })
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+/**
+ * Update a comment
+ * @param {string} commentId - Comment ID
+ * @param {Object} updates - Fields to update
+ * @returns {Promise<Object>} Updated comment
+ */
+export const updateScopeItemComment = async (commentId, updates) => {
+  const { data, error } = await supabase
+    .from('scope_item_comments')
+    .update({
+      ...updates,
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', commentId)
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+/**
+ * Delete a comment
+ * @param {string} commentId - Comment ID
+ */
+export const deleteScopeItemComment = async (commentId) => {
+  const { error } = await supabase
+    .from('scope_item_comments')
+    .delete()
+    .eq('id', commentId)
 
   if (error) throw error
 }

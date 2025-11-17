@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { X, Wrench, Package, CheckSquare, Camera, Plus, Trash2, Info, Flag, User, Calendar, Tag, MapPin, Clock, FolderTree, Layers, CheckCircle2, Circle, AlertCircle } from 'lucide-react'
+import { X, Wrench, Package, CheckSquare, Camera, Plus, Trash2, Info, Flag, User, Calendar, Tag, MapPin, Clock, FolderTree, Layers, CheckCircle2, Circle, AlertCircle, MessageSquare } from 'lucide-react'
 import { Button } from '../UI/Button'
 import { colors } from '../../styles/design-tokens'
 import { api } from '../../services/api'
@@ -233,6 +233,7 @@ const TaskDetailDialog = ({ item, isOpen, onClose, onUpdate }) => {
     { id: 'materials', label: 'Materials', icon: Package, count: details.materials.length },
     { id: 'tools', label: 'Tools', icon: Wrench, count: details.tools.length },
     { id: 'photos', label: 'Photos', icon: Camera, count: details.photos.length },
+    { id: 'comments', label: 'Comments', icon: MessageSquare, count: details.comments.length },
   ]
 
   // Priority color mapping (Todoist style)
@@ -364,6 +365,16 @@ const TaskDetailDialog = ({ item, isOpen, onClose, onUpdate }) => {
                   photos={details.photos}
                   onUpload={handlePhotoUpload}
                   onDelete={deletePhoto}
+                />
+              )}
+
+              {/* Comments Tab */}
+              {activeTab === 'comments' && (
+                <CommentsTab
+                  comments={details.comments}
+                  itemId={item.id}
+                  currentUser={user}
+                  onRefresh={fetchTaskDetails}
                 />
               )}
             </>
@@ -969,6 +980,141 @@ const SubtasksTab = ({ subtasks, parentTaskId, subcategoryId, onRefresh }) => {
           <FolderTree size={48} className="mx-auto mb-4 opacity-30" />
           <p>No subtasks yet</p>
           <p className="text-sm mt-1">Break down this task into smaller subtasks</p>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// Comments Tab
+const CommentsTab = ({ comments, itemId, currentUser, onRefresh }) => {
+  const [newComment, setNewComment] = useState('')
+  const [isAdding, setIsAdding] = useState(false)
+
+  const createComment = async () => {
+    if (!newComment.trim()) return
+
+    try {
+      setIsAdding(true)
+      await api.post(`/projects/items/${itemId}/comments`, {
+        content: newComment,
+        user_id: currentUser?.id
+      })
+      setNewComment('')
+      onRefresh()
+    } catch (error) {
+      console.error('Error creating comment:', error)
+      alert('Failed to add comment')
+    } finally {
+      setIsAdding(false)
+    }
+  }
+
+  const deleteComment = async (commentId) => {
+    if (!confirm('Delete this comment?')) return
+
+    try {
+      await api.delete(`/projects/comments/${commentId}`)
+      onRefresh()
+    } catch (error) {
+      console.error('Error deleting comment:', error)
+      alert('Failed to delete comment')
+    }
+  }
+
+  // Sort comments by created_at descending (newest first)
+  const sortedComments = [...comments].sort((a, b) =>
+    new Date(b.created_at) - new Date(a.created_at)
+  )
+
+  return (
+    <div className="space-y-4">
+      {/* Add Comment */}
+      <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+        <h3 className="text-sm font-semibold text-blue-800 mb-3 flex items-center gap-2">
+          <MessageSquare size={16} />
+          Add Comment
+        </h3>
+        <div className="space-y-2">
+          <textarea
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            placeholder="Enter your comment..."
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+            rows={3}
+            disabled={isAdding}
+          />
+          <div className="flex justify-end">
+            <Button
+              onClick={createComment}
+              disabled={!newComment.trim() || isAdding}
+              className="whitespace-nowrap"
+            >
+              <Plus size={18} />
+              Add Comment
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Comments List */}
+      {sortedComments.length > 0 ? (
+        <div className="space-y-3">
+          {sortedComments.map(comment => {
+            const isOwnComment = comment.user_id === currentUser?.id
+            const userName = comment.user_name || comment.user_email?.split('@')[0] || 'Unknown User'
+            const createdDate = new Date(comment.created_at)
+            const formattedDate = createdDate.toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric',
+              hour: 'numeric',
+              minute: '2-digit'
+            })
+
+            return (
+              <div
+                key={comment.id}
+                className="p-4 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 transition-colors"
+              >
+                <div className="flex items-start justify-between gap-3 mb-2">
+                  <div className="flex items-center gap-2">
+                    <div
+                      className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-semibold"
+                      style={{ backgroundColor: isOwnComment ? '#3b82f6' : '#6b7280' }}
+                    >
+                      {userName[0]?.toUpperCase() || 'U'}
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-gray-900">
+                        {userName}
+                        {isOwnComment && (
+                          <span className="ml-2 text-xs text-blue-600 font-normal">(You)</span>
+                        )}
+                      </p>
+                      <p className="text-xs text-gray-500">{formattedDate}</p>
+                    </div>
+                  </div>
+                  {isOwnComment && (
+                    <button
+                      onClick={() => deleteComment(comment.id)}
+                      className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
+                      title="Delete comment"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  )}
+                </div>
+                <p className="text-sm text-gray-700 whitespace-pre-wrap">{comment.content}</p>
+              </div>
+            )
+          })}
+        </div>
+      ) : (
+        <div className="text-center py-12 text-gray-500">
+          <MessageSquare size={48} className="mx-auto mb-4 opacity-30" />
+          <p>No comments yet</p>
+          <p className="text-sm mt-1">Add notes, updates, or questions about this task</p>
         </div>
       )}
     </div>

@@ -178,16 +178,22 @@ SELECT
   pp.status,
   pp.total_hours,
   pp.total_cost,
-  COUNT(DISTINCT te.worker_name) as worker_count,
-  COUNT(te.id) as entry_count,
-  json_agg(
-    json_build_object(
-      'worker_name', te.worker_name,
-      'total_hours', SUM(te.duration_minutes) / 60.0,
-      'entry_count', COUNT(te.id)
-    )
-  ) FILTER (WHERE te.id IS NOT NULL) as worker_breakdown
+  pp.created_at,
+  pp.updated_at,
+  pp.closed_at,
+  (SELECT COUNT(DISTINCT worker_name) FROM time_entries WHERE pay_period_id = pp.id) as worker_count,
+  (SELECT COUNT(*) FROM time_entries WHERE pay_period_id = pp.id) as entry_count,
+  (
+    SELECT json_agg(worker_stats)
+    FROM (
+      SELECT
+        worker_name,
+        SUM(duration_minutes) / 60.0 as total_hours,
+        COUNT(*) as entry_count
+      FROM time_entries
+      WHERE pay_period_id = pp.id
+      GROUP BY worker_name
+    ) worker_stats
+  ) as worker_breakdown
 FROM pay_periods pp
-LEFT JOIN time_entries te ON te.pay_period_id = pp.id
-GROUP BY pp.id, pp.name, pp.start_date, pp.end_date, pp.frequency, pp.status, pp.total_hours, pp.total_cost
 ORDER BY pp.start_date DESC;

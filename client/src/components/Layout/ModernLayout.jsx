@@ -12,7 +12,8 @@ import {
   Users,
   CheckSquare,
   Clock,
-  BarChart3
+  BarChart3,
+  DollarSign
 } from 'lucide-react'
 import { colors } from '../../styles/design-tokens'
 
@@ -29,6 +30,7 @@ const ModernLayout = ({ children }) => {
   const isBuildz = location.pathname.startsWith('/projects') ||
                    location.pathname.startsWith('/tasks') ||
                    location.pathname.startsWith('/time') ||
+                   location.pathname.startsWith('/expenses') ||
                    location.pathname.startsWith('/analytics')
 
   // Navigation items based on current app
@@ -43,6 +45,7 @@ const ModernLayout = ({ children }) => {
     { label: 'Projects', path: '/projects', icon: Hammer },
     { label: 'Tasks', path: '/tasks', icon: CheckSquare },
     { label: 'Time', path: '/time', icon: Clock },
+    { label: 'Expenses', path: '/expenses', icon: DollarSign },
     { label: 'Analytics', path: '/analytics', icon: BarChart3 },
     { label: 'Contacts', path: '/contacts', icon: Users },
   ]

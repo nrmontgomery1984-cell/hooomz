@@ -5,6 +5,7 @@ import ModernCard from '../components/UI/ModernCard'
 import TimeTrackerModule from '../components/Projects/modules/TimeTrackerModule'
 import { Button } from '../components/UI/Button'
 import { Clock, ChevronDown } from 'lucide-react'
+import PayPeriodSelector from '../components/PayPeriods/PayPeriodSelector'
 
 /**
  * Global Time Tracker Page
@@ -23,6 +24,9 @@ const GlobalTimeTracker = () => {
     const lastActiveProject = localStorage.getItem('lastActiveProject')
     return lastActiveProject || null
   })
+
+  // Pay period state
+  const [selectedPayPeriodId, setSelectedPayPeriodId] = useState(null)
 
   // Update URL when project changes
   useEffect(() => {
@@ -170,6 +174,14 @@ const GlobalTimeTracker = () => {
               </div>
             </div>
           )}
+
+          {/* Pay Period Selector */}
+          <div className="mt-6">
+            <PayPeriodSelector
+              selectedPeriodId={selectedPayPeriodId}
+              onPeriodChange={setSelectedPayPeriodId}
+            />
+          </div>
         </div>
 
         {/* Time Tracker Module */}

@@ -18,6 +18,7 @@ import projectsRouter from './routes/projects.js'
 import employeesRouter from './routes/employees.js'
 import contactsRouter from './routes/contacts.js'
 import expensesRouter from './routes/expenses.js'
+import payPeriodsRouter from './routes/payPeriods.js'
 
 // Import middleware
 import { errorHandler } from './middleware/errorHandler.js'
@@ -78,6 +79,7 @@ app.use('/api/projects', projectsRouter)
 app.use('/api/employees', employeesRouter)
 app.use('/api/contacts', contactsRouter)
 app.use('/api/expenses', expensesRouter)  // Expense tracking with receipt upload
+app.use('/api/pay-periods', payPeriodsRouter)  // Pay period management for time tracking
 // Generic /api mounts for nested home resources (must come AFTER specific routes)
 app.use('/api', roomsRouter)  // Mount at /api so routes can be /api/homes/:homeId/rooms
 app.use('/api', materialsRouter)  // Mount at /api so routes can be /api/homes/:homeId/materials

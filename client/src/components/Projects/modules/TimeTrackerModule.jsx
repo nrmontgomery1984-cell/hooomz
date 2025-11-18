@@ -67,14 +67,18 @@ const TimeTrackerModule = ({ projectId }) => {
 
       const entryDate = new Date(entry.start_time)
 
+      // Get category name from nested structure
+      const categoryName = entry.scope_item?.subcategory?.category?.name
+
       if (startDate && entryDate < startDate) return false
       if (workerFilter && workerFilter !== 'all' && entry.worker_name !== workerFilter) return false
-      if (categoryFilter && categoryFilter !== 'all' && entry.category_name !== categoryFilter) return false
+      if (categoryFilter && categoryFilter !== 'all' && categoryName !== categoryFilter) return false
 
       return true
     })
 
-    return filtered.reduce((sum, entry) => sum + (entry.hours_worked || 0), 0)
+    // Convert duration_minutes to hours
+    return filtered.reduce((sum, entry) => sum + ((entry.duration_minutes || 0) / 60), 0)
   }
 
   // Get unique workers and categories
@@ -84,7 +88,11 @@ const TimeTrackerModule = ({ projectId }) => {
   }, [timeEntries])
 
   const uniqueCategories = useMemo(() => {
-    const categories = new Set(timeEntries.map(e => e.category_name).filter(Boolean))
+    const categories = new Set(
+      timeEntries
+        .map(e => e.scope_item?.subcategory?.category?.name)
+        .filter(Boolean)
+    )
     return Array.from(categories).sort()
   }, [timeEntries])
 

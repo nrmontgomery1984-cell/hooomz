@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { List, Filter, CheckCircle2, Circle, Clock, AlertCircle, MapPin, User, Calendar, Plus } from 'lucide-react'
+import { List, Filter, CheckCircle2, Circle, Clock, AlertCircle, MapPin, User, Calendar, Plus, Eye, EyeOff } from 'lucide-react'
 import { Button } from '../../UI/Button'
 import ModernCard from '../../UI/ModernCard'
 import * as projectsApi from '../../../services/projectsApi'
@@ -22,6 +22,12 @@ const TaskInstancesModule = ({ projectId }) => {
   const [locations, setLocations] = useState([])
   const [teamMembers, setTeamMembers] = useState([])
 
+  const [hideCompleted, setHideCompleted] = useState(() => {
+    // Load from localStorage on initial render
+    const saved = localStorage.getItem('taskInstances_hideCompleted')
+    return saved === 'true'
+  })
+
   const [filters, setFilters] = useState({
     status: '',
     priority: '',
@@ -41,7 +47,12 @@ const TaskInstancesModule = ({ projectId }) => {
 
   useEffect(() => {
     loadInstances()
-  }, [projectId, filters])
+  }, [projectId, filters, hideCompleted])
+
+  // Save hideCompleted preference to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('taskInstances_hideCompleted', hideCompleted.toString())
+  }, [hideCompleted])
 
   const loadInstances = async () => {
     try {
@@ -125,6 +136,11 @@ const TaskInstancesModule = ({ projectId }) => {
           const itemDate = item.due_date.split('T')[0]
           return itemDate === filters.dueDate
         })
+      }
+
+      // Hide completed filter
+      if (hideCompleted) {
+        filteredItems = filteredItems.filter(item => item.status !== 'completed')
       }
 
       setInstances(filteredItems)
@@ -226,6 +242,14 @@ const TaskInstancesModule = ({ projectId }) => {
             </div>
 
             <div style={{ display: 'flex', gap: '8px' }}>
+              <Button
+                onClick={() => setHideCompleted(!hideCompleted)}
+                variant="outline"
+                size="sm"
+              >
+                {hideCompleted ? <Eye size={16} style={{ marginRight: '6px' }} /> : <EyeOff size={16} style={{ marginRight: '6px' }} />}
+                {hideCompleted ? 'Show' : 'Hide'} Completed
+              </Button>
               <Button onClick={() => setIsAddTaskDialogOpen(true)} variant="primary" size="sm">
                 <Plus size={16} style={{ marginRight: '6px' }} />
                 Add Task

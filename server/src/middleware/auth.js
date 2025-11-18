@@ -6,6 +6,11 @@ import supabase from '../utils/supabase.js'
  * and attaches user to req.user
  */
 export const authMiddleware = async (req, res, next) => {
+  // Skip authentication for OPTIONS requests (CORS preflight)
+  if (req.method === 'OPTIONS') {
+    return next()
+  }
+
   try {
     // Extract Authorization header
     const authHeader = req.headers.authorization

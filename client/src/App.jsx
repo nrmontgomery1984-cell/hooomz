@@ -16,6 +16,7 @@ import Projects from './pages/ProjectsNew'
 import ProjectDetail from './pages/ProjectDetailNew'
 import GlobalTasks from './pages/GlobalTasks'
 import GlobalTimeTracker from './pages/GlobalTimeTracker'
+import GlobalAnalytics from './pages/GlobalAnalytics'
 import Contacts from './pages/Contacts'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
@@ -45,6 +46,7 @@ function App() {
           <Route path="/projects/:projectId" element={<ModernLayout><ProjectDetail /></ModernLayout>} />
           <Route path="/tasks" element={<ModernLayout><GlobalTasks /></ModernLayout>} />
           <Route path="/time" element={<ModernLayout><GlobalTimeTracker /></ModernLayout>} />
+          <Route path="/analytics" element={<ModernLayout><GlobalAnalytics /></ModernLayout>} />
           <Route path="/contacts" element={<ModernLayout><Contacts /></ModernLayout>} />
           <Route path="/settings" element={<ModernLayout><Settings /></ModernLayout>} />
         </Routes>

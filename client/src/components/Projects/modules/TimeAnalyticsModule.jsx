@@ -42,7 +42,11 @@ const TimeAnalyticsModule = ({ projectId }) => {
     const fetchData = async () => {
       try {
         setLoading(true)
-        const response = await api.get(`/projects/${projectId}/time-entries`)
+        // If projectId is null or 'all', fetch all time entries
+        const endpoint = (!projectId || projectId === 'all')
+          ? '/time-entries/all'
+          : `/projects/${projectId}/time-entries`
+        const response = await api.get(endpoint)
         setTimeEntries(response.data.data || [])
       } catch (err) {
         console.error('Error fetching time data:', err)
@@ -51,9 +55,7 @@ const TimeAnalyticsModule = ({ projectId }) => {
       }
     }
 
-    if (projectId) {
-      fetchData()
-    }
+    fetchData()
   }, [projectId])
 
   // Get unique employees and categories
@@ -151,17 +153,39 @@ const TimeAnalyticsModule = ({ projectId }) => {
     }, 0)
   }, [filteredEntries])
 
+  // Get unique projects (for all-projects mode)
+  const projects = useMemo(() => {
+    const projs = new Set(
+      timeEntries
+        .map(e => e.scope_item?.subcategory?.category?.project?.name)
+        .filter(Boolean)
+    )
+    return Array.from(projs).sort()
+  }, [timeEntries])
+
   // Export to CSV
   const exportToCSV = () => {
-    const headers = ['Date', 'Employee', 'Category', 'Task', 'Hours', 'Notes']
-    const rows = filteredEntries.map(entry => [
-      format(parseISO(entry.start_time), 'yyyy-MM-dd HH:mm'),
-      entry.worker_name || '',
-      entry.scope_item?.subcategory?.category?.name || '',
-      entry.scope_item?.description || '',
-      ((entry.duration_minutes || 0) / 60).toFixed(2),
-      entry.notes || ''
-    ])
+    const headers = projectId === 'all' || !projectId
+      ? ['Date', 'Project', 'Employee', 'Category', 'Task', 'Hours', 'Notes']
+      : ['Date', 'Employee', 'Category', 'Task', 'Hours', 'Notes']
+
+    const rows = filteredEntries.map(entry => {
+      const baseRow = [
+        format(parseISO(entry.start_time), 'yyyy-MM-dd HH:mm'),
+        entry.worker_name || '',
+        entry.scope_item?.subcategory?.category?.name || '',
+        entry.scope_item?.description || '',
+        ((entry.duration_minutes || 0) / 60).toFixed(2),
+        entry.notes || ''
+      ]
+
+      if (projectId === 'all' || !projectId) {
+        // Insert project name as second column
+        baseRow.splice(1, 0, entry.scope_item?.subcategory?.category?.project?.name || '')
+      }
+
+      return baseRow
+    })
 
     const csv = [headers, ...rows]
       .map(row => row.map(cell => `"${cell}"`).join(','))

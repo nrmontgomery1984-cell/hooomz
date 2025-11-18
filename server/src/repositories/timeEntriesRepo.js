@@ -402,6 +402,40 @@ export const deleteTimeEntry = async (timeEntryId) => {
 }
 
 /**
+ * Get all time entries across all projects
+ * @returns {Promise<Array>} Array of all time entries with scope item details
+ */
+export const getAllTimeEntries = async () => {
+  const { data, error} = await supabase
+    .from('time_entries')
+    .select(`
+      *,
+      scope_item:scope_items (
+        id,
+        description,
+        subcategory:scope_subcategories (
+          id,
+          name,
+          category:scope_categories (
+            id,
+            name,
+            project_id,
+            project:projects (
+              id,
+              name,
+              client_name
+            )
+          )
+        )
+      )
+    `)
+    .order('start_time', { ascending: false })
+
+  if (error) throw error
+  return data || []
+}
+
+/**
  * Get active (running) time entry for a worker
  * @param {string} workerName - Worker name
  * @returns {Promise<Object|null>} Active time entry or null

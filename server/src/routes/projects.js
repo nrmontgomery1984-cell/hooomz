@@ -36,6 +36,17 @@ router.get('/workers', async (req, res) => {
 
 // ==================== TIME ENTRIES (Must come BEFORE /:projectId) ====================
 
+// Get all time entries across all projects
+router.get('/time-entries/all', async (req, res) => {
+  try {
+    const allEntries = await timeEntriesRepo.getAllTimeEntries()
+    res.json({ data: allEntries })
+  } catch (error) {
+    console.error('Error fetching all time entries:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
 // Get active time entry for a worker
 router.get('/time-entries/active/:workerName', async (req, res) => {
   try {

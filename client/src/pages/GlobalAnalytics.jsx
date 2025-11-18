@@ -15,34 +15,26 @@ const GlobalAnalytics = () => {
   const [searchParams, setSearchParams] = useSearchParams()
   const { projects, loading: projectsLoading } = useProjects()
 
-  // Get project from URL params or localStorage
+  // Get project from URL params or localStorage, default to 'all'
   const [selectedProjectId, setSelectedProjectId] = useState(() => {
     const urlProject = searchParams.get('project')
     if (urlProject) return urlProject
 
     const lastActiveProject = localStorage.getItem('lastActiveProject')
-    return lastActiveProject || null
+    return lastActiveProject || 'all'
   })
 
   // Update URL when project changes
   useEffect(() => {
     if (selectedProjectId) {
       setSearchParams({ project: selectedProjectId })
-      localStorage.setItem('lastActiveProject', selectedProjectId)
+      if (selectedProjectId !== 'all') {
+        localStorage.setItem('lastActiveProject', selectedProjectId)
+      }
     }
   }, [selectedProjectId, setSearchParams])
 
-  // Auto-select first active project if none selected
-  useEffect(() => {
-    if (!selectedProjectId && projects.length > 0 && !projectsLoading) {
-      const activeProject = projects.find(p => p.status === 'active')
-      if (activeProject) {
-        setSelectedProjectId(activeProject.id)
-      } else if (projects[0]) {
-        setSelectedProjectId(projects[0].id)
-      }
-    }
-  }, [projects, projectsLoading, selectedProjectId])
+  // Don't auto-select - default to 'all' is handled in state initialization
 
   const handleProjectChange = (e) => {
     const newProjectId = e.target.value
@@ -115,13 +107,11 @@ const GlobalAnalytics = () => {
               </label>
               <div className="relative">
                 <select
-                  value={selectedProjectId || ''}
+                  value={selectedProjectId || 'all'}
                   onChange={handleProjectChange}
                   className="w-full sm:w-96 px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white text-base font-medium"
                 >
-                  {!selectedProjectId && (
-                    <option value="">Select a project...</option>
-                  )}
+                  <option value="all">All Projects</option>
                   {projects.map(project => (
                     <option key={project.id} value={project.id}>
                       {project.name} {project.status === 'completed' ? '(Archived)' : ''}
@@ -132,7 +122,7 @@ const GlobalAnalytics = () => {
               </div>
             </div>
 
-            {selectedProjectId && selectedProject && (
+            {selectedProjectId && selectedProjectId !== 'all' && selectedProject && (
               <div className="flex items-end gap-2">
                 <Button
                   variant="outline"
@@ -146,7 +136,7 @@ const GlobalAnalytics = () => {
           </div>
 
           {/* Project Info */}
-          {selectedProject && (
+          {selectedProject && selectedProjectId !== 'all' && (
             <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
               <div className="flex items-center justify-between">
                 <div>
@@ -173,15 +163,7 @@ const GlobalAnalytics = () => {
         </div>
 
         {/* Analytics Module */}
-        {selectedProjectId ? (
-          <TimeAnalyticsModule projectId={selectedProjectId} />
-        ) : (
-          <ModernCard className="p-12">
-            <div className="text-center text-gray-500">
-              <p>Select a project to view analytics</p>
-            </div>
-          </ModernCard>
-        )}
+        <TimeAnalyticsModule projectId={selectedProjectId} />
       </div>
     </div>
   )

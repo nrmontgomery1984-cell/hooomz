@@ -33,7 +33,8 @@ CREATE INDEX IF NOT EXISTS idx_pay_periods_created_by ON pay_periods(created_by)
 CREATE INDEX IF NOT EXISTS idx_time_entries_pay_period ON time_entries(pay_period_id);
 
 -- Trigger for automatic timestamp updates
-CREATE TRIGGER IF NOT EXISTS update_pay_periods_updated_at
+DROP TRIGGER IF EXISTS update_pay_periods_updated_at ON pay_periods;
+CREATE TRIGGER update_pay_periods_updated_at
 BEFORE UPDATE ON pay_periods
 FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 

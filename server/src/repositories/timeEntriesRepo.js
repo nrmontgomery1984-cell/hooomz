@@ -319,7 +319,40 @@ export const updateTimeEntry = async (timeEntryId, updates) => {
 }
 
 /**
- * Stop/complete a running time entry
+ * Round minutes to nearest 15-minute increment
+ * @param {number} minutes - Minutes to round
+ * @returns {number} Rounded minutes
+ */
+const roundToNearest15 = (minutes) => {
+  return Math.ceil(minutes / 15) * 15
+}
+
+/**
+ * Check if there's a consecutive task (no gap between end and next start)
+ * @param {string} workerName - Worker name
+ * @param {Date} endTime - End time of current entry
+ * @returns {Promise<boolean>} True if there's a consecutive task
+ */
+const hasConsecutiveTask = async (workerName, endTime) => {
+  // Look for any time entry that starts within 2 minutes of this end time
+  const endTimestamp = new Date(endTime).getTime()
+  const twoMinutesLater = new Date(endTimestamp + 2 * 60000).toISOString()
+  const twoMinutesBefore = new Date(endTimestamp - 2 * 60000).toISOString()
+
+  const { data, error } = await supabase
+    .from('time_entries')
+    .select('id')
+    .eq('worker_name', workerName)
+    .gte('start_time', twoMinutesBefore)
+    .lte('start_time', twoMinutesLater)
+    .limit(1)
+
+  if (error) return false
+  return data && data.length > 0
+}
+
+/**
+ * Stop/complete a running time entry with smart rounding and lunch deduction
  * @param {string} timeEntryId - Time entry ID
  * @returns {Promise<Object>} Updated time entry
  */
@@ -330,11 +363,27 @@ export const stopTimeEntry = async (timeEntryId) => {
   const entry = await getTimeEntryById(timeEntryId)
   const start = new Date(entry.start_time)
   const end = new Date(endTime)
-  const durationMinutes = Math.round((end - start) / 60000)
+  let durationMinutes = Math.round((end - start) / 60000)
+
+  // Check if there's a consecutive task to avoid double-rounding
+  const hasConsecutive = await hasConsecutiveTask(entry.worker_name, endTime)
+
+  // Apply 15-minute rounding only if no consecutive task
+  if (!hasConsecutive) {
+    durationMinutes = roundToNearest15(durationMinutes)
+  }
+
+  // Check if we need to deduct lunch (6+ hours = 360+ minutes)
+  let lunchDeducted = false
+  if (durationMinutes >= 360) {
+    durationMinutes -= 30
+    lunchDeducted = true
+  }
 
   return updateTimeEntry(timeEntryId, {
     end_time: endTime,
-    duration_minutes: durationMinutes
+    duration_minutes: durationMinutes,
+    lunch_deducted: lunchDeducted
   })
 }
 
@@ -390,4 +439,90 @@ export const getActiveTimeEntry = async (workerName) => {
   }
 
   return data
+}
+
+/**
+ * Create a manual time entry (not from timer)
+ * @param {Object} entryData - Manual entry data (scope_item_id, worker_name, start_time, end_time, notes, created_by)
+ * @returns {Promise<Object>} Created time entry
+ */
+export const createManualTimeEntry = async (entryData) => {
+  const start = new Date(entryData.start_time)
+  const end = new Date(entryData.end_time)
+  let durationMinutes = Math.round((end - start) / 60000)
+
+  // Apply 15-minute rounding for manual entries
+  durationMinutes = roundToNearest15(durationMinutes)
+
+  // Check if we need to deduct lunch (6+ hours = 360+ minutes)
+  let lunchDeducted = false
+  if (durationMinutes >= 360) {
+    durationMinutes -= 30
+    lunchDeducted = true
+  }
+
+  const { data, error } = await supabase
+    .from('time_entries')
+    .insert({
+      ...entryData,
+      duration_minutes: durationMinutes,
+      lunch_deducted: lunchDeducted,
+      is_manual_entry: true
+    })
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+/**
+ * Toggle lunch deduction for a time entry
+ * @param {string} timeEntryId - Time entry ID
+ * @param {boolean} deductLunch - Whether to deduct lunch
+ * @returns {Promise<Object>} Updated time entry
+ */
+export const toggleLunchDeduction = async (timeEntryId, deductLunch) => {
+  const entry = await getTimeEntryById(timeEntryId)
+  let durationMinutes = entry.duration_minutes
+
+  if (deductLunch && !entry.lunch_deducted) {
+    // Add lunch deduction
+    durationMinutes -= 30
+  } else if (!deductLunch && entry.lunch_deducted) {
+    // Remove lunch deduction
+    durationMinutes += 30
+  }
+
+  return updateTimeEntry(timeEntryId, {
+    duration_minutes: durationMinutes,
+    lunch_deducted: deductLunch
+  })
+}
+
+/**
+ * Approve a time entry (manager only)
+ * @param {string} timeEntryId - Time entry ID
+ * @param {string} approverId - User ID of the approver
+ * @returns {Promise<Object>} Updated time entry
+ */
+export const approveTimeEntry = async (timeEntryId, approverId) => {
+  return updateTimeEntry(timeEntryId, {
+    approved_by_manager: true,
+    approved_at: new Date().toISOString(),
+    approved_by: approverId
+  })
+}
+
+/**
+ * Unapprove a time entry
+ * @param {string} timeEntryId - Time entry ID
+ * @returns {Promise<Object>} Updated time entry
+ */
+export const unapproveTimeEntry = async (timeEntryId) => {
+  return updateTimeEntry(timeEntryId, {
+    approved_by_manager: false,
+    approved_at: null,
+    approved_by: null
+  })
 }

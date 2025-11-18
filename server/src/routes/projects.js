@@ -84,6 +84,55 @@ router.delete('/time-entries/:entryId', async (req, res) => {
   }
 })
 
+// Create manual time entry
+router.post('/time-entries/manual', async (req, res) => {
+  try {
+    const timeEntry = await timeEntriesRepo.createManualTimeEntry(req.body)
+    res.json({ data: timeEntry })
+  } catch (error) {
+    console.error('Error creating manual time entry:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Toggle lunch deduction
+router.post('/time-entries/:entryId/toggle-lunch', async (req, res) => {
+  try {
+    const { entryId } = req.params
+    const { deduct_lunch } = req.body
+    const timeEntry = await timeEntriesRepo.toggleLunchDeduction(entryId, deduct_lunch)
+    res.json({ data: timeEntry })
+  } catch (error) {
+    console.error('Error toggling lunch deduction:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Approve time entry (manager)
+router.post('/time-entries/:entryId/approve', async (req, res) => {
+  try {
+    const { entryId } = req.params
+    const { approver_id } = req.body
+    const timeEntry = await timeEntriesRepo.approveTimeEntry(entryId, approver_id)
+    res.json({ data: timeEntry })
+  } catch (error) {
+    console.error('Error approving time entry:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Unapprove time entry
+router.post('/time-entries/:entryId/unapprove', async (req, res) => {
+  try {
+    const { entryId } = req.params
+    const timeEntry = await timeEntriesRepo.unapproveTimeEntry(entryId)
+    res.json({ data: timeEntry })
+  } catch (error) {
+    console.error('Error unapproving time entry:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
 // ==================== SCOPE CATEGORIES (Must come BEFORE /:projectId) ====================
 
 // Update category

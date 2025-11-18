@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Clock, Users, Calendar, TrendingUp } from 'lucide-react'
 import TimeTracker from '../TimeTracker'
-import TimeEntriesList from '../TimeEntriesList'
 import { Card } from '../../UI/Card'
 import { api } from '../../../services/api'
 import { useAuth } from '../../../context/AuthContext'
@@ -68,18 +67,14 @@ const TimeTrackerModule = ({ projectId }) => {
 
       const entryDate = new Date(entry.start_time)
 
-      // Get category name from nested structure
-      const categoryName = entry.scope_item?.subcategory?.category?.name
-
       if (startDate && entryDate < startDate) return false
       if (workerFilter && workerFilter !== 'all' && entry.worker_name !== workerFilter) return false
-      if (categoryFilter && categoryFilter !== 'all' && categoryName !== categoryFilter) return false
+      if (categoryFilter && categoryFilter !== 'all' && entry.category_name !== categoryFilter) return false
 
       return true
     })
 
-    // Convert duration_minutes to hours
-    return filtered.reduce((sum, entry) => sum + ((entry.duration_minutes || 0) / 60), 0)
+    return filtered.reduce((sum, entry) => sum + (entry.hours_worked || 0), 0)
   }
 
   // Get unique workers and categories
@@ -89,11 +84,7 @@ const TimeTrackerModule = ({ projectId }) => {
   }, [timeEntries])
 
   const uniqueCategories = useMemo(() => {
-    const categories = new Set(
-      timeEntries
-        .map(e => e.scope_item?.subcategory?.category?.name)
-        .filter(Boolean)
-    )
+    const categories = new Set(timeEntries.map(e => e.category_name).filter(Boolean))
     return Array.from(categories).sort()
   }, [timeEntries])
 
@@ -263,11 +254,6 @@ const TimeTrackerModule = ({ projectId }) => {
 
       {/* Time Tracker Component */}
       <TimeTracker projectId={projectId} />
-
-      {/* Time Entries List with Manual Upload */}
-      <div className="mt-6">
-        <TimeEntriesList projectId={projectId} />
-      </div>
     </div>
   )
 }

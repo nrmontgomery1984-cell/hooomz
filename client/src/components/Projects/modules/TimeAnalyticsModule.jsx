@@ -512,7 +512,7 @@ const TimeAnalyticsModule = ({ projectId }) => {
             <div className="flex items-center justify-between p-6 border-b sticky top-0 bg-white">
               <div>
                 <h2 className="text-xl font-bold text-gray-900">
-                  {format(parseISO(selectedDayEntries.date), 'MMMM d, yyyy')}
+                  {format(selectedDayEntries.date, 'MMMM d, yyyy')}
                 </h2>
                 <p className="text-sm text-gray-600 mt-1">
                   Total: {selectedDayEntries.hours.toFixed(2)} hours • {selectedDayEntries.entries.length} {selectedDayEntries.entries.length === 1 ? 'entry' : 'entries'}

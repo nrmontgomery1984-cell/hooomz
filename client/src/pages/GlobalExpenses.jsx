@@ -1,9 +1,14 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useProjects } from '../hooks/useProjects'
+import { useAuth } from '../context/AuthContext'
 import ModernCard from '../components/UI/ModernCard'
 import { Button } from '../components/UI/Button'
-import { DollarSign, ChevronDown, Plus } from 'lucide-react'
+import { DollarSign, ChevronDown, Plus, Download } from 'lucide-react'
+import ExpenseForm from '../components/Expenses/ExpenseForm'
+import ExpensesTable from '../components/Expenses/ExpensesTable'
+import * as expensesApi from '../services/expensesApi'
+import { format } from 'date-fns'
 
 /**
  * Global Expenses Page
@@ -13,7 +18,12 @@ const GlobalExpenses = () => {
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const { projects, loading: projectsLoading } = useProjects()
+  const { user } = useAuth()
   const [showExpenseForm, setShowExpenseForm] = useState(false)
+  const [editingExpense, setEditingExpense] = useState(null)
+  const [expenses, setExpenses] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(true) // TODO: Get from user role
 
   // Get project from URL params or localStorage, default to 'all'
   const [selectedProjectId, setSelectedProjectId] = useState(() => {
@@ -34,6 +44,29 @@ const GlobalExpenses = () => {
     }
   }, [selectedProjectId, setSearchParams])
 
+  // Fetch expenses when project changes
+  useEffect(() => {
+    const fetchExpenses = async () => {
+      if (!selectedProjectId || selectedProjectId === 'all') {
+        setExpenses([])
+        return
+      }
+
+      try {
+        setLoading(true)
+        const data = await expensesApi.getExpensesByProject(selectedProjectId)
+        setExpenses(data)
+      } catch (err) {
+        console.error('Error fetching expenses:', err)
+        alert('Failed to load expenses')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchExpenses()
+  }, [selectedProjectId])
+
   const handleProjectChange = (e) => {
     const newProjectId = e.target.value
     setSelectedProjectId(newProjectId)
@@ -43,6 +76,83 @@ const GlobalExpenses = () => {
     if (selectedProjectId && selectedProjectId !== 'all') {
       navigate(`/projects/${selectedProjectId}`)
     }
+  }
+
+  const handleAddExpense = async (expenseData) => {
+    try {
+      const newExpense = await expensesApi.createExpense(expenseData)
+      setExpenses(prev => [newExpense, ...prev])
+      setShowExpenseForm(false)
+    } catch (err) {
+      console.error('Error creating expense:', err)
+      throw err
+    }
+  }
+
+  const handleEditExpense = async (expenseData) => {
+    try {
+      const updated = await expensesApi.updateExpense(editingExpense.id, expenseData)
+      setExpenses(prev => prev.map(e => e.id === editingExpense.id ? updated : e))
+      setEditingExpense(null)
+    } catch (err) {
+      console.error('Error updating expense:', err)
+      throw err
+    }
+  }
+
+  const handleDeleteExpense = async (expenseId) => {
+    try {
+      await expensesApi.deleteExpense(expenseId)
+      setExpenses(prev => prev.filter(e => e.id !== expenseId))
+    } catch (err) {
+      console.error('Error deleting expense:', err)
+      alert('Failed to delete expense')
+    }
+  }
+
+  const handleApproveExpense = async (expenseId) => {
+    try {
+      const updated = await expensesApi.approveExpense(expenseId)
+      setExpenses(prev => prev.map(e => e.id === expenseId ? updated : e))
+    } catch (err) {
+      console.error('Error approving expense:', err)
+      alert('Failed to approve expense')
+    }
+  }
+
+  const handleRejectExpense = async (expenseId) => {
+    const notes = prompt('Rejection reason (optional):')
+    try {
+      const updated = await expensesApi.rejectExpense(expenseId, notes)
+      setExpenses(prev => prev.map(e => e.id === expenseId ? updated : e))
+    } catch (err) {
+      console.error('Error rejecting expense:', err)
+      alert('Failed to reject expense')
+    }
+  }
+
+  const handleExportCSV = () => {
+    const headers = ['Date', 'Vendor', 'Category', 'Description', 'Amount', 'Status', 'Notes']
+    const rows = expenses.map(expense => [
+      expense.date,
+      expense.vendor || '',
+      expense.category || '',
+      expense.description || '',
+      expense.amount,
+      expense.status,
+      expense.notes || ''
+    ])
+
+    const csv = [headers, ...rows]
+      .map(row => row.map(cell => `"${cell}"`).join(','))
+      .join('\n')
+
+    const blob = new Blob([csv], { type: 'text/csv' })
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `expenses-${selectedProject?.name || 'all'}-${format(new Date(), 'yyyy-MM-dd')}.csv`
+    a.click()
   }
 
   if (projectsLoading) {
@@ -123,13 +233,25 @@ const GlobalExpenses = () => {
             {/* Actions */}
             <div className="flex items-end gap-2">
               {selectedProjectId && selectedProjectId !== 'all' && selectedProject && (
-                <Button
-                  variant="outline"
-                  onClick={handleGoToProject}
-                  className="whitespace-nowrap"
-                >
-                  View Project Details
-                </Button>
+                <>
+                  <Button
+                    variant="outline"
+                    onClick={handleGoToProject}
+                    className="whitespace-nowrap"
+                  >
+                    View Project Details
+                  </Button>
+                  {expenses.length > 0 && (
+                    <Button
+                      variant="outline"
+                      onClick={handleExportCSV}
+                      className="whitespace-nowrap"
+                    >
+                      <Download size={18} className="mr-2" />
+                      Export CSV
+                    </Button>
+                  )}
+                </>
               )}
               <Button
                 onClick={() => setShowExpenseForm(true)}
@@ -169,19 +291,52 @@ const GlobalExpenses = () => {
           )}
         </div>
 
-        {/* Expense Module - Placeholder for now */}
-        <ModernCard className="p-6">
-          <div className="text-center text-gray-500 py-12">
-            <DollarSign size={48} className="mx-auto text-gray-400 mb-4" />
-            <p className="text-lg font-medium mb-2">Expense Tracker</p>
-            <p className="text-sm">
-              {selectedProjectId === 'all'
-                ? 'Select a project to view and manage expenses'
-                : 'Expense tracking module coming soon'}
-            </p>
-          </div>
-        </ModernCard>
+        {/* Expense Table */}
+        {selectedProjectId === 'all' ? (
+          <ModernCard className="p-6">
+            <div className="text-center text-gray-500 py-12">
+              <DollarSign size={48} className="mx-auto text-gray-400 mb-4" />
+              <p className="text-lg font-medium mb-2">Expense Tracker</p>
+              <p className="text-sm">Select a specific project to view and manage expenses</p>
+            </div>
+          </ModernCard>
+        ) : loading ? (
+          <ModernCard className="p-12">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+              <p className="mt-4 text-gray-600">Loading expenses...</p>
+            </div>
+          </ModernCard>
+        ) : (
+          <ExpensesTable
+            expenses={expenses}
+            onEdit={setEditingExpense}
+            onDelete={handleDeleteExpense}
+            onApprove={handleApproveExpense}
+            onReject={handleRejectExpense}
+            isAdmin={isAdmin}
+          />
+        )}
       </div>
+
+      {/* Expense Form Modal */}
+      {showExpenseForm && (
+        <ExpenseForm
+          projectId={selectedProjectId}
+          onSubmit={handleAddExpense}
+          onCancel={() => setShowExpenseForm(false)}
+        />
+      )}
+
+      {/* Edit Expense Modal */}
+      {editingExpense && (
+        <ExpenseForm
+          projectId={selectedProjectId}
+          expense={editingExpense}
+          onSubmit={handleEditExpense}
+          onCancel={() => setEditingExpense(null)}
+        />
+      )}
     </div>
   )
 }

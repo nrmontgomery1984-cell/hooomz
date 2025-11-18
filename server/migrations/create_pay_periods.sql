@@ -58,7 +58,8 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Trigger to auto-assign pay period when time entry is inserted or updated
-CREATE TRIGGER IF NOT EXISTS assign_pay_period_on_time_entry
+DROP TRIGGER IF EXISTS assign_pay_period_on_time_entry ON time_entries;
+CREATE TRIGGER assign_pay_period_on_time_entry
 BEFORE INSERT OR UPDATE ON time_entries
 FOR EACH ROW EXECUTE FUNCTION assign_time_entry_to_pay_period();
 
@@ -81,13 +82,29 @@ $$ LANGUAGE plpgsql;
 -- Trigger to recalculate totals when time entries change
 CREATE OR REPLACE FUNCTION update_pay_period_totals_on_time_entry_change()
 RETURNS TRIGGER AS $$
+DECLARE
+  old_period_id UUID;
+  new_period_id UUID;
 BEGIN
-  -- Update old pay period if it changed
-  IF TG_OP = 'UPDATE' AND OLD.pay_period_id IS NOT NULL AND OLD.pay_period_id != NEW.pay_period_id THEN
-    PERFORM recalculate_pay_period_totals(OLD.pay_period_id);
+  -- Handle DELETE
+  IF TG_OP = 'DELETE' THEN
+    IF OLD.pay_period_id IS NOT NULL THEN
+      PERFORM recalculate_pay_period_totals(OLD.pay_period_id);
+    END IF;
+    RETURN OLD;
   END IF;
 
-  -- Update new pay period
+  -- Handle UPDATE
+  IF TG_OP = 'UPDATE' THEN
+    old_period_id := OLD.pay_period_id;
+    new_period_id := NEW.pay_period_id;
+
+    IF old_period_id IS NOT NULL AND old_period_id != new_period_id THEN
+      PERFORM recalculate_pay_period_totals(old_period_id);
+    END IF;
+  END IF;
+
+  -- Handle INSERT and UPDATE (new period)
   IF NEW.pay_period_id IS NOT NULL THEN
     PERFORM recalculate_pay_period_totals(NEW.pay_period_id);
   END IF;
@@ -96,7 +113,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER IF NOT EXISTS update_pay_period_totals_on_time_entry
+DROP TRIGGER IF EXISTS update_pay_period_totals_on_time_entry ON time_entries;
+CREATE TRIGGER update_pay_period_totals_on_time_entry
 AFTER INSERT OR UPDATE OR DELETE ON time_entries
 FOR EACH ROW EXECUTE FUNCTION update_pay_period_totals_on_time_entry_change();
 
@@ -104,21 +122,24 @@ FOR EACH ROW EXECUTE FUNCTION update_pay_period_totals_on_time_entry_change();
 ALTER TABLE pay_periods ENABLE ROW LEVEL SECURITY;
 
 -- Allow all authenticated users to read pay periods
-CREATE POLICY IF NOT EXISTS "Allow authenticated users to read pay periods"
+DROP POLICY IF EXISTS "Allow authenticated users to read pay periods" ON pay_periods;
+CREATE POLICY "Allow authenticated users to read pay periods"
 ON pay_periods
 FOR SELECT
 TO authenticated
 USING (true);
 
 -- Allow authenticated users to create pay periods
-CREATE POLICY IF NOT EXISTS "Allow authenticated users to create pay periods"
+DROP POLICY IF EXISTS "Allow authenticated users to create pay periods" ON pay_periods;
+CREATE POLICY "Allow authenticated users to create pay periods"
 ON pay_periods
 FOR INSERT
 TO authenticated
 WITH CHECK (true);
 
 -- Allow users to update their own pay periods or if they're admins
-CREATE POLICY IF NOT EXISTS "Allow users to update pay periods"
+DROP POLICY IF EXISTS "Allow users to update pay periods" ON pay_periods;
+CREATE POLICY "Allow users to update pay periods"
 ON pay_periods
 FOR UPDATE
 TO authenticated
@@ -126,7 +147,8 @@ USING (true)
 WITH CHECK (true);
 
 -- Allow users to delete their own pay periods
-CREATE POLICY IF NOT EXISTS "Allow users to delete pay periods"
+DROP POLICY IF EXISTS "Allow users to delete pay periods" ON pay_periods;
+CREATE POLICY "Allow users to delete pay periods"
 ON pay_periods
 FOR DELETE
 TO authenticated

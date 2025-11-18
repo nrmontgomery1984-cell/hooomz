@@ -142,12 +142,27 @@ export const deletePayPeriod = async (periodId) => {
 /**
  * Get time entries for a specific pay period
  * @param {string} periodId - Pay period UUID
- * @returns {Promise<Array>} Array of time entries
+ * @returns {Promise<Array>} Array of time entries with full scope details
  */
 export const getTimeEntriesForPayPeriod = async (periodId) => {
   const { data, error } = await supabase
     .from('time_entries')
-    .select('*')
+    .select(`
+      *,
+      scope_item:scope_items (
+        id,
+        description,
+        subcategory:scope_subcategories (
+          id,
+          name,
+          category:scope_categories (
+            id,
+            name,
+            project_id
+          )
+        )
+      )
+    `)
     .eq('pay_period_id', periodId)
     .order('start_time', { ascending: false })
 

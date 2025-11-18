@@ -10,7 +10,7 @@ import { useAuth } from '../../../context/AuthContext'
  * Time Tracker Module
  * Enhanced with statistics for members and admin filtering
  */
-const TimeTrackerModule = ({ projectId }) => {
+const TimeTrackerModule = ({ projectId, payPeriodId }) => {
   const { user } = useAuth()
   const [timeEntries, setTimeEntries] = useState([])
   const [loading, setLoading] = useState(true)
@@ -34,8 +34,12 @@ const TimeTrackerModule = ({ projectId }) => {
           setUserRole(currentMember.role)
         }
 
-        // Fetch all time entries for the project
-        const entriesResponse = await api.get(`/projects/${projectId}/time-entries`)
+        // Fetch time entries for the project (optionally filtered by pay period)
+        let url = `/projects/${projectId}/time-entries`
+        if (payPeriodId) {
+          url = `/pay-periods/${payPeriodId}/entries`
+        }
+        const entriesResponse = await api.get(url)
         setTimeEntries(entriesResponse.data.data || [])
       } catch (err) {
         console.error('Error fetching time data:', err)
@@ -47,7 +51,7 @@ const TimeTrackerModule = ({ projectId }) => {
     if (projectId && user) {
       fetchData()
     }
-  }, [projectId, user])
+  }, [projectId, user, payPeriodId])
 
   // Calculate time ranges
   const getDateRanges = () => {

@@ -186,7 +186,10 @@ const GlobalTimeTracker = () => {
 
         {/* Time Tracker Module */}
         {selectedProjectId ? (
-          <TimeTrackerModule projectId={selectedProjectId} />
+          <TimeTrackerModule
+            projectId={selectedProjectId}
+            payPeriodId={selectedPayPeriodId}
+          />
         ) : (
           <ModernCard className="p-12">
             <div className="text-center text-gray-500">

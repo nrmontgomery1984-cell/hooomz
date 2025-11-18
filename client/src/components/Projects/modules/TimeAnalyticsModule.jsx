@@ -1,9 +1,10 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Calendar, BarChart3, Download, Filter, Clock, Users, Briefcase, TrendingUp, Grid, List, X } from 'lucide-react'
+import { Calendar, BarChart3, Download, Filter, Clock, Users, Briefcase, TrendingUp, Grid, List, X, ExternalLink, Check, Edit2 } from 'lucide-react'
 import { Card } from '../../UI/Card'
 import { Button } from '../../UI/Button'
 import { api } from '../../../services/api'
 import { useAuth } from '../../../context/AuthContext'
+import { useNavigate } from 'react-router-dom'
 import {
   format,
   startOfWeek,
@@ -23,12 +24,15 @@ import {
  */
 const TimeAnalyticsModule = ({ projectId }) => {
   const { user } = useAuth()
+  const navigate = useNavigate()
   const [timeEntries, setTimeEntries] = useState([])
   const [loading, setLoading] = useState(true)
   const [viewMode, setViewMode] = useState('charts') // 'charts' or 'calendar'
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [selectedDayEntries, setSelectedDayEntries] = useState(null)
   const [showDayModal, setShowDayModal] = useState(false)
+  const [userRole, setUserRole] = useState('member')
+  const [updatingApproval, setUpdatingApproval] = useState(null)
 
   // Filters
   const [filters, setFilters] = useState({
@@ -39,11 +43,28 @@ const TimeAnalyticsModule = ({ projectId }) => {
     endDate: null
   })
 
-  // Fetch time entries
+  // Fetch time entries and user role
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true)
+
+        // Fetch user role if viewing a specific project
+        if (projectId && projectId !== 'all') {
+          try {
+            const membersResponse = await api.get(`/projects/${projectId}/members`)
+            const currentMember = membersResponse.data.data?.find(m => m.user_id === user?.id)
+            if (currentMember) {
+              setUserRole(currentMember.role)
+            }
+          } catch (err) {
+            console.error('Error fetching user role:', err)
+          }
+        } else {
+          // For 'all projects' view, assume admin if they can access it
+          setUserRole('admin')
+        }
+
         // If projectId is null or 'all', fetch all time entries
         const endpoint = (!projectId || projectId === 'all')
           ? '/time-entries/all'
@@ -57,8 +78,10 @@ const TimeAnalyticsModule = ({ projectId }) => {
       }
     }
 
-    fetchData()
-  }, [projectId])
+    if (user) {
+      fetchData()
+    }
+  }, [projectId, user])
 
   // Get unique employees and categories
   const employees = useMemo(() => {
@@ -203,6 +226,56 @@ const TimeAnalyticsModule = ({ projectId }) => {
     a.download = `time-report-${format(new Date(), 'yyyy-MM-dd')}.csv`
     a.click()
   }
+
+  // Toggle approval status
+  const handleToggleApproval = async (entryId, currentStatus) => {
+    try {
+      setUpdatingApproval(entryId)
+      const newStatus = !currentStatus
+
+      await api.put(`/time-entries/${entryId}`, {
+        approved_by_manager: newStatus,
+        approved_at: newStatus ? new Date().toISOString() : null,
+        approved_by: newStatus ? user.id : null
+      })
+
+      // Update local state
+      setTimeEntries(prev => prev.map(entry =>
+        entry.id === entryId
+          ? {
+              ...entry,
+              approved_by_manager: newStatus,
+              approved_at: newStatus ? new Date().toISOString() : null,
+              approved_by: newStatus ? user.id : null
+            }
+          : entry
+      ))
+
+      // Update modal state if it's showing
+      if (selectedDayEntries) {
+        setSelectedDayEntries(prev => ({
+          ...prev,
+          entries: prev.entries.map(entry =>
+            entry.id === entryId
+              ? {
+                  ...entry,
+                  approved_by_manager: newStatus,
+                  approved_at: newStatus ? new Date().toISOString() : null,
+                  approved_by: newStatus ? user.id : null
+                }
+              : entry
+          )
+        }))
+      }
+    } catch (err) {
+      console.error('Error toggling approval:', err)
+      alert('Failed to update approval status')
+    } finally {
+      setUpdatingApproval(null)
+    }
+  }
+
+  const isAdmin = userRole === 'admin' || userRole === 'owner' || userRole === 'manager'
 
   // Calendar days for current month
   const calendarDays = useMemo(() => {
@@ -562,13 +635,23 @@ const TimeAnalyticsModule = ({ projectId }) => {
                       <span className="font-medium text-gray-700">{entry.worker_name || 'Unknown'}</span>
                     </div>
 
-                    {/* Project (if in all-projects mode) */}
-                    {(!projectId || projectId === 'all') && entry.scope_item?.subcategory?.category?.project && (
-                      <div className="text-sm">
+                    {/* Project with link */}
+                    {entry.scope_item?.subcategory?.category?.project && (
+                      <div className="text-sm flex items-center gap-2">
                         <span className="text-gray-600">Project: </span>
-                        <span className="font-medium text-gray-900">
+                        <button
+                          onClick={() => {
+                            const projId = entry.scope_item.subcategory.category.project_id ||
+                                          entry.scope_item.subcategory.category.project.id
+                            if (projId) {
+                              navigate(`/projects/${projId}`)
+                            }
+                          }}
+                          className="font-medium text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1"
+                        >
                           {entry.scope_item.subcategory.category.project.name}
-                        </span>
+                          <ExternalLink size={12} />
+                        </button>
                       </div>
                     )}
 
@@ -591,6 +674,45 @@ const TimeAnalyticsModule = ({ projectId }) => {
                       <div className="mt-2 p-2 bg-gray-50 rounded text-sm text-gray-700">
                         <span className="font-medium">Notes: </span>
                         {entry.notes}
+                      </div>
+                    )}
+
+                    {/* Manager Actions */}
+                    {isAdmin && (
+                      <div className="mt-3 pt-3 border-t border-gray-200 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          {/* Approval Checkbox */}
+                          <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={entry.approved_by_manager || false}
+                              onChange={() => handleToggleApproval(entry.id, entry.approved_by_manager)}
+                              disabled={updatingApproval === entry.id}
+                              className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500 cursor-pointer"
+                            />
+                            <span className="text-sm font-medium text-gray-700">
+                              {entry.approved_by_manager ? 'Approved' : 'Approve'}
+                            </span>
+                          </label>
+                        </div>
+
+                        {/* Edit Button */}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            // Navigate to project with entry highlighted or open edit modal
+                            const projId = entry.scope_item?.subcategory?.category?.project_id ||
+                                          entry.scope_item?.subcategory?.category?.project?.id
+                            if (projId) {
+                              navigate(`/projects/${projId}?tab=time&highlight=${entry.id}`)
+                            }
+                          }}
+                          className="text-xs"
+                        >
+                          <Edit2 size={14} className="mr-1" />
+                          Edit
+                        </Button>
                       </div>
                     )}
                   </div>

@@ -57,6 +57,12 @@ const ModuleNav = ({ activeModule, onModuleChange, projectId }) => {
       label: 'Time',
       icon: Clock,
       description: 'Time tracking'
+    },
+    {
+      id: 'analytics',
+      label: 'Analytics',
+      icon: BarChart3,
+      description: 'Time analytics and reports'
     }
   ]
 

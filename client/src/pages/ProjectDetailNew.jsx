@@ -15,6 +15,7 @@ import TaskTemplatesModule from '../components/Projects/modules/TaskTemplatesMod
 import TaskInstancesModule from '../components/Projects/modules/TaskInstancesModule'
 import ChangeOrdersModule from '../components/Projects/modules/ChangeOrdersModule'
 import TimeTrackerModule from '../components/Projects/modules/TimeTrackerModule'
+import TimeAnalyticsModule from '../components/Projects/modules/TimeAnalyticsModule'
 import EstimateModule from '../components/Projects/modules/EstimateModule'
 import { colors } from '../styles/design-tokens'
 import { api } from '../services/api'
@@ -470,6 +471,10 @@ const ProjectDetailNew = () => {
 
           {activeModule === 'time' && (
             <TimeTrackerModule projectId={projectId} />
+          )}
+
+          {activeModule === 'analytics' && (
+            <TimeAnalyticsModule projectId={projectId} />
           )}
         </div>
       </div>

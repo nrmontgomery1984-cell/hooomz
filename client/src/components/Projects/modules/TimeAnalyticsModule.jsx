@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Calendar, BarChart3, Download, Filter, Clock, Users, Briefcase, TrendingUp, Grid, List } from 'lucide-react'
+import { Calendar, BarChart3, Download, Filter, Clock, Users, Briefcase, TrendingUp, Grid, List, X } from 'lucide-react'
 import { Card } from '../../UI/Card'
 import { Button } from '../../UI/Button'
 import { api } from '../../../services/api'
@@ -27,6 +27,8 @@ const TimeAnalyticsModule = ({ projectId }) => {
   const [loading, setLoading] = useState(true)
   const [viewMode, setViewMode] = useState('charts') // 'charts' or 'calendar'
   const [selectedDate, setSelectedDate] = useState(new Date())
+  const [selectedDayEntries, setSelectedDayEntries] = useState(null)
+  const [showDayModal, setShowDayModal] = useState(false)
 
   // Filters
   const [filters, setFilters] = useState({
@@ -134,17 +136,20 @@ const TimeAnalyticsModule = ({ projectId }) => {
       .sort((a, b) => b.hours - a.hours)
   }, [filteredEntries])
 
-  // Calculate hours by day for calendar view
+  // Calculate hours by day for calendar view - use ALL entries, not just filtered
   const hoursByDay = useMemo(() => {
     const byDay = {}
-    filteredEntries.forEach(entry => {
+    // Use timeEntries directly to show all calendar data
+    timeEntries.forEach(entry => {
+      if (!entry.end_time) return // Skip active entries
+
       const day = format(parseISO(entry.start_time), 'yyyy-MM-dd')
       if (!byDay[day]) byDay[day] = { hours: 0, entries: [] }
       byDay[day].hours += (entry.duration_minutes || 0) / 60
       byDay[day].entries.push(entry)
     })
     return byDay
-  }, [filteredEntries])
+  }, [timeEntries])
 
   // Total hours
   const totalHours = useMemo(() => {
@@ -467,10 +472,16 @@ const TimeAnalyticsModule = ({ projectId }) => {
               return (
                 <div
                   key={dayKey}
+                  onClick={() => {
+                    if (dayData && dayData.entries.length > 0) {
+                      setSelectedDayEntries({ date: day, ...dayData })
+                      setShowDayModal(true)
+                    }
+                  }}
                   className={`
-                    min-h-24 p-2 border rounded-lg
+                    min-h-24 p-2 border rounded-lg transition-all
                     ${isToday ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}
-                    ${dayData ? 'bg-green-50' : 'bg-white'}
+                    ${dayData ? 'bg-green-50 cursor-pointer hover:bg-green-100 hover:shadow-md' : 'bg-white'}
                   `}
                 >
                   <div className="text-sm font-medium text-gray-700">
@@ -491,6 +502,103 @@ const TimeAnalyticsModule = ({ projectId }) => {
             })}
           </div>
         </Card>
+      )}
+
+      {/* Day Entries Modal */}
+      {showDayModal && selectedDayEntries && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-3xl w-full max-h-[80vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b sticky top-0 bg-white">
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">
+                  {format(parseISO(selectedDayEntries.date), 'MMMM d, yyyy')}
+                </h2>
+                <p className="text-sm text-gray-600 mt-1">
+                  Total: {selectedDayEntries.hours.toFixed(2)} hours • {selectedDayEntries.entries.length} {selectedDayEntries.entries.length === 1 ? 'entry' : 'entries'}
+                </p>
+              </div>
+              <button
+                onClick={() => setShowDayModal(false)}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X size={20} className="text-gray-500" />
+              </button>
+            </div>
+
+            {/* Entries List */}
+            <div className="p-6 space-y-4">
+              {selectedDayEntries.entries.map((entry, index) => (
+                <Card key={entry.id || index} className="p-4">
+                  <div className="space-y-2">
+                    {/* Time and Employee */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Clock size={16} className="text-blue-600" />
+                        <span className="font-semibold text-gray-900">
+                          {format(parseISO(entry.start_time), 'h:mm a')} - {format(parseISO(entry.end_time), 'h:mm a')}
+                        </span>
+                        <span className="text-sm text-gray-600">
+                          ({((entry.duration_minutes || 0) / 60).toFixed(2)}h)
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {entry.lunch_deducted && (
+                          <span className="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded-full">
+                            Lunch -30min
+                          </span>
+                        )}
+                        {entry.approved_by_manager && (
+                          <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">
+                            Approved
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Employee Name */}
+                    <div className="flex items-center gap-2 text-sm">
+                      <Users size={14} className="text-gray-400" />
+                      <span className="font-medium text-gray-700">{entry.worker_name || 'Unknown'}</span>
+                    </div>
+
+                    {/* Project (if in all-projects mode) */}
+                    {(!projectId || projectId === 'all') && entry.scope_item?.subcategory?.category?.project && (
+                      <div className="text-sm">
+                        <span className="text-gray-600">Project: </span>
+                        <span className="font-medium text-gray-900">
+                          {entry.scope_item.subcategory.category.project.name}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Category and Task */}
+                    <div className="text-sm">
+                      <span className="text-gray-600">Category: </span>
+                      <span className="font-medium text-gray-900">
+                        {entry.scope_item?.subcategory?.category?.name || 'N/A'}
+                      </span>
+                    </div>
+                    <div className="text-sm">
+                      <span className="text-gray-600">Task: </span>
+                      <span className="text-gray-900">
+                        {entry.scope_item?.description || 'N/A'}
+                      </span>
+                    </div>
+
+                    {/* Notes */}
+                    {entry.notes && (
+                      <div className="mt-2 p-2 bg-gray-50 rounded text-sm text-gray-700">
+                        <span className="font-medium">Notes: </span>
+                        {entry.notes}
+                      </div>
+                    )}
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

@@ -49,7 +49,14 @@
       "Bash(Get-Content \"c:\\Users\\NRMon\\Documents\\hooomz\\server\\server-output.log\" -Tail 50)",
       "Bash(nul)",
       "Bash(cd:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(git -C ../hooomz log --oneline -5)",
+      "Bash(git -C ../hooomz status --short)",
+      "Bash(git fetch:*)",
+      "Bash(git merge-base:*)",
+      "Bash(git merge:*)",
+      "Bash(git reset:*)",
+      "Bash(rm:*)"
     ],
     "deny": [],
     "ask": []

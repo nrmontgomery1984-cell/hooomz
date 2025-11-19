@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import ModernLayout from './components/Layout/ModernLayout'
+import InstallPrompt from './components/PWA/InstallPrompt'
 
 // Pages
 import Dashboard from './pages/Dashboard'
@@ -54,6 +55,7 @@ function App() {
         </Routes>
       </Router>
     </AuthProvider>
+      <InstallPrompt />
   )
 }
 

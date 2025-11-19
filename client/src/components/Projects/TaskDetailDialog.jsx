@@ -144,13 +144,11 @@ const TaskDetailDialog = ({ item, isOpen, onClose, onUpdate }) => {
           valueToSend = value.split('T')[0]
         }
 
-        console.log(`[DATE DEBUG] Field: ${field}, Original value: ${value}, Sending: ${valueToSend}`)
       }
 
       const response = await api.patch(`/projects/items/${item.id}`, { [field]: valueToSend })
 
       if (field === 'due_date' || field === 'reminder_date') {
-        console.log(`[DATE DEBUG] Response from server:`, response.data)
       }
 
       // Update local state with the clean value

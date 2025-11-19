@@ -107,7 +107,7 @@ const TaskTrackerModule = ({ projectId, filteredProject, updateScopeItem }) => {
 
     const categories = filteredProject.categories.map(c => ({ value: c.id, label: c.name }))
     const locationSet = new Set()
-    const assigneeSet = new Set()
+    const assigneeMap = new Map()
     const durationSet = new Set()
     const labelSet = new Set()
 
@@ -115,7 +115,8 @@ const TaskTrackerModule = ({ projectId, filteredProject, updateScopeItem }) => {
       cat.subcategories.forEach(sub => {
         sub.items.forEach(item => {
           if (item.location) locationSet.add(item.location)
-          if (item.assignee_id) assigneeSet.add(item.assignee_id)
+          if (item.assignee_id && item.assignee_name) {
+          }
           if (item.duration_minutes) {
             if (item.duration_minutes <= 30) durationSet.add('0-30')
             else if (item.duration_minutes <= 60) durationSet.add('31-60')
@@ -132,7 +133,7 @@ const TaskTrackerModule = ({ projectId, filteredProject, updateScopeItem }) => {
     return {
       categories,
       locations: Array.from(locationSet).map(l => ({ value: l, label: l })),
-      assignees: Array.from(assigneeSet).map(a => ({ value: a, label: 'Team Member' })), // TODO: Fetch actual names
+      assignees: Array.from(assigneeMap.entries()).map(([id, name]) => ({ value: id, label: name })),
       durations: Array.from(durationSet).map(d => ({ value: d, label: `${d} minutes` })),
       labels: Array.from(labelSet).sort().map(l => ({ value: l, label: l }))
     }

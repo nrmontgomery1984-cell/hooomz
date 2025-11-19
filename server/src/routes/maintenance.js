@@ -68,21 +68,51 @@ router.post('/homes/:homeId/maintenance', validate(schemas.createMaintenance), a
 })
 
 // POST /api/maintenance/:taskId/complete - Mark task as complete
+// POST /api/maintenance/:taskId/complete - Mark task as complete
 router.post('/:taskId/complete', async (req, res, next) => {
   try {
-    // TODO: Calculate next due date based on frequency
+    // First, get the current task to know its frequency
+    const { data: task, error: fetchError } = await supabase
+      .from('maintenance')
+      .select('*')
+      .eq('id', req.params.taskId)
+      .single()
+
+    if (fetchError) throw fetchError
+    if (!task) return res.status(404).json({ error: 'Task not found' })
+
+    // Calculate next due date based on frequency
+    const now = new Date()
+    let nextDue = new Date(now)
+
+    switch (task.frequency) {
+      case 'weekly':
+        nextDue.setDate(nextDue.getDate() + 7)
+        break
+      case 'monthly':
+        nextDue.setMonth(nextDue.getMonth() + 1)
+        break
+      case 'quarterly':
+        nextDue.setMonth(nextDue.getMonth() + 3)
+        break
+      case 'annually':
+        nextDue.setFullYear(nextDue.getFullYear() + 1)
+        break
+      default:
+        throw new Error(\`Unknown frequency: \${task.frequency}\`)
+    }
+
     const { data, error } = await supabase
       .from('maintenance')
       .update({
-        last_completed: new Date().toISOString()
-        // next_due: calculated based on frequency
+        last_completed: now.toISOString(),
+        next_due: nextDue.toISOString()
       })
       .eq('id', req.params.taskId)
       .select()
       .single()
 
     if (error) throw error
-    if (!data) return res.status(404).json({ error: 'Task not found' })
 
     res.json(data)
   } catch (error) {

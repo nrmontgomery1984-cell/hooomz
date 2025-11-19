@@ -9,6 +9,7 @@ import ExpenseForm from '../components/Expenses/ExpenseForm'
 import ExpensesTable from '../components/Expenses/ExpensesTable'
 import * as expensesApi from '../services/expensesApi'
 import { format } from 'date-fns'
+import { api } from '../services/api'
 
 /**
  * Global Expenses Page
@@ -22,8 +23,7 @@ const GlobalExpenses = () => {
   const [showExpenseForm, setShowExpenseForm] = useState(false)
   const [editingExpense, setEditingExpense] = useState(null)
   const [expenses, setExpenses] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [isAdmin, setIsAdmin] = useState(true) // TODO: Get from user role
+  const [userRole, setUserRole] = useState(null)
 
   // Get project from URL params or localStorage, default to 'all'
   const [selectedProjectId, setSelectedProjectId] = useState(() => {
@@ -44,16 +44,30 @@ const GlobalExpenses = () => {
     }
   }, [selectedProjectId, setSearchParams])
 
-  // Fetch expenses when project changes
+  // Fetch user role and expenses when project changes
   useEffect(() => {
-    const fetchExpenses = async () => {
+    const fetchData = async () => {
       if (!selectedProjectId || selectedProjectId === 'all') {
         setExpenses([])
+        setUserRole('admin') // Assume admin for 'all projects' view
         return
       }
 
       try {
         setLoading(true)
+
+        // Fetch user role
+        try {
+          const membersResponse = await api.get(`/projects/${selectedProjectId}/members`)
+          const currentMember = membersResponse.data.data?.find(m => m.user_id === user?.id)
+          if (currentMember) {
+            setUserRole(currentMember.role)
+          }
+        } catch (err) {
+          console.error('Error fetching user role:', err)
+        }
+
+        // Fetch expenses
         const data = await expensesApi.getExpensesByProject(selectedProjectId)
         setExpenses(data)
       } catch (err) {
@@ -64,8 +78,8 @@ const GlobalExpenses = () => {
       }
     }
 
-    fetchExpenses()
-  }, [selectedProjectId])
+    fetchData()
+  }, [selectedProjectId, user])
 
   const handleProjectChange = (e) => {
     const newProjectId = e.target.value
@@ -314,7 +328,7 @@ const GlobalExpenses = () => {
             onDelete={handleDeleteExpense}
             onApprove={handleApproveExpense}
             onReject={handleRejectExpense}
-            isAdmin={isAdmin}
+            isAdmin={userRole === 'admin' || userRole === 'owner' || userRole === 'manager'}
           />
         )}
       </div>

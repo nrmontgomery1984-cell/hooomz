@@ -17,6 +17,17 @@ export const clockIn = async ({ employee_id, project_id, category_id, sub_catego
     throw new Error('Employee already has an active time entry. Please clock out first.')
   }
 
+  // Get employee details
+  const { data: employee, error: empError } = await supabase
+    .from('employees')
+    .select('first_name, last_name, hourly_rate, charged_rate')
+    .eq('id', employee_id)
+    .single()
+
+  if (empError || !employee) {
+    throw new Error('Employee not found')
+  }
+
   // Get category details to get phase_id
   const { data: category, error: catError } = await supabase
     .from('categories')
@@ -47,10 +58,13 @@ export const clockIn = async ({ employee_id, project_id, category_id, sub_catego
   const roundedTime = roundToNearest15Minutes(new Date())
 
   // Create time entry
+  const workerName = `${employee.first_name} ${employee.last_name}`
+
   const { data: timeEntry, error } = await supabase
     .from('time_entries')
     .insert({
       employee_id,
+      worker_name: workerName,
       project_id,
       phase_id: category.phase_id,
       category_id,

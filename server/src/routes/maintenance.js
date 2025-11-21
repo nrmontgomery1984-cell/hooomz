@@ -99,7 +99,7 @@ router.post('/:taskId/complete', async (req, res, next) => {
         nextDue.setFullYear(nextDue.getFullYear() + 1)
         break
       default:
-        throw new Error(\`Unknown frequency: \${task.frequency}\`)
+        throw new Error(`Unknown frequency: ${task.frequency}`)
     }
 
     const { data, error } = await supabase

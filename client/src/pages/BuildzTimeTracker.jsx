@@ -329,7 +329,7 @@ const BuildzTimeTracker = () => {
               {!onBreak ? (
                 <Button
                   onClick={handleStartBreak}
-                  variant="outline"
+                  variant="secondary"
                   className="py-4 text-lg font-semibold flex items-center justify-center gap-2"
                 >
                   <Coffee size={20} />

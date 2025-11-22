@@ -23,6 +23,7 @@ import Contacts from './pages/Contacts'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Settings from './pages/Settings'
+import BuildzTimeTracker from './pages/BuildzTimeTracker'
 
 function App() {
   return (
@@ -52,6 +53,7 @@ function App() {
           <Route path="/analytics" element={<ModernLayout><GlobalAnalytics /></ModernLayout>} />
           <Route path="/contacts" element={<ModernLayout><Contacts /></ModernLayout>} />
           <Route path="/settings" element={<ModernLayout><Settings /></ModernLayout>} />
+          <Route path="/buildz-time-tracker" element={<BuildzTimeTracker />} />
         </Routes>
         <InstallPrompt />
       </Router>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Clock, Play, Square, Coffee, RefreshCw, CheckCircle } from 'lucide-react'
+import { Clock, Play, Square, Coffee, RefreshCw } from 'lucide-react'
 import { Button } from '../components/UI/Button'
 import ModernCard from '../components/UI/ModernCard'
 
@@ -8,6 +8,8 @@ import ModernCard from '../components/UI/ModernCard'
  * Simple, mobile-friendly interface for construction workers
  */
 const BuildzTimeTracker = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'
+
   const [employees, setEmployees] = useState([])
   const [projects, setProjects] = useState([])
   const [categories, setCategories] = useState([])
@@ -35,7 +37,7 @@ const BuildzTimeTracker = () => {
 
   const loadEmployees = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/employees')
+      const response = await fetch(`${API_BASE_URL}/employees`)
       const data = await response.json()
       setEmployees(data.data || [])
     } catch (error) {
@@ -45,7 +47,7 @@ const BuildzTimeTracker = () => {
 
   const loadProjects = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/projects')
+      const response = await fetch(`${API_BASE_URL}/projects`)
       const data = await response.json()
       const activeProjects = (data.data || []).filter(p => p.status === 'active')
       setProjects(activeProjects)
@@ -58,7 +60,7 @@ const BuildzTimeTracker = () => {
 
   const loadCategories = async (projectId) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/time-tracking/projects/${projectId}/categories`)
+      const response = await fetch(`${API_BASE_URL}/time-tracking/projects/${projectId}/categories`)
       const data = await response.json()
       setCategories(data.categories || [])
     } catch (error) {
@@ -73,7 +75,7 @@ const BuildzTimeTracker = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:8080/api/time-tracking/clock-in', {
+      const response = await fetch(`${API_BASE_URL}/time-tracking/clock-in`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -99,7 +101,7 @@ const BuildzTimeTracker = () => {
     if (!activeEntry) return
 
     try {
-      const response = await fetch(`http://localhost:8080/api/time-tracking/${activeEntry.time_entry_id}/clock-out`, {
+      const response = await fetch(`${API_BASE_URL}/time-tracking/${activeEntry.time_entry_id}/clock-out`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({})
@@ -119,7 +121,7 @@ const BuildzTimeTracker = () => {
     if (!activeEntry) return
 
     try {
-      await fetch(`http://localhost:8080/api/time-tracking/${activeEntry.time_entry_id}/break/start`, {
+      await fetch(`${API_BASE_URL}/time-tracking/${activeEntry.time_entry_id}/break/start`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({})
@@ -137,7 +139,7 @@ const BuildzTimeTracker = () => {
     if (!activeEntry) return
 
     try {
-      await fetch(`http://localhost:8080/api/time-tracking/${activeEntry.time_entry_id}/break/end`, {
+      await fetch(`${API_BASE_URL}/time-tracking/${activeEntry.time_entry_id}/break/end`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({})
@@ -155,7 +157,7 @@ const BuildzTimeTracker = () => {
     if (!activeEntry) return
 
     try {
-      const response = await fetch(`http://localhost:8080/api/time-tracking/${activeEntry.time_entry_id}/switch-category`, {
+      const response = await fetch(`${API_BASE_URL}/time-tracking/${activeEntry.time_entry_id}/switch-category`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ new_category_id: newCategoryId })

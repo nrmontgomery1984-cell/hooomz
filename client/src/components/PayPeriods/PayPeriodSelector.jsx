@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Calendar, ChevronDown, Plus, Lock, LockOpen } from 'lucide-react'
+import { Calendar, ChevronDown, Plus, Lock, Unlock } from 'lucide-react'
 import { Button } from '../UI/Button'
 import * as payPeriodsApi from '../../services/payPeriodsApi'
 import PayPeriodDialog from './PayPeriodDialog'
@@ -126,7 +126,7 @@ const PayPeriodSelector = ({ selectedPeriodId, onPeriodChange }) => {
 
         <div className="flex items-end gap-2">
           <Button
-            variant="outline"
+            variant="secondary"
             onClick={() => setShowDialog(true)}
             className="whitespace-nowrap"
           >
@@ -136,7 +136,7 @@ const PayPeriodSelector = ({ selectedPeriodId, onPeriodChange }) => {
 
           {selectedPeriod && selectedPeriod.status === 'open' && (
             <Button
-              variant="outline"
+              variant="secondary"
               onClick={() => handleClosePeriod(selectedPeriod.id)}
               className="whitespace-nowrap"
             >
@@ -147,11 +147,11 @@ const PayPeriodSelector = ({ selectedPeriodId, onPeriodChange }) => {
 
           {selectedPeriod && selectedPeriod.status === 'closed' && (
             <Button
-              variant="outline"
+              variant="secondary"
               onClick={() => handleReopenPeriod(selectedPeriod.id)}
               className="whitespace-nowrap"
             >
-              <LockOpen size={18} className="mr-2" />
+              <Unlock size={18} className="mr-2" />
               Reopen
             </Button>
           )}

@@ -53,9 +53,9 @@ function App() {
           <Route path="/contacts" element={<ModernLayout><Contacts /></ModernLayout>} />
           <Route path="/settings" element={<ModernLayout><Settings /></ModernLayout>} />
         </Routes>
+        <InstallPrompt />
       </Router>
     </AuthProvider>
-      <InstallPrompt />
   )
 }
 

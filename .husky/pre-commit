@@ -1,0 +1,20 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🔍 Running pre-commit checks..."
+
+# Run lint
+echo "\n📝 Linting..."
+pnpm lint || {
+  echo "❌ Lint failed. Please fix the errors before committing."
+  exit 1
+}
+
+# Run typecheck
+echo "\n🔎 Type checking..."
+pnpm typecheck || {
+  echo "❌ TypeScript check failed. Please fix the errors before committing."
+  exit 1
+}
+
+echo "\n✅ Pre-commit checks passed!"

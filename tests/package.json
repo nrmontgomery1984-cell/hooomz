@@ -1,0 +1,31 @@
+{
+  "name": "@hooomz/tests",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Integration tests for Hooomz",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest watch",
+    "test:coverage": "vitest run --coverage",
+    "test:ui": "vitest --ui"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@vitest/ui": "^1.2.0",
+    "fake-indexeddb": "^5.0.2",
+    "jsdom": "^24.0.0",
+    "vitest": "^1.2.0",
+    "@vitest/coverage-v8": "^1.2.0"
+  },
+  "dependencies": {
+    "@hooomz/customers": "workspace:*",
+    "@hooomz/projects": "workspace:*",
+    "@hooomz/estimating": "workspace:*",
+    "@hooomz/scheduling": "workspace:*",
+    "@hooomz/field-docs": "workspace:*",
+    "@hooomz/reporting": "workspace:*",
+    "@hooomz/shared-contracts": "workspace:*",
+    "@hooomz/db": "workspace:*"
+  }
+}

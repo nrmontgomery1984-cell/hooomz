@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "checkJs": false,
+    "jsx": "preserve",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "outDir": "./dist",
+    "removeComments": true,
+    "importHelpers": true,
+    "isolatedModules": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "paths": {
+      "@hooomz/shared-contracts": ["./packages/shared-contracts/src"],
+      "@hooomz/core": ["./packages/core/src"],
+      "@hooomz/estimating": ["./packages/estimating/src"],
+      "@hooomz/scheduling": ["./packages/scheduling/src"],
+      "@hooomz/customers": ["./packages/customers/src"],
+      "@hooomz/field-docs": ["./packages/field-docs/src"],
+      "@hooomz/reporting": ["./packages/reporting/src"]
+    }
+  },
+  "exclude": ["node_modules", "dist", "build"]
+}

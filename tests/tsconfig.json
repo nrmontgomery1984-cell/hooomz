@@ -1,0 +1,34 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "types": ["vitest/globals", "node"],
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "paths": {
+      "@hooomz/customers": ["../packages/customers/src"],
+      "@hooomz/projects": ["../packages/projects/src"],
+      "@hooomz/estimating": ["../packages/estimating/src"],
+      "@hooomz/scheduling": ["../packages/scheduling/src"],
+      "@hooomz/field-docs": ["../packages/field-docs/src"],
+      "@hooomz/reporting": ["../packages/reporting/src"],
+      "@hooomz/shared-contracts": ["../packages/shared-contracts/src"],
+      "@hooomz/db": ["../packages/db/src"],
+      "@hooomz/ui": ["../packages/ui/src"]
+    }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+    "reports"
+  ]
+}

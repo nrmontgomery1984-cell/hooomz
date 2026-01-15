@@ -1,0 +1,44 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"],
+      "@hooomz/shared-contracts": ["../../packages/shared-contracts/src"],
+      "@hooomz/core": ["../../packages/core/src"],
+      "@hooomz/estimating": ["../../packages/estimating/src"],
+      "@hooomz/scheduling": ["../../packages/scheduling/src"],
+      "@hooomz/customers": ["../../packages/customers/src"],
+      "@hooomz/field-docs": ["../../packages/field-docs/src"],
+      "@hooomz/reporting": ["../../packages/reporting/src"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"],
+  "references": [
+    { "path": "../../packages/shared-contracts" },
+    { "path": "../../packages/core" },
+    { "path": "../../packages/estimating" },
+    { "path": "../../packages/scheduling" },
+    { "path": "../../packages/customers" },
+    { "path": "../../packages/field-docs" },
+    { "path": "../../packages/reporting" }
+  ]
+}

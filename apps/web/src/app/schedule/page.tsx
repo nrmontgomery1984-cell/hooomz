@@ -29,13 +29,13 @@ export default function SchedulePage() {
   const loadAllTasks = async () => {
     setIsLoading(true);
     try {
-      const response = await schedulingService.listAll();
+      const response = await schedulingService.list();
       if (response.success && response.data) {
         setTasks(response.data);
       }
     } catch (error) {
       console.error('Failed to load tasks:', error);
-      showToast('Failed to load tasks', 'error');
+      showToast({ message: 'Failed to load tasks', variant: 'error' });
     } finally {
       setIsLoading(false);
     }
@@ -47,14 +47,14 @@ export default function SchedulePage() {
 
   const handleStatusChange = async (taskId: string, newStatus: string) => {
     try {
-      const response = await schedulingService.updateTask(taskId, { status: newStatus });
+      const response = await schedulingService.update(taskId, { status: newStatus });
       if (response.success && response.data) {
         setTasks(tasks.map((t) => (t.id === taskId ? response.data! : t)));
-        showToast('Status updated', 'success');
+        showToast({ message: 'Status updated', variant: 'success' });
       }
     } catch (error) {
       console.error('Failed to update status:', error);
-      showToast('Failed to update status', 'error');
+      showToast({ message: 'Failed to update status', variant: 'error' });
     }
   };
 

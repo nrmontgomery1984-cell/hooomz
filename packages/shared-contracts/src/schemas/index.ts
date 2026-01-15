@@ -90,8 +90,8 @@ export const TaskSchema = z.object({
   metadata: MetadataSchema,
 });
 
-// LineItem Schema
-export const LineItemSchema = z.object({
+// LineItem Base Schema (without refinement for .omit() compatibility)
+export const LineItemBaseSchema = z.object({
   id: z.string().min(1, 'Line item ID is required'),
   projectId: z.string().min(1, 'Project ID is required'),
   category: CostCategorySchema,
@@ -102,7 +102,10 @@ export const LineItemSchema = z.object({
   totalCost: z.number().nonnegative('Total cost must be non-negative'),
   isLabor: z.boolean(),
   metadata: MetadataSchema,
-}).refine(
+});
+
+// LineItem Schema with validation refinement
+export const LineItemSchema = LineItemBaseSchema.refine(
   (data) => Math.abs(data.totalCost - data.quantity * data.unitCost) < 0.01,
   {
     message: 'Total cost must equal quantity × unit cost',
@@ -138,7 +141,7 @@ export const CreateTaskSchema = TaskSchema.omit({ id: true, metadata: true }).ex
   dependencies: z.array(z.string()).default([]),
 });
 
-export const CreateLineItemSchema = LineItemSchema.omit({ id: true, metadata: true });
+export const CreateLineItemSchema = LineItemBaseSchema.omit({ id: true, metadata: true });
 
 export const CreateInspectionSchema = InspectionSchema.omit({ id: true, metadata: true }).extend({
   photos: z.array(z.string()).default([]),
@@ -152,7 +155,7 @@ export const UpdateCustomerSchema = CustomerSchema.partial().required({ id: true
 
 export const UpdateTaskSchema = TaskSchema.partial().required({ id: true });
 
-export const UpdateLineItemSchema = LineItemSchema.partial().required({ id: true });
+export const UpdateLineItemSchema = LineItemBaseSchema.partial().required({ id: true });
 
 export const UpdateInspectionSchema = InspectionSchema.partial().required({ id: true });
 

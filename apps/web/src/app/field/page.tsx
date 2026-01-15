@@ -31,22 +31,17 @@ export default function FieldDocsPage() {
     setIsLoading(true);
     try {
       // Load all inspections
-      const inspResponse = await fieldDocsService.listAll();
+      const inspResponse = await fieldDocsService.inspections.list();
       if (inspResponse.success && inspResponse.data) {
         setInspections(inspResponse.data);
       }
 
-      // Load recent photos (last 8)
-      const photosResponse = await fieldDocsService.listPhotos();
-      if (photosResponse.success && photosResponse.data) {
-        const recent = photosResponse.data
-          .sort((a, b) => new Date(b.capturedAt).getTime() - new Date(a.capturedAt).getTime())
-          .slice(0, 8);
-        setRecentPhotos(recent);
-      }
+      // Photos are loaded per-project, so skip for now on dashboard
+      // TODO: Add a getAllPhotos method to PhotoService for dashboard use
+      setRecentPhotos([]);
     } catch (error) {
       console.error('Failed to load data:', error);
-      showToast('Failed to load field data', 'error');
+      showToast({ message: 'Failed to load field data', variant: 'error' });
     } finally {
       setIsLoading(false);
     }

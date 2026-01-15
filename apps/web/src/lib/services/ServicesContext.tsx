@@ -150,7 +150,16 @@ export function useEstimateService() {
   return services.estimating;
 }
 
+// Alias for consistency with naming conventions
+export const useEstimatingService = useEstimateService;
+
 export function useTaskService() {
+  const services = useServices();
+  return services.scheduling.tasks;
+}
+
+// Alias for scheduling service access
+export function useSchedulingService() {
   const services = useServices();
   return services.scheduling.tasks;
 }
@@ -163,6 +172,12 @@ export function useInspectionService() {
 export function usePhotoService() {
   const services = useServices();
   return services.fieldDocs.photos;
+}
+
+// Alias for field docs service access
+export function useFieldDocsService() {
+  const services = useServices();
+  return services.fieldDocs;
 }
 
 export function useChecklistService() {
@@ -183,4 +198,10 @@ export function useReportService() {
 export function useExportService() {
   const services = useServices();
   return services.reporting.exports;
+}
+
+// Alias for reporting service access
+export function useReportingService() {
+  const services = useServices();
+  return services.reporting;
 }

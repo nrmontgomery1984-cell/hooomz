@@ -6,11 +6,16 @@
  */
 
 import { ServicesProvider } from '@/lib/services/ServicesContext';
+import { ToastProvider } from '@/components/ui/Toast';
 
 interface ProvidersProps {
   children: React.ReactNode;
 }
 
 export function Providers({ children }: ProvidersProps) {
-  return <ServicesProvider>{children}</ServicesProvider>;
+  return (
+    <ServicesProvider>
+      <ToastProvider>{children}</ToastProvider>
+    </ServicesProvider>
+  );
 }

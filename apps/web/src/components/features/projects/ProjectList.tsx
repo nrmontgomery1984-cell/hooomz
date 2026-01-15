@@ -37,8 +37,9 @@ export function ProjectList({ initialProjects = [] }: ProjectListProps) {
     try {
       const response = await projectService.list();
       if (response.success && response.data) {
-        setProjects(response.data.projects);
-        setFilteredProjects(response.data.projects);
+        // response.data is the projects array directly
+        setProjects(response.data);
+        setFilteredProjects(response.data);
       }
     } catch (error) {
       console.error('Failed to load projects:', error);

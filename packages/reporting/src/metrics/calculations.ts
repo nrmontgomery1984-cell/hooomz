@@ -268,7 +268,7 @@ export async function calculateProfitMarginTrend(
 
     completedProjects.forEach((project) => {
       const date = new Date(project.actualEndDate!);
-      const periodKey = this.getPeriodKey(date, period);
+      const periodKey = getPeriodKey(date, period);
 
       const revenue = project.actualRevenue!;
       const profit = revenue - project.actualCost;
@@ -487,7 +487,7 @@ export async function identifyTopCostOverruns(
 /**
  * Helper: Get period key for grouping
  */
-function getPeriodKey(date: Date, period: TimePeriod): string {
+export function getPeriodKey(date: Date, period: TimePeriod): string {
   const year = date.getFullYear();
   const month = date.getMonth() + 1;
 

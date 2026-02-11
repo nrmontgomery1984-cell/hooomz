@@ -5,20 +5,43 @@
 import type {
   Task,
   CreateTask,
-  QueryParams,
-  TaskFilters,
-  TaskSortField,
 } from '@hooomz/shared-contracts';
-import { generateId, createMetadata, updateMetadata } from '@hooomz/shared-contracts';
-import type { ITaskRepository, TaskDependency } from '@hooomz/scheduling';
+import { generateId, createMetadata, updateMetadata, TaskStatus, TaskPriority } from '@hooomz/shared-contracts';
 import type { StorageAdapter } from '../storage/StorageAdapter';
 import { StoreNames } from '../storage/StorageAdapter';
 import { SyncQueue } from './SyncQueue';
 
+type TaskSortField = 'title' | 'status' | 'priority' | 'dueDate' | 'createdAt' | 'updatedAt';
+
+interface TaskFilters {
+  projectId?: string;
+  status?: TaskStatus | TaskStatus[];
+  priority?: TaskPriority | TaskPriority[];
+  assignedTo?: string;
+  dueDateFrom?: string;
+  dueDateTo?: string;
+  overdue?: boolean;
+}
+
+interface QueryParams<S, F> {
+  sortBy?: S;
+  sortOrder?: 'asc' | 'desc';
+  page?: number;
+  pageSize?: number;
+  filters?: F;
+}
+
+interface TaskDependency {
+  id: string;
+  taskId: string;
+  dependsOnTaskId: string;
+  metadata: { createdAt: string; updatedAt: string; version: number };
+}
+
 /**
  * IndexedDB-backed Task Repository
  */
-export class TaskRepository implements ITaskRepository {
+export class TaskRepository {
   private storage: StorageAdapter;
   private storeName = StoreNames.TASKS;
   private dependenciesStoreName = 'taskDependencies'; // Store dependencies separately
@@ -79,7 +102,7 @@ export class TaskRepository implements ITaskRepository {
         tasks = tasks.filter((task) => {
           if (!task.dueDate) return false;
           const isOverdue =
-            new Date(task.dueDate) < now && task.status !== 'completed';
+            new Date(task.dueDate) < now && task.status !== TaskStatus.COMPLETE;
           return filters.overdue ? isOverdue : !isOverdue;
         });
       }
@@ -161,7 +184,7 @@ export class TaskRepository implements ITaskRepository {
       (task) =>
         task.dueDate &&
         new Date(task.dueDate) < now &&
-        task.status !== 'completed'
+        task.status !== TaskStatus.COMPLETE
     );
   }
 

@@ -159,6 +159,7 @@ export function createMetadata() {
   return {
     createdAt: timestamp,
     updatedAt: timestamp,
+    version: 1,
   };
 }
 
@@ -167,10 +168,11 @@ export function createMetadata() {
  * @param metadata - Existing metadata
  * @returns Updated metadata object
  */
-export function updateMetadata(metadata: { createdAt: string; updatedAt: string }) {
+export function updateMetadata(metadata: { createdAt: string; updatedAt: string; version: number }) {
   return {
     ...metadata,
     updatedAt: now(),
+    version: metadata.version + 1,
   };
 }
 
@@ -262,10 +264,9 @@ export function isOverBudget(actualCost: number, estimatedCost: number): boolean
 // ============================================================================
 
 /**
- * Status color mapping for UI
+ * Project status color mapping
  */
-const STATUS_COLORS = {
-  // Project statuses
+const PROJECT_STATUS_COLORS: Record<ProjectStatus, string> = {
   [ProjectStatus.LEAD]: '#9CA3AF', // gray
   [ProjectStatus.QUOTED]: '#60A5FA', // blue
   [ProjectStatus.APPROVED]: '#34D399', // green
@@ -273,19 +274,48 @@ const STATUS_COLORS = {
   [ProjectStatus.ON_HOLD]: '#F59E0B', // orange
   [ProjectStatus.COMPLETE]: '#10B981', // green
   [ProjectStatus.CANCELLED]: '#EF4444', // red
+};
 
-  // Task statuses
+/**
+ * Task status color mapping
+ */
+const TASK_STATUS_COLORS: Record<TaskStatus, string> = {
   [TaskStatus.NOT_STARTED]: '#9CA3AF', // gray
   [TaskStatus.IN_PROGRESS]: '#3B82F6', // blue
   [TaskStatus.BLOCKED]: '#EF4444', // red
   [TaskStatus.COMPLETE]: '#10B981', // green
+};
 
-  // Inspection statuses
+/**
+ * Inspection status color mapping
+ */
+const INSPECTION_STATUS_COLORS: Record<InspectionStatus, string> = {
   [InspectionStatus.SCHEDULED]: '#60A5FA', // blue
   [InspectionStatus.PASSED]: '#10B981', // green
   [InspectionStatus.FAILED]: '#EF4444', // red
   [InspectionStatus.PENDING_REINSPECTION]: '#F59E0B', // orange
-} as const;
+};
+
+/**
+ * Get color code for a project status
+ */
+export function getProjectStatusColor(status: ProjectStatus): string {
+  return PROJECT_STATUS_COLORS[status] || '#9CA3AF';
+}
+
+/**
+ * Get color code for a task status
+ */
+export function getTaskStatusColor(status: TaskStatus): string {
+  return TASK_STATUS_COLORS[status] || '#9CA3AF';
+}
+
+/**
+ * Get color code for an inspection status
+ */
+export function getInspectionStatusColor(status: InspectionStatus): string {
+  return INSPECTION_STATUS_COLORS[status] || '#9CA3AF';
+}
 
 /**
  * Get color code for a status
@@ -295,7 +325,16 @@ const STATUS_COLORS = {
 export function getStatusColor(
   status: ProjectStatus | TaskStatus | InspectionStatus
 ): string {
-  return STATUS_COLORS[status] || '#9CA3AF';
+  if (Object.values(ProjectStatus).includes(status as ProjectStatus)) {
+    return getProjectStatusColor(status as ProjectStatus);
+  }
+  if (Object.values(TaskStatus).includes(status as TaskStatus)) {
+    return getTaskStatusColor(status as TaskStatus);
+  }
+  if (Object.values(InspectionStatus).includes(status as InspectionStatus)) {
+    return getInspectionStatusColor(status as InspectionStatus);
+  }
+  return '#9CA3AF';
 }
 
 /**

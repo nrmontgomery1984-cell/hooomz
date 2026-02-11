@@ -91,7 +91,7 @@ export class CalendarService {
         tasks.map(async (task) => {
           const now = new Date();
           const dueDate = task.dueDate ? new Date(task.dueDate) : null;
-          const isOverdue = dueDate ? dueDate < now && task.status !== 'completed' : false;
+          const isOverdue = dueDate ? dueDate < now && task.status !== 'complete' : false;
 
           let daysUntilDue: number | null = null;
           if (dueDate) {
@@ -163,17 +163,13 @@ export class CalendarService {
         const slotEnd = new Date(startOfDay);
         slotEnd.setHours(hour + 1, 0, 0, 0);
 
-        // Find tasks that overlap with this slot
+        // Find tasks that overlap with this slot (using dueDate as the task's scheduled time)
         const overlappingTasks = tasks.filter((task) => {
-          if (!task.startDate || !task.dueDate) return false;
+          if (!task.dueDate) return false;
 
-          const taskStart = new Date(task.startDate);
-          const taskEnd = new Date(task.dueDate);
+          const taskDate = new Date(task.dueDate);
 
-          return (
-            (taskStart <= slotEnd && taskEnd >= slotStart) ||
-            (taskStart >= slotStart && taskStart < slotEnd)
-          );
+          return taskDate >= slotStart && taskDate < slotEnd;
         });
 
         slots.push({
@@ -221,15 +217,12 @@ export class CalendarService {
       const existingTasks = await this.deps.taskRepository.findByDateRange(start, end, filters);
 
       for (const task of existingTasks) {
-        if (!task.startDate || !task.dueDate) continue;
+        if (!task.dueDate) continue;
 
-        const taskStart = new Date(task.startDate);
-        const taskEnd = new Date(task.dueDate);
+        const taskDate = new Date(task.dueDate);
 
-        // Check for time overlap
-        const hasTimeOverlap =
-          (start <= taskEnd && end >= taskStart) ||
-          (start >= taskStart && start < taskEnd);
+        // Check for time overlap (task's due date falls within the new task's range)
+        const hasTimeOverlap = taskDate >= start && taskDate <= end;
 
         if (hasTimeOverlap) {
           // Assignee overlap

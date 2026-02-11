@@ -1,23 +1,15 @@
 import type { Metadata } from 'next';
-import { Navigation } from '@/components/ui/Navigation';
 import { Providers } from './providers';
+import { BottomNav } from '@/components/navigation/BottomNav';
+import { QuickAddSheet } from '@/components/activity/QuickAddSheet';
+import { DevTools } from '@/components/dev/DevTools';
+import { CrewGate } from '@/components/crew/CrewGate';
+import { TimeClockWidget } from '@/components/timeclock/TimeClockWidget';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Hooomz - Construction Management',
-  description: 'Mobile-first construction management platform for contractors',
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 5,
-    userScalable: true,
-  },
-  themeColor: '#0284c7',
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: 'default',
-    title: 'Hooomz',
-  },
+  title: 'Hooomz',
+  description: 'Construction management for small contractors',
 };
 
 export default function RootLayout({
@@ -27,17 +19,22 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="bg-gray-50">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+      </head>
+      <body style={{ backgroundColor: 'var(--theme-background)' }}>
         <Providers>
-          <div className="flex flex-col min-h-screen">
-            {/* Navigation */}
-            <Navigation />
-
-            {/* Main content */}
-            <main className="flex-1 safe-bottom">
+          <CrewGate>
+            <main className="min-h-screen">
               {children}
             </main>
-          </div>
+            <BottomNav />
+            <TimeClockWidget />
+            <QuickAddSheet />
+            <DevTools />
+          </CrewGate>
         </Providers>
       </body>
     </html>

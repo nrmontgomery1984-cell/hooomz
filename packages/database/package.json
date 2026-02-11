@@ -1,0 +1,15 @@
+{
+  "name": "@hooomz/database",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Supabase database migrations for Hooomz",
+  "scripts": {
+    "migrate": "supabase db push",
+    "reset": "supabase db reset",
+    "generate-types": "supabase gen types typescript --local > src/types.ts"
+  },
+  "devDependencies": {
+    "postgres": "^3.4.8",
+    "supabase": "^1.200.0"
+  }
+}

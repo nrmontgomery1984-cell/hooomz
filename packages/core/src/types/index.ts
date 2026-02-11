@@ -1,27 +1,41 @@
-/**
- * Core module-specific types
- *
- * This file can contain additional types specific to the core module
- * that extend or complement the shared contracts.
- */
-
-// Re-export commonly used types from shared-contracts for convenience
 export type {
-  Project,
-  CreateProject,
-  UpdateProject,
-  ProjectStatus,
-  ProjectType,
-  ProjectWithDetails,
-  ProjectStats,
-  CoreOperations,
-} from '@hooomz/shared-contracts';
+  CreateProjectInput,
+  UpdateProjectInput,
+  ProjectFilters,
+  ProjectWithRelations,
+} from './project.types';
 
-// Module-specific type extensions can be added here
-// Example:
-// export interface ProjectWithAnalytics extends Project {
-//   analytics: {
-//     viewCount: number;
-//     lastAccessed: string;
-//   };
-// }
+export type {
+  CreateLoopContextInput,
+  CreateLoopIterationInput,
+  UpdateLoopIterationInput,
+  LoopIterationWithChildren,
+  LoopTreeNode,
+} from './loop.types';
+
+export { PROPERTY_TRANSFORMABLE_TYPES } from './loop.types';
+
+// Home Profile types
+export type {
+  PropertyHomeProfile,
+  PropertyType,
+  UpdatePropertyHomeProfileInput,
+  InstalledProduct,
+  ProductCategory,
+  CreateInstalledProductInput,
+  UpdateInstalledProductInput,
+  InstalledProductFilters,
+  HomeScan,
+  ScanStage,
+  CreateHomeScanInput,
+  UpdateHomeScanInput,
+  MaintenanceRecord,
+  MaintenanceType,
+  CreateMaintenanceRecordInput,
+  OwnershipHistory,
+  OwnershipTransferType,
+  CreateOwnershipHistoryInput,
+  ExpiringWarranty,
+  MaintenanceDue,
+  HomeProfileSummary,
+} from './home-profile.types';

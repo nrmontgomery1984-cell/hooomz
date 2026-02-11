@@ -680,8 +680,9 @@ export function convertMarginToMarkup(marginPercentage: number): number {
  * Calculate line item total with markup
  *
  * Takes a full LineItem object and calculates totals including markup
+ * @param markupPercentage - Optional markup percentage to apply (default: 0)
  */
-export function calculateLineItemWithMarkup(lineItem: LineItem): LineItemTotal {
+export function calculateLineItemWithMarkup(lineItem: LineItem, markupPercentage: number = 0): LineItemTotal {
   const quantity = lineItem.quantity || 1;
   const unitCost = lineItem.unitCost || 0;
   const totalCost = calculateLineItemTotal(quantity, unitCost);
@@ -690,8 +691,8 @@ export function calculateLineItemWithMarkup(lineItem: LineItem): LineItemTotal {
   let price: number;
   let markup: number;
 
-  if (lineItem.markup !== undefined && lineItem.markup > 0) {
-    price = calculatePriceFromMarkup(totalCost, lineItem.markup);
+  if (markupPercentage > 0) {
+    price = calculatePriceFromMarkup(totalCost, markupPercentage);
     markup = price - totalCost;
   } else {
     // Use the totalCost from the line item if provided

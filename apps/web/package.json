@@ -16,18 +16,25 @@
     "@hooomz/field-docs": "workspace:*",
     "@hooomz/reporting": "workspace:*",
     "@hooomz/scheduling": "workspace:*",
+    "@hooomz/shared": "workspace:^",
     "@hooomz/shared-contracts": "workspace:*",
+    "@tanstack/react-query": "^5.90.18",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "lucide-react": "^0.563.0",
     "next": "^14.1.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "tailwind-merge": "^3.4.0",
+    "tslib": "^2.8.1"
   },
   "devDependencies": {
     "@types/node": "^20.11.5",
     "@types/react": "^18.2.48",
     "@types/react-dom": "^18.2.18",
     "autoprefixer": "^10.4.17",
-    "eslint": "^9.39.2",
-    "eslint-config-next": "^16.1.2",
+    "eslint": "^8.56.0",
+    "eslint-config-next": "14.2.35",
     "postcss": "^8.4.33",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.3.3"

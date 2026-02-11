@@ -126,6 +126,8 @@ export interface ProjectFilters {
 export interface CustomerFilters {
   search?: string;
   preferredContactMethod?: string;
+  type?: 'residential' | 'commercial';
+  tags?: string[];
 }
 
 /**
@@ -221,7 +223,7 @@ export interface ProjectOperations
 /**
  * Customer sortable fields
  */
-export type CustomerSortField = 'lastName' | 'firstName' | 'email' | 'createdAt' | 'updatedAt';
+export type CustomerSortField = 'name' | 'lastName' | 'firstName' | 'email' | 'createdAt' | 'updatedAt';
 
 /**
  * Customer CRUD operations
@@ -593,12 +595,17 @@ export function createSuccessResponse<T>(data: T): ApiResponse<T> {
 /**
  * Create an error response
  */
-export function createErrorResponse(code: string, message: string): ApiResponse<never> {
+export function createErrorResponse(
+  code: string,
+  message: string,
+  details?: Record<string, unknown>
+): ApiResponse<never> {
   return {
     success: false,
     error: {
       code,
       message,
+      details,
     },
   };
 }

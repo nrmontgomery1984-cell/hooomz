@@ -14,7 +14,6 @@ import {
   createMetadata,
   updateMetadata,
 } from '@hooomz/shared-contracts';
-import type { ICustomerRepository } from '@hooomz/customers';
 import type { StorageAdapter } from '../storage/StorageAdapter';
 import { StoreNames } from '../storage/StorageAdapter';
 import { SyncQueue } from './SyncQueue';
@@ -22,7 +21,7 @@ import { SyncQueue } from './SyncQueue';
 /**
  * IndexedDB-backed Customer Repository
  */
-export class CustomerRepository implements ICustomerRepository {
+export class CustomerRepository {
   private storage: StorageAdapter;
   private storeName = StoreNames.CUSTOMERS;
   private syncQueue: SyncQueue;

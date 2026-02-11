@@ -174,4 +174,34 @@ export class LineItemRepository implements ILineItemRepository {
 
     return count;
   }
+
+  /**
+   * Calculate project totals from line items
+   */
+  async calculateProjectTotals(projectId: string): Promise<{
+    totalMaterials: number;
+    totalLabor: number;
+    totalCost: number;
+    lineItemCount: number;
+  }> {
+    const lineItems = await this.findByProjectId(projectId);
+
+    let totalMaterials = 0;
+    let totalLabor = 0;
+
+    for (const item of lineItems) {
+      if (item.isLabor) {
+        totalLabor += item.totalCost;
+      } else {
+        totalMaterials += item.totalCost;
+      }
+    }
+
+    return {
+      totalMaterials,
+      totalLabor,
+      totalCost: totalMaterials + totalLabor,
+      lineItemCount: lineItems.length,
+    };
+  }
 }

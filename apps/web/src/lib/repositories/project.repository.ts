@@ -6,11 +6,7 @@
 import type {
   Project,
   CreateProject,
-  IProjectRepository,
-  QueryParams,
-  ProjectFilters,
-  ProjectSortField,
-} from '@hooomz/core';
+} from '@hooomz/shared-contracts';
 import {
   generateProjectId,
   createMetadata,
@@ -20,7 +16,26 @@ import type { StorageAdapter } from '../storage/StorageAdapter';
 import { StoreNames } from '../storage/StorageAdapter';
 import { SyncQueue } from './SyncQueue';
 
-export class ProjectRepository implements IProjectRepository {
+type ProjectSortField = 'name' | 'status' | 'createdAt' | 'updatedAt' | 'startDate' | 'estimatedCost';
+
+interface ProjectFilters {
+  status?: string | string[];
+  projectType?: string | string[];
+  clientId?: string;
+  estimatedCostMin?: number;
+  estimatedCostMax?: number;
+  search?: string;
+}
+
+interface QueryParams<S, F> {
+  sortBy?: S;
+  sortOrder?: 'asc' | 'desc';
+  page?: number;
+  pageSize?: number;
+  filters?: F;
+}
+
+export class ProjectRepository {
   private storage: StorageAdapter;
   private storeName = StoreNames.PROJECTS;
   private syncQueue: SyncQueue;

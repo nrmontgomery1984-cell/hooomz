@@ -2,102 +2,304 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  * {
-    @apply box-border;
-  }
+/* ============================================================================
+   Hooomz Design System — Monochrome + Teal Accent
+   Typography does the heavy lifting. 90% mono, 10% accent.
+   ============================================================================ */
 
-  html,
-  body {
-    @apply max-w-full overflow-x-hidden;
-  }
+:root {
+  /* Brand — customizable via ThemeProvider */
+  --theme-primary: #111827;
+  --theme-secondary: #6B7280;
+  --theme-muted: #9CA3AF;
+  --theme-text-body: #374151;
+  --theme-background: #F3F4F6;
+  --theme-surface: #FFFFFF;
+  --theme-border: #E5E7EB;
+  --theme-accent: #0F766E;
+  --theme-accent-dark: #0D5F58;
+  --theme-accent-light: #F0FDFA;
 
-  body {
-    @apply font-sans antialiased;
+  /* Status — semantic */
+  --theme-status-green: #10B981;
+  --theme-status-blue: #3B82F6;
+  --theme-status-amber: #F59E0B;
+  --theme-status-red: #EF4444;
+  --theme-status-gray: #9CA3AF;
+
+  /* Layout */
+  --theme-radius: 12px;
+  --theme-card-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --theme-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --theme-font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+body {
+  background-color: var(--theme-background);
+  color: var(--theme-primary);
+  font-family: var(--theme-font);
+}
+
+/* ============================================================================
+   Cards — barely-there shadows, clean borders
+   ============================================================================ */
+
+.card {
+  background: var(--theme-surface, #FFFFFF);
+  border: none;
+  border-radius: var(--theme-radius);
+  padding: 20px;
+  transition: all 0.2s ease;
+  box-shadow: var(--theme-card-shadow);
+}
+
+.card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  border-color: var(--theme-accent);
+}
+
+.card-interactive {
+  cursor: pointer;
+}
+
+.card-interactive:active {
+  transform: scale(0.98);
+}
+
+/* ============================================================================
+   Buttons — monochrome base, teal for primary actions
+   ============================================================================ */
+
+.btn {
+  padding: 12px 20px;
+  border: 1px solid var(--theme-border);
+  background: #FFFFFF;
+  color: var(--theme-primary);
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: var(--theme-radius);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 48px;
+}
+
+.btn:hover {
+  border-color: var(--theme-muted);
+  background: #fafafa;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn-primary {
+  background: var(--theme-accent);
+  color: white;
+  border: 1px solid var(--theme-accent);
+}
+
+.btn-primary:hover {
+  background: var(--theme-accent-dark);
+  border-color: var(--theme-accent-dark);
+}
+
+.btn-dark {
+  background: #374151;
+  color: white;
+  border: 1px solid #374151;
+  width: 100%;
+}
+
+.btn-dark:hover {
+  background: #1F2937;
+  border-color: #1F2937;
+}
+
+.btn-text {
+  background: transparent;
+  border: none;
+  color: var(--theme-secondary);
+  padding: 8px 16px;
+  box-shadow: none;
+}
+
+.btn-text:hover {
+  color: var(--theme-accent);
+  background: transparent;
+}
+
+/* ============================================================================
+   Form Inputs
+   ============================================================================ */
+
+.input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--theme-border);
+  border-radius: var(--theme-radius);
+  background: #FFFFFF;
+  color: var(--theme-primary);
+  font-size: 16px;
+  transition: all 0.2s ease;
+  min-height: 48px;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--theme-accent);
+  box-shadow: 0 0 0 3px var(--theme-accent-light);
+}
+
+.input::placeholder {
+  color: var(--theme-muted);
+}
+
+.textarea {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--theme-border);
+  border-radius: var(--theme-radius);
+  background: #FFFFFF;
+  color: var(--theme-primary);
+  font-size: 16px;
+  resize: vertical;
+  transition: all 0.2s ease;
+  line-height: 1.6;
+  min-height: 100px;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: var(--theme-accent);
+  box-shadow: 0 0 0 3px var(--theme-accent-light);
+}
+
+/* ============================================================================
+   Navigation — bottom nav for mobile
+   ============================================================================ */
+
+.bottom-nav {
+  background: #FFFFFF;
+  border-top: 1px solid var(--theme-border);
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  background: transparent;
+  border: none;
+  border-radius: var(--theme-radius);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--theme-muted);
+  font-size: 24px;
+  width: 56px;
+  height: 56px;
+  min-height: 48px;
+}
+
+.nav-item:hover {
+  color: var(--theme-primary);
+}
+
+.nav-item--active {
+  color: var(--theme-accent);
+}
+
+/* ============================================================================
+   Loop Rollup — color-coded header dots + completion fractions
+   Project health score -> Loop headers -> Individual tasks
+   ============================================================================ */
+
+.loop-header-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.loop-progress-bar {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--theme-border);
+  overflow: hidden;
+}
+
+.loop-progress-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+/* ============================================================================
+   Touch targets — 48px minimum for work gloves
+   ============================================================================ */
+
+@media (pointer: coarse) {
+  button, a, .btn, .nav-item {
+    min-height: 48px;
+    min-width: 48px;
   }
 }
 
-@layer components {
-  /* Large touch-friendly buttons for field use */
-  .btn-touch {
-    @apply min-h-touch min-w-touch px-6 py-3 rounded-lg font-semibold
-           transition-colors duration-200 active:scale-95;
-  }
+/* ============================================================================
+   Utilities
+   ============================================================================ */
 
-  .btn-primary {
-    @apply btn-touch bg-primary-600 text-white hover:bg-primary-700
-           active:bg-primary-800;
-  }
-
-  .btn-secondary {
-    @apply btn-touch bg-gray-200 text-gray-900 hover:bg-gray-300
-           active:bg-gray-400;
-  }
-
-  .btn-accent {
-    @apply btn-touch bg-accent-500 text-white hover:bg-accent-600
-           active:bg-accent-700;
-  }
-
-  /* Touch-friendly navigation */
-  .nav-item {
-    @apply min-h-touch flex items-center gap-3 px-4 py-3 rounded-lg
-           transition-colors duration-200 hover:bg-gray-100 active:bg-gray-200;
-  }
-
-  .nav-item-active {
-    @apply nav-item bg-primary-50 text-primary-700 font-semibold;
-  }
-
-  /* Large form inputs for gloved hands */
-  .input-touch {
-    @apply min-h-touch px-4 py-3 rounded-lg border border-gray-300
-           focus:border-primary-500 focus:ring-2 focus:ring-primary-200
-           text-base transition-colors;
-  }
-
-  /* Cards with adequate spacing */
-  .card {
-    @apply bg-white rounded-xl shadow-sm border border-gray-200 p-6;
-  }
-
-  .card-interactive {
-    @apply card hover:shadow-md active:shadow-sm transition-shadow
-           cursor-pointer;
-  }
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-@layer utilities {
-  /* Utility for hiding scrollbars while keeping functionality */
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
 
-  /* Safe area insets for mobile devices */
-  .safe-top {
-    padding-top: env(safe-area-inset-top);
-  }
-  .safe-bottom {
-    padding-bottom: env(safe-area-inset-bottom);
-  }
+/* ============================================================================
+   Animations
+   ============================================================================ */
 
-  /* Toast animations */
-  @keyframes slide-in {
-    from {
-      transform: translateX(100%);
-      opacity: 0;
-    }
-    to {
-      transform: translateX(0);
-      opacity: 1;
-    }
-  }
+@keyframes slide-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
 
-  .animate-slide-in {
-    animation: slide-in 0.3s ease-out;
-  }
+.animate-slide-up {
+  animation: slide-up 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out;
+}
+
+@keyframes slide-in-from-bottom {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.animate-in.slide-in-from-bottom {
+  animation: slide-in-from-bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-in.fade-in {
+  animation: fade-in 0.2s ease-out;
+}
+
+@keyframes slide-in-from-top-2 {
+  from { transform: translateY(-8px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.animate-in.slide-in-from-top-2 {
+  animation: slide-in-from-top-2 0.2s ease-out;
 }

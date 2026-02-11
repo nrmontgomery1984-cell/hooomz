@@ -8,6 +8,15 @@ import {
   ContactMethod,
   UnitOfMeasure,
   CostCategory,
+  Division,
+  WorkCategory,
+  ProjectStage,
+  InteriorsBundle,
+  WORK_CATEGORY_META,
+  PROJECT_STAGE_META,
+  INTERIORS_BUNDLE_META,
+  getWorkCategoriesForDivision,
+  getStagesForDivision,
 } from '../types';
 
 // Project Status Constants
@@ -164,3 +173,112 @@ export const DEFAULT_CURRENCY = 'CAD';
 export const POSTAL_CODE_REGEX = /^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/i;
 export const PHONE_REGEX = /^(\+1\s?)?(\(\d{3}\)|\d{3})[\s.-]?\d{3}[\s.-]?\d{4}$/;
 export const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// ============================================================================
+// Division Constants
+// ============================================================================
+
+export const DIVISIONS = [
+  { value: Division.INTERIORS, label: 'Hooomz Interiors', description: 'Flooring, paint, trim, accent walls' },
+  { value: Division.EXTERIORS, label: 'Hooomz Exteriors', description: 'Roofing, siding, decks, windows/doors' },
+  { value: Division.DIY, label: 'Hooomz DIY', description: 'Slat wall system' },
+  { value: Division.MAINTENANCE, label: 'Hooomz Maintenance', description: 'Seasonal packages, Home Partner tier' },
+] as const;
+
+// ============================================================================
+// Work Category Constants (by Division)
+// ============================================================================
+
+/** All work categories with metadata */
+export const WORK_CATEGORIES = Object.entries(WORK_CATEGORY_META).map(([code, meta]) => ({
+  value: code as WorkCategory,
+  label: meta.name,
+  icon: meta.icon,
+  order: meta.order,
+})).sort((a, b) => a.order - b.order);
+
+/** Work categories for Interiors division */
+export const INTERIORS_WORK_CATEGORIES = getWorkCategoriesForDivision(Division.INTERIORS).map(code => ({
+  value: code,
+  label: WORK_CATEGORY_META[code].name,
+  icon: WORK_CATEGORY_META[code].icon,
+  order: WORK_CATEGORY_META[code].order,
+}));
+
+/** Work categories for Exteriors division */
+export const EXTERIORS_WORK_CATEGORIES = getWorkCategoriesForDivision(Division.EXTERIORS).map(code => ({
+  value: code,
+  label: WORK_CATEGORY_META[code].name,
+  icon: WORK_CATEGORY_META[code].icon,
+  order: WORK_CATEGORY_META[code].order,
+}));
+
+// ============================================================================
+// Project Stage Constants (by Division)
+// ============================================================================
+
+/** All project stages with metadata */
+export const PROJECT_STAGES = Object.entries(PROJECT_STAGE_META).map(([code, meta]) => ({
+  value: code as ProjectStage,
+  label: meta.name,
+  order: meta.order,
+})).sort((a, b) => a.order - b.order);
+
+/** Project stages for Interiors division */
+export const INTERIORS_PROJECT_STAGES = getStagesForDivision(Division.INTERIORS).map(code => ({
+  value: code,
+  label: PROJECT_STAGE_META[code].name,
+  order: PROJECT_STAGE_META[code].order,
+}));
+
+/** Project stages for Exteriors division */
+export const EXTERIORS_PROJECT_STAGES = getStagesForDivision(Division.EXTERIORS).map(code => ({
+  value: code,
+  label: PROJECT_STAGE_META[code].name,
+  order: PROJECT_STAGE_META[code].order,
+}));
+
+// ============================================================================
+// Interiors Bundle Constants
+// ============================================================================
+
+export const INTERIORS_BUNDLES = [
+  {
+    value: InteriorsBundle.FLOOR_REFRESH,
+    label: INTERIORS_BUNDLE_META[InteriorsBundle.FLOOR_REFRESH].name,
+    description: INTERIORS_BUNDLE_META[InteriorsBundle.FLOOR_REFRESH].description,
+  },
+  {
+    value: InteriorsBundle.ROOM_REFRESH,
+    label: INTERIORS_BUNDLE_META[InteriorsBundle.ROOM_REFRESH].name,
+    description: INTERIORS_BUNDLE_META[InteriorsBundle.ROOM_REFRESH].description,
+  },
+  {
+    value: InteriorsBundle.FULL_INTERIOR,
+    label: INTERIORS_BUNDLE_META[InteriorsBundle.FULL_INTERIOR].name,
+    description: INTERIORS_BUNDLE_META[InteriorsBundle.FULL_INTERIOR].description,
+  },
+  {
+    value: InteriorsBundle.ACCENT_PACKAGE,
+    label: INTERIORS_BUNDLE_META[InteriorsBundle.ACCENT_PACKAGE].name,
+    description: INTERIORS_BUNDLE_META[InteriorsBundle.ACCENT_PACKAGE].description,
+  },
+  {
+    value: InteriorsBundle.CUSTOM,
+    label: INTERIORS_BUNDLE_META[InteriorsBundle.CUSTOM].name,
+    description: INTERIORS_BUNDLE_META[InteriorsBundle.CUSTOM].description,
+  },
+] as const;
+
+// ============================================================================
+// Interiors-Specific Inspection Types
+// ============================================================================
+
+/** Inspection types applicable to Interiors work */
+export const INTERIORS_INSPECTION_TYPES = [
+  { value: 'floor-flatness', label: 'Floor Flatness Check' },
+  { value: 'paint-quality', label: 'Paint Quality Inspection' },
+  { value: 'trim-alignment', label: 'Trim Alignment Check' },
+  { value: 'final-walkthrough', label: 'Final Walkthrough' },
+  { value: 'punch-list', label: 'Punch List Review' },
+] as const;

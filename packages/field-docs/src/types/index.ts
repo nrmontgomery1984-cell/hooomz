@@ -1,8 +1,32 @@
 /**
- * Field Docs module-specific types
+ * Field Docs module types
  */
 
-// Re-export inspection types
+// Photo types
+export type {
+  Photo,
+  CreatePhoto,
+  UpdatePhoto,
+  PhotoFilters,
+  PhotoContext,
+  PhotoUploadRequest,
+  PhotosByDate,
+  PhotoStats,
+} from './photo.types';
+
+// Document types
+export type {
+  DocumentCategory,
+  Document,
+  CreateDocument,
+  UpdateDocument,
+  DocumentFilters,
+  DocumentUploadRequest,
+  DocumentVersion,
+  DocumentWithVersions,
+} from './document.types';
+
+// Inspection types
 export type {
   InspectionType,
   InspectionStatus,
@@ -11,38 +35,17 @@ export type {
   UpdateInspection,
   InspectionFilters,
   InspectionResult,
-  IInspectionRepository,
-} from '../inspections/inspection.repository';
+  UpcomingInspection,
+} from './inspection.types';
 
+// Field note types
 export type {
-  InspectionServiceDependencies,
-  InspectionWithContext,
-} from '../inspections/inspection.service';
-
-// Re-export photo types
-export type {
-  PhotoMetadata,
-  Photo,
-  CreatePhoto,
-  UpdatePhoto,
-  PhotoFilters,
-  IPhotoRepository,
-} from '../photos/photo.repository';
-
-export type {
-  PhotoServiceDependencies,
-  PhotosByDate,
-  PhotoStats,
-} from '../photos/photo.service';
-
-// Re-export checklist types
-export type {
-  ChecklistItemStatus,
-  ChecklistItem,
-  ChecklistTemplate,
-  ChecklistInstanceItem,
-  ChecklistInstance,
-  CreateChecklistInstance,
-  UpdateChecklistItem,
-  ChecklistProgress,
-} from '../checklists/checklist.service';
+  FieldNoteType,
+  InputMethod,
+  FieldNote,
+  CreateFieldNote,
+  UpdateFieldNote,
+  FieldNoteFilters,
+  FieldNoteContext,
+  VoiceNoteInput,
+} from './field-note.types';

@@ -7,6 +7,7 @@
  * - Labor rate database
  * - Estimate calculations and totals
  * - Markup and margin calculations
+ * - Smart Estimating learning system (THE differentiator)
  */
 
 // Export estimation functionality
@@ -20,3 +21,6 @@ export * from './calculations';
 
 // Export module-specific types
 export * from './types';
+
+// Export Smart Estimating learning system
+export * from './learning';

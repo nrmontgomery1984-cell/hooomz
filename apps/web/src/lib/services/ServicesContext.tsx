@@ -8,6 +8,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import type { Services } from './index';
 import { initializeServices } from './index';
+import { seedLabsCatalogs } from '../data/labsSeedData';
 
 interface ServicesContextValue {
   services: Services | null;
@@ -41,6 +42,11 @@ export function ServicesProvider({ children }: ServicesProviderProps) {
         setError(null);
 
         const initializedServices = await initializeServices();
+
+        // Seed Labs catalogs on first run (no-op if already seeded)
+        seedLabsCatalogs(initializedServices.labs).catch((err) =>
+          console.error('Failed to seed Labs catalogs:', err)
+        );
 
         if (mounted) {
           setServices(initializedServices);
@@ -180,28 +186,26 @@ export function useFieldDocsService() {
   return services.fieldDocs;
 }
 
-export function useChecklistService() {
+// Line items and catalog hooks
+export function useLineItemService() {
   const services = useServices();
-  return services.fieldDocs.checklists;
+  return services.estimating.lineItems;
 }
 
-export function useDashboardService() {
+export function useCatalogService() {
   const services = useServices();
-  return services.reporting.dashboards;
+  return services.estimating.catalog;
 }
 
-export function useReportService() {
+// Activity Log - THE SPINE
+// Every mutation should log to this service
+export function useActivityService() {
   const services = useServices();
-  return services.reporting.reports;
+  return services.activity;
 }
 
-export function useExportService() {
+// Labs - Field data collection system
+export function useLabsService() {
   const services = useServices();
-  return services.reporting.exports;
-}
-
-// Alias for reporting service access
-export function useReportingService() {
-  const services = useServices();
-  return services.reporting;
+  return services.labs;
 }

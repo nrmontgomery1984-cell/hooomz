@@ -189,7 +189,7 @@ export class ExportService {
    */
   async exportToEmail(
     report: Record<string, unknown>,
-    recipient: EmailRecipient,
+    _recipient: EmailRecipient,
     options?: {
       includeAttachments?: boolean;
       subject?: string;
@@ -264,7 +264,7 @@ export class ExportService {
    */
   private formatReportSections(
     report: Record<string, unknown>,
-    reportType: string
+    _reportType: string
   ): Array<{
     heading: string;
     content: string | Record<string, unknown>;

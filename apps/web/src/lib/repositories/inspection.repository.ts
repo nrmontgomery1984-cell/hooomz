@@ -5,22 +5,33 @@
 import type {
   Inspection,
   CreateInspection,
-  UpdateInspection,
-  InspectionFilters,
-  InspectionType,
-  InspectionStatus,
-  IInspectionRepository,
-} from '@hooomz/field-docs';
-import type { QueryParams } from '@hooomz/shared-contracts';
-import { generateId, createMetadata, updateMetadata } from '@hooomz/shared-contracts';
+} from '@hooomz/shared-contracts';
+import { generateId, createMetadata, updateMetadata, InspectionStatus, InspectionType } from '@hooomz/shared-contracts';
 import type { StorageAdapter } from '../storage/StorageAdapter';
 import { StoreNames } from '../storage/StorageAdapter';
 import { SyncQueue } from './SyncQueue';
 
+interface InspectionFilters {
+  projectId?: string;
+  status?: InspectionStatus;
+  type?: InspectionType;
+  inspectorName?: string;
+  scheduledAfter?: string;
+  scheduledBefore?: string;
+}
+
+interface InspectionQueryParams {
+  filters?: InspectionFilters;
+  page?: number;
+  pageSize?: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+}
+
 /**
  * IndexedDB-backed Inspection Repository
  */
-export class InspectionRepository implements IInspectionRepository {
+export class InspectionRepository {
   private storage: StorageAdapter;
   private storeName = StoreNames.INSPECTIONS;
   private syncQueue: SyncQueue;
@@ -30,7 +41,7 @@ export class InspectionRepository implements IInspectionRepository {
     this.syncQueue = SyncQueue.getInstance(storage);
   }
 
-  async findAll(params?: QueryParams<InspectionFilters>): Promise<Inspection[]> {
+  async findAll(params?: InspectionQueryParams): Promise<Inspection[]> {
     let results = await this.storage.getAll<Inspection>(this.storeName);
 
     // Apply filters
@@ -42,33 +53,27 @@ export class InspectionRepository implements IInspectionRepository {
       }
 
       if (filters.type) {
-        results = results.filter((i) => i.type === filters.type);
+        results = results.filter((i) => i.inspectionType === filters.type);
       }
 
       if (filters.status) {
         results = results.filter((i) => i.status === filters.status);
       }
 
-      if (filters.requiresReinspection !== undefined) {
-        results = results.filter(
-          (i) => i.requiresReinspection === filters.requiresReinspection
-        );
-      }
-
       if (filters.inspectorName) {
         results = results.filter((i) =>
-          i.inspectorName?.toLowerCase().includes(filters.inspectorName!.toLowerCase())
+          i.inspector?.toLowerCase().includes(filters.inspectorName!.toLowerCase())
         );
       }
 
       if (filters.scheduledAfter) {
         const afterDate = new Date(filters.scheduledAfter);
-        results = results.filter((i) => new Date(i.scheduledDate) >= afterDate);
+        results = results.filter((i) => new Date(i.date) >= afterDate);
       }
 
       if (filters.scheduledBefore) {
         const beforeDate = new Date(filters.scheduledBefore);
-        results = results.filter((i) => new Date(i.scheduledDate) <= beforeDate);
+        results = results.filter((i) => new Date(i.date) <= beforeDate);
       }
     }
 
@@ -83,18 +88,18 @@ export class InspectionRepository implements IInspectionRepository {
         return 0;
       });
     } else {
-      // Default: sort by scheduled date, newest first
+      // Default: sort by date, newest first
       results.sort(
         (a, b) =>
-          new Date(b.scheduledDate).getTime() -
-          new Date(a.scheduledDate).getTime()
+          new Date(b.date).getTime() -
+          new Date(a.date).getTime()
       );
     }
 
     // Apply pagination
-    if (params?.limit) {
-      const offset = params.offset || 0;
-      results = results.slice(offset, offset + params.limit);
+    if (params?.page && params?.pageSize) {
+      const offset = (params.page - 1) * params.pageSize;
+      results = results.slice(offset, offset + params.pageSize);
     }
 
     return results;
@@ -113,13 +118,12 @@ export class InspectionRepository implements IInspectionRepository {
     const inspection: Inspection = {
       id: generateId('inspection'),
       projectId: data.projectId,
-      type: data.type,
-      status: 'scheduled',
-      scheduledDate: data.scheduledDate,
-      inspectorName: data.inspectorName,
-      inspectorContact: data.inspectorContact,
+      inspectionType: data.inspectionType,
+      status: InspectionStatus.SCHEDULED,
+      date: data.date,
+      inspector: data.inspector,
       notes: data.notes,
-      requiresReinspection: false,
+      photos: data.photos || [],
       metadata: createMetadata(),
     };
 
@@ -129,7 +133,7 @@ export class InspectionRepository implements IInspectionRepository {
     return inspection;
   }
 
-  async update(id: string, data: UpdateInspection): Promise<Inspection> {
+  async update(id: string, data: Partial<Omit<Inspection, 'id' | 'metadata'>>): Promise<Inspection> {
     const inspection = await this.storage.get<Inspection>(this.storeName, id);
     if (!inspection) {
       throw new Error(`Inspection ${id} not found`);
@@ -164,34 +168,34 @@ export class InspectionRepository implements IInspectionRepository {
 
     return inspections
       .filter((i) => {
-        const scheduledDate = new Date(i.scheduledDate);
+        const inspectionDate = new Date(i.date);
         return (
-          i.status === 'scheduled' &&
-          scheduledDate >= now &&
-          scheduledDate <= futureDate
+          i.status === InspectionStatus.SCHEDULED &&
+          inspectionDate >= now &&
+          inspectionDate <= futureDate
         );
       })
       .sort(
         (a, b) =>
-          new Date(a.scheduledDate).getTime() -
-          new Date(b.scheduledDate).getTime()
+          new Date(a.date).getTime() -
+          new Date(b.date).getTime()
       );
   }
 
   async findFailed(): Promise<Inspection[]> {
     const inspections = await this.storage.getAll<Inspection>(this.storeName);
     return inspections
-      .filter((i) => i.status === 'failed' || i.requiresReinspection)
+      .filter((i) => i.status === InspectionStatus.FAILED)
       .sort(
         (a, b) =>
-          new Date(b.completedDate || b.scheduledDate).getTime() -
-          new Date(a.completedDate || a.scheduledDate).getTime()
+          new Date(b.date).getTime() -
+          new Date(a.date).getTime()
       );
   }
 
   async findByType(type: InspectionType): Promise<Inspection[]> {
     const inspections = await this.storage.getAll<Inspection>(this.storeName);
-    return inspections.filter((i) => i.type === type);
+    return inspections.filter((i) => i.inspectionType === type);
   }
 
   async findByStatus(status: InspectionStatus): Promise<Inspection[]> {
@@ -206,13 +210,13 @@ export class InspectionRepository implements IInspectionRepository {
 
     return inspections
       .filter((i) => {
-        const scheduledDate = new Date(i.scheduledDate);
-        return scheduledDate >= start && scheduledDate <= end;
+        const inspectionDate = new Date(i.date);
+        return inspectionDate >= start && inspectionDate <= end;
       })
       .sort(
         (a, b) =>
-          new Date(a.scheduledDate).getTime() -
-          new Date(b.scheduledDate).getTime()
+          new Date(a.date).getTime() -
+          new Date(b.date).getTime()
       );
   }
 }

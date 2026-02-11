@@ -219,7 +219,8 @@ export interface DashboardServiceDependencies {
  * Provides aggregated analytics and dashboards
  */
 export class DashboardService {
-  constructor(private deps?: DashboardServiceDependencies) {}
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  constructor(_deps?: DashboardServiceDependencies) {}
 
   /**
    * Get owner dashboard with complete business overview
@@ -281,7 +282,6 @@ export class DashboardService {
     try {
       // In real implementation, aggregate from project, tasks, inspections, photos
 
-      const now = new Date();
       const dashboard: ProjectDashboard = {
         project: {
           id: projectId,

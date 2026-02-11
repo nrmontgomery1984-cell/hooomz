@@ -6,18 +6,26 @@ import type {
   Photo,
   CreatePhoto,
   UpdatePhoto,
-  PhotoFilters,
-  IPhotoRepository,
-} from '@hooomz/field-docs';
+} from '@hooomz/shared-contracts';
 import { generateId, createMetadata, updateMetadata } from '@hooomz/shared-contracts';
 import type { StorageAdapter } from '../storage/StorageAdapter';
 import { StoreNames } from '../storage/StorageAdapter';
 import { SyncQueue } from './SyncQueue';
 
+interface PhotoFilters {
+  projectId?: string;
+  inspectionId?: string;
+  tags?: string[];
+  takenBy?: string;
+  takenAfter?: string;
+  takenBefore?: string;
+  uploadedToCloud?: boolean;
+}
+
 /**
  * IndexedDB-backed Photo Repository
  */
-export class PhotoRepository implements IPhotoRepository {
+export class PhotoRepository {
   private storage: StorageAdapter;
   private storeName = StoreNames.PHOTOS;
   private syncQueue: SyncQueue;

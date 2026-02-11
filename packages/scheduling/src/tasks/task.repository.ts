@@ -11,7 +11,6 @@ import {
   type Metadata,
   type Task,
   type CreateTask,
-  type UpdateTask,
   type QueryParams,
   type TaskFilters,
   type TaskSortField,
@@ -102,7 +101,7 @@ export class InMemoryTaskRepository implements ITaskRepository {
         const now = new Date();
         tasks = tasks.filter((task) => {
           if (!task.dueDate) return false;
-          const isOverdue = new Date(task.dueDate) < now && task.status !== 'completed';
+          const isOverdue = new Date(task.dueDate) < now && task.status !== 'complete';
           return filters.overdue ? isOverdue : !isOverdue;
         });
       }
@@ -181,7 +180,7 @@ export class InMemoryTaskRepository implements ITaskRepository {
       (task) =>
         task.dueDate &&
         new Date(task.dueDate) < now &&
-        task.status !== 'completed'
+        task.status !== 'complete'
     );
   }
 

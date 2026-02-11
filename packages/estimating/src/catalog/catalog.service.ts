@@ -195,11 +195,9 @@ export class CatalogService {
         }
       }
 
-      const updated = await this.deps.catalogRepository.update(id, {
-        ...data,
-        id: undefined,
-        metadata: undefined,
-      });
+      // Extract only the fields we want to update (exclude id since repository takes it as first param)
+      const { id: _id, ...updateData } = data;
+      const updated = await this.deps.catalogRepository.update(id, updateData);
 
       if (!updated) {
         return createErrorResponse('UPDATE_ERROR', 'Failed to update catalog item');

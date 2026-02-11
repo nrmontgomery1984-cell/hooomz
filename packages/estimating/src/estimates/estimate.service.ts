@@ -121,13 +121,13 @@ export class EstimateService implements EstimatingOperations {
     try {
       // Validate input
       const validation = validateCreateLineItem(data);
-      if (!validation.success) {
+      if (!validation.success || !validation.data) {
         return {
           success: false,
           error: {
             code: 'VALIDATION_ERROR',
             message: 'Invalid line item data',
-            details: validation.error.errors,
+            details: validation.error ? { issues: validation.error.errors } : undefined,
           },
         };
       }
@@ -149,13 +149,13 @@ export class EstimateService implements EstimatingOperations {
     try {
       // Validate input
       const validation = validateUpdateLineItem(data);
-      if (!validation.success) {
+      if (!validation.success || !validation.data) {
         return {
           success: false,
           error: {
             code: 'VALIDATION_ERROR',
             message: 'Invalid update data',
-            details: validation.error.errors,
+            details: validation.error ? { issues: validation.error.errors } : undefined,
           },
         };
       }
@@ -166,11 +166,9 @@ export class EstimateService implements EstimatingOperations {
         return createErrorResponse('LINE_ITEM_NOT_FOUND', `Line item ${id} not found`);
       }
 
-      const updated = await this.deps.lineItemRepository.update(id, {
-        ...data,
-        id: undefined,
-        metadata: undefined,
-      });
+      // Extract only the fields we want to update
+      const { id: _id, metadata: _metadata, ...updateData } = data;
+      const updated = await this.deps.lineItemRepository.update(id, updateData);
 
       if (!updated) {
         return createErrorResponse('UPDATE_ERROR', 'Failed to update line item');
@@ -382,8 +380,6 @@ export class EstimateService implements EstimatingOperations {
           totalCost: item.totalCost,
           isLabor: item.isLabor,
           category: item.category,
-          notes: item.notes,
-          markup: item.markup,
         };
 
         const copied = await this.deps.lineItemRepository.create(createData);
@@ -551,13 +547,13 @@ export class EstimateService implements EstimatingOperations {
       // Validate all items first
       for (const item of items) {
         const validation = validateCreateLineItem({ ...item, projectId });
-        if (!validation.success) {
+        if (!validation.success || !validation.data) {
           return {
             success: false,
             error: {
               code: 'VALIDATION_ERROR',
               message: `Invalid line item data: ${item.description}`,
-              details: validation.error.errors,
+              details: validation.error ? { issues: validation.error.errors } : undefined,
             },
           };
         }

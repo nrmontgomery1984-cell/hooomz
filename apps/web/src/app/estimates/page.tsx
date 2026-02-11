@@ -9,6 +9,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { PageErrorBoundary } from '@/components/ui/PageErrorBoundary';
 import Link from 'next/link';
 import { FileText, Plus, ChevronRight } from 'lucide-react';
 import { useLocalProjects } from '@/lib/hooks/useLocalData';
@@ -82,6 +83,7 @@ export default function EstimatesPage() {
   }, [isLoading, services, projects]);
 
   return (
+    <PageErrorBoundary>
     <div className="min-h-screen pb-24" style={{ background: '#F3F4F6' }}>
       {/* Header */}
       <div style={{ background: '#FFFFFF', borderBottom: '1px solid #E5E7EB' }}>
@@ -212,5 +214,6 @@ export default function EstimatesPage() {
         )}
       </div>
     </div>
+    </PageErrorBoundary>
   );
 }

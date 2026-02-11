@@ -10,6 +10,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { PageErrorBoundary } from '@/components/ui/PageErrorBoundary';
 import {
   Plus,
   Phone,
@@ -112,6 +113,7 @@ export default function LeadPipelinePage() {
   }
 
   return (
+    <PageErrorBoundary>
     <div className="min-h-screen pb-24" style={{ background: '#F3F4F6' }}>
       {/* Header */}
       <div style={{ background: '#FFFFFF', borderBottom: '1px solid #E5E7EB' }}>
@@ -219,6 +221,7 @@ export default function LeadPipelinePage() {
         ))}
       </div>
     </div>
+    </PageErrorBoundary>
   );
 }
 

@@ -21,3 +21,7 @@ export * from './Modal';
 // Data display components
 export * from './Table';
 export * from './Tabs';
+
+// Error handling
+export * from './ErrorBoundary';
+export * from './PageErrorBoundary';

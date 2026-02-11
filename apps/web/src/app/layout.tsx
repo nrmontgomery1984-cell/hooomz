@@ -5,6 +5,7 @@ import { QuickAddSheet } from '@/components/activity/QuickAddSheet';
 import { DevTools } from '@/components/dev/DevTools';
 import { CrewGate } from '@/components/crew/CrewGate';
 import { TimeClockWidget } from '@/components/timeclock/TimeClockWidget';
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -26,15 +27,17 @@ export default function RootLayout({
       </head>
       <body style={{ backgroundColor: 'var(--theme-background)' }}>
         <Providers>
-          <CrewGate>
-            <main className="min-h-screen">
-              {children}
-            </main>
-            <BottomNav />
-            <TimeClockWidget />
-            <QuickAddSheet />
-            <DevTools />
-          </CrewGate>
+          <ErrorBoundary>
+            <CrewGate>
+              <main className="min-h-screen">
+                {children}
+              </main>
+              <BottomNav />
+              <TimeClockWidget />
+              <QuickAddSheet />
+              <DevTools />
+            </CrewGate>
+          </ErrorBoundary>
         </Providers>
       </body>
     </html>

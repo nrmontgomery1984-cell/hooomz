@@ -9,6 +9,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { PageErrorBoundary } from '@/components/ui/PageErrorBoundary';
 import {
   Plus,
   ChevronRight,
@@ -86,7 +87,8 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen pb-24" style={{ background: '#F3F4F6' }}>
+    <PageErrorBoundary>
+      <div className="min-h-screen pb-24" style={{ background: '#F3F4F6' }}>
       {/* Header */}
       <div style={{ background: '#FFFFFF', borderBottom: '1px solid #E5E7EB' }}>
         <div className="max-w-lg mx-auto px-4 py-4 flex items-center justify-between">
@@ -245,7 +247,8 @@ export default function HomePage() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </PageErrorBoundary>
   );
 }
 

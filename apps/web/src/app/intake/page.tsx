@@ -10,6 +10,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { PageErrorBoundary } from '@/components/ui/PageErrorBoundary';
 import { IntakeWizard } from '@/components/intake/IntakeWizard';
 import { ContractorIntakeWizard } from '@/components/intake/ContractorIntakeWizard';
 import type { HomeownerIntakeData, ContractorIntakeData } from '@/lib/types/intake.types';
@@ -116,6 +117,7 @@ export default function IntakePage() {
 
   // Selection screen
   return (
+    <PageErrorBoundary>
     <div className="min-h-screen" style={{ background: '#F3F4F6' }}>
       {/* Header */}
       <div className="sticky top-0 z-10" style={{ background: '#FFFFFF', borderBottom: '1px solid #E5E7EB' }}>
@@ -217,5 +219,6 @@ export default function IntakePage() {
         </div>
       </div>
     </div>
+    </PageErrorBoundary>
   );
 }

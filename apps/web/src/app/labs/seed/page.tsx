@@ -9,10 +9,11 @@
 
 import { useState, useCallback } from 'react';
 import Link from 'next/link';
-import { Database, Trash2, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Database, Trash2, Loader2, CheckCircle2, AlertCircle, Users } from 'lucide-react';
 import { useServicesContext } from '@/lib/services/ServicesContext';
 import { useActiveCrew } from '@/lib/crew/ActiveCrewContext';
 import { seedAllLabsData, type SeedResult } from '@/lib/data/seedAll';
+import { seedCustomers, seedProjects, seedTasks, seedActivityEvents, hasExistingData } from '@/lib/seed/seedData';
 
 type SeedState = 'idle' | 'seeding' | 'done' | 'error' | 'clearing';
 
@@ -56,6 +57,19 @@ export default function SeedPage() {
 
     try {
       addLog('Clearing existing data...');
+
+      // Clear demo data (projects + tasks)
+      const { projects } = await services.projects.findAll();
+      let deletedTasks = 0;
+      for (const p of projects) {
+        const tasks = await services.scheduling.tasks.findByProjectId(p.id);
+        for (const t of tasks) {
+          await services.scheduling.tasks.delete(t.id);
+          deletedTasks++;
+        }
+        await services.projects.delete(p.id);
+      }
+      if (projects.length > 0) addLog(`  Deleted ${projects.length} projects and ${deletedTasks} tasks`);
 
       // Clear active crew session so CrewGate re-appears
       await endSession();
@@ -115,9 +129,67 @@ export default function SeedPage() {
     }
   }, [services, addLog, endSession]);
 
+  const handleSeedDemo = useCallback(async () => {
+    if (!services) return;
+    setState('seeding');
+    setLogs([]);
+    setResult(null);
+    setError(null);
+
+    try {
+      const exists = await hasExistingData();
+      if (exists) {
+        addLog('Demo data already seeded — projects found in IndexedDB');
+        addLog('Use "Clear & Re-seed" to start fresh, then try again');
+        setState('idle');
+        return;
+      }
+
+      addLog('Seeding demo scenario...');
+
+      addLog('Creating demo customers...');
+      const customerIds = await seedCustomers(services);
+      addLog(`  Created ${customerIds.length} customers`);
+
+      addLog('Creating demo projects...');
+      const projectIds = await seedProjects(services, customerIds);
+      addLog(`  Created ${projectIds.length} projects`);
+
+      addLog('Creating demo tasks...');
+      const taskCount = await seedTasks(services, projectIds);
+      addLog(`  Created ${taskCount} tasks`);
+
+      addLog('Creating activity events...');
+      await seedActivityEvents(services, projectIds);
+      addLog('  Activity events created');
+
+      setResult({
+        sops: 0,
+        checklistItems: 0,
+        knowledgeItems: 0,
+        products: 0,
+        techniques: 0,
+        toolMethods: 0,
+        crewMembers: 0,
+        catalogItems: 0,
+        customers: customerIds.length,
+        projects: projectIds.length,
+        tasks: taskCount,
+      });
+
+      addLog('Demo scenario complete!');
+      setState('done');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      setError(message);
+      addLog(`ERROR: ${message}`);
+      setState('error');
+    }
+  }, [services, addLog]);
+
   const isWorking = state === 'seeding' || state === 'clearing';
   const total = result
-    ? result.sops + result.checklistItems + result.knowledgeItems + result.products + result.techniques + result.toolMethods + result.crewMembers + result.catalogItems
+    ? result.sops + result.checklistItems + result.knowledgeItems + result.products + result.techniques + result.toolMethods + result.crewMembers + result.catalogItems + (result.customers || 0) + (result.projects || 0) + (result.tasks || 0)
     : 0;
 
   return (
@@ -184,6 +256,21 @@ export default function SeedPage() {
           </button>
 
           <button
+            onClick={handleSeedDemo}
+            disabled={isWorking || !services}
+            className="w-full py-3 text-sm font-semibold rounded-xl transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            style={{
+              background: '#FFFFFF',
+              border: '2px solid #3B82F6',
+              color: '#3B82F6',
+              minHeight: '48px',
+            }}
+          >
+            <Users size={16} />
+            Seed Demo Scenario
+          </button>
+
+          <button
             onClick={handleClearAndReseed}
             disabled={isWorking || !services}
             className="w-full py-3 text-sm font-semibold rounded-xl transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
@@ -227,6 +314,9 @@ export default function SeedPage() {
                 { label: 'Tool Methods', count: result.toolMethods },
                 { label: 'Crew Members', count: result.crewMembers },
                 { label: 'Catalog Items', count: result.catalogItems },
+                ...(result.customers ? [{ label: 'Customers', count: result.customers }] : []),
+                ...(result.projects ? [{ label: 'Projects', count: result.projects }] : []),
+                ...(result.tasks ? [{ label: 'Tasks', count: result.tasks }] : []),
               ].map((item) => (
                 <div key={item.label} className="flex justify-between text-xs px-2 py-1 rounded" style={{ background: '#F0FDF4' }}>
                   <span style={{ color: '#374151' }}>{item.label}</span>
@@ -270,6 +360,8 @@ export default function SeedPage() {
           <h3 className="text-xs font-semibold mb-2" style={{ color: '#6B7280' }}>After seeding, check:</h3>
           <div className="space-y-2">
             {[
+              { href: '/', label: 'Dashboard', desc: 'Should show active projects' },
+              { href: '/leads', label: 'Lead Pipeline', desc: 'Pipeline overview' },
               { href: '/labs/sops', label: 'SOPs', desc: 'Should show 21 SOPs' },
               { href: '/labs/knowledge', label: 'Knowledge Base', desc: 'Should show lab test findings' },
               { href: '/labs/catalogs', label: 'Catalogs', desc: 'Products, techniques, tools' },

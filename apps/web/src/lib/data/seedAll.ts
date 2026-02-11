@@ -45,6 +45,9 @@ export interface SeedResult {
   toolMethods: number;
   crewMembers: number;
   catalogItems: number;
+  customers?: number;
+  projects?: number;
+  tasks?: number;
 }
 
 export type SeedProgressCallback = (message: string) => void;

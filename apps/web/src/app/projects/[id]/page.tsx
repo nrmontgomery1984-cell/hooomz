@@ -10,6 +10,7 @@
 
 import { useMemo, useState, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
+import { PageErrorBoundary } from '@/components/ui/PageErrorBoundary';
 import { ChevronLeft, MapPin } from 'lucide-react';
 import {
   useLocalProject,
@@ -228,10 +229,11 @@ export default function ProjectDetailPage() {
   // Render
   // ---------------------------------------------------------------------------
   return (
-    <div className="min-h-screen pb-24" style={{ background: '#F3F4F6' }}>
-      {/* Sticky Header */}
-      <div
-        className="sticky top-0 z-20"
+    <PageErrorBoundary>
+      <div className="min-h-screen pb-24" style={{ background: '#F3F4F6' }}>
+        {/* Sticky Header */}
+        <div
+          className="sticky top-0 z-20"
         style={{ background: '#FFFFFF', borderBottom: '1px solid #E5E7EB' }}
       >
         <div className="max-w-lg mx-auto px-4 py-3 flex items-center gap-3">
@@ -372,5 +374,6 @@ export default function ProjectDetailPage() {
         {knowledgeSheetId && <KnowledgeSheetContent knowledgeId={knowledgeSheetId} />}
       </BottomSheet>
     </div>
+    </PageErrorBoundary>
   );
 }

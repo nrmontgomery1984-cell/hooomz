@@ -9,6 +9,7 @@
 
 import { useState } from 'react';
 import { useParams } from 'next/navigation';
+import { PageErrorBoundary } from '@/components/ui/PageErrorBoundary';
 import {
   Lock,
   CheckCircle2,
@@ -71,6 +72,7 @@ export default function PortalPage() {
     : '#10B981';
 
   return (
+    <PageErrorBoundary>
     <div className="min-h-screen pb-8" style={{ background: '#FAFAFA' }}>
       {/* ================================================================
           Header
@@ -241,6 +243,7 @@ export default function PortalPage() {
         <MessageModal onClose={() => setShowMessageModal(false)} />
       )}
     </div>
+    </PageErrorBoundary>
   );
 }
 

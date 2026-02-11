@@ -149,13 +149,23 @@ const createDemoProjects = (customerIds: string[]): CreateProject[] => [
 // ============================================================================
 
 /**
- * Seed demo customers into IndexedDB
+ * Seed demo customers into IndexedDB.
+ * Idempotent: skips customers whose email already exists.
  */
 export async function seedCustomers(_services: Services): Promise<string[]> {
+  const services = getServices();
   const loggedServices = getLoggedServices();
   const customerIds: string[] = [];
 
+  const { customers: existing } = await services.customers.findAll();
+
   for (const customerData of DEMO_CUSTOMERS) {
+    const match = existing.find((c) => c.email === customerData.email);
+    if (match) {
+      customerIds.push(match.id);
+      console.log(`Customer exists (skipped): ${match.firstName} ${match.lastName}`);
+      continue;
+    }
     const customer = await loggedServices.customers.create(customerData);
     customerIds.push(customer.id);
     console.log(`Created customer: ${customer.firstName} ${customer.lastName}`);
@@ -165,18 +175,27 @@ export async function seedCustomers(_services: Services): Promise<string[]> {
 }
 
 /**
- * Seed demo projects into IndexedDB
+ * Seed demo projects into IndexedDB.
+ * Idempotent: skips projects whose name already exists.
  */
 export async function seedProjects(
   _services: Services,
   customerIds: string[]
 ): Promise<string[]> {
+  const services = getServices();
   const loggedServices = getLoggedServices();
   const projectIds: string[] = [];
 
+  const { projects: existing } = await services.projects.findAll();
   const demoProjects = createDemoProjects(customerIds);
 
   for (const projectData of demoProjects) {
+    const match = existing.find((p) => p.name === projectData.name);
+    if (match) {
+      projectIds.push(match.id);
+      console.log(`Project exists (skipped): ${match.name}`);
+      continue;
+    }
     const project = await loggedServices.projects.create(projectData);
     projectIds.push(project.id);
     console.log(`Created project: ${project.name}`);

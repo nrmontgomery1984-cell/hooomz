@@ -9,6 +9,7 @@
 
 import { useState, useCallback } from 'react';
 import Link from 'next/link';
+import { useQueryClient } from '@tanstack/react-query';
 import { Database, Trash2, Loader2, CheckCircle2, AlertCircle, Users } from 'lucide-react';
 import { useServicesContext } from '@/lib/services/ServicesContext';
 import { useActiveCrew } from '@/lib/crew/ActiveCrewContext';
@@ -20,6 +21,7 @@ type SeedState = 'idle' | 'seeding' | 'done' | 'error' | 'clearing';
 export default function SeedPage() {
   const { services } = useServicesContext();
   const { endSession } = useActiveCrew();
+  const queryClient = useQueryClient();
   const [state, setState] = useState<SeedState>('idle');
   const [logs, setLogs] = useState<string[]>([]);
   const [result, setResult] = useState<SeedResult | null>(null);
@@ -39,6 +41,7 @@ export default function SeedPage() {
     try {
       const seedResult = await seedAllLabsData(services, addLog);
       setResult(seedResult);
+      queryClient.invalidateQueries();
       setState('done');
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unknown error';
@@ -46,7 +49,7 @@ export default function SeedPage() {
       addLog(`ERROR: ${message}`);
       setState('error');
     }
-  }, [services, addLog]);
+  }, [services, addLog, queryClient]);
 
   const handleClearAndReseed = useCallback(async () => {
     if (!services) return;
@@ -127,6 +130,7 @@ export default function SeedPage() {
       // Re-seed
       const seedResult = await seedAllLabsData(services, addLog);
       setResult(seedResult);
+      queryClient.invalidateQueries();
       setState('done');
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unknown error';
@@ -134,7 +138,7 @@ export default function SeedPage() {
       addLog(`ERROR: ${message}`);
       setState('error');
     }
-  }, [services, addLog, endSession]);
+  }, [services, addLog, endSession, queryClient]);
 
   const handleSeedDemo = useCallback(async () => {
     if (!services) return;
@@ -185,6 +189,7 @@ export default function SeedPage() {
       });
 
       addLog('Demo scenario complete!');
+      queryClient.invalidateQueries();
       setState('done');
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unknown error';
@@ -192,7 +197,7 @@ export default function SeedPage() {
       addLog(`ERROR: ${message}`);
       setState('error');
     }
-  }, [services, addLog]);
+  }, [services, addLog, queryClient]);
 
   const isWorking = state === 'seeding' || state === 'clearing';
   const total = result

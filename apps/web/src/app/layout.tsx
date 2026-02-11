@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Providers } from './providers';
 import { BottomNav } from '@/components/navigation/BottomNav';
+import { Sidebar } from '@/components/navigation/Sidebar';
 import { QuickAddSheet } from '@/components/activity/QuickAddSheet';
 import { DevTools } from '@/components/dev/DevTools';
 import { CrewGate } from '@/components/crew/CrewGate';
@@ -29,9 +30,12 @@ export default function RootLayout({
         <Providers>
           <ErrorBoundary>
             <CrewGate>
-              <main className="min-h-screen">
-                {children}
-              </main>
+              <div className="flex min-h-screen">
+                <Sidebar />
+                <main className="flex-1 min-h-screen min-w-0">
+                  {children}
+                </main>
+              </div>
               <BottomNav />
               <TimeClockWidget />
               <QuickAddSheet />

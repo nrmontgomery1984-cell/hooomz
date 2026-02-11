@@ -33,6 +33,21 @@ function getScoreColor(score: number): string {
   return '#EF4444';
 }
 
+function getGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good morning';
+  if (hour < 18) return 'Good afternoon';
+  return 'Good evening';
+}
+
+function getDateString(): string {
+  return new Date().toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+  });
+}
+
 export default function HomePage() {
   const router = useRouter();
   const dashboard = useDashboardData();
@@ -89,16 +104,20 @@ export default function HomePage() {
   return (
     <PageErrorBoundary>
       <div className="min-h-screen pb-24" style={{ background: '#F3F4F6' }}>
-      {/* Header */}
+      {/* Header — greeting replaces redundant logo (sidebar has logo on desktop) */}
       <div style={{ background: '#FFFFFF', borderBottom: '1px solid #E5E7EB' }}>
-        <div className="max-w-lg mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="max-w-lg md:max-w-4xl mx-auto px-4 md:px-8 py-4 md:py-6 flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold" style={{ color: '#111827' }}>Hooomz</h1>
-            <p className="text-xs" style={{ color: '#9CA3AF' }}>Interiors</p>
+            <p className="text-base md:text-lg font-semibold" style={{ color: '#111827' }}>
+              {getGreeting()}, Nathan
+            </p>
+            <p className="text-xs mt-0.5" style={{ color: '#9CA3AF' }}>
+              {getDateString()}
+            </p>
           </div>
           <button
             onClick={() => router.push('/intake')}
-            className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl"
+            className="md:hidden min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl"
             style={{ background: '#0F766E' }}
           >
             <Plus size={20} color="#FFFFFF" strokeWidth={2} />
@@ -106,29 +125,34 @@ export default function HomePage() {
         </div>
       </div>
 
-      <div className="max-w-lg mx-auto px-4">
+      <div className="max-w-lg md:max-w-4xl mx-auto px-4 md:px-8">
         {/* ================================================================
             Section 1: Summary Cards (2x2 grid)
             ================================================================ */}
-        <div className="mt-4 grid grid-cols-2 gap-3">
-          <StatCard label="Active Projects" value={dashboard.activeProjectCount} dotColor="#3B82F6" />
-          <StatCard label="Portfolio Health" value={`${dashboard.healthScore}%`} dotColor={getScoreColor(dashboard.healthScore)} />
+        <div className="mt-6 md:mt-8 grid grid-cols-2 gap-3 md:gap-4">
+          <button
+            onClick={() => document.getElementById('todays-work')?.scrollIntoView({ behavior: 'smooth' })}
+            className="text-left"
+          >
+            <StatCard label="Active Projects" value={dashboard.activeProjectCount} accentColor="#3B82F6" />
+          </button>
+          <StatCard label="Portfolio Health" value={`${dashboard.healthScore}%`} accentColor={getScoreColor(dashboard.healthScore)} />
           <button onClick={() => router.push('/leads')} className="text-left">
-            <StatCard label="Pipeline" value={dashboard.pipelineCount} dotColor="#F59E0B" />
+            <StatCard label="Pipeline" value={dashboard.pipelineCount} accentColor="#F59E0B" />
           </button>
           <StatCard
             label="Tasks Due"
             value={dashboard.tasksDue}
-            dotColor={dashboard.blockedCount > 0 ? '#EF4444' : '#9CA3AF'}
+            accentColor={dashboard.blockedCount > 0 ? '#EF4444' : '#9CA3AF'}
           />
         </div>
 
         {/* ================================================================
             Section 2: Today's Work
             ================================================================ */}
-        <div className="mt-6">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-medium uppercase tracking-wide" style={{ color: '#6B7280' }}>
+        <div className="mt-8" id="todays-work">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[13px] font-semibold uppercase tracking-wider" style={{ color: '#6B7280' }}>
               Today&apos;s Work
             </h2>
             {dashboard.activeProjects.length > 0 && (
@@ -139,18 +163,18 @@ export default function HomePage() {
           </div>
 
           {dashboard.activeProjects.length === 0 ? (
-            <div className="rounded-xl p-8 text-center" style={{ background: '#FFFFFF', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
+            <div className="rounded-xl p-8 text-center" style={{ background: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}>
               <div className="w-16 h-16 mx-auto mb-4 rounded-xl flex items-center justify-center" style={{ background: '#F0FDFA' }}>
                 <Briefcase size={28} style={{ color: '#0F766E' }} strokeWidth={1.5} />
               </div>
-              <p className="text-sm font-medium mb-1" style={{ color: '#111827' }}>No active projects</p>
-              <p className="text-xs mb-4" style={{ color: '#9CA3AF' }}>Start a project to see it here</p>
+              <p className="text-base font-medium mb-1" style={{ color: '#111827' }}>No active projects yet</p>
+              <p className="text-sm mb-5" style={{ color: '#9CA3AF' }}>Create your first project to see it here</p>
               <button
                 onClick={() => router.push('/intake')}
-                className="min-h-[48px] w-full rounded-xl font-medium text-white"
+                className="min-h-[48px] px-8 rounded-xl font-medium text-white"
                 style={{ background: '#0F766E' }}
               >
-                Start a Project
+                Create a Project
               </button>
             </div>
           ) : (
@@ -169,12 +193,12 @@ export default function HomePage() {
         {/* ================================================================
             Section 3: Needs Attention
             ================================================================ */}
-        <div className="mt-6">
-          <h2 className="text-sm font-medium uppercase tracking-wide mb-3" style={{ color: '#6B7280' }}>
+        <div className="mt-8">
+          <h2 className="text-[13px] font-semibold uppercase tracking-wider mb-4" style={{ color: '#6B7280' }}>
             Needs Attention
           </h2>
 
-          <div className="rounded-xl overflow-hidden" style={{ background: '#FFFFFF', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
+          <div className="rounded-xl overflow-hidden" style={{ background: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}>
             {attentionItems.length === 0 ? (
               <div className="flex items-center gap-3 px-4 py-4">
                 <CheckCircle2 size={18} style={{ color: '#10B981' }} strokeWidth={2} />
@@ -193,9 +217,9 @@ export default function HomePage() {
         {/* ================================================================
             Section 4: Recent Activity
             ================================================================ */}
-        <div className="mt-6">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-medium uppercase tracking-wide" style={{ color: '#6B7280' }}>
+        <div className="mt-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[13px] font-semibold uppercase tracking-wider" style={{ color: '#6B7280' }}>
               Recent Activity
             </h2>
             <Link
@@ -206,9 +230,9 @@ export default function HomePage() {
               View All <ArrowRight size={12} />
             </Link>
           </div>
-          <div className="rounded-xl overflow-hidden" style={{ background: '#FFFFFF', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
+          <div className="rounded-xl overflow-hidden" style={{ background: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}>
             {dashboard.recentEvents.length === 0 ? (
-              <p className="text-sm text-center py-4" style={{ color: '#9CA3AF' }}>No activity yet</p>
+              <p className="text-sm text-center py-6" style={{ color: '#9CA3AF' }}>No activity yet</p>
             ) : (
               <SimpleActivityFeed
                 events={dashboard.recentEvents as any}
@@ -222,8 +246,8 @@ export default function HomePage() {
         {/* ================================================================
             Section 5: Quick Actions
             ================================================================ */}
-        <div className="mt-6 mb-4">
-          <h2 className="text-sm font-medium uppercase tracking-wide mb-3" style={{ color: '#6B7280' }}>
+        <div className="mt-8 mb-6">
+          <h2 className="text-[13px] font-semibold uppercase tracking-wider mb-4" style={{ color: '#6B7280' }}>
             Quick Actions
           </h2>
           <div className="flex gap-2 overflow-x-auto">
@@ -256,22 +280,23 @@ export default function HomePage() {
 // Sub-components
 // ============================================================================
 
-/** Stat card with colored dot indicator */
-function StatCard({ label, value, dotColor }: {
+/** Stat card with colored left-border accent */
+function StatCard({ label, value, accentColor }: {
   label: string;
   value: string | number;
-  dotColor: string;
+  accentColor: string;
 }) {
   return (
-    <div className="rounded-xl p-4" style={{ background: '#FFFFFF', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
-      <div className="flex items-center gap-2 mb-2">
-        <div
-          className="rounded-full flex-shrink-0"
-          style={{ width: 8, height: 8, background: dotColor }}
-        />
-        <span className="text-xs font-medium" style={{ color: '#6B7280' }}>{label}</span>
-      </div>
-      <p className="text-2xl font-bold" style={{ color: '#111827' }}>{value}</p>
+    <div
+      className="rounded-xl p-4 md:p-5 transition-all duration-150 hover:shadow-md hover:-translate-y-px"
+      style={{
+        background: '#FFFFFF',
+        borderLeft: `4px solid ${accentColor}`,
+        boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+      }}
+    >
+      <span className="text-[13px] font-medium block" style={{ color: '#6B7280' }}>{label}</span>
+      <p className="text-3xl font-bold leading-tight mt-1" style={{ color: '#111827' }}>{value}</p>
     </div>
   );
 }
@@ -289,40 +314,45 @@ function ProjectCard({ project, onClick }: {
   return (
     <button
       onClick={onClick}
-      className="w-full rounded-xl p-4 text-left transition-all min-h-[48px]"
-      style={{ background: '#FFFFFF', boxShadow: '0 2px 8px rgba(0,0,0,0.06)', border: '2px solid transparent' }}
-      onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#E5E7EB'; }}
-      onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'transparent'; }}
+      className="w-full rounded-xl p-4 md:p-5 text-left transition-all duration-150 min-h-[48px] hover:shadow-md hover:-translate-y-px"
+      style={{
+        background: '#FFFFFF',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+        border: '1px solid #E5E7EB',
+      }}
     >
-      {/* Top row: name + score */}
+      {/* Top row: name + health score */}
       <div className="flex items-center justify-between">
         <div className="flex-1 min-w-0">
-          <h3 className="text-sm font-semibold truncate" style={{ color: '#111827' }}>{project.name}</h3>
-          <p className="text-xs mt-0.5 capitalize" style={{ color: '#9CA3AF' }}>{project.status.replace(/-/g, ' ')}</p>
+          <h3 className="text-base font-semibold truncate" style={{ color: '#111827' }}>{project.name}</h3>
+          <p className="text-sm mt-0.5 capitalize" style={{ color: '#9CA3AF' }}>{project.status.replace(/-/g, ' ')}</p>
         </div>
-        <div className="flex items-center gap-3 flex-shrink-0">
-          <span className="text-2xl font-bold" style={{ color: scoreColor }}>{project.healthScore}</span>
+        <div className="flex items-center gap-3 flex-shrink-0 ml-4">
+          <div className="text-right">
+            <span className="text-2xl font-bold" style={{ color: scoreColor }}>{project.healthScore}</span>
+            <p className="text-[10px] font-medium" style={{ color: '#9CA3AF' }}>Health</p>
+          </div>
           <ChevronRight size={16} style={{ color: '#D1D5DB' }} strokeWidth={1.5} />
         </div>
       </div>
 
       {/* Progress bar with task count */}
       <div className="mt-3 flex items-center gap-3">
-        <div className="flex-1 h-1.5 rounded-full" style={{ background: '#E5E7EB' }}>
+        <div className="flex-1 h-2 rounded-full" style={{ background: '#E5E7EB' }}>
           <div
-            className="h-1.5 rounded-full"
+            className="h-2 rounded-full"
             style={{ width: `${progress}%`, background: scoreColor, transition: 'width 0.4s ease' }}
           />
         </div>
-        <span className="text-xs flex-shrink-0" style={{ color: '#9CA3AF' }}>
+        <span className="text-xs font-medium flex-shrink-0" style={{ color: '#6B7280' }}>
           {project.completedCount}/{project.taskCount}
         </span>
       </div>
 
       {/* Next task */}
       {project.nextTask && (
-        <p className="text-xs mt-2 truncate" style={{ color: '#6B7280' }}>
-          <span style={{ color: '#0F766E', fontWeight: 500 }}>Next:</span>{' '}
+        <p className="text-sm mt-3 truncate" style={{ color: '#374151' }}>
+          <span className="font-medium" style={{ color: '#0F766E' }}>Next:</span>{' '}
           {project.nextTask}
         </p>
       )}
@@ -376,10 +406,8 @@ function QuickActionButton({ icon, label, onClick }: {
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-2 px-4 min-h-[44px] rounded-xl text-sm font-medium whitespace-nowrap transition-colors"
+      className="flex items-center gap-2 px-4 min-h-[44px] rounded-xl text-sm font-medium whitespace-nowrap transition-all duration-150 hover:shadow-sm hover:-translate-y-px"
       style={{ background: '#FFFFFF', color: '#111827', border: '1px solid #E5E7EB' }}
-      onMouseEnter={(e) => { e.currentTarget.style.background = '#F9FAFB'; }}
-      onMouseLeave={(e) => { e.currentTarget.style.background = '#FFFFFF'; }}
     >
       <span style={{ color: '#0F766E' }}>{icon}</span>
       {label}

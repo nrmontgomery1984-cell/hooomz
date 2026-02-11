@@ -58,7 +58,7 @@ export default function SeedPage() {
     try {
       addLog('Clearing existing data...');
 
-      // Clear demo data (projects + tasks)
+      // Clear demo data (customers + projects + tasks)
       const { projects } = await services.projects.findAll();
       let deletedTasks = 0;
       for (const p of projects) {
@@ -70,6 +70,13 @@ export default function SeedPage() {
         await services.projects.delete(p.id);
       }
       if (projects.length > 0) addLog(`  Deleted ${projects.length} projects and ${deletedTasks} tasks`);
+
+      // Clear customers
+      const { customers } = await services.customers.findAll();
+      for (const c of customers) {
+        await services.customers.delete(c.id);
+      }
+      if (customers.length > 0) addLog(`  Deleted ${customers.length} customers`);
 
       // Clear active crew session so CrewGate re-appears
       await endSession();

@@ -35,7 +35,7 @@ const DEMO_CUSTOMERS: CreateCustomer[] = [
       postalCode: 'E1C 5N2',
       country: 'Canada',
     },
-    tags: ['ritchies-referral'],
+    tags: ['lead', 'source:referral', 'interest:flooring', 'interest:paint', 'ritchies-referral'],
     notes: 'Referred by Ritchies. Main floor refresh - living room and dining room.',
   },
   {
@@ -52,7 +52,7 @@ const DEMO_CUSTOMERS: CreateCustomer[] = [
       postalCode: 'E1B 3J4',
       country: 'Canada',
     },
-    tags: ['budget-conscious'],
+    tags: ['lead', 'source:referral', 'interest:flooring', 'budget-conscious'],
     notes: 'Mike & Jennifer Cole. Whole-home flooring project. Budget-conscious but wants quality.',
   },
   {
@@ -69,7 +69,7 @@ const DEMO_CUSTOMERS: CreateCustomer[] = [
       postalCode: 'E1C 1K8',
       country: 'Canada',
     },
-    tags: ['landlord', 'rental-property'],
+    tags: ['lead', 'source:other', 'interest:flooring', 'interest:paint', 'landlord', 'rental-property'],
     notes: 'Rental property owner. Wants durable LVP throughout. Quick turnaround needed.',
   },
 ];

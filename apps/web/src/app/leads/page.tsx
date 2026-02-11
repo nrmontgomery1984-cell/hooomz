@@ -117,10 +117,15 @@ export default function LeadPipelinePage() {
     <div className="min-h-screen pb-24" style={{ background: '#F3F4F6' }}>
       {/* Header */}
       <div style={{ background: '#FFFFFF', borderBottom: '1px solid #E5E7EB' }}>
-        <div className="max-w-lg mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-xl font-bold" style={{ color: '#111827' }}>
-            Lead Pipeline
-          </h1>
+        <div className="max-w-lg md:max-w-4xl mx-auto px-4 md:px-8 py-4 md:py-6 flex items-center justify-between">
+          <div>
+            <h1 className="text-xl md:text-2xl font-bold" style={{ color: '#111827' }}>
+              Lead Pipeline
+            </h1>
+            <p className="text-xs mt-0.5" style={{ color: '#9CA3AF' }}>
+              {pipeline.leads.length} lead{pipeline.leads.length !== 1 ? 's' : ''} in pipeline
+            </p>
+          </div>
           <button
             onClick={() => router.push('/leads/new')}
             className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl"
@@ -131,7 +136,7 @@ export default function LeadPipelinePage() {
         </div>
 
         {/* Filter pills */}
-        <div className="max-w-lg mx-auto px-4 pb-3">
+        <div className="max-w-lg md:max-w-4xl mx-auto px-4 md:px-8 pb-3">
           <div className="flex gap-2 overflow-x-auto">
             <FilterPill
               label="All"
@@ -156,7 +161,7 @@ export default function LeadPipelinePage() {
         </div>
       </div>
 
-      <div className="max-w-lg mx-auto px-4">
+      <div className="max-w-lg md:max-w-4xl mx-auto px-4 md:px-8">
         {/* Empty state */}
         {filteredLeads.length === 0 && (
           <div className="mt-8 text-center">
@@ -196,7 +201,7 @@ export default function LeadPipelinePage() {
                 <ChevronDown size={16} style={{ color: '#9CA3AF' }} />
               )}
               <h2
-                className="text-sm font-medium uppercase tracking-wide"
+                className="text-[13px] font-semibold uppercase tracking-wider"
                 style={{ color: '#6B7280' }}
               >
                 {STAGE_LABELS[stage]}
@@ -291,11 +296,11 @@ function LeadCard({ lead }: { lead: LeadRecord }) {
 
   return (
     <div
-      className="rounded-xl p-4"
+      className="rounded-xl p-4 transition-all duration-150 hover:shadow-md hover:-translate-y-px"
       style={{
         background: '#FFFFFF',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-        border: stage === 'passed' ? '1px solid #E5E7EB' : 'none',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+        border: stage === 'passed' ? '1px solid #E5E7EB' : '1px solid transparent',
         opacity: stage === 'passed' ? 0.7 : 1,
       }}
     >

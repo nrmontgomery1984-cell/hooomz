@@ -14,7 +14,7 @@ import { Database, Trash2, Loader2, CheckCircle2, AlertCircle, Users } from 'luc
 import { useServicesContext } from '@/lib/services/ServicesContext';
 import { useActiveCrew } from '@/lib/crew/ActiveCrewContext';
 import { seedAllLabsData, type SeedResult } from '@/lib/data/seedAll';
-import { seedCustomers, seedProjects, seedTasks, seedActivityEvents, hasExistingData } from '@/lib/seed/seedData';
+import { seedCustomers, seedProjects, seedLineItems, seedTasks, seedActivityEvents, hasExistingData } from '@/lib/seed/seedData';
 
 type SeedState = 'idle' | 'seeding' | 'done' | 'error' | 'clearing';
 
@@ -41,7 +41,7 @@ export default function SeedPage() {
     try {
       const seedResult = await seedAllLabsData(services, addLog);
       setResult(seedResult);
-      queryClient.invalidateQueries();
+      queryClient.removeQueries();
       setState('done');
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unknown error';
@@ -60,6 +60,13 @@ export default function SeedPage() {
 
     try {
       addLog('Clearing existing data...');
+
+      // Clear line items (estimates)
+      const { lineItems } = await services.estimating.lineItems.findAll();
+      for (const li of lineItems) {
+        await services.estimating.lineItems.delete(li.id);
+      }
+      if (lineItems.length > 0) addLog(`  Deleted ${lineItems.length} line items`);
 
       // Clear demo data (customers + projects + tasks)
       const { projects } = await services.projects.findAll();
@@ -125,12 +132,31 @@ export default function SeedPage() {
       await services.loopManagement.clearAll();
       addLog('  Cleared loop contexts and iterations');
 
-      addLog('Clear complete. Re-seeding...');
+      addLog('Clear complete. Re-seeding Labs + Demo...');
 
-      // Re-seed
+      // Re-seed Labs
       const seedResult = await seedAllLabsData(services, addLog);
-      setResult(seedResult);
-      queryClient.invalidateQueries();
+
+      // Re-seed Demo (customers, projects, line items, tasks, activity)
+      addLog('Seeding demo scenario...');
+      const customerIds = await seedCustomers(services);
+      addLog(`  Created ${customerIds.length} customers`);
+      const projectIds = await seedProjects(services, customerIds);
+      addLog(`  Created ${projectIds.length} projects`);
+      const lineItemCount = await seedLineItems(services, projectIds);
+      addLog(`  Created ${lineItemCount} line items`);
+      const taskCount = await seedTasks(services, projectIds);
+      addLog(`  Created ${taskCount} tasks`);
+      await seedActivityEvents(services, projectIds);
+      addLog('  Activity events created');
+
+      setResult({
+        ...seedResult,
+        customers: customerIds.length,
+        projects: projectIds.length,
+        tasks: taskCount,
+      });
+      queryClient.removeQueries();
       setState('done');
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unknown error';
@@ -166,6 +192,10 @@ export default function SeedPage() {
       const projectIds = await seedProjects(services, customerIds);
       addLog(`  Created ${projectIds.length} projects`);
 
+      addLog('Creating line items (estimates)...');
+      const lineItemCount = await seedLineItems(services, projectIds);
+      addLog(`  Created ${lineItemCount} line items`);
+
       addLog('Creating demo tasks...');
       const taskCount = await seedTasks(services, projectIds);
       addLog(`  Created ${taskCount} tasks`);
@@ -189,7 +219,7 @@ export default function SeedPage() {
       });
 
       addLog('Demo scenario complete!');
-      queryClient.invalidateQueries();
+      queryClient.removeQueries();
       setState('done');
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unknown error';

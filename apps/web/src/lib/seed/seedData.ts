@@ -12,7 +12,7 @@
  */
 
 import type { CreateProject, CreateCustomer } from '@hooomz/shared-contracts';
-import { ProjectStatus, ProjectType, ContactMethod, TaskStatus, TaskPriority } from '@hooomz/shared-contracts';
+import { ProjectStatus, ProjectType, ContactMethod, TaskStatus, TaskPriority, CostCategory, UnitOfMeasure } from '@hooomz/shared-contracts';
 import type { Services } from '../services';
 import { getLoggedServices, getServices } from '../services';
 
@@ -202,6 +202,96 @@ export async function seedProjects(
   }
 
   return projectIds;
+}
+
+/**
+ * Seed line items (estimates) for demo projects.
+ * Creates actual LineItem records in IndexedDB so /estimates shows data.
+ */
+export async function seedLineItems(
+  services: Services,
+  projectIds: string[]
+): Promise<number> {
+  // Check if line items already exist for these projects
+  const existing = await services.estimating.lineItems.findByProjectId(projectIds[0] || '');
+  if (existing.length > 0) {
+    console.log('Line items already exist, skipping');
+    return 0;
+  }
+
+  let count = 0;
+
+  const createItem = async (item: Parameters<typeof services.estimating.lineItems.create>[0]) => {
+    await services.estimating.lineItems.create(item);
+    count++;
+  };
+
+  // ======================================================================
+  // Mitchell Main Floor — Room Refresh ($14,200)
+  // Living Room + Dining Room: LVP, baseboard, paint
+  // ======================================================================
+  if (projectIds[0]) {
+    const pid = projectIds[0];
+
+    // Materials ($6,140)
+    await createItem({ projectId: pid, category: CostCategory.FLOORING, description: 'LVP Flooring — Living Room', quantity: 420, unit: UnitOfMeasure.SQUARE_FOOT, unitCost: 5.50, totalCost: 2310, isLabor: false });
+    await createItem({ projectId: pid, category: CostCategory.FLOORING, description: 'LVP Flooring — Dining Room', quantity: 260, unit: UnitOfMeasure.SQUARE_FOOT, unitCost: 5.50, totalCost: 1430, isLabor: false });
+    await createItem({ projectId: pid, category: CostCategory.FLOORING, description: 'Underlayment', quantity: 680, unit: UnitOfMeasure.SQUARE_FOOT, unitCost: 0.75, totalCost: 510, isLabor: false });
+    await createItem({ projectId: pid, category: CostCategory.INTERIOR_TRIM, description: 'Baseboard — MDF Primed', quantity: 140, unit: UnitOfMeasure.LINEAR_FOOT, unitCost: 3.50, totalCost: 490, isLabor: false });
+    await createItem({ projectId: pid, category: CostCategory.PAINTING, description: 'Paint + Primer', quantity: 10, unit: UnitOfMeasure.GALLON, unitCost: 65, totalCost: 650, isLabor: false });
+    await createItem({ projectId: pid, category: CostCategory.MATERIALS, description: 'Misc Supplies (transitions, adhesive, caulk)', quantity: 1, unit: UnitOfMeasure.LOT, unitCost: 750, totalCost: 750, isLabor: false });
+
+    // Labor ($8,060)
+    await createItem({ projectId: pid, category: CostCategory.LABOR, description: 'Flooring Installation', quantity: 680, unit: UnitOfMeasure.SQUARE_FOOT, unitCost: 5.50, totalCost: 3740, isLabor: true });
+    await createItem({ projectId: pid, category: CostCategory.LABOR, description: 'Trim Installation', quantity: 140, unit: UnitOfMeasure.LINEAR_FOOT, unitCost: 6, totalCost: 840, isLabor: true });
+    await createItem({ projectId: pid, category: CostCategory.LABOR, description: 'Painting', quantity: 800, unit: UnitOfMeasure.SQUARE_FOOT, unitCost: 3, totalCost: 2400, isLabor: true });
+    await createItem({ projectId: pid, category: CostCategory.LABOR, description: 'Demo & Prep', quantity: 16, unit: UnitOfMeasure.HOUR, unitCost: 45, totalCost: 720, isLabor: true });
+    await createItem({ projectId: pid, category: CostCategory.LABOR, description: 'Cleanup & Moveout', quantity: 8, unit: UnitOfMeasure.HOUR, unitCost: 45, totalCost: 360, isLabor: true });
+  }
+
+  // ======================================================================
+  // Cole Whole-Home Flooring ($9,800)
+  // 1,400 sqft LVP, baseboard, shoe molding
+  // ======================================================================
+  if (projectIds[1]) {
+    const pid = projectIds[1];
+
+    // Materials ($6,800)
+    await createItem({ projectId: pid, category: CostCategory.FLOORING, description: 'LVP Flooring — Main Floor', quantity: 1400, unit: UnitOfMeasure.SQUARE_FOOT, unitCost: 3.50, totalCost: 4900, isLabor: false });
+    await createItem({ projectId: pid, category: CostCategory.FLOORING, description: 'Underlayment', quantity: 1400, unit: UnitOfMeasure.SQUARE_FOOT, unitCost: 0.50, totalCost: 700, isLabor: false });
+    await createItem({ projectId: pid, category: CostCategory.INTERIOR_TRIM, description: 'Baseboard — MDF Primed', quantity: 200, unit: UnitOfMeasure.LINEAR_FOOT, unitCost: 3.25, totalCost: 650, isLabor: false });
+    await createItem({ projectId: pid, category: CostCategory.INTERIOR_TRIM, description: 'Shoe Molding', quantity: 200, unit: UnitOfMeasure.LINEAR_FOOT, unitCost: 1.50, totalCost: 300, isLabor: false });
+    await createItem({ projectId: pid, category: CostCategory.MATERIALS, description: 'Transitions & Adhesive', quantity: 1, unit: UnitOfMeasure.LOT, unitCost: 250, totalCost: 250, isLabor: false });
+
+    // Labor ($3,000)
+    await createItem({ projectId: pid, category: CostCategory.LABOR, description: 'Flooring Installation', quantity: 1400, unit: UnitOfMeasure.SQUARE_FOOT, unitCost: 1.50, totalCost: 2100, isLabor: true });
+    await createItem({ projectId: pid, category: CostCategory.LABOR, description: 'Trim Installation', quantity: 200, unit: UnitOfMeasure.LINEAR_FOOT, unitCost: 3, totalCost: 600, isLabor: true });
+    await createItem({ projectId: pid, category: CostCategory.LABOR, description: 'Shoe Molding Install', quantity: 200, unit: UnitOfMeasure.LINEAR_FOOT, unitCost: 1.50, totalCost: 300, isLabor: true });
+  }
+
+  // ======================================================================
+  // Bradley Rental Refresh ($6,400)
+  // 3 bedrooms + hallway: LVP, baseboard, ceiling paint
+  // ======================================================================
+  if (projectIds[2]) {
+    const pid = projectIds[2];
+
+    // Materials ($3,580)
+    await createItem({ projectId: pid, category: CostCategory.FLOORING, description: 'LVP Flooring — Bedrooms + Hallway', quantity: 520, unit: UnitOfMeasure.SQUARE_FOOT, unitCost: 4.50, totalCost: 2340, isLabor: false });
+    await createItem({ projectId: pid, category: CostCategory.FLOORING, description: 'Underlayment', quantity: 520, unit: UnitOfMeasure.SQUARE_FOOT, unitCost: 0.50, totalCost: 260, isLabor: false });
+    await createItem({ projectId: pid, category: CostCategory.INTERIOR_TRIM, description: 'Baseboard — MDF Primed', quantity: 180, unit: UnitOfMeasure.LINEAR_FOOT, unitCost: 3, totalCost: 540, isLabor: false });
+    await createItem({ projectId: pid, category: CostCategory.PAINTING, description: 'Ceiling Paint', quantity: 8, unit: UnitOfMeasure.GALLON, unitCost: 55, totalCost: 440, isLabor: false });
+
+    // Labor ($2,820)
+    await createItem({ projectId: pid, category: CostCategory.LABOR, description: 'Demo — Remove Existing Flooring', quantity: 8, unit: UnitOfMeasure.HOUR, unitCost: 45, totalCost: 360, isLabor: true });
+    await createItem({ projectId: pid, category: CostCategory.LABOR, description: 'Flooring Installation', quantity: 520, unit: UnitOfMeasure.SQUARE_FOOT, unitCost: 2.50, totalCost: 1300, isLabor: true });
+    await createItem({ projectId: pid, category: CostCategory.LABOR, description: 'Trim Installation', quantity: 180, unit: UnitOfMeasure.LINEAR_FOOT, unitCost: 3.50, totalCost: 630, isLabor: true });
+    await createItem({ projectId: pid, category: CostCategory.LABOR, description: 'Ceiling Painting', quantity: 8, unit: UnitOfMeasure.HOUR, unitCost: 45, totalCost: 360, isLabor: true });
+    await createItem({ projectId: pid, category: CostCategory.LABOR, description: 'Cleanup', quantity: 4, unit: UnitOfMeasure.HOUR, unitCost: 42.50, totalCost: 170, isLabor: true });
+  }
+
+  console.log(`Created ${count} line items`);
+  return count;
 }
 
 /**
@@ -526,6 +616,10 @@ export async function seedAllData(): Promise<{
   // Seed projects with customer references
   const projectIds = await seedProjects(services, customerIds);
   console.log(`✅ Created ${projectIds.length} projects`);
+
+  // Seed line items (estimates)
+  await seedLineItems(services, projectIds);
+  console.log('✅ Created line items');
 
   // Seed tasks for demo projects
   await seedTasks(services, projectIds);

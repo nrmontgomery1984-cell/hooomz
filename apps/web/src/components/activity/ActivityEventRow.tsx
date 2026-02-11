@@ -77,7 +77,19 @@ export function ActivityEventRow({
   const details = event.event_data?.details as string | undefined;
   const notes = event.event_data?.notes as string | undefined;
   const reason = event.event_data?.reason as string | undefined;
-  const hasExpandedContent = Boolean(details || reason || notes || (event.entity_type && event.entity_id));
+
+  // Build extra fields from event_data (excluding already-displayed ones)
+  const HIDDEN_KEYS = new Set(['details', 'notes', 'reason', 'project_name']);
+  const extraFields = event.event_data
+    ? Object.entries(event.event_data).filter(
+        ([k, v]) => !HIDDEN_KEYS.has(k) && v !== undefined && v !== null && v !== ''
+      )
+    : [];
+
+  // Always expandable — show event_data fields even without details/notes
+  const hasExpandedContent = Boolean(
+    details || reason || notes || extraFields.length > 0 || (event.entity_type && event.entity_id)
+  );
 
   return (
     <div
@@ -106,13 +118,23 @@ export function ActivityEventRow({
             <p className="text-sm font-medium leading-snug" style={{ color: '#111827' }}>
               {message}
             </p>
-            <time
-              dateTime={event.timestamp}
-              className="text-xs whitespace-nowrap flex-shrink-0 mt-0.5"
-              style={{ color: '#9CA3AF' }}
-            >
-              {relativeTime}
-            </time>
+            <span className="flex items-center gap-1.5 flex-shrink-0 mt-0.5">
+              {hasExpandedContent && (
+                <span
+                  className="text-[10px] transition-transform"
+                  style={{ color: '#9CA3AF', display: 'inline-block', transform: isExpanded ? 'rotate(90deg)' : 'none' }}
+                >
+                  ▸
+                </span>
+              )}
+              <time
+                dateTime={event.timestamp}
+                className="text-xs whitespace-nowrap"
+                style={{ color: '#9CA3AF' }}
+              >
+                {relativeTime}
+              </time>
+            </span>
           </div>
 
           {/* Project name subtitle */}
@@ -126,16 +148,31 @@ export function ActivityEventRow({
 
       {/* Expanded details */}
       {isExpanded && hasExpandedContent && (
-        <div className="mt-2 ml-5 pl-3 space-y-2" style={{ borderLeft: '2px solid #E5E7EB' }}>
+        <div className="mt-2 ml-5 pl-3 space-y-1.5" style={{ borderLeft: '2px solid #E5E7EB' }}>
           {(details || notes) && (
-            <p className="text-sm" style={{ color: '#6B7280' }}>
+            <p className="text-xs" style={{ color: '#6B7280' }}>
               {details || notes}
             </p>
           )}
           {reason && (
-            <p className="text-sm" style={{ color: '#EF4444' }}>
+            <p className="text-xs" style={{ color: '#EF4444' }}>
               {reason}
             </p>
+          )}
+          {/* Show event_data fields as key-value pairs */}
+          {extraFields.length > 0 && (
+            <div className="flex flex-wrap gap-x-3 gap-y-1">
+              {extraFields.map(([key, value]) => (
+                <span key={key} className="text-[11px]" style={{ color: '#6B7280' }}>
+                  <span className="font-medium" style={{ color: '#9CA3AF' }}>
+                    {key.replace(/_/g, ' ')}:
+                  </span>{' '}
+                  {typeof value === 'number' && key.includes('amount')
+                    ? `$${value.toLocaleString()}`
+                    : String(value)}
+                </span>
+              ))}
+            </div>
           )}
           {event.entity_type && event.entity_id && onEntityClick && (
             <button

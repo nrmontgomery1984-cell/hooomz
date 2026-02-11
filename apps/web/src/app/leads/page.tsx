@@ -4,7 +4,7 @@
  * Lead Pipeline — /leads
  *
  * Cards grouped by stage (New, Quoted, Converted, Passed).
- * Stage headers with counts. Passed/Converted collapsed by default.
+ * Stage headers with colored dots + counts. Passed/Converted collapsed by default.
  * Actions: Call, Create Estimate, Pass, Restore, View Project.
  */
 
@@ -40,6 +40,20 @@ const STAGE_LABELS: Record<LeadStage, string> = {
   quoted: 'Quoted',
   converted: 'Converted',
   passed: 'Passed',
+};
+
+const STAGE_COLORS: Record<LeadStage, string> = {
+  new: '#8B5CF6',
+  quoted: '#3B82F6',
+  converted: '#0F766E',
+  passed: '#9CA3AF',
+};
+
+const STAGE_BG: Record<LeadStage, string> = {
+  new: '#F5F3FF',
+  quoted: '#EFF6FF',
+  converted: '#F0FDFA',
+  passed: '#F9FAFB',
 };
 
 const SOURCE_LABELS: Record<string, string> = {
@@ -103,10 +117,10 @@ export default function LeadPipelinePage() {
       <div className="min-h-screen flex items-center justify-center" style={{ background: '#F3F4F6' }}>
         <div className="text-center">
           <div
-            className="w-12 h-12 border-4 rounded-full animate-spin mx-auto mb-4"
+            className="w-10 h-10 border-3 rounded-full animate-spin mx-auto mb-3"
             style={{ borderColor: '#E5E7EB', borderTopColor: '#0F766E' }}
           />
-          <p style={{ color: '#6B7280' }}>Loading pipeline...</p>
+          <p className="text-xs" style={{ color: '#9CA3AF' }}>Loading pipeline...</p>
         </div>
       </div>
     );
@@ -117,12 +131,12 @@ export default function LeadPipelinePage() {
     <div className="min-h-screen pb-24" style={{ background: '#F3F4F6' }}>
       {/* Header */}
       <div style={{ background: '#FFFFFF', borderBottom: '1px solid #E5E7EB' }}>
-        <div className="max-w-lg md:max-w-4xl mx-auto px-4 md:px-8 py-4 md:py-6 flex items-center justify-between">
+        <div className="max-w-lg md:max-w-4xl mx-auto px-4 md:px-8 py-3 md:py-4 flex items-center justify-between">
           <div>
-            <h1 className="text-xl md:text-2xl font-bold" style={{ color: '#111827' }}>
+            <h1 className="text-lg md:text-xl font-bold" style={{ color: '#111827' }}>
               Lead Pipeline
             </h1>
-            <p className="text-xs mt-0.5" style={{ color: '#9CA3AF' }}>
+            <p className="text-[11px] mt-0.5" style={{ color: '#9CA3AF' }}>
               {pipeline.leads.length} lead{pipeline.leads.length !== 1 ? 's' : ''} in pipeline
             </p>
           </div>
@@ -131,17 +145,18 @@ export default function LeadPipelinePage() {
             className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl"
             style={{ background: '#0F766E' }}
           >
-            <Plus size={20} color="#FFFFFF" strokeWidth={2} />
+            <Plus size={18} color="#FFFFFF" strokeWidth={2} />
           </button>
         </div>
 
-        {/* Filter pills */}
+        {/* Stage summary strip */}
         <div className="max-w-lg md:max-w-4xl mx-auto px-4 md:px-8 pb-3">
           <div className="flex gap-2 overflow-x-auto">
             <FilterPill
               label="All"
               count={pipeline.leads.length}
               active={stageFilter === 'all'}
+              color="#374151"
               onClick={() => setStageFilter('all')}
             />
             {STAGE_ORDER.map((stage) => {
@@ -153,6 +168,7 @@ export default function LeadPipelinePage() {
                   label={STAGE_LABELS[stage]}
                   count={count}
                   active={stageFilter === stage}
+                  color={STAGE_COLORS[stage]}
                   onClick={() => setStageFilter(stage)}
                 />
               );
@@ -166,10 +182,10 @@ export default function LeadPipelinePage() {
         {filteredLeads.length === 0 && (
           <div className="mt-8 text-center">
             <div
-              className="w-16 h-16 mx-auto mb-4 rounded-xl flex items-center justify-center"
+              className="w-14 h-14 mx-auto mb-3 rounded-xl flex items-center justify-center"
               style={{ background: '#F0FDFA' }}
             >
-              <FileText size={28} style={{ color: '#0F766E' }} strokeWidth={1.5} />
+              <FileText size={24} style={{ color: '#0F766E' }} strokeWidth={1.5} />
             </div>
             <p className="text-sm font-medium mb-1" style={{ color: '#111827' }}>
               No leads yet
@@ -179,7 +195,7 @@ export default function LeadPipelinePage() {
             </p>
             <button
               onClick={() => router.push('/leads/new')}
-              className="min-h-[48px] px-6 rounded-xl font-medium text-white"
+              className="min-h-[44px] px-5 rounded-xl font-medium text-sm text-white"
               style={{ background: '#0F766E' }}
             >
               Capture a Lead
@@ -187,28 +203,51 @@ export default function LeadPipelinePage() {
           </div>
         )}
 
+        {/* Pipeline visualization bar */}
+        {pipeline.leads.length > 0 && stageFilter === 'all' && (
+          <div className="mt-4 mb-2">
+            <div className="flex rounded-lg overflow-hidden h-2">
+              {STAGE_ORDER.map((stage) => {
+                const count = pipeline.counts[stage];
+                if (count === 0) return null;
+                const pct = (count / pipeline.leads.length) * 100;
+                return (
+                  <div
+                    key={stage}
+                    style={{ width: `${pct}%`, background: STAGE_COLORS[stage], minWidth: '4px' }}
+                  />
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Stage groups */}
         {grouped.map(({ stage, leads }) => (
-          <div key={stage} className="mt-5">
+          <div key={stage} className="mt-4">
             {/* Stage header */}
             <button
               onClick={() => toggleCollapse(stage)}
-              className="flex items-center gap-2 mb-3 min-h-[32px]"
+              className="flex items-center gap-2 mb-2 min-h-[28px]"
             >
               {collapsedStages.has(stage) ? (
-                <ChevronRight size={16} style={{ color: '#9CA3AF' }} />
+                <ChevronRight size={14} style={{ color: '#9CA3AF' }} />
               ) : (
-                <ChevronDown size={16} style={{ color: '#9CA3AF' }} />
+                <ChevronDown size={14} style={{ color: '#9CA3AF' }} />
               )}
+              <div
+                className="w-2 h-2 rounded-full"
+                style={{ background: STAGE_COLORS[stage] }}
+              />
               <h2
-                className="text-[13px] font-semibold uppercase tracking-wider"
+                className="text-[11px] font-semibold uppercase tracking-wider"
                 style={{ color: '#6B7280' }}
               >
                 {STAGE_LABELS[stage]}
               </h2>
               <span
-                className="text-xs px-2 py-0.5 rounded-full"
-                style={{ background: '#E5E7EB', color: '#6B7280' }}
+                className="text-[10px] font-medium px-1.5 py-0.5 rounded-full"
+                style={{ background: STAGE_BG[stage], color: STAGE_COLORS[stage] }}
               >
                 {leads.length}
               </span>
@@ -216,7 +255,7 @@ export default function LeadPipelinePage() {
 
             {/* Cards */}
             {!collapsedStages.has(stage) && (
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {leads.map((lead) => (
                   <LeadCard key={lead.customer.id} lead={lead} />
                 ))}
@@ -238,19 +277,21 @@ function FilterPill({
   label,
   count,
   active,
+  color,
   onClick,
 }: {
   label: string;
   count: number;
   active: boolean;
+  color: string;
   onClick: () => void;
 }) {
   return (
     <button
       onClick={onClick}
-      className="min-h-[36px] px-3 rounded-lg text-sm font-medium whitespace-nowrap transition-colors"
+      className="min-h-[32px] px-3 rounded-lg text-xs font-medium whitespace-nowrap transition-colors"
       style={{
-        background: active ? '#0F766E' : '#F3F4F6',
+        background: active ? color : '#F3F4F6',
         color: active ? '#FFFFFF' : '#6B7280',
       }}
     >
@@ -273,6 +314,7 @@ function LeadCard({ lead }: { lead: LeadRecord }) {
   const sourceLabel = SOURCE_LABELS[source] || source;
   const createdAt = new Date(customer.metadata.createdAt);
   const timeLabel = formatRelativeDate(createdAt);
+  const stageColor = STAGE_COLORS[stage];
 
   const handleCreateEstimate = async () => {
     if (createProject.isPending) return;
@@ -296,37 +338,46 @@ function LeadCard({ lead }: { lead: LeadRecord }) {
 
   return (
     <div
-      className="rounded-xl p-4 transition-all duration-150 hover:shadow-md hover:-translate-y-px"
+      className="rounded-xl p-3 transition-all duration-150 hover:shadow-md hover:-translate-y-px"
       style={{
         background: '#FFFFFF',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-        border: stage === 'passed' ? '1px solid #E5E7EB' : '1px solid transparent',
-        opacity: stage === 'passed' ? 0.7 : 1,
+        boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+        borderLeft: `3px solid ${stageColor}`,
+        opacity: stage === 'passed' ? 0.65 : 1,
       }}
     >
-      {/* Top row: name + phone */}
-      <div className="flex items-start justify-between mb-1">
-        <h3 className="text-sm font-semibold" style={{ color: '#111827' }}>
-          {fullName}
-        </h3>
+      {/* Top row: name + stage pill + phone */}
+      <div className="flex items-center justify-between mb-0.5">
+        <div className="flex items-center gap-2 min-w-0">
+          <h3 className="text-[13px] font-semibold truncate" style={{ color: '#111827' }}>
+            {fullName}
+          </h3>
+          <span
+            className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full uppercase tracking-wide flex-shrink-0"
+            style={{ background: STAGE_BG[stage], color: stageColor }}
+          >
+            {STAGE_LABELS[stage]}
+          </span>
+        </div>
         <a
           href={`tel:${customer.phone}`}
-          className="text-sm font-medium flex-shrink-0"
+          className="text-xs font-medium flex-shrink-0 ml-2"
           style={{ color: '#0F766E' }}
         >
           {customer.phone}
         </a>
       </div>
 
-      {/* Interests + source */}
-      <p className="text-xs mb-1" style={{ color: '#6B7280' }}>
+      {/* Interests + source + time */}
+      <p className="text-[11px] mb-0.5" style={{ color: '#6B7280' }}>
         {interestLabels}
         {sourceLabel && ` \u00B7 ${sourceLabel}`}
+        <span style={{ color: '#D1D5DB' }}> \u00B7 {timeLabel}</span>
       </p>
 
       {/* Linked project info */}
       {linkedProject && (
-        <p className="text-xs mb-1" style={{ color: '#9CA3AF' }}>
+        <p className="text-[11px] mb-0.5" style={{ color: '#9CA3AF' }}>
           Project: {linkedProject.name} \u00B7{' '}
           {linkedProject.status.replace(/-/g, ' ')}
         </p>
@@ -335,27 +386,21 @@ function LeadCard({ lead }: { lead: LeadRecord }) {
       {/* Notes */}
       {customer.notes && (
         <p
-          className="text-xs italic mb-1 truncate"
+          className="text-[11px] italic mb-0.5 truncate"
           style={{ color: '#9CA3AF' }}
         >
           &ldquo;{customer.notes}&rdquo;
         </p>
       )}
 
-      {/* Timestamp */}
-      <p className="text-xs mb-3" style={{ color: '#D1D5DB' }}>
-        {timeLabel}
-      </p>
-
       {/* Actions */}
-      <div className="flex gap-2">
-        {/* Call — always shown */}
+      <div className="flex gap-1.5 mt-2">
         <a
           href={`tel:${customer.phone}`}
-          className="min-h-[36px] px-3 flex items-center gap-1.5 rounded-lg text-xs font-medium"
+          className="min-h-[32px] px-2.5 flex items-center gap-1 rounded-lg text-[11px] font-medium"
           style={{ background: '#F3F4F6', color: '#374151' }}
         >
-          <Phone size={14} /> Call
+          <Phone size={12} /> Call
         </a>
 
         {stage === 'new' && (
@@ -363,19 +408,19 @@ function LeadCard({ lead }: { lead: LeadRecord }) {
             <button
               onClick={handleCreateEstimate}
               disabled={createProject.isPending}
-              className="min-h-[36px] px-3 flex items-center gap-1.5 rounded-lg text-xs font-medium"
+              className="min-h-[32px] px-2.5 flex items-center gap-1 rounded-lg text-[11px] font-medium"
               style={{ background: '#F0FDFA', color: '#0F766E' }}
             >
-              <FileText size={14} />{' '}
-              {createProject.isPending ? 'Creating...' : 'Create Estimate'}
+              <FileText size={12} />{' '}
+              {createProject.isPending ? 'Creating...' : 'Estimate'}
             </button>
             <button
               onClick={handlePass}
               disabled={passLead.isPending}
-              className="min-h-[36px] px-3 flex items-center gap-1.5 rounded-lg text-xs font-medium"
+              className="min-h-[32px] px-2.5 flex items-center gap-1 rounded-lg text-[11px] font-medium"
               style={{ background: '#FEF2F2', color: '#EF4444' }}
             >
-              <XCircle size={14} /> Pass
+              <XCircle size={12} /> Pass
             </button>
           </>
         )}
@@ -383,10 +428,10 @@ function LeadCard({ lead }: { lead: LeadRecord }) {
         {(stage === 'quoted' || stage === 'converted') && linkedProject && (
           <button
             onClick={() => router.push(`/projects/${linkedProject.id}`)}
-            className="min-h-[36px] px-3 flex items-center gap-1.5 rounded-lg text-xs font-medium"
+            className="min-h-[32px] px-2.5 flex items-center gap-1 rounded-lg text-[11px] font-medium"
             style={{ background: '#F0FDFA', color: '#0F766E' }}
           >
-            View Project <ArrowRight size={14} />
+            View Project <ArrowRight size={12} />
           </button>
         )}
 
@@ -394,10 +439,10 @@ function LeadCard({ lead }: { lead: LeadRecord }) {
           <button
             onClick={handleRestore}
             disabled={restoreLead.isPending}
-            className="min-h-[36px] px-3 flex items-center gap-1.5 rounded-lg text-xs font-medium"
+            className="min-h-[32px] px-2.5 flex items-center gap-1 rounded-lg text-[11px] font-medium"
             style={{ background: '#F3F4F6', color: '#374151' }}
           >
-            <RotateCcw size={14} /> Restore
+            <RotateCcw size={12} /> Restore
           </button>
         )}
       </div>

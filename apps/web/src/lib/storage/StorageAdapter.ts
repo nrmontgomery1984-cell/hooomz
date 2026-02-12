@@ -103,6 +103,8 @@ export const StoreNames = {
   // Build 3d: Loop Management
   LOOP_CONTEXTS: 'loopContexts',
   LOOP_ITERATIONS: 'loopIterations',
+  // Intake Drafts
+  INTAKE_DRAFTS: 'intakeDrafts',
 } as const;
 
 export type StoreName = (typeof StoreNames)[keyof typeof StoreNames];

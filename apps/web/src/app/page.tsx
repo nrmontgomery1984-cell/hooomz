@@ -141,6 +141,9 @@ export default function HomePage() {
           {dashboard.blockedCount > 0 && (
             <StatPill label="Blocked" value={dashboard.blockedCount} color="#EF4444" />
           )}
+          {dashboard.draftCount > 0 && (
+            <StatPill label="Drafts" value={dashboard.draftCount} color="#F59E0B" onClick={() => router.push('/intake')} />
+          )}
         </div>
 
         {/* ================================================================

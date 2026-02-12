@@ -7,7 +7,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { useServicesContext } from '../services/ServicesContext';
-import { useLocalBusinessHealth, useLocalRecentActivity } from './useLocalData';
+import { useLocalBusinessHealth, useLocalRecentActivity, useIntakeDrafts } from './useLocalData';
 import { useOverBudgetTasks, useTrainingRecords, useActiveCrewMembers } from './useCrewData';
 import type { TaskBudget, TrainingRecord, ChangeOrder, CrewMember } from '@hooomz/shared-contracts';
 
@@ -48,6 +48,9 @@ export interface DashboardData {
   // Activity
   recentEvents: Array<Record<string, unknown>>;
 
+  // Intake drafts
+  draftCount: number;
+
   // State
   isLoading: boolean;
 }
@@ -73,6 +76,9 @@ export function useDashboardData(): DashboardData {
 
   // Recent activity
   const { data: activityData } = useLocalRecentActivity(10);
+
+  // Intake drafts
+  const { data: drafts = [] } = useIntakeDrafts();
 
   // Pending change orders — iterate over active projects
   const projectIds = health.projects.map((p) => p.id);
@@ -140,6 +146,8 @@ export function useDashboardData(): DashboardData {
     crewMembers: crewRaw,
 
     recentEvents: (activityData?.events as unknown as Array<Record<string, unknown>>) ?? [],
+
+    draftCount: drafts.length,
 
     isLoading: health.isLoading,
   };

@@ -67,6 +67,9 @@ import { LoopContextRepository } from '../repositories/loopContext.repository';
 import { LoopIterationRepository } from '../repositories/loopIteration.repository';
 import { LoopManagementService, createLoopManagementService } from './loopManagement.service';
 
+// Intake Drafts (local-only, no sync, no activity logging)
+import { IntakeDraftRepository } from '../repositories/intakeDraft.repository';
+
 /**
  * Repository container - provides access to all offline-first repositories
  * Use this for read operations and internal access.
@@ -121,6 +124,9 @@ export interface Services {
 
   // Build 3d: Loop Management
   loopManagement: LoopManagementService;
+
+  // Intake Drafts (local-only, no sync, no activity logging)
+  intakeDrafts: IntakeDraftRepository;
 }
 
 /**
@@ -199,6 +205,7 @@ export async function initializeServices(): Promise<Services> {
     const taskBudgetRepository = new TaskBudgetRepository(storage);
     const loopContextRepository = new LoopContextRepository(storage);
     const loopIterationRepository = new LoopIterationRepository(storage);
+    const intakeDraftRepository = new IntakeDraftRepository(storage);
 
     // Create ActivityService (THE SPINE)
     const activityService = new ActivityService(activityRepository);
@@ -277,6 +284,9 @@ export async function initializeServices(): Promise<Services> {
 
       // Build 3d: Loop Management
       loopManagement: createLoopManagementService(loopContextRepository, loopIterationRepository, activityService),
+
+      // Intake Drafts (local-only)
+      intakeDrafts: intakeDraftRepository,
     };
 
     servicesInstance = services;

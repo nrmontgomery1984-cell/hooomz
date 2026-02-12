@@ -48,6 +48,11 @@ export function ServicesProvider({ children }: ServicesProviderProps) {
           console.error('Failed to seed Labs catalogs:', err)
         );
 
+        // Cleanup stale intake drafts (fire-and-forget)
+        initializedServices.intakeDrafts.cleanupStale().catch((err) =>
+          console.error('Failed to cleanup stale drafts:', err)
+        );
+
         if (mounted) {
           setServices(initializedServices);
           setIsLoading(false);

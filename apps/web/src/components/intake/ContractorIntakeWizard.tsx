@@ -15,6 +15,7 @@
 
 import { useState, useCallback } from 'react';
 import { cn } from '@/lib/utils';
+import { useIntakeDraftAutoSave } from '@/lib/hooks/useIntakeDraftAutoSave';
 import type {
   ContractorIntakeData,
   ScopeItem,
@@ -1111,6 +1112,10 @@ const STEPS = [
 interface ContractorIntakeWizardProps {
   onComplete: (data: ContractorIntakeData) => void;
   onCancel: () => void;
+  initialData?: ContractorIntakeData;
+  initialStep?: number;
+  draftId?: string | null;
+  onDraftCreated?: (id: string) => void;
 }
 
 // Default project type for initial data
@@ -1170,10 +1175,26 @@ const getInitialData = (): ContractorIntakeData => {
   };
 };
 
-export function ContractorIntakeWizard({ onComplete, onCancel }: ContractorIntakeWizardProps) {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [formData, setFormData] = useState<ContractorIntakeData>(getInitialData);
+export function ContractorIntakeWizard({
+  onComplete,
+  onCancel,
+  initialData: initialDataProp,
+  initialStep,
+  draftId: draftIdProp,
+  onDraftCreated: onDraftCreatedProp,
+}: ContractorIntakeWizardProps) {
+  const [currentStep, setCurrentStep] = useState(initialStep ?? 0);
+  const [formData, setFormData] = useState<ContractorIntakeData>(initialDataProp ?? getInitialData);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Draft auto-save
+  const { debouncedSave, immediateSave } = useIntakeDraftAutoSave({
+    draftId: draftIdProp ?? null,
+    type: 'contractor',
+    currentStep,
+    data: formData,
+    onDraftCreated: onDraftCreatedProp ?? (() => {}),
+  });
 
   const updateData = useCallback((section: keyof ContractorIntakeData, value: unknown) => {
     setFormData((prev) => ({ ...prev, [section]: value }));
@@ -1184,7 +1205,9 @@ export function ContractorIntakeWizard({ onComplete, onCancel }: ContractorIntak
       });
       return newErrors;
     });
-  }, []);
+    // Auto-save on data change (debounced)
+    debouncedSave();
+  }, [debouncedSave]);
 
   // Auto-populate trades, phases, scope items, and estimates when project type changes
   const handleProjectTypeChange = useCallback((projectType: ProjectType) => {
@@ -1243,19 +1266,23 @@ export function ContractorIntakeWizard({ onComplete, onCancel }: ContractorIntak
     if (validateStep()) {
       if (currentStep < STEPS.length - 1) {
         setCurrentStep((prev) => prev + 1);
+        // Save immediately on step transition
+        immediateSave();
       } else {
         onComplete(formData);
       }
     }
-  }, [currentStep, formData, onComplete, validateStep]);
+  }, [currentStep, formData, onComplete, validateStep, immediateSave]);
 
   const handleBack = useCallback(() => {
     if (currentStep > 0) {
       setCurrentStep((prev) => prev - 1);
+      // Save immediately on step transition
+      immediateSave();
     } else {
       onCancel();
     }
-  }, [currentStep, onCancel]);
+  }, [currentStep, onCancel, immediateSave]);
 
   const CurrentStepComponent = STEPS[currentStep].component;
   const progress = ((currentStep + 1) / STEPS.length) * 100;

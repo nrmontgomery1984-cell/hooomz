@@ -7,7 +7,7 @@ import type { StorageAdapter } from './StorageAdapter';
 import { StoreNames } from './StorageAdapter';
 
 const DB_NAME = 'hooomz_db';
-const DB_VERSION = 11; // v11: added loopContexts, loopIterations (Build 3d)
+const DB_VERSION = 12; // v12: added intakeDrafts (Intake Draft Saving)
 
 export class IndexedDBAdapter implements StorageAdapter {
   private db: IDBDatabase | null = null;
@@ -191,6 +191,8 @@ export class IndexedDBAdapter implements StorageAdapter {
       // Build 3d: Loop Management
       [StoreNames.LOOP_CONTEXTS]: ['project_id', 'loop_type', 'parent_context_id'],
       [StoreNames.LOOP_ITERATIONS]: ['context_id', 'project_id', 'parent_iteration_id'],
+      // Intake Drafts
+      [StoreNames.INTAKE_DRAFTS]: ['type', 'status', 'updatedAt'],
     };
 
     const storeIndexes = indexes[storeName] || [];

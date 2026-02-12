@@ -13,6 +13,7 @@
  */
 
 import { useState, useCallback } from 'react';
+import { useIntakeDraftAutoSave } from '@/lib/hooks/useIntakeDraftAutoSave';
 import {
   User,
   Mail,
@@ -447,6 +448,10 @@ const STEPS = [
 interface IntakeWizardProps {
   onComplete: (data: HomeownerIntakeData) => void;
   onCancel: () => void;
+  initialData?: HomeownerIntakeData;
+  initialStep?: number;
+  draftId?: string | null;
+  onDraftCreated?: (id: string) => void;
 }
 
 const initialData: HomeownerIntakeData = {
@@ -468,10 +473,26 @@ const initialData: HomeownerIntakeData = {
   },
 };
 
-export function IntakeWizard({ onComplete, onCancel }: IntakeWizardProps) {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [formData, setFormData] = useState<HomeownerIntakeData>(initialData);
+export function IntakeWizard({
+  onComplete,
+  onCancel,
+  initialData: initialDataProp,
+  initialStep,
+  draftId: draftIdProp,
+  onDraftCreated: onDraftCreatedProp,
+}: IntakeWizardProps) {
+  const [currentStep, setCurrentStep] = useState(initialStep ?? 0);
+  const [formData, setFormData] = useState<HomeownerIntakeData>(initialDataProp ?? initialData);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Draft auto-save
+  const { debouncedSave, immediateSave } = useIntakeDraftAutoSave({
+    draftId: draftIdProp ?? null,
+    type: 'homeowner',
+    currentStep,
+    data: formData,
+    onDraftCreated: onDraftCreatedProp ?? (() => {}),
+  });
 
   const updateField = useCallback((path: string, value: unknown) => {
     setFormData((prev) => {
@@ -497,7 +518,10 @@ export function IntakeWizard({ onComplete, onCancel }: IntakeWizardProps) {
       });
       return newErrors;
     });
-  }, []);
+
+    // Auto-save on field change (debounced)
+    debouncedSave();
+  }, [debouncedSave]);
 
   const validateStep = useCallback((): boolean => {
     const step = STEPS[currentStep];
@@ -523,6 +547,8 @@ export function IntakeWizard({ onComplete, onCancel }: IntakeWizardProps) {
     if (validateStep()) {
       if (currentStep < STEPS.length - 1) {
         setCurrentStep((prev) => prev + 1);
+        // Save immediately on step transition
+        immediateSave();
       } else {
         // Auto-generate project name if blank
         const finalData = { ...formData };
@@ -533,15 +559,17 @@ export function IntakeWizard({ onComplete, onCancel }: IntakeWizardProps) {
         onComplete(finalData);
       }
     }
-  }, [currentStep, formData, onComplete, validateStep]);
+  }, [currentStep, formData, onComplete, validateStep, immediateSave]);
 
   const handleBack = useCallback(() => {
     if (currentStep > 0) {
       setCurrentStep((prev) => prev - 1);
+      // Save immediately on step transition
+      immediateSave();
     } else {
       onCancel();
     }
-  }, [currentStep, onCancel]);
+  }, [currentStep, onCancel, immediateSave]);
 
   const CurrentStepComponent = STEPS[currentStep].component;
   const isLastStep = currentStep === STEPS.length - 1;

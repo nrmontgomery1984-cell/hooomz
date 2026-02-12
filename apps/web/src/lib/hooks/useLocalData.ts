@@ -43,6 +43,11 @@ export const LOCAL_QUERY_KEYS = {
     all: ['local', 'customers'] as const,
     detail: (id: string) => [...LOCAL_QUERY_KEYS.customers.all, 'detail', id] as const,
   },
+  intakeDrafts: {
+    all: ['local', 'intakeDrafts'] as const,
+    inProgress: ['local', 'intakeDrafts', 'inProgress'] as const,
+    detail: (id: string) => ['local', 'intakeDrafts', 'detail', id] as const,
+  },
 };
 
 // ============================================================================
@@ -549,6 +554,43 @@ export function useLocalCustomer(id: string | undefined) {
     queryFn: async () => {
       if (!services) throw new Error('Services not initialized');
       return services.customers.findById(id!);
+    },
+    enabled: !servicesLoading && !!services && !!id,
+  });
+}
+
+// ============================================================================
+// Intake Draft Hooks
+// ============================================================================
+
+/**
+ * Fetch all in-progress intake drafts from IndexedDB
+ */
+export function useIntakeDrafts() {
+  const { services, isLoading: servicesLoading } = useServicesContext();
+
+  return useQuery({
+    queryKey: LOCAL_QUERY_KEYS.intakeDrafts.inProgress,
+    queryFn: async () => {
+      if (!services) throw new Error('Services not initialized');
+      return services.intakeDrafts.findInProgress();
+    },
+    enabled: !servicesLoading && !!services,
+    staleTime: 5 * 1000,
+  });
+}
+
+/**
+ * Fetch a single intake draft by ID
+ */
+export function useIntakeDraft(id: string | undefined) {
+  const { services, isLoading: servicesLoading } = useServicesContext();
+
+  return useQuery({
+    queryKey: LOCAL_QUERY_KEYS.intakeDrafts.detail(id!),
+    queryFn: async () => {
+      if (!services) throw new Error('Services not initialized');
+      return services.intakeDrafts.findById(id!);
     },
     enabled: !servicesLoading && !!services && !!id,
   });

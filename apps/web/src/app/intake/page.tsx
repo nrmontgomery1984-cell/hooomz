@@ -6,25 +6,54 @@
  * Presents two options:
  * 1. Homeowner Intake - 4-step wizard (client, bundle, rooms, notes)
  * 2. Contractor Intake - 4-step efficient wizard (trade-organized)
+ *
+ * Draft saving: Shows in-progress drafts above wizard selection.
+ * Resume flow: ?draft=<id> loads draft and switches to correct wizard.
  */
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useCallback, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { PageErrorBoundary } from '@/components/ui/PageErrorBoundary';
 import { IntakeWizard } from '@/components/intake/IntakeWizard';
 import { ContractorIntakeWizard } from '@/components/intake/ContractorIntakeWizard';
 import type { HomeownerIntakeData, ContractorIntakeData } from '@/lib/types/intake.types';
 import { useServicesContext } from '@/lib/services/ServicesContext';
 import { createIntakeService } from '@/lib/services/intake.service';
+import { useIntakeDrafts, useIntakeDraft, LOCAL_QUERY_KEYS } from '@/lib/hooks/useLocalData';
+import { formatRelativeTime } from '@hooomz/shared';
+import type { IntakeDraft } from '@/lib/types/intakeDraft.types';
+import { Trash2 } from 'lucide-react';
 
 type IntakeMode = 'select' | 'homeowner' | 'contractor';
 
 export default function IntakePage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const queryClient = useQueryClient();
   const { services, isLoading } = useServicesContext();
   const [mode, setMode] = useState<IntakeMode>('select');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Draft state
+  const draftIdFromUrl = searchParams.get('draft');
+  const [activeDraftId, setActiveDraftId] = useState<string | null>(draftIdFromUrl);
+  const { data: drafts = [] } = useIntakeDrafts();
+  const { data: resumeDraft } = useIntakeDraft(draftIdFromUrl ?? undefined);
+
+  // Resume flow: when ?draft=id is present and draft is loaded, switch to correct wizard
+  useEffect(() => {
+    if (resumeDraft && mode === 'select') {
+      setActiveDraftId(resumeDraft.id);
+      setMode(resumeDraft.type === 'homeowner' ? 'homeowner' : 'contractor');
+    }
+  }, [resumeDraft, mode]);
+
+  const handleDraftCreated = useCallback((id: string) => {
+    setActiveDraftId(id);
+    router.replace(`/intake?draft=${id}`, { scroll: false });
+  }, [router]);
 
   const handleHomeownerComplete = async (data: HomeownerIntakeData) => {
     if (!services) {
@@ -39,9 +68,12 @@ export default function IntakePage() {
       const intakeService = createIntakeService(services);
       const result = await intakeService.processHomeownerIntake(data);
 
-      console.log('Homeowner intake complete:', result);
+      // Mark draft as submitted
+      if (activeDraftId) {
+        await services.intakeDrafts.markSubmitted(activeDraftId);
+        queryClient.invalidateQueries({ queryKey: LOCAL_QUERY_KEYS.intakeDrafts.all });
+      }
 
-      // Redirect to the newly created project
       router.push(`/projects/${result.project_id}`);
     } catch (err) {
       console.error('Error processing homeowner intake:', err);
@@ -63,9 +95,12 @@ export default function IntakePage() {
       const intakeService = createIntakeService(services);
       const result = await intakeService.processContractorIntake(data);
 
-      console.log('Contractor intake complete:', result);
+      // Mark draft as submitted
+      if (activeDraftId) {
+        await services.intakeDrafts.markSubmitted(activeDraftId);
+        queryClient.invalidateQueries({ queryKey: LOCAL_QUERY_KEYS.intakeDrafts.all });
+      }
 
-      // Redirect to the newly created project
       router.push(`/projects/${result.project_id}`);
     } catch (err) {
       console.error('Error processing contractor intake:', err);
@@ -77,9 +112,27 @@ export default function IntakePage() {
   const handleCancel = () => {
     if (mode !== 'select') {
       setMode('select');
+      setActiveDraftId(null);
+      router.replace('/intake', { scroll: false });
     } else {
       router.back();
     }
+  };
+
+  const handleDeleteDraft = async (draft: IntakeDraft) => {
+    if (!services) return;
+    if (!confirm(`Delete draft "${draft.customerName}"?`)) return;
+
+    try {
+      await services.intakeDrafts.delete(draft.id);
+      queryClient.invalidateQueries({ queryKey: LOCAL_QUERY_KEYS.intakeDrafts.all });
+    } catch (err) {
+      console.error('Failed to delete draft:', err);
+    }
+  };
+
+  const handleResumeDraft = (draft: IntakeDraft) => {
+    router.push(`/intake?draft=${draft.id}`);
   };
 
   // Loading state
@@ -108,11 +161,29 @@ export default function IntakePage() {
 
   // Show the appropriate wizard based on mode
   if (mode === 'homeowner') {
-    return <IntakeWizard onComplete={handleHomeownerComplete} onCancel={handleCancel} />;
+    return (
+      <IntakeWizard
+        onComplete={handleHomeownerComplete}
+        onCancel={handleCancel}
+        initialData={resumeDraft?.type === 'homeowner' ? resumeDraft.data as HomeownerIntakeData : undefined}
+        initialStep={resumeDraft?.type === 'homeowner' ? resumeDraft.currentStep : undefined}
+        draftId={activeDraftId}
+        onDraftCreated={handleDraftCreated}
+      />
+    );
   }
 
   if (mode === 'contractor') {
-    return <ContractorIntakeWizard onComplete={handleContractorComplete} onCancel={handleCancel} />;
+    return (
+      <ContractorIntakeWizard
+        onComplete={handleContractorComplete}
+        onCancel={handleCancel}
+        initialData={resumeDraft?.type === 'contractor' ? resumeDraft.data as ContractorIntakeData : undefined}
+        initialStep={resumeDraft?.type === 'contractor' ? resumeDraft.currentStep : undefined}
+        draftId={activeDraftId}
+        onDraftCreated={handleDraftCreated}
+      />
+    );
   }
 
   // Selection screen
@@ -127,7 +198,7 @@ export default function IntakePage() {
             className="min-h-[48px] min-w-[48px] flex items-center justify-center text-sm font-medium"
             style={{ color: '#6B7280' }}
           >
-            ← Back
+            &larr; Back
           </button>
         </div>
       </div>
@@ -143,6 +214,74 @@ export default function IntakePage() {
 
       {/* Content */}
       <div className="max-w-lg mx-auto px-4 py-8">
+        {/* Draft list — shown when in-progress drafts exist */}
+        {drafts.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-[11px] font-semibold uppercase tracking-wider mb-2" style={{ color: '#9CA3AF' }}>
+              Continue Where You Left Off
+            </h2>
+            <div
+              className="rounded-xl overflow-hidden"
+              style={{ background: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}
+            >
+              {drafts.map((draft, i) => (
+                <div
+                  key={draft.id}
+                  className="flex items-center gap-3 px-3 py-3 min-h-[56px]"
+                  style={{ borderBottom: i < drafts.length - 1 ? '1px solid #F3F4F6' : 'none' }}
+                >
+                  {/* Type badge */}
+                  <div
+                    className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 text-[11px] font-bold"
+                    style={{
+                      background: draft.type === 'homeowner' ? '#F0FDFA' : '#F3F4F6',
+                      color: draft.type === 'homeowner' ? '#0F766E' : '#6B7280',
+                    }}
+                  >
+                    {draft.type === 'homeowner' ? 'HO' : 'CT'}
+                  </div>
+
+                  {/* Info */}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate" style={{ color: '#111827' }}>
+                      {draft.customerName}
+                    </p>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-[11px]" style={{ color: '#9CA3AF' }}>
+                        {draft.projectSummary}
+                      </span>
+                      <span className="text-[10px]" style={{ color: '#D1D5DB' }}>·</span>
+                      <span className="text-[10px]" style={{ color: '#D1D5DB' }}>
+                        Step {draft.currentStep + 1} of 4
+                      </span>
+                      <span className="text-[10px]" style={{ color: '#D1D5DB' }}>·</span>
+                      <span className="text-[10px]" style={{ color: '#D1D5DB' }}>
+                        {formatRelativeTime(draft.updatedAt)}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <button
+                    onClick={() => handleResumeDraft(draft)}
+                    className="text-xs font-medium px-3 min-h-[36px] rounded-lg flex-shrink-0"
+                    style={{ background: '#0F766E', color: '#FFFFFF' }}
+                  >
+                    Continue
+                  </button>
+                  <button
+                    onClick={() => handleDeleteDraft(draft)}
+                    className="min-h-[36px] min-w-[36px] flex items-center justify-center rounded-lg flex-shrink-0"
+                    style={{ color: '#9CA3AF' }}
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold mb-2" style={{ color: '#111827' }}>Start a New Project</h1>
           <p style={{ color: '#6B7280' }}>Choose how you&apos;d like to get started</p>

@@ -8,6 +8,8 @@
 
 export { IntakeWizard, default as HomeownerIntakeWizard } from './IntakeWizard';
 export { ContractorIntakeWizard } from './ContractorIntakeWizard';
+export { RoomScopeBuilder } from './RoomScopeBuilder';
+export { RoomDetailPanel } from './RoomDetailPanel';
 
 // Re-export types for convenience
 export type {
@@ -16,6 +18,15 @@ export type {
   ScopeTier,
   QualityTier,
   RoomScopeTier,
+  RoomScope,
+  RoomTradeScopes,
+  RoomMeasurements,
+  RoomMaterials,
+  RoomPhoto,
+  FlooringMaterial,
+  PaintMaterial,
+  TrimMaterial,
+  TileMaterial,
   MaterialSelection,
   ScopeItem,
   ThreeAxisTags,

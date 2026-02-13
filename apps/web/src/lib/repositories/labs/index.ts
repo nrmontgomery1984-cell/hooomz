@@ -33,3 +33,8 @@ export { SopChecklistItemTemplateRepository } from './sopChecklistItemTemplate.r
 
 // Build 2: Observation Trigger System
 export { PendingBatchObservationRepository } from './pendingBatchObservation.repository';
+
+// Tool Research
+export { ToolPlatformRepository } from './toolPlatform.repository';
+export { ToolResearchItemRepository } from './toolResearchItem.repository';
+export { ToolInventoryRepository } from './toolInventory.repository';

@@ -23,6 +23,7 @@ export interface EnrichedTask {
   sopCode?: string;
   blueprintId?: string;
   loopIterationId?: string;
+  labsFlagged?: boolean;
   // Parsed fields
   taskName: string;
   room: string;
@@ -157,6 +158,7 @@ export function enrichTask(task: {
   sopCode?: string;
   blueprintId?: string;
   loopIterationId?: string;
+  labsFlagged?: boolean;
   [key: string]: unknown;
 }): EnrichedTask {
   const { taskName, room } = parseRoomFromTitle(task.title);

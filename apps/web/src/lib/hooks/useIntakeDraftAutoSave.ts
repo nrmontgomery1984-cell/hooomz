@@ -49,7 +49,9 @@ function deriveLabels(
   // Contractor
   const d = data as ContractorIntakeData;
   const customerName = d.client?.name?.trim() || 'New Contractor';
-  const projectSummary = d.project.name?.trim() || d.project.project_type?.replace(/_/g, ' ') || 'Contractor intake';
+  const roomCount = d.scope.room_scopes?.length ?? 0;
+  const baseSummary = d.project.name?.trim() || d.project.project_type?.replace(/_/g, ' ') || 'Contractor intake';
+  const projectSummary = roomCount > 0 ? `${baseSummary} (${roomCount} rooms)` : baseSummary;
   return { customerName, projectSummary };
 }
 

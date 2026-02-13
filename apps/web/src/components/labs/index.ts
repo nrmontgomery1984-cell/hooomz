@@ -8,3 +8,8 @@ export { LabsStatsRow } from './LabsStatsRow';
 export { SOPCard } from './SOPCard';
 export { ObservationConfirmCard } from './ObservationConfirmCard';
 export { BatchConfirmModal } from './BatchConfirmModal';
+export { StarRating } from './StarRating';
+export { QuickCapturePrompt } from './QuickCapturePrompt';
+export type { QuickCaptureTaskContext } from './QuickCapturePrompt';
+export { ObservationDetailContent } from './ObservationDetailContent';
+export { ExperimentCreateModal } from './ExperimentCreateModal';

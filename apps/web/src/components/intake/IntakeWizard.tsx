@@ -27,8 +27,9 @@ import {
   ChevronLeft,
   StickyNote,
 } from 'lucide-react';
-import type { HomeownerIntakeData, ProjectType } from '@/lib/types/intake.types';
-import { ROOM_LOCATIONS } from '@/lib/types/intake.types';
+import type { HomeownerIntakeData, ProjectType, RoomScope } from '@/lib/types/intake.types';
+import { getActiveTradesFromScopes, TRADE_CODES } from '@/lib/types/intake.types';
+import { RoomScopeBuilder } from './RoomScopeBuilder';
 
 // =============================================================================
 // Bundle definitions
@@ -74,22 +75,6 @@ const BUNDLES: {
     trades: ['We\'ll discuss your needs'],
     icon: <Wrench size={24} />,
   },
-];
-
-// Rooms available for Interiors (no Exterior — that's Brisso)
-const AVAILABLE_ROOMS = [
-  { id: 'kitchen', name: 'Kitchen' },
-  { id: 'master-bath', name: 'Master Bath' },
-  { id: 'master-bed', name: 'Master Bedroom' },
-  { id: 'living', name: 'Living Room' },
-  { id: 'dining', name: 'Dining Room' },
-  { id: 'guest-bath', name: 'Guest Bath' },
-  { id: 'guest-bed', name: 'Guest Bedroom' },
-  { id: 'basement', name: 'Basement' },
-  { id: 'laundry', name: 'Laundry' },
-  { id: 'office', name: 'Office' },
-  { id: 'hallway', name: 'Hallway' },
-  { id: 'entryway', name: 'Entryway' },
 ];
 
 // =============================================================================
@@ -292,60 +277,34 @@ function BundleStep({ data, updateField }: StepProps) {
   );
 }
 
-// Step 3: Room Selection
+// Step 3: Room Scope Builder
 function RoomsStep({ data, updateField, errors }: StepProps) {
-  const selectedRooms = data.project.selected_rooms;
+  const roomScopes = data.project.room_scopes ?? [];
 
-  const toggleRoom = (roomId: string) => {
-    const newRooms = selectedRooms.includes(roomId)
-      ? selectedRooms.filter((r) => r !== roomId)
-      : [...selectedRooms, roomId];
-    updateField('project.selected_rooms', newRooms);
+  const handleRoomsChange = (rooms: RoomScope[]) => {
+    updateField('project.room_scopes', rooms);
+    // Derive selected_rooms for backward compat
+    updateField('project.selected_rooms', rooms.map((r) => r.id.replace('loc-', '')));
   };
 
   return (
     <div className="space-y-5">
       <div>
-        <h2 className="text-xl font-semibold" style={{ color: '#111827' }}>Select Rooms</h2>
-        <p className="text-sm mt-1" style={{ color: '#6B7280' }}>Which areas are included in this project?</p>
+        <h2 className="text-xl font-semibold" style={{ color: '#111827' }}>Room Scope</h2>
+        <p className="text-sm mt-1" style={{ color: '#6B7280' }}>
+          Add rooms, enter measurements, and configure trades per room.
+        </p>
       </div>
 
       {errors['project.selected_rooms'] && (
         <p className="text-xs" style={{ color: '#EF4444' }}>{errors['project.selected_rooms']}</p>
       )}
 
-      <div className="grid grid-cols-2 gap-2">
-        {AVAILABLE_ROOMS.map((room) => {
-          const isSelected = selectedRooms.includes(room.id);
-          return (
-            <button
-              key={room.id}
-              type="button"
-              onClick={() => toggleRoom(room.id)}
-              className="flex items-center gap-2 rounded-xl p-3 transition-all min-h-[52px] text-left"
-              style={{
-                background: isSelected ? '#F0FDFA' : '#FFFFFF',
-                border: isSelected ? '2px solid #0F766E' : '2px solid #E5E7EB',
-              }}
-            >
-              <span className="font-medium text-sm" style={{ color: isSelected ? '#0F766E' : '#374151' }}>
-                {room.name}
-              </span>
-              {isSelected && (
-                <Check size={16} className="ml-auto flex-shrink-0" style={{ color: '#0F766E' }} />
-              )}
-            </button>
-          );
-        })}
-      </div>
-
-      {selectedRooms.length > 0 && (
-        <div className="rounded-xl p-3" style={{ background: '#F0FDFA' }}>
-          <p className="text-sm font-medium" style={{ color: '#0F766E' }}>
-            {selectedRooms.length} room{selectedRooms.length !== 1 ? 's' : ''} selected
-          </p>
-        </div>
-      )}
+      <RoomScopeBuilder
+        rooms={roomScopes}
+        onChange={handleRoomsChange}
+        bundleType={data.project.project_type}
+      />
     </div>
   );
 }
@@ -353,11 +312,8 @@ function RoomsStep({ data, updateField, errors }: StepProps) {
 // Step 4: Notes & Submit
 function NotesStep({ data, updateField }: StepProps) {
   const bundleLabel = BUNDLES.find((b) => b.value === data.project.project_type)?.label || 'Custom';
-  const roomCount = data.project.selected_rooms.length;
-  const roomNames = data.project.selected_rooms.map((id) => {
-    const loc = ROOM_LOCATIONS[`loc-${id}` as keyof typeof ROOM_LOCATIONS];
-    return loc?.name || id;
-  });
+  const roomScopes = data.project.room_scopes ?? [];
+  const totalSqft = roomScopes.reduce((sum, r) => sum + (r.measurements.sqft ?? 0), 0);
 
   return (
     <div className="space-y-5">
@@ -381,25 +337,84 @@ function NotesStep({ data, updateField }: StepProps) {
           </div>
           <div className="flex justify-between">
             <span className="text-sm" style={{ color: '#6B7280' }}>Rooms</span>
-            <span className="text-sm font-medium" style={{ color: '#111827' }}>{roomCount}</span>
+            <span className="text-sm font-medium" style={{ color: '#111827' }}>
+              {roomScopes.length}{totalSqft > 0 ? ` · ${totalSqft.toLocaleString()} sqft` : ''}
+            </span>
           </div>
-          {roomNames.length > 0 && (
-            <div className="pt-2" style={{ borderTop: '1px solid #E5E7EB' }}>
-              <div className="flex flex-wrap gap-1.5">
-                {roomNames.map((name) => (
-                  <span
-                    key={name}
-                    className="text-xs px-2 py-0.5 rounded-full"
-                    style={{ background: '#F0FDFA', color: '#0F766E' }}
-                  >
-                    {name}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </div>
+
+      {/* Room-by-room breakdown */}
+      {roomScopes.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: '#9CA3AF' }}>
+            Room Breakdown
+          </p>
+          {roomScopes.map((room) => {
+            const activeTrades = getActiveTradesFromScopes(room.trades);
+            const photoCount = room.photos?.length ?? 0;
+            const mat = room.materials;
+            return (
+              <div
+                key={room.id}
+                className="rounded-xl p-3"
+                style={{ background: '#FFFFFF', border: '1px solid #E5E7EB' }}
+              >
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium" style={{ color: '#111827' }}>{room.name}</span>
+                  {room.measurements.sqft != null && room.measurements.sqft > 0 && (
+                    <span className="text-xs" style={{ color: '#9CA3AF' }}>{room.measurements.sqft} sqft</span>
+                  )}
+                  {photoCount > 0 && (
+                    <span className="text-xs" style={{ color: '#6B7280' }}>
+                      {photoCount} photo{photoCount !== 1 ? 's' : ''}
+                    </span>
+                  )}
+                </div>
+                {activeTrades.length > 0 && (
+                  <div className="flex items-center gap-1 mt-0.5">
+                    {activeTrades.map((code) => (
+                      <span
+                        key={code}
+                        className="text-[10px] font-medium"
+                        style={{ color: '#0F766E' }}
+                      >
+                        {TRADE_CODES[code as keyof typeof TRADE_CODES]?.name ?? code}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                {/* Material summary lines */}
+                {mat && (
+                  <div className="mt-1 space-y-0.5">
+                    {mat.flooring?.product && (
+                      <p className="text-[11px]" style={{ color: '#6B7280' }}>
+                        Flooring: {mat.flooring.product}{mat.flooring.color ? ` (${mat.flooring.color})` : ''}
+                      </p>
+                    )}
+                    {mat.paint?.brand && (
+                      <p className="text-[11px]" style={{ color: '#6B7280' }}>
+                        Paint: {mat.paint.brand} {mat.paint.finish}
+                        {mat.paint.colors.walls ? ` — ${mat.paint.colors.walls}` : ''}
+                      </p>
+                    )}
+                    {mat.trim?.profile && (
+                      <p className="text-[11px]" style={{ color: '#6B7280' }}>
+                        Trim: {mat.trim.profile} {mat.trim.material}
+                      </p>
+                    )}
+                    {mat.tile?.type && (
+                      <p className="text-[11px]" style={{ color: '#6B7280' }}>
+                        Tile: {mat.tile.type}{mat.tile.size ? ` ${mat.tile.size}` : ''}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       <div>
         <label className="block text-sm font-medium mb-1.5" style={{ color: '#374151' }}>
@@ -467,6 +482,7 @@ const initialData: HomeownerIntakeData = {
     address: { street: '', city: '', province: 'NB', postal_code: '' },
     project_type: 'room_refresh',
     selected_rooms: [],
+    room_scopes: [],
   },
   notes: {
     special_requests: '',
@@ -534,8 +550,8 @@ export function IntakeWizard({
     }
 
     if (step.id === 'rooms') {
-      if (formData.project.selected_rooms.length === 0) {
-        newErrors['project.selected_rooms'] = 'Select at least one room';
+      if ((formData.project.room_scopes ?? []).length === 0) {
+        newErrors['project.selected_rooms'] = 'Add at least one room';
       }
     }
 

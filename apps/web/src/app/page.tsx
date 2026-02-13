@@ -96,8 +96,8 @@ export default function HomePage() {
 
   // Pipeline data for mini-chart
   const pipelineStages = [
-    { label: 'Lead', count: dashboard.pipelineCount, color: '#8B5CF6' },
-    { label: 'Quoted', count: dashboard.pipelineCount, color: '#3B82F6' },
+    { label: 'Lead', count: dashboard.leadCount, color: '#8B5CF6' },
+    { label: 'Quoted', count: dashboard.quotedCount, color: '#3B82F6' },
     { label: 'Active', count: dashboard.activeProjectCount, color: '#0F766E' },
   ];
   const pipelineMax = Math.max(...pipelineStages.map((s) => s.count), 1);

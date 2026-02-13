@@ -21,8 +21,10 @@ import type {
   ScopeItem,
   ProjectType,
   SpecLevel,
+  RoomScope,
 } from '@/lib/types/intake.types';
-import { TRADE_CODES, STAGE_CODES, ROOM_LOCATIONS } from '@/lib/types/intake.types';
+import { TRADE_CODES, getActiveTradesFromScopes } from '@/lib/types/intake.types';
+import { RoomScopeBuilder } from './RoomScopeBuilder';
 
 // =============================================================================
 // INTERIORS Bundle Templates
@@ -211,55 +213,6 @@ function calculateEstimate(items: ScopeItemTemplate[]): { low: number; high: num
 
   return { low, high, materialTotal: Math.round(materialTotal), laborTotal: Math.round(laborTotal) };
 }
-
-// Suggested scope items per trade (Interiors trades only)
-const TRADE_SCOPE_SUGGESTIONS: Record<string, { name: string; unit: string; category: string }[]> = {
-  'FL': [  // Flooring
-    { name: 'Install hardwood', unit: 'sqft', category: 'hardwood' },
-    { name: 'Install LVP/LVT', unit: 'sqft', category: 'vinyl' },
-    { name: 'Install carpet', unit: 'sqft', category: 'carpet' },
-    { name: 'Install underlayment', unit: 'sqft', category: 'prep' },
-    { name: 'Sand and finish hardwood', unit: 'sqft', category: 'hardwood' },
-    { name: 'Remove existing flooring', unit: 'sqft', category: 'demo' },
-  ],
-  'PT': [  // Paint
-    { name: 'Prime walls', unit: 'sqft', category: 'prep' },
-    { name: 'Paint walls', unit: 'sqft', category: 'paint' },
-    { name: 'Paint ceiling', unit: 'sqft', category: 'paint' },
-    { name: 'Paint trim', unit: 'lf', category: 'paint' },
-    { name: 'Paint cabinets', unit: 'ea', category: 'specialty' },
-    { name: 'Accent wall', unit: 'sqft', category: 'specialty' },
-  ],
-  'FC': [  // Finish Carpentry
-    { name: 'Install baseboard', unit: 'lf', category: 'trim' },
-    { name: 'Install door casing', unit: 'ea', category: 'trim' },
-    { name: 'Install window casing', unit: 'ea', category: 'trim' },
-    { name: 'Install crown molding', unit: 'lf', category: 'trim' },
-    { name: 'Install interior doors', unit: 'ea', category: 'doors' },
-    { name: 'Install wainscoting', unit: 'sqft', category: 'millwork' },
-    { name: 'Install chair rail', unit: 'lf', category: 'trim' },
-  ],
-  'TL': [  // Tile
-    { name: 'Install floor tile', unit: 'sqft', category: 'floor' },
-    { name: 'Install wall tile', unit: 'sqft', category: 'wall' },
-    { name: 'Install backsplash', unit: 'sqft', category: 'wall' },
-    { name: 'Grout tile', unit: 'sqft', category: 'finish' },
-    { name: 'Remove existing tile', unit: 'sqft', category: 'demo' },
-  ],
-  'DW': [  // Drywall
-    { name: 'Hang drywall', unit: 'sqft', category: 'install' },
-    { name: 'Tape and mud', unit: 'sqft', category: 'finish' },
-    { name: 'Sand and prep', unit: 'sqft', category: 'finish' },
-    { name: 'Patch holes', unit: 'ea', category: 'repair' },
-    { name: 'Skim coat', unit: 'sqft', category: 'finish' },
-  ],
-  'OH': [  // Overhead
-    { name: 'Project management', unit: 'hr', category: 'admin' },
-    { name: 'Site cleanup', unit: 'ea', category: 'cleanup' },
-    { name: 'Waste disposal', unit: 'ea', category: 'cleanup' },
-    { name: 'Material delivery', unit: 'ea', category: 'logistics' },
-  ],
-};
 
 // =============================================================================
 // Step Components
@@ -510,16 +463,10 @@ function ProjectInfoStep({ data, updateData, onProjectTypeChange }: StepProps) {
   );
 }
 
-// Step 2: Scope (Trade-Organized)
-function ScopeStep({ data, updateData }: StepProps) {
+// Step 2: Scope (Room-by-Room)
+function ScopeStep({ data, updateData, errors }: StepProps) {
   const scope = data.scope;
-  const [selectedTrade, setSelectedTrade] = useState<string | null>(null);
-  const [showAddItem, setShowAddItem] = useState(false);
-  const [newItem, setNewItem] = useState<Partial<ScopeItem>>({});
-
   const trades = Object.entries(TRADE_CODES);
-  const stages = Object.entries(STAGE_CODES);
-  const locations = Object.entries(ROOM_LOCATIONS);
 
   const toggleTrade = (tradeCode: string) => {
     const newTrades = scope.enabled_trades.includes(tradeCode)
@@ -528,299 +475,58 @@ function ScopeStep({ data, updateData }: StepProps) {
     updateData('scope', { ...scope, enabled_trades: newTrades });
   };
 
-  const addScopeItem = () => {
-    if (!newItem.item_name || !newItem.trade_code) return;
-
-    const item: ScopeItem = {
-      id: `scope-${Date.now()}`,
-      trade_code: newItem.trade_code,
-      category: newItem.category || 'general',
-      item_name: newItem.item_name,
-      quantity: newItem.quantity || 1,
-      unit: newItem.unit || 'ea',
-      work_category_code: newItem.trade_code,
-      stage_code: newItem.stage_code || 'ST-FINISH',
-      location_id: newItem.location_id || 'loc-kitchen',
-      notes: newItem.notes,
-    };
-
-    updateData('scope', { ...scope, items: [...scope.items, item] });
-    setNewItem({});
-    setShowAddItem(false);
-  };
-
-  const removeScopeItem = (itemId: string) => {
-    updateData('scope', { ...scope, items: scope.items.filter((i) => i.id !== itemId) });
-  };
-
-  const getTradeItems = (tradeCode: string) => {
-    return scope.items.filter((i) => i.trade_code === tradeCode);
-  };
-
-  // Get suggested items for a trade that aren't already added
-  const getSuggestions = (tradeCode: string) => {
-    const suggestions = TRADE_SCOPE_SUGGESTIONS[tradeCode] || [];
-    const existingNames = scope.items.map((i) => i.item_name.toLowerCase());
-    return suggestions.filter((s) => !existingNames.includes(s.name.toLowerCase()));
-  };
-
-  // Quick-add a suggested item
-  const addSuggestedItem = (tradeCode: string, suggestion: { name: string; unit: string; category: string }) => {
-    const item: ScopeItem = {
-      id: `scope-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      trade_code: tradeCode,
-      category: suggestion.category,
-      item_name: suggestion.name,
-      quantity: 1,
-      unit: suggestion.unit,
-      work_category_code: tradeCode,
-      stage_code: 'ST-FINISH',
-      location_id: 'loc-general',
-    };
-    updateData('scope', { ...scope, items: [...scope.items, item] });
+  const handleRoomsChange = (rooms: RoomScope[]) => {
+    updateData('scope', { ...scope, room_scopes: rooms });
   };
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-slate-800 mb-2">Project Scope</h2>
-        <p className="text-slate-500">Trades are pre-selected based on project type. Tap to add/remove.</p>
+        <h2 className="text-xl font-semibold" style={{ color: '#111827' }}>Project Scope</h2>
+        <p className="text-sm mt-1" style={{ color: '#6B7280' }}>
+          Select trades, then add rooms with measurements and per-room details.
+        </p>
       </div>
 
       {/* Trade Selection */}
       <div>
-        <label className="block text-sm font-medium text-slate-600 mb-3">Trades Involved</label>
+        <p className="text-[11px] font-semibold uppercase tracking-wider mb-2" style={{ color: '#9CA3AF' }}>
+          Trades Involved
+        </p>
         <div className="grid grid-cols-3 gap-2">
           {trades.map(([code, trade]) => {
             const isEnabled = scope.enabled_trades.includes(code);
-            const itemCount = getTradeItems(code).length;
-
             return (
               <button
                 key={code}
                 type="button"
                 onClick={() => toggleTrade(code)}
-                className={cn(
-                  'min-h-[48px] px-3 rounded-xl text-sm font-medium transition-colors',
-                  'flex items-center gap-2',
-                  isEnabled
-                    ? 'bg-coral/10 border-2 border-coral text-coral'
-                    : 'bg-slate-50 border-2 border-transparent text-slate-600 hover:bg-slate-100'
-                )}
+                className="min-h-[48px] px-3 rounded-xl text-sm font-medium transition-colors flex items-center gap-2"
+                style={{
+                  background: isEnabled ? '#F0FDFA' : '#F3F4F6',
+                  color: isEnabled ? '#0F766E' : '#6B7280',
+                  border: isEnabled ? '2px solid #0F766E' : '2px solid transparent',
+                }}
               >
                 <span>{trade.icon}</span>
                 <span className="flex-1 text-left">{trade.name}</span>
-                {itemCount > 0 && (
-                  <span className="bg-coral text-white text-xs px-1.5 py-0.5 rounded-full">
-                    {itemCount}
-                  </span>
-                )}
               </button>
             );
           })}
         </div>
       </div>
 
-      {/* Scope Items by Trade */}
-      {scope.enabled_trades.length > 0 && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <label className="block text-sm font-medium text-slate-600">Scope Items</label>
-            <button
-              type="button"
-              onClick={() => setShowAddItem(true)}
-              className="text-sm text-coral font-medium hover:underline"
-            >
-              + Add Item
-            </button>
-          </div>
-
-          {/* Items grouped by trade */}
-          {scope.enabled_trades.map((tradeCode) => {
-            const trade = TRADE_CODES[tradeCode as keyof typeof TRADE_CODES];
-            const items = getTradeItems(tradeCode);
-
-            return (
-              <div key={tradeCode} className="card">
-                <div
-                  className="flex items-center gap-2 cursor-pointer"
-                  onClick={() => setSelectedTrade(selectedTrade === tradeCode ? null : tradeCode)}
-                >
-                  <span className="text-lg">{trade?.icon}</span>
-                  <span className="font-semibold text-slate-800 flex-1">{trade?.name}</span>
-                  <span className="text-sm text-slate-500">{items.length} items</span>
-                  <span className="text-slate-400">{selectedTrade === tradeCode ? '▼' : '▶'}</span>
-                </div>
-
-                {selectedTrade === tradeCode && (
-                  <div className="mt-4 space-y-3">
-                    {/* Added items */}
-                    {items.length > 0 && (
-                      <div className="space-y-2">
-                        {items.map((item) => (
-                          <div
-                            key={item.id}
-                            className="flex items-center gap-3 p-3 bg-sage/10 rounded-lg"
-                          >
-                            <span className="text-sage">✓</span>
-                            <div className="flex-1">
-                              <span className="font-medium text-slate-800">{item.item_name}</span>
-                              <p className="text-xs text-slate-500">
-                                {item.quantity} {item.unit}
-                              </p>
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => removeScopeItem(item.id)}
-                              className="text-slate-400 hover:text-coral min-w-[44px] min-h-[44px] flex items-center justify-center"
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* Quick-add suggestions */}
-                    {getSuggestions(tradeCode).length > 0 && (
-                      <div>
-                        <p className="text-xs text-slate-500 mb-2">Quick add common items:</p>
-                        <div className="flex flex-wrap gap-2">
-                          {getSuggestions(tradeCode).slice(0, 5).map((suggestion) => (
-                            <button
-                              key={suggestion.name}
-                              type="button"
-                              onClick={() => addSuggestedItem(tradeCode, suggestion)}
-                              className="text-xs px-3 py-1.5 bg-slate-100 text-slate-600 rounded-full hover:bg-coral/10 hover:text-coral transition-colors"
-                            >
-                              + {suggestion.name}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {items.length === 0 && getSuggestions(tradeCode).length === 0 && (
-                      <p className="text-sm text-slate-400 italic">No items added yet</p>
-                    )}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
+      {errors?.['scope.trades'] && (
+        <p className="text-xs" style={{ color: '#EF4444' }}>{errors['scope.trades']}</p>
       )}
 
-      {/* Add Item Modal */}
-      {showAddItem && (
-        <div className="fixed inset-0 bg-black/50 flex items-end justify-center z-50">
-          <div className="bg-white w-full max-w-lg rounded-t-2xl p-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-slate-800">Add Scope Item</h3>
-              <button
-                type="button"
-                onClick={() => setShowAddItem(false)}
-                className="min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-400"
-              >
-                ×
-              </button>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-600 mb-2">Trade *</label>
-              <select
-                value={newItem.trade_code || ''}
-                onChange={(e) => setNewItem({ ...newItem, trade_code: e.target.value })}
-                className="input"
-              >
-                <option value="">Select trade...</option>
-                {scope.enabled_trades.map((code) => (
-                  <option key={code} value={code}>
-                    {TRADE_CODES[code as keyof typeof TRADE_CODES]?.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-600 mb-2">Item Name *</label>
-              <input
-                type="text"
-                value={newItem.item_name || ''}
-                onChange={(e) => setNewItem({ ...newItem, item_name: e.target.value })}
-                className="input"
-                placeholder="e.g., Install recessed lights"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-sm font-medium text-slate-600 mb-2">Quantity</label>
-                <input
-                  type="number"
-                  min={1}
-                  value={newItem.quantity || 1}
-                  onChange={(e) => setNewItem({ ...newItem, quantity: parseInt(e.target.value) || 1 })}
-                  className="input"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-600 mb-2">Unit</label>
-                <select
-                  value={newItem.unit || 'ea'}
-                  onChange={(e) => setNewItem({ ...newItem, unit: e.target.value })}
-                  className="input"
-                >
-                  <option value="ea">Each</option>
-                  <option value="sqft">Sq Ft</option>
-                  <option value="lf">Lin Ft</option>
-                  <option value="hr">Hours</option>
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-600 mb-2">Location</label>
-              <select
-                value={newItem.location_id || ''}
-                onChange={(e) => setNewItem({ ...newItem, location_id: e.target.value })}
-                className="input"
-              >
-                <option value="">Select location...</option>
-                {locations.map(([id, loc]) => (
-                  <option key={id} value={id}>
-                    {loc.icon} {loc.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-600 mb-2">Stage</label>
-              <select
-                value={newItem.stage_code || ''}
-                onChange={(e) => setNewItem({ ...newItem, stage_code: e.target.value })}
-                className="input"
-              >
-                <option value="">Select stage...</option>
-                {stages.map(([code, stage]) => (
-                  <option key={code} value={code}>
-                    {stage.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <button
-              type="button"
-              onClick={addScopeItem}
-              disabled={!newItem.item_name || !newItem.trade_code}
-              className="btn btn-primary w-full"
-            >
-              Add Item
-            </button>
-          </div>
-        </div>
+      {/* Room Scope Builder */}
+      {scope.enabled_trades.length > 0 && (
+        <RoomScopeBuilder
+          rooms={scope.room_scopes ?? []}
+          onChange={handleRoomsChange}
+          enabledTrades={scope.enabled_trades}
+        />
       )}
     </div>
   );
@@ -961,53 +667,54 @@ function ScheduleStep({ data, updateData }: StepProps) {
 
 // Step 4: Review
 function ReviewStep({ data }: StepProps) {
-  const itemCount = data.scope.items.length;
   const tradeCount = data.scope.enabled_trades.length;
+  const roomScopes = data.scope.room_scopes ?? [];
+  const totalSqft = roomScopes.reduce((sum, r) => sum + (r.measurements.sqft ?? 0), 0);
   const totalWeeks = (data.schedule.phases || []).reduce((sum, p) => sum + p.duration_weeks, 0);
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-slate-800 mb-2">Review & Submit</h2>
-        <p className="text-slate-500">Confirm project details before creating</p>
+        <h2 className="text-xl font-semibold" style={{ color: '#111827' }}>Review & Submit</h2>
+        <p className="text-sm mt-1" style={{ color: '#6B7280' }}>Confirm project details before creating</p>
       </div>
 
       {/* Project Summary */}
-      <div className="card">
-        <h3 className="font-semibold text-slate-800 mb-3">Project</h3>
+      <div className="rounded-xl p-4" style={{ background: '#F3F4F6', border: '1px solid #E5E7EB' }}>
+        <h3 className="font-semibold mb-3" style={{ color: '#111827' }}>Project</h3>
         <dl className="space-y-2 text-sm">
           <div className="flex justify-between">
-            <dt className="text-slate-500">Name</dt>
-            <dd className="text-slate-800 font-medium">{data.project.name || '-'}</dd>
+            <dt style={{ color: '#6B7280' }}>Name</dt>
+            <dd className="font-medium" style={{ color: '#111827' }}>{data.project.name || '-'}</dd>
           </div>
           <div className="flex justify-between">
-            <dt className="text-slate-500">Type</dt>
-            <dd className="text-slate-800">{data.project.project_type.replace('_', ' ')}</dd>
+            <dt style={{ color: '#6B7280' }}>Type</dt>
+            <dd style={{ color: '#111827' }}>{data.project.project_type.replace('_', ' ')}</dd>
           </div>
           <div className="flex justify-between">
-            <dt className="text-slate-500">Address</dt>
-            <dd className="text-slate-800 text-right">{data.project.address.street || '-'}</dd>
+            <dt style={{ color: '#6B7280' }}>Address</dt>
+            <dd className="text-right" style={{ color: '#111827' }}>{data.project.address.street || '-'}</dd>
           </div>
           <div className="flex justify-between">
-            <dt className="text-slate-500">Spec Level</dt>
-            <dd className="text-slate-800 capitalize">{data.project.spec_level}</dd>
+            <dt style={{ color: '#6B7280' }}>Spec Level</dt>
+            <dd className="capitalize" style={{ color: '#111827' }}>{data.project.spec_level}</dd>
           </div>
         </dl>
       </div>
 
       {/* Client Summary */}
       {data.client?.name && (
-        <div className="card">
-          <h3 className="font-semibold text-slate-800 mb-3">Client</h3>
+        <div className="rounded-xl p-4" style={{ background: '#F3F4F6', border: '1px solid #E5E7EB' }}>
+          <h3 className="font-semibold mb-3" style={{ color: '#111827' }}>Client</h3>
           <dl className="space-y-2 text-sm">
             <div className="flex justify-between">
-              <dt className="text-slate-500">Name</dt>
-              <dd className="text-slate-800">{data.client.name}</dd>
+              <dt style={{ color: '#6B7280' }}>Name</dt>
+              <dd style={{ color: '#111827' }}>{data.client.name}</dd>
             </div>
             {data.client.email && (
               <div className="flex justify-between">
-                <dt className="text-slate-500">Email</dt>
-                <dd className="text-slate-800">{data.client.email}</dd>
+                <dt style={{ color: '#6B7280' }}>Email</dt>
+                <dd style={{ color: '#111827' }}>{data.client.email}</dd>
               </div>
             )}
           </dl>
@@ -1015,80 +722,139 @@ function ReviewStep({ data }: StepProps) {
       )}
 
       {/* Scope Summary */}
-      <div className="card">
-        <h3 className="font-semibold text-slate-800 mb-3">Scope</h3>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="bg-slate-50 rounded-lg p-4 text-center">
-            <p className="text-2xl font-bold text-coral">{tradeCount}</p>
-            <p className="text-sm text-slate-500">Trades</p>
+      <div className="rounded-xl p-4" style={{ background: '#F3F4F6', border: '1px solid #E5E7EB' }}>
+        <h3 className="font-semibold mb-3" style={{ color: '#111827' }}>Scope</h3>
+        <div className="grid grid-cols-3 gap-3">
+          <div className="rounded-lg p-3 text-center" style={{ background: '#FFFFFF' }}>
+            <p className="text-xl font-bold" style={{ color: '#0F766E' }}>{tradeCount}</p>
+            <p className="text-xs" style={{ color: '#6B7280' }}>Trades</p>
           </div>
-          <div className="bg-slate-50 rounded-lg p-4 text-center">
-            <p className="text-2xl font-bold text-coral">{itemCount}</p>
-            <p className="text-sm text-slate-500">Scope Items</p>
+          <div className="rounded-lg p-3 text-center" style={{ background: '#FFFFFF' }}>
+            <p className="text-xl font-bold" style={{ color: '#0F766E' }}>{roomScopes.length}</p>
+            <p className="text-xs" style={{ color: '#6B7280' }}>Rooms</p>
+          </div>
+          <div className="rounded-lg p-3 text-center" style={{ background: '#FFFFFF' }}>
+            <p className="text-xl font-bold" style={{ color: '#0F766E' }}>{totalSqft > 0 ? totalSqft.toLocaleString() : '-'}</p>
+            <p className="text-xs" style={{ color: '#6B7280' }}>Sqft</p>
           </div>
         </div>
 
-        {/* Trade breakdown */}
-        <div className="mt-4 space-y-1">
-          {data.scope.enabled_trades.map((code) => {
-            const trade = TRADE_CODES[code as keyof typeof TRADE_CODES];
-            const count = data.scope.items.filter((i) => i.trade_code === code).length;
-            return (
-              <div key={code} className="flex items-center gap-2 text-sm">
-                <span>{trade?.icon}</span>
-                <span className="flex-1 text-slate-600">{trade?.name}</span>
-                <span className="text-slate-400">{count} items</span>
-              </div>
-            );
-          })}
-        </div>
+        {/* Room breakdown with materials + photo counts */}
+        {roomScopes.length > 0 && (
+          <div className="mt-3 space-y-2">
+            {roomScopes.map((room) => {
+              const activeTrades = getActiveTradesFromScopes(room.trades);
+              const photoCount = room.photos?.length ?? 0;
+              const mat = room.materials;
+              return (
+                <div key={room.id} className="text-sm">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium" style={{ color: '#111827' }}>{room.name}</span>
+                    {room.measurements.sqft != null && room.measurements.sqft > 0 && (
+                      <span style={{ color: '#9CA3AF' }}>{room.measurements.sqft} sqft</span>
+                    )}
+                    {photoCount > 0 && (
+                      <span style={{ color: '#6B7280' }} className="text-xs">
+                        {photoCount} photo{photoCount !== 1 ? 's' : ''}
+                      </span>
+                    )}
+                    <span className="ml-auto flex gap-1">
+                      {activeTrades.map((code) => (
+                        <span
+                          key={code}
+                          className="text-[10px] font-medium px-1.5 py-0.5 rounded"
+                          style={{ background: '#F0FDFA', color: '#0F766E' }}
+                        >
+                          {code}
+                        </span>
+                      ))}
+                    </span>
+                  </div>
+                  {/* Material details */}
+                  {mat && (
+                    <div className="ml-2 mt-0.5 space-y-0.5">
+                      {mat.flooring?.product && (
+                        <p className="text-xs" style={{ color: '#6B7280' }}>
+                          Flooring: {mat.flooring.product}
+                          {mat.flooring.color ? ` (${mat.flooring.color})` : ''}
+                          {mat.flooring.grade ? `, ${mat.flooring.grade}` : ''}
+                          {mat.flooring.pricePerSqft ? `, $${mat.flooring.pricePerSqft}/sqft` : ''}
+                        </p>
+                      )}
+                      {mat.paint?.brand && (
+                        <p className="text-xs" style={{ color: '#6B7280' }}>
+                          Paint: {mat.paint.brand}{mat.paint.product ? ` ${mat.paint.product}` : ''}, {mat.paint.finish}
+                          {mat.paint.colors.walls ? ` | Walls: ${mat.paint.colors.walls}` : ''}
+                          {mat.paint.colors.ceiling ? ` | Ceiling: ${mat.paint.colors.ceiling}` : ''}
+                        </p>
+                      )}
+                      {mat.trim?.profile && (
+                        <p className="text-xs" style={{ color: '#6B7280' }}>
+                          Trim: {mat.trim.profile}, {mat.trim.material}, {mat.trim.finish.replace('_', ' ')}
+                          {mat.trim.width ? ` (${mat.trim.width})` : ''}
+                        </p>
+                      )}
+                      {mat.tile?.type && (
+                        <p className="text-xs" style={{ color: '#6B7280' }}>
+                          Tile: {mat.tile.type}{mat.tile.size ? ` ${mat.tile.size}` : ''}
+                          {mat.tile.color ? `, ${mat.tile.color}` : ''}
+                          {mat.tile.pattern ? `, ${mat.tile.pattern}` : ''}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Schedule Summary */}
-      <div className="card">
-        <h3 className="font-semibold text-slate-800 mb-3">Schedule</h3>
+      <div className="rounded-xl p-4" style={{ background: '#F3F4F6', border: '1px solid #E5E7EB' }}>
+        <h3 className="font-semibold mb-3" style={{ color: '#111827' }}>Schedule</h3>
         <dl className="space-y-2 text-sm">
           {data.schedule.estimated_start && (
             <div className="flex justify-between">
-              <dt className="text-slate-500">Start Date</dt>
-              <dd className="text-slate-800">{data.schedule.estimated_start}</dd>
+              <dt style={{ color: '#6B7280' }}>Start Date</dt>
+              <dd style={{ color: '#111827' }}>{data.schedule.estimated_start}</dd>
             </div>
           )}
           <div className="flex justify-between">
-            <dt className="text-slate-500">Duration</dt>
-            <dd className="text-slate-800">
+            <dt style={{ color: '#6B7280' }}>Duration</dt>
+            <dd style={{ color: '#111827' }}>
               {data.schedule.estimated_duration_weeks || totalWeeks || '-'} weeks
             </dd>
           </div>
           <div className="flex justify-between">
-            <dt className="text-slate-500">Phases</dt>
-            <dd className="text-slate-800">{(data.schedule.phases || []).length}</dd>
+            <dt style={{ color: '#6B7280' }}>Phases</dt>
+            <dd style={{ color: '#111827' }}>{(data.schedule.phases || []).length}</dd>
           </div>
         </dl>
       </div>
 
       {/* Estimate Summary */}
       {data.estimates ? (
-        <div className="card bg-sage/5 border-2 border-sage/20">
-          <h3 className="font-semibold text-slate-800 mb-3">Preliminary Estimate</h3>
+        <div className="rounded-xl p-4" style={{ background: '#F0FDFA', border: '2px solid #D1FAE5' }}>
+          <h3 className="font-semibold mb-3" style={{ color: '#111827' }}>Preliminary Estimate</h3>
           <div className="text-center py-4">
-            <p className="text-sm text-slate-500 mb-1">Estimated Range</p>
-            <p className="text-3xl font-bold text-sage-dark">
+            <p className="text-sm mb-1" style={{ color: '#6B7280' }}>Estimated Range</p>
+            <p className="text-3xl font-bold" style={{ color: '#0F766E' }}>
               ${data.estimates.low.toLocaleString()} - ${data.estimates.high.toLocaleString()}
             </p>
-            <p className="text-xs text-slate-400 mt-2 flex items-center justify-center gap-1">
-              <span>?</span> Based on template quantities • Refine in Estimate Builder
+            <p className="text-xs mt-2" style={{ color: '#9CA3AF' }}>
+              Based on template quantities · Refine in Estimate Builder
             </p>
           </div>
-          <div className="border-t border-sage/20 pt-3 mt-3">
-            <p className="text-xs text-slate-500 text-center">
-              Includes 15-25% contingency • Based on NB market rates
+          <div className="pt-3 mt-3" style={{ borderTop: '1px solid #D1FAE5' }}>
+            <p className="text-xs text-center" style={{ color: '#6B7280' }}>
+              Includes 15-25% contingency · Based on NB market rates
             </p>
           </div>
         </div>
       ) : (
-        <div className="bg-amber/10 rounded-xl p-4">
-          <p className="text-sm text-amber-dark">
+        <div className="rounded-xl p-4" style={{ background: '#FFFBEB' }}>
+          <p className="text-sm" style={{ color: '#92400E' }}>
             <strong>Note:</strong> A detailed estimate will be generated after you submit. You can
             refine it in the Estimate Builder.
           </p>
@@ -1162,6 +928,7 @@ const getInitialData = (): ContractorIntakeData => {
     scope: {
       enabled_trades: defaultTrades,
       items: defaultScopeItems,
+      room_scopes: [],
     },
     schedule: {
       phases: defaultPhases,
@@ -1230,6 +997,7 @@ export function ContractorIntakeWizard({
         ...prev.scope,
         enabled_trades: suggestedTrades,
         items: scopeItems, // Replace with template items
+        room_scopes: [],   // Reset rooms when bundle changes
       },
       schedule: {
         ...prev.schedule,

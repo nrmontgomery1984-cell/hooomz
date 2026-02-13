@@ -25,6 +25,9 @@ import {
   SopRepository,
   SopChecklistItemTemplateRepository,
   PendingBatchObservationRepository,
+  ToolPlatformRepository,
+  ToolResearchItemRepository,
+  ToolInventoryRepository,
 } from '../../repositories/labs';
 
 // Services
@@ -39,6 +42,7 @@ import { KnowledgeItemService } from './knowledgeItem.service';
 import { ObservationLinkingService } from './observationLinking.service';
 import { SopService } from './sop.service';
 import { ObservationTriggerService } from './observationTrigger.service';
+import { ToolResearchService } from './toolResearch.service';
 
 export interface LabsServices {
   // Phase 1: Passive Data Capture
@@ -66,6 +70,9 @@ export interface LabsServices {
 
   // Build 2: Observation Trigger System
   observationTrigger: ObservationTriggerService;
+
+  // Tool Research
+  toolResearch: ToolResearchService;
 }
 
 export function createLabsServices(
@@ -133,6 +140,14 @@ export function createLabsServices(
       ),
       activity
     ),
+
+    // Tool Research
+    toolResearch: new ToolResearchService(
+      new ToolPlatformRepository(storage),
+      new ToolResearchItemRepository(storage),
+      new ToolInventoryRepository(storage),
+      activity,
+    ),
   };
 }
 
@@ -148,3 +163,4 @@ export { KnowledgeItemService } from './knowledgeItem.service';
 export { ObservationLinkingService } from './observationLinking.service';
 export { SopService } from './sop.service';
 export { ObservationTriggerService } from './observationTrigger.service';
+export { ToolResearchService } from './toolResearch.service';

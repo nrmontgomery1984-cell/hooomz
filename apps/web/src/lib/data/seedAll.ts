@@ -11,6 +11,7 @@
 import { SOPS } from './sops';
 import { seedLabsCatalogs } from './labsSeedData';
 import { seedEstimatingCatalog } from './estimatingCatalogSeed';
+import { seedToolResearchData } from './toolResearchSeed';
 import type { Services } from '../services';
 
 // Guide source prefix → tradeFamily
@@ -45,6 +46,9 @@ export interface SeedResult {
   toolMethods: number;
   crewMembers: number;
   catalogItems: number;
+  toolPlatforms?: number;
+  toolResearchItems?: number;
+  toolInventoryItems?: number;
   customers?: number;
   projects?: number;
   tasks?: number;
@@ -235,6 +239,15 @@ export async function seedAllLabsData(
   } else {
     log('Skipping estimating catalog — items already exist');
   }
+
+  // ========================================================================
+  // 6. Tool Research Data
+  // ========================================================================
+  log('Seeding tool research data...');
+  const toolResult = await seedToolResearchData(services, log);
+  result.toolPlatforms = toolResult.platforms;
+  result.toolResearchItems = toolResult.researchItems;
+  result.toolInventoryItems = toolResult.inventoryItems;
 
   log('Seed complete!');
   return result;

@@ -132,6 +132,10 @@ export default function SeedPage() {
       await services.loopManagement.clearAll();
       addLog('  Cleared loop contexts and iterations');
 
+      // Clear tool research data
+      await services.labs.toolResearch.clearAll();
+      addLog('  Cleared tool research data');
+
       addLog('Clear complete. Re-seeding Labs + Demo...');
 
       // Re-seed Labs
@@ -264,6 +268,9 @@ export default function SeedPage() {
               { label: '18 Techniques', desc: 'Installation methods per trade' },
               { label: '16 Tool Methods', desc: 'Saws, nailers, sanders, rollers' },
               { label: '2 Crew Members', desc: 'Nathan ($45/$95) + Nishant ($28/$55)' },
+              { label: '6 Tool Platforms', desc: 'Cordless platform comparisons' },
+              { label: '~63 Research Items', desc: 'Saws, PPE, instruments, fastening, measuring, site mgmt' },
+              { label: '18 Inventory Items', desc: '8 owned + 10 RIDGID purchasing' },
             ].map((item, i) => (
               <div key={i} className="flex items-start gap-2">
                 <Database size={12} className="mt-0.5 flex-shrink-0" style={{ color: '#9CA3AF' }} />
@@ -356,6 +363,9 @@ export default function SeedPage() {
                 { label: 'Tool Methods', count: result.toolMethods },
                 { label: 'Crew Members', count: result.crewMembers },
                 { label: 'Catalog Items', count: result.catalogItems },
+                ...(result.toolPlatforms ? [{ label: 'Tool Platforms', count: result.toolPlatforms }] : []),
+                ...(result.toolResearchItems ? [{ label: 'Research Items', count: result.toolResearchItems }] : []),
+                ...(result.toolInventoryItems ? [{ label: 'Inventory Items', count: result.toolInventoryItems }] : []),
                 ...(result.customers ? [{ label: 'Customers', count: result.customers }] : []),
                 ...(result.projects ? [{ label: 'Projects', count: result.projects }] : []),
                 ...(result.tasks ? [{ label: 'Tasks', count: result.tasks }] : []),
@@ -409,6 +419,7 @@ export default function SeedPage() {
               { href: '/labs/catalogs', label: 'Catalogs', desc: 'Products, techniques, tools' },
               { href: '/labs/training', label: 'Training', desc: 'Crew certification status' },
               { href: '/labs/structure', label: 'Building Structure', desc: 'Define floors and rooms' },
+              { href: '/labs/tool-research', label: 'Tool Research', desc: 'Platform comparison & inventory' },
             ].map((link) => (
               <Link
                 key={link.href}

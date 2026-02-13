@@ -19,6 +19,7 @@ import {
   ExternalLink,
   GraduationCap,
   Timer,
+  FlaskConical,
 } from 'lucide-react';
 import { TRADE_CODES } from '@/lib/types/intake.types';
 import { SOPChecklist } from '@/components/sop/SOPChecklist';
@@ -60,6 +61,8 @@ interface TaskCardProps {
   isUndoing: boolean;
   onOpenSOP?: (sopId: string) => void;
   onOpenKnowledge?: (sourceId: string) => void;
+  onToggleLabsFlag?: (taskId: string, flagged: boolean) => void;
+  onOpenLabsCapture?: (taskId: string) => void;
 }
 
 // =============================================================================
@@ -93,6 +96,8 @@ export function TaskCard({
   isUndoing,
   onOpenSOP,
   onOpenKnowledge,
+  onToggleLabsFlag,
+  onOpenLabsCapture,
 }: TaskCardProps) {
   const isComplete = task.status === 'complete';
   const isInProgress = task.status === 'in_progress';
@@ -239,6 +244,17 @@ export function TaskCard({
                 {trainingRecord.status === 'certified'
                   ? '✓'
                   : `${completedSupervised}/${requiredSupervised}`}
+              </span>
+            )}
+
+            {/* Labs flag badge */}
+            {task.labsFlagged && (
+              <span
+                className="inline-flex items-center gap-0.5 text-[10px] font-medium px-1.5 py-0.5 rounded-full"
+                style={{ background: '#F0FDFA', color: '#0F766E' }}
+              >
+                <FlaskConical size={8} />
+                Labs
               </span>
             )}
           </div>
@@ -437,6 +453,31 @@ export function TaskCard({
                 <StickyNote size={14} strokeWidth={1.5} />
                 {task.userNotes ? 'Edit Note' : 'Add Note'}
               </button>
+
+              {/* Labs action: capture (complete) or flag (incomplete) */}
+              {isComplete && onOpenLabsCapture && (
+                <button
+                  onClick={(e) => { e.stopPropagation(); onOpenLabsCapture(task.id); }}
+                  className="flex items-center gap-1.5 text-xs font-medium px-3 min-h-[36px] rounded-lg transition-colors"
+                  style={{ color: '#0F766E', background: '#F0FDFA' }}
+                >
+                  <FlaskConical size={14} strokeWidth={1.5} />
+                  Labs Note
+                </button>
+              )}
+              {!isComplete && onToggleLabsFlag && (
+                <button
+                  onClick={(e) => { e.stopPropagation(); onToggleLabsFlag(task.id, !task.labsFlagged); }}
+                  className="flex items-center gap-1.5 text-xs font-medium px-3 min-h-[36px] rounded-lg transition-colors"
+                  style={{
+                    color: task.labsFlagged ? '#0F766E' : '#6B7280',
+                    background: task.labsFlagged ? '#F0FDFA' : '#F3F4F6',
+                  }}
+                >
+                  <FlaskConical size={14} strokeWidth={1.5} />
+                  {task.labsFlagged ? 'Flagged' : 'Flag for Labs'}
+                </button>
+              )}
             </div>
           )}
         </div>

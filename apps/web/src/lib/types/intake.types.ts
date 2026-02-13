@@ -37,6 +37,209 @@ export interface RoomScopeTier {
   price_range?: { low: number; high: number };
 }
 
+// =============================================================================
+// Per-Room Scope Details (Intake Refinement 2/3)
+// =============================================================================
+
+export interface FlooringScope {
+  enabled: boolean;
+  type: 'lvp' | 'hardwood' | 'engineered' | 'laminate' | 'tile' | 'carpet';
+  condition: 'new_subfloor' | 'over_existing' | 'remove_replace';
+  scope: 'full_room' | 'partial';
+  sqft_override?: number;
+}
+
+export interface PaintScope {
+  enabled: boolean;
+  surfaces: ('walls' | 'ceiling' | 'trim')[];
+  prep: 'minimal' | 'standard' | 'extensive';
+  coats: 1 | 2 | 3;
+}
+
+export interface TrimScope {
+  enabled: boolean;
+  items: ('baseboard' | 'casing' | 'crown' | 'shoe' | 'wainscoting')[];
+  action: 'replace' | 'new_install' | 'repair_repaint';
+  lf_override?: number;
+}
+
+export interface TileScope {
+  enabled: boolean;
+  surfaces: ('floor' | 'walls' | 'backsplash')[];
+  sqft_override?: number;
+}
+
+export interface DrywallScope {
+  enabled: boolean;
+  extent: 'patch' | 'skim_coat' | 'full_replacement';
+  sqft_override?: number;
+}
+
+// =============================================================================
+// Per-Trade Material Selections (Intake Refinement 3/3)
+// =============================================================================
+
+export type PaintFinish = 'flat' | 'matte' | 'eggshell' | 'satin' | 'semi_gloss' | 'gloss';
+export type TrimProfile = 'colonial' | 'craftsman' | 'modern_flat' | 'ogee' | 'ranch' | 'custom';
+export type TrimMaterialType = 'mdf' | 'pine' | 'poplar' | 'oak' | 'pvc';
+export type TileType = 'ceramic' | 'porcelain' | 'natural_stone' | 'glass' | 'mosaic';
+export type TilePattern = 'straight' | 'offset' | 'herringbone' | 'diagonal';
+
+export interface FlooringMaterial {
+  category: 'lvp' | 'hardwood' | 'laminate' | 'tile' | 'carpet' | 'other';
+  product?: string;
+  sku?: string;
+  color?: string;
+  grade?: QualityTier;
+  pricePerSqft?: number;
+  notes?: string;
+}
+
+export interface PaintMaterial {
+  brand?: string;
+  product?: string;
+  finish: PaintFinish;
+  colors: {
+    walls?: string;
+    ceiling?: string;
+    trim?: string;
+    accent?: string;
+  };
+  notes?: string;
+}
+
+export interface TrimMaterial {
+  profile: TrimProfile;
+  material: TrimMaterialType;
+  width?: string;
+  finish: 'paint_grade' | 'stain_grade' | 'prefinished';
+  notes?: string;
+}
+
+export interface TileMaterial {
+  type: TileType;
+  size?: string;
+  color?: string;
+  grout_color?: string;
+  pattern?: TilePattern;
+  notes?: string;
+}
+
+// =============================================================================
+// Room Photos (Intake Refinement 3/3)
+// =============================================================================
+
+export type PhotoTradeTag = 'flooring' | 'paint' | 'trim' | 'tile' | 'drywall' | 'general';
+
+export interface RoomPhoto {
+  id: string;
+  dataUrl: string;
+  caption?: string;
+  trade?: PhotoTradeTag;
+  timestamp: string;
+}
+
+export interface RoomTradeScopes {
+  flooring?: FlooringScope;
+  paint?: PaintScope;
+  trim?: TrimScope;
+  tile?: TileScope;
+  drywall?: DrywallScope;
+}
+
+// Per-trade material selections (attached to room, not trade scope)
+export interface RoomMaterials {
+  flooring?: FlooringMaterial;
+  paint?: PaintMaterial;
+  trim?: TrimMaterial;
+  tile?: TileMaterial;
+}
+
+export interface RoomMeasurements {
+  length_ft?: number;
+  width_ft?: number;
+  height_ft?: number;
+  sqft?: number;          // auto = length * width, or manual override
+  perimeter_lf?: number;  // auto = 2*(length+width), or manual override
+}
+
+export interface RoomScope {
+  id: string;              // matches ROOM_LOCATIONS key: "loc-kitchen"
+  name: string;            // display name: "Kitchen"
+  measurements: RoomMeasurements;
+  priority: 'high' | 'medium' | 'low';
+  trades: RoomTradeScopes;
+  materials?: RoomMaterials;
+  photos?: RoomPhoto[];
+  notes?: string;
+}
+
+/** Default trade scopes based on bundle type */
+export function getDefaultTradesForBundle(
+  bundle: InteriorsBundle,
+  roomId?: string
+): RoomTradeScopes {
+  const WET_ROOMS = ['loc-master-bath', 'loc-guest-bath', 'loc-kitchen', 'loc-laundry'];
+  const isWet = roomId ? WET_ROOMS.includes(roomId) : false;
+
+  switch (bundle) {
+    case 'floor_refresh':
+      return {
+        flooring: { enabled: true, type: 'lvp', condition: 'remove_replace', scope: 'full_room' },
+        trim: { enabled: true, items: ['baseboard'], action: 'replace' },
+      };
+    case 'room_refresh':
+      return {
+        flooring: { enabled: true, type: 'lvp', condition: 'remove_replace', scope: 'full_room' },
+        paint: { enabled: true, surfaces: ['walls', 'ceiling'], prep: 'standard', coats: 2 },
+        trim: { enabled: true, items: ['baseboard'], action: 'replace' },
+      };
+    case 'full_interior':
+      return {
+        flooring: { enabled: true, type: 'lvp', condition: 'remove_replace', scope: 'full_room' },
+        paint: { enabled: true, surfaces: ['walls', 'ceiling', 'trim'], prep: 'standard', coats: 2 },
+        trim: { enabled: true, items: ['baseboard', 'casing', 'crown', 'shoe'], action: 'replace' },
+        drywall: { enabled: true, extent: 'patch' },
+        ...(isWet ? { tile: { enabled: true, surfaces: ['floor', 'walls'] } } : {}),
+      };
+    case 'custom':
+    default:
+      return {};
+  }
+}
+
+/** Get default trade scopes from enabled trade codes (contractor flow) */
+export function getDefaultTradesFromCodes(tradeCodes: string[]): RoomTradeScopes {
+  const trades: RoomTradeScopes = {};
+  if (tradeCodes.includes('FL')) {
+    trades.flooring = { enabled: true, type: 'lvp', condition: 'remove_replace', scope: 'full_room' };
+  }
+  if (tradeCodes.includes('PT')) {
+    trades.paint = { enabled: true, surfaces: ['walls', 'ceiling'], prep: 'standard', coats: 2 };
+  }
+  if (tradeCodes.includes('FC')) {
+    trades.trim = { enabled: true, items: ['baseboard'], action: 'replace' };
+  }
+  if (tradeCodes.includes('TL')) {
+    trades.tile = { enabled: true, surfaces: ['floor'] };
+  }
+  if (tradeCodes.includes('DW')) {
+    trades.drywall = { enabled: true, extent: 'patch' };
+  }
+  return trades;
+}
+
+/** Get active trade codes from a RoomTradeScopes object */
+export function getActiveTradesFromScopes(trades: RoomTradeScopes): string[] {
+  const active: string[] = [];
+  if (trades.flooring?.enabled) active.push('FL');
+  if (trades.paint?.enabled) active.push('PT');
+  if (trades.trim?.enabled) active.push('FC');
+  if (trades.tile?.enabled) active.push('TL');
+  if (trades.drywall?.enabled) active.push('DW');
+  return active;
+}
+
 export interface MaterialSelection {
   category: string;          // "flooring", "paint", "trim", "tile" (Interiors categories)
   subcategory?: string;
@@ -100,6 +303,7 @@ export interface HomeownerIntakeData {
     };
     project_type: ProjectType;
     selected_rooms: string[];  // ["kitchen", "master-bath", "living"]
+    room_scopes?: RoomScope[]; // detailed per-room scope with measurements
   };
 
   // Step 4: Notes
@@ -132,6 +336,11 @@ export interface ScopeItem {
   isLooped?: boolean;
   loopContextLabel?: string;
   estimatedHoursPerUnit?: number;
+
+  // Material enrichment (Intake Refinement 3/3)
+  materialDescription?: string;   // e.g., "Lifeproof Sterling Oak (Natural Oak)"
+  materialCostPerUnit?: number;   // overrides default cost lookup when set
+  catalogSku?: string;            // links to catalog item by SKU
 }
 
 export interface ContractorIntakeData {
@@ -163,6 +372,7 @@ export interface ContractorIntakeData {
   scope: {
     enabled_trades: string[];  // ["FL", "PT", "FC", "DW"]
     items: ScopeItem[];
+    room_scopes?: RoomScope[]; // detailed per-room scope with measurements
   };
 
   // Step 3: Schedule

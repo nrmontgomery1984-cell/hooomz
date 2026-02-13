@@ -30,6 +30,8 @@ export interface DashboardData {
   healthScore: number;
   activeProjectCount: number;   // in-progress + approved only
   pipelineCount: number;        // lead + quoted
+  leadCount: number;            // lead only
+  quotedCount: number;          // quoted only
   blockedCount: number;
   tasksDue: number;             // total incomplete tasks across active projects
   blockedTaskCount: number;
@@ -133,6 +135,8 @@ export function useDashboardData(): DashboardData {
     healthScore: health.healthScore,
     activeProjectCount: activeProjects.length,
     pipelineCount: pipelineProjects.length,
+    leadCount: pipelineProjects.filter((p) => p.status === 'lead').length,
+    quotedCount: pipelineProjects.filter((p) => p.status === 'quoted').length,
     blockedCount: health.blockedCount,
     tasksDue,
     blockedTaskCount: 0, // TODO: would need per-task status tracking

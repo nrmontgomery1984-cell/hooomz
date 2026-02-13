@@ -24,6 +24,11 @@ import type {
   SopStatus,
   ObservationDraft,
   ConditionAssessment,
+  ToolPlatform,
+  ToolResearchItem,
+  ToolInventoryItem,
+  ToolResearchCategory,
+  MaintenanceEntry,
 } from '@hooomz/shared-contracts';
 
 // ============================================================================
@@ -117,6 +122,12 @@ export const LABS_QUERY_KEYS = {
     byCrewMember: (crewMemberId: string) => ['labs', 'pendingBatch', 'crew', crewMemberId] as const,
     count: ['labs', 'pendingBatch', 'count'] as const,
     countByTask: (taskId: string) => ['labs', 'pendingBatch', 'count', taskId] as const,
+  },
+  // Tool Research
+  toolResearch: {
+    platforms: ['labs', 'toolResearch', 'platforms'] as const,
+    researchItems: (category?: string) => ['labs', 'toolResearch', 'items', category] as const,
+    inventory: (filters?: Record<string, string>) => ['labs', 'toolResearch', 'inventory', filters] as const,
   },
 };
 
@@ -920,6 +931,241 @@ export function useConfirmAllBatch() {
       queryClient.invalidateQueries({ queryKey: LABS_QUERY_KEYS.observations.all });
       queryClient.invalidateQueries({ queryKey: LABS_QUERY_KEYS.pendingBatch.all });
       queryClient.invalidateQueries({ queryKey: LABS_QUERY_KEYS.pendingBatch.count });
+    },
+  });
+}
+
+// ============================================================================
+// Labs Dashboard Aggregation
+// ============================================================================
+
+export interface LabsDashboardStats {
+  activeExperiments: number;
+  fieldObservations: number;
+  knowledgeItems: number;
+  contentReady: number;
+  productsRated: number;
+}
+
+export interface LabsDashboardData {
+  stats: LabsDashboardStats;
+  recentObservations: FieldObservation[];
+  contentReadyItems: KnowledgeItem[];
+  activeExperimentsList: Experiment[];
+  isLoading: boolean;
+}
+
+export function useLabsDashboardData(): LabsDashboardData {
+  const { data: observations = [], isLoading: obsLoading } = useLabsObservations();
+  const { data: knowledgeItems = [], isLoading: knLoading } = useLabsKnowledgeItems();
+  const { data: experiments = [], isLoading: expLoading } = useLabsActiveExperiments();
+
+  const isLoading = obsLoading || knLoading || expLoading;
+
+  // Recent observations: sorted by date descending, top 10
+  const recentObservations = [...observations]
+    .sort((a, b) => new Date(b.metadata.createdAt).getTime() - new Date(a.metadata.createdAt).getTime())
+    .slice(0, 10);
+
+  // Knowledge items with 3+ observations — ready for content
+  const contentReadyItems = knowledgeItems.filter(
+    (item) => item.observationCount >= 3,
+  );
+
+  // Count distinct products that have been rated in observations
+  const ratedProductIds = new Set<string>();
+  for (const obs of observations) {
+    if (obs.productId && obs.quality) {
+      ratedProductIds.add(obs.productId);
+    }
+  }
+
+  const stats: LabsDashboardStats = {
+    activeExperiments: experiments.length,
+    fieldObservations: observations.length,
+    knowledgeItems: knowledgeItems.length,
+    contentReady: contentReadyItems.length,
+    productsRated: ratedProductIds.size,
+  };
+
+  return {
+    stats,
+    recentObservations,
+    contentReadyItems,
+    activeExperimentsList: experiments,
+    isLoading,
+  };
+}
+
+// ============================================================================
+// Tool Research
+// ============================================================================
+
+export function useToolPlatforms() {
+  const { services, isLoading } = useServicesContext();
+  return useQuery<ToolPlatform[]>({
+    queryKey: LABS_QUERY_KEYS.toolResearch.platforms,
+    queryFn: () => services!.labs.toolResearch.getPlatforms(),
+    enabled: !isLoading && !!services,
+  });
+}
+
+export function useToolResearchItems(category?: ToolResearchCategory) {
+  const { services, isLoading } = useServicesContext();
+  return useQuery<ToolResearchItem[]>({
+    queryKey: LABS_QUERY_KEYS.toolResearch.researchItems(category),
+    queryFn: () => services!.labs.toolResearch.getResearchItems(category),
+    enabled: !isLoading && !!services,
+  });
+}
+
+export function useToolInventory(filters?: { status?: string; platform?: string; category?: string }) {
+  const { services, isLoading } = useServicesContext();
+  return useQuery<ToolInventoryItem[]>({
+    queryKey: LABS_QUERY_KEYS.toolResearch.inventory(filters as Record<string, string>),
+    queryFn: () => services!.labs.toolResearch.getInventory(filters),
+    enabled: !isLoading && !!services,
+  });
+}
+
+export function useUpdateInventoryItem() {
+  const { services } = useServicesContext();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: { id: string; changes: Partial<Omit<ToolInventoryItem, 'id' | 'metadata'>> }) =>
+      services!.labs.toolResearch.updateInventoryItem(data.id, data.changes),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['labs', 'toolResearch'] });
+    },
+  });
+}
+
+export function useUpdateResearchItem() {
+  const { services } = useServicesContext();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: { id: string; changes: Partial<Omit<ToolResearchItem, 'id' | 'metadata'>> }) =>
+      services!.labs.toolResearch.updateResearchItem(data.id, data.changes),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['labs', 'toolResearch'] });
+    },
+  });
+}
+
+export function useMarkAsPurchased() {
+  const { services } = useServicesContext();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: { researchItemId: string; date: string; price: number; retailer: string }) =>
+      services!.labs.toolResearch.markAsPurchased(data.researchItemId, data.date, data.price, data.retailer),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['labs', 'toolResearch'] });
+    },
+  });
+}
+
+export function useMarkAsReceived() {
+  const { services } = useServicesContext();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: { id: string; date: string; price?: number }) =>
+      services!.labs.toolResearch.markAsReceived(data.id, data.date, data.price),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['labs', 'toolResearch'] });
+    },
+  });
+}
+
+export function useRetireInventoryItem() {
+  const { services } = useServicesContext();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: { id: string; reason?: string; replacedById?: string }) =>
+      services!.labs.toolResearch.retireInventoryItem(data.id, data.reason, data.replacedById),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['labs', 'toolResearch'] });
+    },
+  });
+}
+
+export function useArchiveInventoryItem() {
+  const { services } = useServicesContext();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: { id: string; reason?: string }) =>
+      services!.labs.toolResearch.archiveInventoryItem(data.id, data.reason),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['labs', 'toolResearch'] });
+    },
+  });
+}
+
+export function useDeleteInventoryItem() {
+  const { services } = useServicesContext();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: { id: string }) =>
+      services!.labs.toolResearch.deleteInventoryItem(data.id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['labs', 'toolResearch'] });
+    },
+  });
+}
+
+export function useRegisterRidgid() {
+  const { services } = useServicesContext();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: { id: string; registrationDate: string }) =>
+      services!.labs.toolResearch.registerRidgid(data.id, data.registrationDate),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['labs', 'toolResearch'] });
+    },
+  });
+}
+
+export function useLogToolUse() {
+  const { services } = useServicesContext();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => services!.labs.toolResearch.logUse(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['labs', 'toolResearch'] });
+    },
+  });
+}
+
+export function useAdvanceContentStatus() {
+  const { services } = useServicesContext();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: { entityType: 'research' | 'inventory'; id: string }) =>
+      services!.labs.toolResearch.advanceContentStatus(data.entityType, data.id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['labs', 'toolResearch'] });
+    },
+  });
+}
+
+export function useAddMaintenanceEntry() {
+  const { services } = useServicesContext();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: { id: string; entry: MaintenanceEntry }) =>
+      services!.labs.toolResearch.addMaintenanceEntry(data.id, data.entry),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['labs', 'toolResearch'] });
     },
   });
 }

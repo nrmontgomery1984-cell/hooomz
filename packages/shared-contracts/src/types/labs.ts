@@ -491,3 +491,107 @@ export interface LabsNotification {
   timestamp: string;
   metadata: Metadata;
 }
+
+// ============================================================================
+// Tool Research — Platform comparison, research items, inventory
+// ============================================================================
+
+/** Cordless platform comparison (6 records) */
+export interface ToolPlatform {
+  id: string;
+  name: string;
+  tier: string;
+  retailers: string[];
+  retailerCount: number;
+  platformSize: string;
+  entryPrice: string;
+  entryNum: number;
+  batteryOptions: string;
+  motorType: string;
+  warranty: string;
+  upgradePath: string;
+  keyKit: string;
+  pros: string;
+  cons: string;
+  labsAngle: string;
+  score: { breadth: number; availability: number; battery: number; upgrade: number; price: number };
+  metadata: Metadata;
+}
+
+/** Content pipeline status for tool research and inventory items */
+export type ContentPipelineStatus = 'planned' | 'filmed' | 'edited' | 'published';
+
+/** Maintenance log entry for inventory items */
+export interface MaintenanceEntry {
+  date: string;
+  action: string;
+  notes?: string;
+}
+
+/** Research category for tool research items */
+export type ToolResearchCategory =
+  | 'mitre_saw'
+  | 'table_saw'
+  | 'fastening'
+  | 'measuring'
+  | 'ppe'
+  | 'lab_instrument'
+  | 'site_mgmt';
+
+/** Individual research item (saws, PPE, instruments, etc.) */
+export interface ToolResearchItem {
+  id: string;
+  category: ToolResearchCategory;
+  item: string;
+  retailer?: string;
+  type?: string;
+  specs?: string;
+  price: string;
+  priceNum: number;
+  priority?: string;
+  notes: string;
+  cat?: string;
+  source?: string;
+  // P1: Purchase tracking
+  purchased?: boolean;
+  purchasedDate?: string;
+  purchasedPrice?: number;
+  purchasedRetailer?: string;
+  inventoryItemId?: string;
+  // P2: Content pipeline
+  contentStatus?: ContentPipelineStatus;
+  metadata: Metadata;
+}
+
+/** Tool inventory item (owned/purchasing) */
+export interface ToolInventoryItem {
+  id: string;
+  item: string;
+  brand: string;
+  category: string;
+  platform: string;
+  status: 'Owned' | 'Purchasing' | 'Wishlist' | 'Retired' | 'Archived';
+  condition: string;
+  pricePaid: number | null;
+  source: string;
+  labsRole: string;
+  notes: string;
+  // P1: Research link
+  researchItemId?: string;
+  purchasedDate?: string;
+  // P1: RIDGID registration
+  ridgidRegistered?: boolean;
+  ridgidRegistrationDate?: string;
+  // P1: Retirement
+  retiredDate?: string;
+  retiredReason?: string;
+  replacedById?: string;
+  // P2: Usage tracking
+  usageCount?: number;
+  lastUsedDate?: string;
+  // P2: Content pipeline
+  contentStatus?: ContentPipelineStatus;
+  // P2: Maintenance
+  maintenanceLog?: MaintenanceEntry[];
+  metadata: Metadata;
+}

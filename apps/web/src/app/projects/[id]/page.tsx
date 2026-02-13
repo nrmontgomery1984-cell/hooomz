@@ -17,12 +17,13 @@ import {
   useLocalTasks,
   useUndoCompleteTask,
   useUpdateTaskDescription,
+  useToggleLabsFlag,
 } from '@/lib/hooks/useLocalData';
 import { useCompleteTaskWithBatchCheck } from '@/lib/hooks/useCompleteTaskWithBatchCheck';
 import { usePendingBatchItems, useConfirmBatchItem, useSkipBatchItem, useConfirmAllBatch } from '@/lib/hooks/useLabsData';
 import { useProjectBudgets, useProjectBudgetSummary, useCrewTrainingRecords } from '@/lib/hooks/useCrewData';
 import { useActiveCrew } from '@/lib/crew/ActiveCrewContext';
-import { BatchConfirmModal } from '@/components/labs';
+import { BatchConfirmModal, QuickCapturePrompt } from '@/components/labs';
 import { BottomSheet } from '@/components/ui/BottomSheet';
 import { SOPSheetContent } from '@/components/sop/SOPSheetContent';
 import { KnowledgeSheetContent } from '@/components/labs/KnowledgeSheetContent';
@@ -30,6 +31,7 @@ import { ProjectHealthCard } from '@/components/projects/ProjectHealthCard';
 import { ProjectFilterBar, type ProjectFilterValues } from '@/components/projects/ProjectFilterBar';
 import { RoomSection } from '@/components/projects/RoomSection';
 import { TaskCard } from '@/components/projects/TaskCard';
+import { ProjectLabsData } from '@/components/projects/ProjectLabsData';
 import { enrichTask, type EnrichedTask } from '@/lib/utils/taskParsing';
 import type { TaskBudget, TrainingRecord } from '@hooomz/shared-contracts';
 
@@ -71,6 +73,10 @@ export default function ProjectDetailPage() {
   const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null);
   const [sopSheetId, setSopSheetId] = useState<string | null>(null);
   const [knowledgeSheetId, setKnowledgeSheetId] = useState<string | null>(null);
+  const [quickCaptureTask, setQuickCaptureTask] = useState<EnrichedTask | null>(null);
+
+  // Labs flag toggle
+  const toggleLabsFlag = useToggleLabsFlag();
 
   // ---------------------------------------------------------------------------
   // Derived data
@@ -138,10 +144,13 @@ export default function ProjectDetailPage() {
     e.stopPropagation();
     try {
       await completeTaskFn(projectId, taskId);
+      // Queue this task for QuickCapture after batch modal closes
+      const completed = enrichedTasks.find((t) => t.id === taskId);
+      if (completed) setQuickCaptureTask(completed);
     } catch (err) {
       console.error('Failed to complete task:', err);
     }
-  }, [completeTaskFn, projectId]);
+  }, [completeTaskFn, projectId, enrichedTasks]);
 
   const handleUndoTask = useCallback(async (e: React.MouseEvent, taskId: string) => {
     e.stopPropagation();
@@ -184,6 +193,22 @@ export default function ProjectDetailPage() {
       console.error('Failed to save note:', err);
     }
   }, [projectId, updateDescription]);
+
+  const handleToggleLabsFlag = useCallback(async (taskId: string, flagged: boolean) => {
+    try {
+      await toggleLabsFlag.mutateAsync({ projectId, taskId, flagged });
+    } catch (err) {
+      console.error('Failed to toggle labs flag:', err);
+    }
+  }, [toggleLabsFlag, projectId]);
+
+  const handleOpenLabsCapture = useCallback((taskId: string) => {
+    const task = enrichedTasks.find((t) => t.id === taskId);
+    if (task) setQuickCaptureTask(task);
+  }, [enrichedTasks]);
+
+  // Show QuickCapture only when batch modal is not showing
+  const showQuickCapture = quickCaptureTask !== null && !hasPendingBatch;
 
   // ---------------------------------------------------------------------------
   // Loading / not found
@@ -311,11 +336,16 @@ export default function ProjectDetailPage() {
                     isUndoing={undoTask.isPending}
                     onOpenSOP={handleOpenSOP}
                     onOpenKnowledge={handleOpenKnowledge}
+                    onToggleLabsFlag={handleToggleLabsFlag}
+                    onOpenLabsCapture={handleOpenLabsCapture}
                   />
                 ))}
               </RoomSection>
             );
           })}
+
+          {/* Labs Data Section */}
+          <ProjectLabsData projectId={projectId} />
 
           {totalTasks === 0 && (
             <div className="text-center py-8">
@@ -348,6 +378,24 @@ export default function ProjectDetailPage() {
           onSkipItem={async (pendingBatchId) => { await skipBatchItem.mutateAsync(pendingBatchId); }}
           onConfirmAll={async () => { await confirmAllBatch.mutateAsync(batchTaskId); }}
           onClose={clearBatch}
+        />
+      )}
+
+      {/* Quick Capture Prompt — appears after batch modal closes */}
+      {showQuickCapture && quickCaptureTask && (
+        <QuickCapturePrompt
+          isOpen={true}
+          onClose={() => setQuickCaptureTask(null)}
+          taskContext={{
+            taskId: quickCaptureTask.id,
+            taskName: quickCaptureTask.taskName,
+            room: quickCaptureTask.room,
+            projectId,
+            sopCode: quickCaptureTask.sopCode,
+            tradeCode: quickCaptureTask.tradeCode ?? undefined,
+            labsFlagged: quickCaptureTask.labsFlagged,
+          }}
+          crewMemberId={crewMemberId || ''}
         />
       )}
 

@@ -33,6 +33,7 @@ import type {
   GeneratedTask,
   ScopeItem,
   ProjectType,
+  RoomScope,
 } from '@/lib/types/intake.types';
 import { ROOM_LOCATIONS, TRADE_CODES, STAGE_CODES } from '@/lib/types/intake.types';
 import { getSOPForTask } from '@/lib/data/sops';
@@ -207,6 +208,296 @@ function mapContactMethod(method: 'email' | 'phone' | 'text'): ContactMethod {
   return mapping[method] || ContactMethod.EMAIL;
 }
 
+// =============================================================================
+// Room Scope → Scope Items Derivation
+// =============================================================================
+
+/**
+ * Derive ScopeItem[] from RoomScope[].
+ * Each enabled trade within a room generates one or more scope items
+ * with per-room quantities based on measurements.
+ */
+function deriveScopeItemsFromRooms(rooms: RoomScope[]): ScopeItem[] {
+  const items: ScopeItem[] = [];
+  let idx = 0;
+
+  for (const room of rooms) {
+    const sqft = room.measurements.sqft ?? 0;
+    const perimeterLf = room.measurements.perimeter_lf ?? 0;
+    const locationId = room.id;
+
+    // Material data for enrichment
+    const mats = room.materials;
+
+    // Flooring
+    if (room.trades.flooring?.enabled) {
+      const fl = room.trades.flooring;
+      const flooringType = fl.type === 'hardwood' ? 'Install hardwood'
+        : fl.type === 'engineered' ? 'Install engineered hardwood'
+        : fl.type === 'laminate' ? 'Install laminate'
+        : fl.type === 'tile' ? 'Install floor tile'
+        : 'Install LVP/LVT';
+      const floorSqft = fl.sqft_override ?? sqft;
+
+      // Build material description from intake selections
+      const flMat = mats?.flooring;
+      const flMatDesc = flMat
+        ? [flMat.product, flMat.color].filter(Boolean).join(' (') + (flMat.color ? ')' : '')
+        : undefined;
+
+      if (fl.condition === 'remove_replace') {
+        items.push({
+          id: `scope-room-${idx++}`,
+          trade_code: 'FL', category: 'demo', item_name: 'Remove existing flooring',
+          quantity: floorSqft, unit: 'sqft',
+          work_category_code: 'FL', stage_code: 'ST-DM', location_id: locationId,
+          sopCodes: ['HI-SOP-FL-001'], isLooped: true, loopContextLabel: room.name,
+        });
+      }
+      items.push({
+        id: `scope-room-${idx++}`,
+        trade_code: 'FL', category: fl.type === 'tile' ? 'tile' : 'vinyl',
+        item_name: flMatDesc ? `${flooringType} — ${flMatDesc}` : flooringType,
+        quantity: floorSqft, unit: 'sqft',
+        work_category_code: 'FL', stage_code: 'ST-FN', location_id: locationId,
+        sopCodes: ['HI-SOP-FL-004'], isLooped: true, loopContextLabel: room.name,
+        estimatedHoursPerUnit: 4,
+        materialDescription: flMatDesc,
+        materialCostPerUnit: flMat?.pricePerSqft,
+        catalogSku: flMat?.sku,
+      });
+      if (fl.type !== 'tile' && fl.condition !== 'new_subfloor') {
+        items.push({
+          id: `scope-room-${idx++}`,
+          trade_code: 'FL', category: 'prep', item_name: 'Install underlayment',
+          quantity: floorSqft, unit: 'sqft',
+          work_category_code: 'FL', stage_code: 'ST-PR', location_id: locationId,
+          sopCodes: ['HI-SOP-FL-001'], isLooped: true, loopContextLabel: room.name,
+          estimatedHoursPerUnit: 2,
+        });
+      }
+    }
+
+    // Paint
+    if (room.trades.paint?.enabled) {
+      const pt = room.trades.paint;
+      const ptMat = mats?.paint;
+      const wallSqft = sqft * 2; // rough wall area ≈ 2× floor area
+      // Build paint description: "Brand Product, Finish"
+      const ptMatDesc = ptMat
+        ? [ptMat.brand, ptMat.product, ptMat.finish?.replace('_', ' ')].filter(Boolean).join(' ')
+        : undefined;
+
+      if (pt.surfaces.includes('walls')) {
+        const wallColor = ptMat?.colors?.walls;
+        const wallDesc = [ptMatDesc, wallColor].filter(Boolean).join(' — ');
+        if (pt.prep !== 'minimal') {
+          items.push({
+            id: `scope-room-${idx++}`,
+            trade_code: 'PT', category: 'prep', item_name: 'Prime walls',
+            quantity: wallSqft, unit: 'sqft',
+            work_category_code: 'PT', stage_code: 'ST-PR', location_id: locationId,
+            sopCodes: ['HI-SOP-PT-001'], isLooped: true, loopContextLabel: room.name,
+            estimatedHoursPerUnit: 2,
+          });
+        }
+        items.push({
+          id: `scope-room-${idx++}`,
+          trade_code: 'PT', category: 'paint',
+          item_name: wallDesc ? `Paint walls — ${wallDesc}` : 'Paint walls',
+          quantity: wallSqft, unit: 'sqft',
+          work_category_code: 'PT', stage_code: 'ST-FN', location_id: locationId,
+          sopCodes: ['HI-SOP-PT-002'], isLooped: true, loopContextLabel: room.name,
+          estimatedHoursPerUnit: 3,
+          materialDescription: wallDesc || undefined,
+        });
+      }
+      if (pt.surfaces.includes('ceiling')) {
+        const ceilingColor = ptMat?.colors?.ceiling;
+        items.push({
+          id: `scope-room-${idx++}`,
+          trade_code: 'PT', category: 'paint',
+          item_name: ceilingColor ? `Paint ceiling — ${ceilingColor}` : 'Paint ceiling',
+          quantity: sqft, unit: 'sqft',
+          work_category_code: 'PT', stage_code: 'ST-FN', location_id: locationId,
+          sopCodes: ['HI-SOP-PT-002'], isLooped: true, loopContextLabel: room.name,
+          estimatedHoursPerUnit: 1.5,
+          materialDescription: ceilingColor || undefined,
+        });
+      }
+      if (pt.surfaces.includes('trim')) {
+        const trimColor = ptMat?.colors?.trim;
+        items.push({
+          id: `scope-room-${idx++}`,
+          trade_code: 'PT', category: 'paint',
+          item_name: trimColor ? `Paint trim — ${trimColor}` : 'Paint trim',
+          quantity: perimeterLf || Math.ceil(Math.sqrt(sqft) * 4), unit: 'lf',
+          work_category_code: 'PT', stage_code: 'ST-FN', location_id: locationId,
+          sopCodes: ['HI-SOP-PT-002'], isLooped: true, loopContextLabel: room.name,
+          estimatedHoursPerUnit: 1,
+          materialDescription: trimColor || undefined,
+        });
+      }
+    }
+
+    // Trim / Finish Carpentry
+    if (room.trades.trim?.enabled) {
+      const tr = room.trades.trim;
+      const trMat = mats?.trim;
+      const trimLf = tr.lf_override ?? perimeterLf ?? Math.ceil(Math.sqrt(sqft) * 4);
+      // Build trim description: "Colonial MDF, Paint Grade"
+      const trMatDesc = trMat
+        ? [trMat.profile?.replace('_', ' '), trMat.material?.toUpperCase(), trMat.finish?.replace('_', ' ')].filter(Boolean).join(', ')
+        : undefined;
+
+      if (tr.action === 'replace') {
+        items.push({
+          id: `scope-room-${idx++}`,
+          trade_code: 'FC', category: 'demo', item_name: 'Remove existing baseboard',
+          quantity: trimLf, unit: 'lf',
+          work_category_code: 'FC', stage_code: 'ST-DM', location_id: locationId,
+        });
+      }
+      if (tr.items.includes('baseboard')) {
+        items.push({
+          id: `scope-room-${idx++}`,
+          trade_code: 'FC', category: 'trim',
+          item_name: trMatDesc ? `Install baseboard — ${trMatDesc}` : 'Install baseboard',
+          quantity: trimLf, unit: 'lf',
+          work_category_code: 'FC', stage_code: 'ST-FN', location_id: locationId,
+          sopCodes: ['HI-SOP-FC-003'], isLooped: true, loopContextLabel: room.name,
+          estimatedHoursPerUnit: 1.5,
+          materialDescription: trMatDesc,
+        });
+      }
+      if (tr.items.includes('shoe')) {
+        items.push({
+          id: `scope-room-${idx++}`,
+          trade_code: 'FC', category: 'trim',
+          item_name: trMatDesc ? `Install shoe molding — ${trMatDesc}` : 'Install shoe molding',
+          quantity: trimLf, unit: 'lf',
+          work_category_code: 'FC', stage_code: 'ST-FN', location_id: locationId,
+          sopCodes: ['HI-SOP-FC-003'], isLooped: true, loopContextLabel: room.name,
+          materialDescription: trMatDesc,
+        });
+      }
+      if (tr.items.includes('crown')) {
+        items.push({
+          id: `scope-room-${idx++}`,
+          trade_code: 'FC', category: 'trim',
+          item_name: trMatDesc ? `Install crown molding — ${trMatDesc}` : 'Install crown molding',
+          quantity: trimLf, unit: 'lf',
+          work_category_code: 'FC', stage_code: 'ST-FN', location_id: locationId,
+          sopCodes: ['HI-SOP-FC-001'], isLooped: true, loopContextLabel: room.name,
+          materialDescription: trMatDesc,
+        });
+      }
+      if (tr.items.includes('casing')) {
+        items.push({
+          id: `scope-room-${idx++}`,
+          trade_code: 'FC', category: 'trim',
+          item_name: trMatDesc ? `Install door casing — ${trMatDesc}` : 'Install door casing',
+          quantity: 2, unit: 'ea',
+          work_category_code: 'FC', stage_code: 'ST-FN', location_id: locationId,
+          sopCodes: ['HI-SOP-FC-001'], isLooped: false,
+          estimatedHoursPerUnit: 0.5,
+          materialDescription: trMatDesc,
+        });
+      }
+      if (tr.items.includes('wainscoting')) {
+        items.push({
+          id: `scope-room-${idx++}`,
+          trade_code: 'FC', category: 'trim',
+          item_name: trMatDesc ? `Install wainscoting — ${trMatDesc}` : 'Install wainscoting',
+          quantity: Math.ceil(sqft * 0.3), unit: 'sqft',
+          work_category_code: 'FC', stage_code: 'ST-FN', location_id: locationId,
+          sopCodes: ['HI-SOP-FC-005'], isLooped: true, loopContextLabel: room.name,
+          materialDescription: trMatDesc,
+        });
+      }
+    }
+
+    // Tile
+    if (room.trades.tile?.enabled) {
+      const tl = room.trades.tile;
+      const tlMat = mats?.tile;
+      const tileSqft = tl.sqft_override ?? sqft;
+      // Build tile description: "Porcelain 12x24, Herringbone"
+      const tlMatDesc = tlMat
+        ? [tlMat.type?.replace('_', ' '), tlMat.size, tlMat.color, tlMat.pattern?.replace('_', ' ')].filter(Boolean).join(', ')
+        : undefined;
+
+      if (tl.surfaces.includes('floor')) {
+        items.push({
+          id: `scope-room-${idx++}`,
+          trade_code: 'TL', category: 'tile',
+          item_name: tlMatDesc ? `Install floor tile — ${tlMatDesc}` : 'Install floor tile',
+          quantity: tileSqft, unit: 'sqft',
+          work_category_code: 'TL', stage_code: 'ST-FN', location_id: locationId,
+          isLooped: true, loopContextLabel: room.name,
+          materialDescription: tlMatDesc,
+        });
+      }
+      if (tl.surfaces.includes('walls')) {
+        items.push({
+          id: `scope-room-${idx++}`,
+          trade_code: 'TL', category: 'tile',
+          item_name: tlMatDesc ? `Install wall tile — ${tlMatDesc}` : 'Install wall tile',
+          quantity: Math.ceil(tileSqft * 0.5), unit: 'sqft',
+          work_category_code: 'TL', stage_code: 'ST-FN', location_id: locationId,
+          isLooped: true, loopContextLabel: room.name,
+          materialDescription: tlMatDesc,
+        });
+      }
+      if (tl.surfaces.includes('backsplash')) {
+        items.push({
+          id: `scope-room-${idx++}`,
+          trade_code: 'TL', category: 'tile',
+          item_name: tlMatDesc ? `Install backsplash — ${tlMatDesc}` : 'Install backsplash',
+          quantity: Math.ceil(tileSqft * 0.15), unit: 'sqft',
+          work_category_code: 'TL', stage_code: 'ST-FN', location_id: locationId,
+          isLooped: true, loopContextLabel: room.name,
+          materialDescription: tlMatDesc,
+        });
+      }
+    }
+
+    // Drywall
+    if (room.trades.drywall?.enabled) {
+      const dw = room.trades.drywall;
+      const dwSqft = dw.sqft_override ?? sqft;
+      if (dw.extent === 'patch') {
+        items.push({
+          id: `scope-room-${idx++}`,
+          trade_code: 'DW', category: 'repair', item_name: 'Patch drywall',
+          quantity: 3, unit: 'ea', // typical ~3 patches per room
+          work_category_code: 'DW', stage_code: 'ST-PR', location_id: locationId,
+          sopCodes: ['HI-SOP-DW-002'], isLooped: true, loopContextLabel: room.name,
+        });
+      } else {
+        items.push({
+          id: `scope-room-${idx++}`,
+          trade_code: 'DW', category: 'repair', item_name: 'Tape and mud',
+          quantity: dwSqft, unit: 'sqft',
+          work_category_code: 'DW', stage_code: 'ST-PR', location_id: locationId,
+          sopCodes: ['HI-SOP-DW-002'], isLooped: true, loopContextLabel: room.name,
+          estimatedHoursPerUnit: 3,
+        });
+        items.push({
+          id: `scope-room-${idx++}`,
+          trade_code: 'DW', category: 'repair', item_name: 'Sand and prep',
+          quantity: dwSqft, unit: 'sqft',
+          work_category_code: 'DW', stage_code: 'ST-PR', location_id: locationId,
+          sopCodes: ['HI-SOP-DW-003'], isLooped: true, loopContextLabel: room.name,
+          estimatedHoursPerUnit: 2,
+        });
+      }
+    }
+  }
+
+  return items;
+}
+
 /**
  * IntakeService - Transforms intake wizard data into system entities
  */
@@ -300,17 +591,39 @@ export class IntakeService {
     );
     activityEventIds.push(projectEvent.id);
 
-    // 4. Generate loops (one per room)
-    const loops = await this.generateLoopsFromRooms(actualProjectId, data.project.selected_rooms, activityEventIds);
+    // 4. Generate loops and tasks — room-scope-aware when available
+    const roomScopes = data.project.room_scopes;
+    let loops: GeneratedLoop[];
+    let tasks: GeneratedTask[];
 
-    // 5. Generate tasks from bundle type per room
-    const tasks = await this.generateTasksFromBundle(
-      actualProjectId,
-      data.project.project_type,
-      data.project.selected_rooms,
-      loops,
-      activityEventIds
-    );
+    if (roomScopes && roomScopes.length > 0) {
+      // Derive enabled trades from room scopes for loop hierarchy
+      const enabledTrades = new Set<string>();
+      roomScopes.forEach((r) => {
+        if (r.trades.flooring?.enabled) enabledTrades.add('FL');
+        if (r.trades.paint?.enabled) enabledTrades.add('PT');
+        if (r.trades.trim?.enabled) enabledTrades.add('FC');
+        if (r.trades.tile?.enabled) enabledTrades.add('TL');
+        if (r.trades.drywall?.enabled) enabledTrades.add('DW');
+      });
+      loops = await this.generateLoopsFromRoomScopes(
+        actualProjectId, roomScopes, Array.from(enabledTrades), activityEventIds
+      );
+      const scopeItems = deriveScopeItemsFromRooms(roomScopes);
+      tasks = await this.generateTasksFromContractorScope(actualProjectId, scopeItems, loops, activityEventIds);
+      await this.generateLineItemsFromScope(actualProjectId, scopeItems, activityEventIds);
+    } else {
+      // Legacy path: simple selected_rooms list
+      loops = await this.generateLoopsFromRooms(actualProjectId, data.project.selected_rooms, activityEventIds);
+      tasks = await this.generateTasksFromBundle(
+        actualProjectId, data.project.project_type, data.project.selected_rooms, loops, activityEventIds
+      );
+    }
+
+    // 5b. Transfer photos from room scopes to photos store
+    if (roomScopes && roomScopes.length > 0) {
+      await this.transferPhotosFromRoomScopes(actualProjectId, roomScopes, activityEventIds);
+    }
 
     // 6. Log intake completed
     const completeEvent = await this.services.activity.logIntakeEvent('intake.submitted', intakeId, {
@@ -411,19 +724,32 @@ export class IntakeService {
       actualProjectId,
       {
         project_name: projectName,
-        details: `Created from contractor intake with ${data.scope.enabled_trades.length} trades and ${data.scope.items.length} scope items`,
+        details: `Created from contractor intake with ${data.scope.enabled_trades.length} trades, ${data.scope.room_scopes?.length ?? 0} rooms, and ${data.scope.items.length} scope items`,
       }
     );
     activityEventIds.push(projectEvent.id);
 
-    // 4. Generate loops from scope (trade-based for contractors)
-    const loops = await this.generateLoopsFromContractorScope(actualProjectId, data, activityEventIds);
+    // 4. Derive scope items from room scopes if available, otherwise use provided items
+    const roomScopes = data.scope.room_scopes;
+    const scopeItems = (roomScopes && roomScopes.length > 0)
+      ? deriveScopeItemsFromRooms(roomScopes)
+      : data.scope.items;
+
+    // 4b. Generate loops — room-based when room scopes exist, trade-based otherwise
+    const loops = (roomScopes && roomScopes.length > 0)
+      ? await this.generateLoopsFromRoomScopes(actualProjectId, roomScopes, data.scope.enabled_trades, activityEventIds)
+      : await this.generateLoopsFromContractorScope(actualProjectId, data, activityEventIds);
 
     // 5. Generate tasks from scope items (already have three-axis tags)
-    const tasks = await this.generateTasksFromContractorScope(actualProjectId, data.scope.items, loops, activityEventIds);
+    const tasks = await this.generateTasksFromContractorScope(actualProjectId, scopeItems, loops, activityEventIds);
 
     // 5b. Generate pre-populated line items from scope (estimate page ready)
-    await this.generateLineItemsFromScope(actualProjectId, data.scope.items, activityEventIds);
+    await this.generateLineItemsFromScope(actualProjectId, scopeItems, activityEventIds);
+
+    // 5c. Transfer photos from room scopes to photos store
+    if (roomScopes && roomScopes.length > 0) {
+      await this.transferPhotosFromRoomScopes(actualProjectId, roomScopes, activityEventIds);
+    }
 
     // 6. Log intake completed
     const completeEvent = await this.services.activity.logIntakeEvent('intake.submitted', intakeId, {
@@ -475,6 +801,89 @@ export class IntakeService {
         location_id: loop.location_id,
       });
       activityEventIds.push(loopEvent.id);
+    }
+
+    return loops;
+  }
+
+  /**
+   * Generate loops from RoomScope[] — one location loop per room,
+   * grouped under a parent trade loop per enabled trade.
+   */
+  private async generateLoopsFromRoomScopes(
+    projectId: string,
+    roomScopes: RoomScope[],
+    enabledTrades: string[],
+    activityEventIds: string[]
+  ): Promise<GeneratedLoop[]> {
+    const loops: GeneratedLoop[] = [];
+
+    // Create a parent loop per trade
+    const tradeLoopMap = new Map<string, string>(); // tradeCode → loopId
+    for (const tradeCode of enabledTrades) {
+      const tradeInfo = TRADE_CODES[tradeCode as keyof typeof TRADE_CODES];
+      const loopId = generateId('loop');
+      const loop: GeneratedLoop = {
+        id: loopId,
+        name: tradeInfo?.name || tradeCode,
+        parent_id: null,
+        loop_type: 'trade',
+        status: 'not-started',
+        health_score: 100,
+        work_category_code: tradeCode,
+        stage_code: '',
+        location_id: '',
+      };
+      loops.push(loop);
+      tradeLoopMap.set(tradeCode, loopId);
+
+      const loopEvent = await this.services.activity.logLoopEvent('loop.created', projectId, loopId, {
+        loop_name: loop.name,
+        loop_type: 'trade',
+        parent_loop_id: null,
+        work_category_code: tradeCode,
+      });
+      activityEventIds.push(loopEvent.id);
+    }
+
+    // Create a location loop per room, nested under each relevant trade
+    for (const room of roomScopes) {
+      // Determine which trades are active in this room
+      const roomTrades: string[] = [];
+      if (room.trades.flooring?.enabled) roomTrades.push('FL');
+      if (room.trades.paint?.enabled) roomTrades.push('PT');
+      if (room.trades.trim?.enabled) roomTrades.push('FC');
+      if (room.trades.tile?.enabled) roomTrades.push('TL');
+      if (room.trades.drywall?.enabled) roomTrades.push('DW');
+
+      for (const tradeCode of roomTrades) {
+        const parentId = tradeLoopMap.get(tradeCode);
+        if (!parentId) continue;
+
+        const tradeInfo = TRADE_CODES[tradeCode as keyof typeof TRADE_CODES];
+        const loopId = generateId('loop');
+        const loop: GeneratedLoop = {
+          id: loopId,
+          name: `${tradeInfo?.name || tradeCode} — ${room.name}`,
+          parent_id: parentId,
+          loop_type: 'location',
+          status: 'not-started',
+          health_score: 100,
+          work_category_code: tradeCode,
+          stage_code: '',
+          location_id: room.id,
+        };
+        loops.push(loop);
+
+        const loopEvent = await this.services.activity.logLoopEvent('loop.created', projectId, loopId, {
+          loop_name: loop.name,
+          loop_type: 'location',
+          parent_loop_id: parentId,
+          work_category_code: tradeCode,
+          location_id: room.id,
+        });
+        activityEventIds.push(loopEvent.id);
+      }
     }
 
     return loops;
@@ -627,22 +1036,33 @@ export class IntakeService {
     activityEventIds: string[]
   ): Promise<void> {
     for (const item of scopeItems) {
-      const costs = SCOPE_ITEM_COSTS[item.item_name];
+      // Strip material description from item_name for cost lookup
+      // (item_name may be "Install LVP/LVT — Lifeproof Sterling Oak")
+      const baseName = item.item_name.includes(' — ')
+        ? item.item_name.split(' — ')[0]
+        : item.item_name;
+      const costs = SCOPE_ITEM_COSTS[baseName];
       if (!costs) continue;
 
       const category = TRADE_TO_COST_CATEGORY[item.trade_code] || CostCategory.OTHER;
       const unit = mapUnitOfMeasure(item.unit);
 
+      // Use intake material cost when available, otherwise fall back to defaults
+      const materialUnitCost = item.materialCostPerUnit ?? costs.materialCost;
+
       // Material line item
-      if (costs.materialCost > 0) {
-        const totalCost = costs.materialCost * item.quantity;
+      if (materialUnitCost > 0) {
+        const totalCost = materialUnitCost * item.quantity;
+        const desc = item.materialDescription
+          ? `Material: ${item.item_name}`
+          : `Material: ${baseName}`;
         const lineItem = await this.services.estimating.lineItems.create({
           projectId,
           category,
-          description: `Material: ${item.item_name}`,
+          description: desc,
           quantity: item.quantity,
           unit,
-          unitCost: costs.materialCost,
+          unitCost: materialUnitCost,
           totalCost,
           isLabor: false,
           sopCodes: item.sopCodes,
@@ -654,7 +1074,7 @@ export class IntakeService {
         this.services.activity.logEstimateLineItemEvent(
           'estimate.line_item_added', projectId, lineItem.id,
           {
-            description: `Material: ${item.item_name}`,
+            description: desc,
             quantity: item.quantity,
             unit: item.unit,
             total: totalCost,
@@ -667,13 +1087,14 @@ export class IntakeService {
         activityEventIds.push(lineItem.id);
       }
 
-      // Labor line item
+      // Labor line item (not affected by material pricing)
       if (costs.laborCost > 0) {
         const totalCost = costs.laborCost * item.quantity;
+        const desc = `Labor: ${baseName}`;
         const lineItem = await this.services.estimating.lineItems.create({
           projectId,
           category,
-          description: `Labor: ${item.item_name}`,
+          description: desc,
           quantity: item.quantity,
           unit,
           unitCost: costs.laborCost,
@@ -688,7 +1109,7 @@ export class IntakeService {
         this.services.activity.logEstimateLineItemEvent(
           'estimate.line_item_added', projectId, lineItem.id,
           {
-            description: `Labor: ${item.item_name}`,
+            description: desc,
             quantity: item.quantity,
             unit: item.unit,
             total: totalCost,
@@ -760,6 +1181,60 @@ export class IntakeService {
     }
 
     return tasks;
+  }
+
+  /**
+   * Transfer photos from room scopes into the photos IndexedDB store.
+   * Each RoomPhoto from intake draft becomes a persisted Photo entity
+   * tagged with the project ID, room location, and trade.
+   */
+  private async transferPhotosFromRoomScopes(
+    projectId: string,
+    roomScopes: RoomScope[],
+    activityEventIds: string[]
+  ): Promise<void> {
+    for (const room of roomScopes) {
+      if (!room.photos || room.photos.length === 0) continue;
+
+      const roomInfo = ROOM_LOCATIONS[room.id as keyof typeof ROOM_LOCATIONS];
+      const locationName = roomInfo?.name || room.name;
+
+      for (const photo of room.photos) {
+        const tags = ['intake', room.id];
+        if (photo.trade) tags.push(photo.trade);
+
+        // Map trade tag to work category code
+        const tradeMap: Record<string, string> = {
+          flooring: 'FL', paint: 'PT', trim: 'FC', tile: 'TL', drywall: 'DW',
+        };
+        const workCategoryCode = photo.trade ? tradeMap[photo.trade] : undefined;
+
+        const created = await this.services.fieldDocs.photos.create({
+          projectId,
+          filePath: photo.dataUrl, // dataUrl stored as filePath for offline-first
+          fileSize: Math.round(photo.dataUrl.length * 0.75), // approximate decoded size
+          mimeType: 'image/jpeg',
+          width: 1200,  // resized max dimension from intake
+          height: 900,  // approximate
+          metadata: {
+            caption: photo.caption,
+            tags,
+            timestamp: photo.timestamp || new Date().toISOString(),
+            takenBy: 'intake',
+          },
+        });
+
+        // Log photo upload (non-blocking)
+        this.services.activity.logPhotoEvent('photo.uploaded', projectId, created.id, {
+          caption: photo.caption,
+          tags,
+          location_name: locationName,
+          work_category_code: workCategoryCode,
+          location_id: room.id,
+        }).catch((err) => console.error('Failed to log intake photo:', err));
+        activityEventIds.push(created.id);
+      }
+    }
   }
 }
 

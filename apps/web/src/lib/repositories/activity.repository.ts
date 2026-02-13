@@ -1127,6 +1127,19 @@ export class ActivityService {
       case 'labs.batch_processed':
         summary = `Batch processed: ${entityName}`;
         break;
+      // Tool Research P1-P2
+      case 'labs.tool.purchased':
+        summary = `Tool purchased: ${entityName}`;
+        break;
+      case 'labs.tool.used':
+        summary = `Tool use logged: ${entityName}`;
+        break;
+      case 'labs.tool.retired':
+        summary = `Tool retired: ${entityName}`;
+        break;
+      case 'labs.content.status':
+        summary = `Content status updated: ${entityName}`;
+        break;
       default:
         summary = `Labs event: ${entityName}`;
     }

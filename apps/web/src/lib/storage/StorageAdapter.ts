@@ -105,6 +105,10 @@ export const StoreNames = {
   LOOP_ITERATIONS: 'loopIterations',
   // Intake Drafts
   INTAKE_DRAFTS: 'intakeDrafts',
+  // Tool Research
+  TOOL_PLATFORMS: 'toolPlatforms',
+  TOOL_RESEARCH_ITEMS: 'toolResearchItems',
+  TOOL_INVENTORY: 'toolInventory',
 } as const;
 
 export type StoreName = (typeof StoreNames)[keyof typeof StoreNames];

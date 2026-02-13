@@ -7,7 +7,7 @@ import type { StorageAdapter } from './StorageAdapter';
 import { StoreNames } from './StorageAdapter';
 
 const DB_NAME = 'hooomz_db';
-const DB_VERSION = 12; // v12: added intakeDrafts (Intake Draft Saving)
+const DB_VERSION = 13; // v13: added toolPlatforms, toolResearchItems, toolInventory (Tool Research)
 
 export class IndexedDBAdapter implements StorageAdapter {
   private db: IDBDatabase | null = null;
@@ -193,6 +193,10 @@ export class IndexedDBAdapter implements StorageAdapter {
       [StoreNames.LOOP_ITERATIONS]: ['context_id', 'project_id', 'parent_iteration_id'],
       // Intake Drafts
       [StoreNames.INTAKE_DRAFTS]: ['type', 'status', 'updatedAt'],
+      // Tool Research
+      [StoreNames.TOOL_PLATFORMS]: ['tier', 'name'],
+      [StoreNames.TOOL_RESEARCH_ITEMS]: ['category', 'priority'],
+      [StoreNames.TOOL_INVENTORY]: ['status', 'platform', 'category', 'brand'],
     };
 
     const storeIndexes = indexes[storeName] || [];

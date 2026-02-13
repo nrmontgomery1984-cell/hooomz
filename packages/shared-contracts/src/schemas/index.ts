@@ -123,6 +123,8 @@ export const TaskSchema = z.object({
   blueprintId: z.string().optional(),
   // Build 3d: Loop Management — location binding
   loopIterationId: z.string().optional(),
+  // Labs Bridge: flag task for labs observation capture
+  labsFlagged: z.boolean().optional(),
 });
 
 // LineItem Base Schema (without refinement for .omit() compatibility)

@@ -245,6 +245,21 @@ export function useUpdateTaskDescription() {
   });
 }
 
+export function useToggleLabsFlag() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ projectId, taskId, flagged }: { projectId: string; taskId: string; flagged: boolean }) => {
+      const loggedServices = getLoggedServices();
+      return loggedServices.tasks.update(projectId, taskId, { labsFlagged: flagged });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: LOCAL_QUERY_KEYS.tasks.all });
+      queryClient.invalidateQueries({ queryKey: LOCAL_QUERY_KEYS.tasks.allTasks });
+    },
+  });
+}
+
 // ============================================================================
 // SOP Progress Hooks
 // ============================================================================

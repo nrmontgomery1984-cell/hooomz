@@ -9,7 +9,7 @@
  * Visual: labor/material split bar, status pill, dense cards.
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { PageErrorBoundary } from '@/components/ui/PageErrorBoundary';
 import Link from 'next/link';
@@ -44,7 +44,7 @@ export default function EstimatesPage() {
   const [summaries, setSummaries] = useState<ProjectEstimateSummary[]>([]);
   const [loadingSummaries, setLoadingSummaries] = useState(true);
 
-  const projects = projectsResult?.projects || [];
+  const projects = useMemo(() => projectsResult?.projects || [], [projectsResult]);
   const isLoading = projectsLoading || servicesLoading;
 
   // Totals across all estimates

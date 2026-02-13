@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useProjects } from '@/lib/api/hooks/useProjects';
 import { ProjectStatus } from '@hooomz/shared-contracts';
 import { Check } from 'lucide-react';
@@ -13,7 +13,7 @@ interface ProjectSelectorProps {
 export function ProjectSelector({ value, onChange }: ProjectSelectorProps) {
   const { data: projectsResponse, isLoading } = useProjects({ status: ProjectStatus.IN_PROGRESS });
 
-  const projects = projectsResponse?.projects ?? [];
+  const projects = useMemo(() => projectsResponse?.projects ?? [], [projectsResponse]);
 
   // Auto-select if only 1 project
   useEffect(() => {

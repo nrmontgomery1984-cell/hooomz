@@ -16,6 +16,8 @@ const LIGHT_TEAL = '#E6F5F3';
 const LIGHT_GOLD = '#FDF6E3';
 const LIGHT_CORAL = '#FDEEEA';
 
+const SCORING_WEIGHTS = { breadth: 0.25, availability: 0.25, battery: 0.2, upgrade: 0.15, price: 0.15 };
+
 function Badge({ text, color = TEAL }: { text: string; color?: string }) {
   return (
     <span
@@ -40,13 +42,11 @@ interface PlatformTabProps {
 
 export function PlatformTab({ platforms }: PlatformTabProps) {
   const [expanded, setExpanded] = useState<string | null>(null);
-  const weights = { breadth: 0.25, availability: 0.25, battery: 0.2, upgrade: 0.15, price: 0.15 };
-
   const scored = useMemo(() => {
     return platforms
       .map((p) => ({
         ...p,
-        weighted: Object.entries(weights).reduce(
+        weighted: Object.entries(SCORING_WEIGHTS).reduce(
           (sum, [k, w]) => sum + (p.score[k as keyof typeof p.score] ?? 0) * w,
           0,
         ),

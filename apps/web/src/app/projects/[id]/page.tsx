@@ -81,7 +81,7 @@ export default function ProjectDetailPage() {
   // ---------------------------------------------------------------------------
   // Derived data
   // ---------------------------------------------------------------------------
-  const tasks = taskData?.tasks || [];
+  const tasks = useMemo(() => taskData?.tasks || [], [taskData]);
 
   const enrichedTasks: EnrichedTask[] = useMemo(
     () => tasks.map((t) => enrichTask(t)),

@@ -90,19 +90,20 @@ export function VoiceInputContainer({
       };
 
       // Use the appropriate ActivityService method
+      // Voice parser produces dynamic event types — cast to the specific union each method expects
       if (eventType.startsWith('task.')) {
         await activityService.logTaskEvent(
-          eventType as any,
+          eventType as 'task.created' | 'task.status_changed' | 'task.completed' | 'task.blocked' | 'task.started' | 'task.deleted' | 'task.assigned' | 'task.template_created' | 'task.instance_created',
           projectId,
           entityId,
-          eventData as any
+          eventData as Record<string, string | string[] | undefined>
         );
       } else if (eventType.startsWith('photo.')) {
         await activityService.logPhotoEvent(
-          eventType as any,
+          eventType as 'photo.uploaded' | 'photo.shared',
           projectId,
           entityId,
-          eventData as any
+          eventData as Record<string, string | string[] | undefined>
         );
         // Open camera if needed
         if (parsedEvent.openCamera && onOpenCamera) {
@@ -110,20 +111,20 @@ export function VoiceInputContainer({
         }
       } else if (eventType.startsWith('inspection.')) {
         await activityService.logInspectionEvent(
-          eventType as any,
+          eventType as 'inspection.scheduled' | 'inspection.passed' | 'inspection.failed',
           projectId,
           entityId,
-          eventData as any
+          eventData as Record<string, string | string[] | undefined>
         );
       } else if (eventType.startsWith('time.')) {
         await activityService.logTimeEvent(
-          eventType as any,
+          eventType as 'time.clock_in' | 'time.clock_out' | 'time.entry_logged' | 'time.entry_approved',
           projectId,
           entityId,
-          eventData as any
+          eventData as Record<string, string | number | undefined>
         );
       } else if (eventType === 'field_note.created') {
-        await activityService.logFieldNoteEvent(projectId, entityId, eventData as any);
+        await activityService.logFieldNoteEvent(projectId, entityId, eventData as Record<string, string | undefined>);
       }
 
       // Notify parent

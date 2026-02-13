@@ -19,7 +19,7 @@
  * - Progressive disclosure
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { groupEventsByDayArray } from '@hooomz/shared';
 import { apiClient } from '@/lib/api/client';
@@ -63,9 +63,9 @@ export function ActivityFeed({
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Build query key based on project context
-  const queryKey = projectId
+  const queryKey = useMemo(() => projectId
     ? ['activity', 'project', projectId]
-    : ['activity', 'recent'];
+    : ['activity', 'recent'], [projectId]);
 
   // Infinite query for paginated events
   const {

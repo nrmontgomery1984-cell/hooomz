@@ -24,7 +24,7 @@
  * - #11 Data Persistence: Data stays with the home
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { groupEventsByDayArray } from '@hooomz/shared';
 import { apiClient } from '@/lib/api/client';
@@ -79,7 +79,7 @@ export function HomeownerActivityFeed({
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Query key for property activity
-  const queryKey = ['activity', 'property', propertyId, 'homeowner'];
+  const queryKey = useMemo(() => ['activity', 'property', propertyId, 'homeowner'], [propertyId]);
 
   // Infinite query for paginated events
   const {

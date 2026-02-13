@@ -25,7 +25,7 @@
  * Same task appears in all three views - orthogonal filtering.
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
 import { groupEventsByDayArray } from '@hooomz/shared';
 import { apiClient } from '@/lib/api/client';
@@ -104,14 +104,14 @@ export function ProjectActivityFeed({
   });
 
   // Build query key including Three-Axis filters
-  const queryKey = [
+  const queryKey = useMemo(() => [
     'activity',
     'project',
     projectId,
     threeAxisFilters.workCategory,
     threeAxisFilters.stage,
     threeAxisFilters.location,
-  ];
+  ], [projectId, threeAxisFilters.workCategory, threeAxisFilters.stage, threeAxisFilters.location]);
 
   // Infinite query for paginated events with Three-Axis filters
   const {

@@ -9,6 +9,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import type { Services } from './index';
 import { initializeServices } from './index';
 import { seedLabsCatalogs } from '../data/labsSeedData';
+import { seedSOPsIfEmpty } from '../data/seedAll';
 
 interface ServicesContextValue {
   services: Services | null;
@@ -46,6 +47,11 @@ export function ServicesProvider({ children }: ServicesProviderProps) {
         // Seed Labs catalogs on first run (no-op if already seeded)
         seedLabsCatalogs(initializedServices.labs).catch((err) =>
           console.error('Failed to seed Labs catalogs:', err)
+        );
+
+        // Auto-seed SOPs so task pipeline works without manual /labs/seed visit
+        seedSOPsIfEmpty(initializedServices).catch((err) =>
+          console.error('Failed to auto-seed SOPs:', err)
         );
 
         // Cleanup stale intake drafts (fire-and-forget)

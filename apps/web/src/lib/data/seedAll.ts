@@ -12,7 +12,9 @@ import { SOPS } from './sops';
 import { seedLabsCatalogs } from './labsSeedData';
 import { seedEstimatingCatalog } from './estimatingCatalogSeed';
 import { seedToolResearchData } from './toolResearchSeed';
+import { seedLabsIntegrationData } from './labsIntegrationSeed';
 import type { Services } from '../services';
+import { ProjectStatus } from '@hooomz/shared-contracts';
 
 // Guide source prefix → tradeFamily
 const TRADE_FAMILY_MAP: Record<string, string> = {
@@ -52,9 +54,82 @@ export interface SeedResult {
   customers?: number;
   projects?: number;
   tasks?: number;
+  leads?: number;
 }
 
 export type SeedProgressCallback = (message: string) => void;
+
+/**
+ * Auto-seed SOPs if none exist in IndexedDB.
+ * Called on app init so the task pipeline can find SOPs without manual /labs/seed visit.
+ */
+export async function seedSOPsIfEmpty(services: Services): Promise<number> {
+  const existing = await services.labs.sops.getAllCurrent();
+  if (existing.length > 0) return 0;
+
+  const now = new Date().toISOString();
+  let count = 0;
+
+  for (const sop of SOPS) {
+    const tradeFamily = getTradeFamily(sop.guide_source);
+    const dbSop = await services.labs.sops.createSop({
+      sopCode: sop.id,
+      title: sop.title,
+      description: null,
+      tradeFamily,
+      effectiveDate: now,
+      defaultObservationMode: 'standard',
+      certificationLevel: 'apprentice',
+      requiredSupervisedCompletions: 3,
+      reviewQuestionCount: 5,
+      reviewPassThreshold: 80,
+      fieldGuideRef: sop.guide_source,
+      status: 'active',
+      createdBy: 'auto-seed',
+      versionNotes: 'Auto-seeded on app init',
+    });
+    count++;
+
+    for (const step of sop.quick_steps) {
+      const hasPhotoHint = /photo|document|capture/i.test(step.action);
+      await services.labs.sops.addChecklistItem(dbSop.id, {
+        title: step.action,
+        description: null,
+        checklistType: 'activity',
+        category: 'procedure',
+        isCritical: false,
+        generatesObservation: hasPhotoHint,
+        observationKnowledgeType: null,
+        requiresPhoto: hasPhotoHint,
+        hasTimingFollowup: null,
+        triggerTiming: 'batch',
+        defaultProductId: null,
+        defaultTechniqueId: null,
+        defaultToolId: null,
+        scriptPhase: null,
+      });
+    }
+  }
+
+  console.log(`[Auto-seed] Created ${count} SOPs with checklist items`);
+
+  // Recovery: re-run pipeline for APPROVED projects that have 0 tasks
+  // (they were approved before SOPs existed, so pipeline generated nothing)
+  const approvedProjects = await services.projects.findByStatus(ProjectStatus.APPROVED);
+  for (const proj of approvedProjects) {
+    const tasks = await services.scheduling.tasks.findByProjectId(proj.id);
+    if (tasks.length === 0) {
+      const lineItems = await services.estimating.lineItems.findByProjectId(proj.id);
+      const pipelineItems = lineItems.filter((li) => li.sopCodes && li.sopCodes.length > 0 && li.isLabor !== false);
+      if (pipelineItems.length > 0) {
+        const result = await services.pipeline.generateFromEstimate(proj.id, pipelineItems);
+        console.log(`[Auto-seed] Recovery: generated ${result.blueprints.length} blueprints, deployed ${result.deployed.length} tasks for project "${proj.name}"`);
+      }
+    }
+  }
+
+  return count;
+}
 
 export async function seedAllLabsData(
   services: Services,
@@ -122,6 +197,7 @@ export async function seedAllLabsData(
           defaultProductId: null,
           defaultTechniqueId: null,
           defaultToolId: null,
+          scriptPhase: null,
         });
         result.checklistItems++;
       }
@@ -248,6 +324,45 @@ export async function seedAllLabsData(
   result.toolPlatforms = toolResult.platforms;
   result.toolResearchItems = toolResult.researchItems;
   result.toolInventoryItems = toolResult.inventoryItems;
+
+  // ========================================================================
+  // 7. Workflows (Labs — construction sequencing)
+  // ========================================================================
+  const existingWorkflows = await services.labs.workflows.getAll();
+  if (existingWorkflows.length > 0) {
+    log(`Skipping workflows — ${existingWorkflows.length} already exist`);
+  } else {
+    log('Seeding workflows...');
+
+    await services.labs.workflows.createWithId('wf_standard_reno', {
+      name: 'Standard Residential Renovation',
+      description: 'Default construction sequence for interior renovation projects: demo → drywall → prime → paint ceilings → paint walls → flooring → trim → hardware → punch list → cleanup',
+      status: 'active',
+      isDefault: true,
+      phases: [
+        { phaseCode: 'DEMO', name: 'Demolition & Removal', order: 1, stageCode: 'ST-DM', tradeCodes: ['FL', 'FC', 'PT', 'DW', 'TL'], sopCodes: [], description: 'Remove existing materials before new work begins' },
+        { phaseCode: 'DRYWALL', name: 'Drywall Patching', order: 2, stageCode: 'ST-PR', tradeCodes: ['DW'], sopCodes: [], description: 'Patch, tape, and mud drywall before priming' },
+        { phaseCode: 'PRIME', name: 'Prime & Prep', order: 3, stageCode: 'ST-PR', tradeCodes: ['PT'], sopCodes: [], description: 'Sand, fill, and prime all surfaces' },
+        { phaseCode: 'PAINT-CEIL', name: 'Paint Ceilings', order: 4, stageCode: 'ST-FN', tradeCodes: ['PT'], sopCodes: ['PT-CEIL-ROLL', 'PT-CEIL-SPRAY'], description: 'Paint ceilings before walls to catch drips' },
+        { phaseCode: 'PAINT-WALL', name: 'Paint Walls', order: 5, stageCode: 'ST-FN', tradeCodes: ['PT'], sopCodes: ['PT-WALL-ROLL', 'PT-WALL-SPRAY', 'PT-WALL-BRUSH'], description: 'Paint walls after ceilings, before flooring' },
+        { phaseCode: 'FLOORING', name: 'Install Flooring', order: 6, stageCode: 'ST-FN', tradeCodes: ['FL', 'TL'], sopCodes: [], description: 'Install flooring after paint is dry' },
+        { phaseCode: 'TRIM', name: 'Install Trim & Millwork', order: 7, stageCode: 'ST-FN', tradeCodes: ['FC'], sopCodes: [], description: 'Install baseboard, casing, and crown after flooring' },
+        { phaseCode: 'HARDWARE', name: 'Hardware & Accessories', order: 8, stageCode: 'ST-FN', tradeCodes: ['FC'], sopCodes: [], description: 'Door hardware, outlet covers, accessories' },
+        { phaseCode: 'PUNCH', name: 'Punch List & Touch-ups', order: 9, stageCode: 'ST-PL', tradeCodes: ['FL', 'FC', 'PT', 'DW', 'TL'], sopCodes: [], description: 'Touch-up paint, fix deficiencies, snag list' },
+        { phaseCode: 'CLEANUP', name: 'Closeout & Cleanup', order: 10, stageCode: 'ST-CL', tradeCodes: ['FL', 'FC', 'PT', 'DW', 'TL'], sopCodes: [], description: 'Final clean, inspection, client handoff' },
+      ],
+    });
+    log('Workflows complete: 1 workflow (Standard Residential Renovation)');
+  }
+
+  // ========================================================================
+  // 8. Labs Integration Data (Tokens, Tests, Voting)
+  // ========================================================================
+  log('Seeding Labs integration data...');
+  const integrationResult = await seedLabsIntegrationData(services, log);
+  if (integrationResult.tokens > 0 || integrationResult.tests > 0 || integrationResult.ballots > 0) {
+    log(`Labs integration complete: ${integrationResult.tokens} tokens, ${integrationResult.tests} tests, ${integrationResult.ballots} ballots`);
+  }
 
   log('Seed complete!');
   return result;

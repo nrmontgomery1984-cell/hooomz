@@ -4,7 +4,7 @@
  * Implements SOP database records for Build 2's checklist→observation trigger logic.
  */
 
-import type { Sop, SopChecklistItemTemplate, ObservationMode } from '@hooomz/shared-contracts';
+import type { Sop, SopChecklistItemTemplate, ObservationMode, ScriptPhase } from '@hooomz/shared-contracts';
 import type { SopRepository } from '../../repositories/labs/sop.repository';
 import type { SopChecklistItemTemplateRepository } from '../../repositories/labs/sopChecklistItemTemplate.repository';
 import type { ActivityService } from '../../repositories/activity.repository';
@@ -104,6 +104,7 @@ export class SopService {
         defaultProductId: item.defaultProductId,
         defaultTechniqueId: item.defaultTechniqueId,
         defaultToolId: item.defaultToolId,
+        scriptPhase: item.scriptPhase ?? null,
       });
     }
 
@@ -246,6 +247,37 @@ export class SopService {
       return this.checklistRepo.getBySopIdAndType(sopId, checklistType);
     }
     return this.checklistRepo.getBySopId(sopId);
+  }
+
+  // ============================================================================
+  // SCRIPT Phase Management
+  // ============================================================================
+
+  /** Group checklist items by SCRIPT phase */
+  async getChecklistByScriptPhase(sopId: string): Promise<Record<ScriptPhase | 'unassigned', SopChecklistItemTemplate[]>> {
+    const items = await this.checklistRepo.getBySopId(sopId);
+    const grouped: Record<string, SopChecklistItemTemplate[]> = {
+      shield: [], clear: [], ready: [], install: [], punch: [], turnover: [], unassigned: [],
+    };
+    for (const item of items) {
+      const phase = item.scriptPhase ?? 'unassigned';
+      grouped[phase].push(item);
+    }
+    return grouped as Record<ScriptPhase | 'unassigned', SopChecklistItemTemplate[]>;
+  }
+
+  /** Assign a SCRIPT phase to a single checklist item */
+  async assignScriptPhase(itemId: string, phase: ScriptPhase | null): Promise<SopChecklistItemTemplate> {
+    const updated = await this.checklistRepo.update(itemId, { scriptPhase: phase });
+    if (!updated) throw new Error(`Checklist item not found: ${itemId}`);
+    return updated;
+  }
+
+  /** Bulk assign SCRIPT phases to multiple checklist items */
+  async bulkAssignScriptPhases(assignments: { itemId: string; phase: ScriptPhase }[]): Promise<void> {
+    for (const { itemId, phase } of assignments) {
+      await this.checklistRepo.update(itemId, { scriptPhase: phase });
+    }
   }
 
   // ============================================================================

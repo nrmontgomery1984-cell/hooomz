@@ -25,6 +25,9 @@ export interface CatalogItem {
   unitCost: number;
   supplier?: string; // e.g., "Home Hardware", "Kent", "Subcontractor Name"
   sku?: string; // Product SKU or code
+  manufacturer?: string; // e.g., "Shaw", "Beauti-Tone", "CGC"
+  productName?: string; // e.g., "Endura Plus", "Signature Series"
+  modelNumber?: string; // e.g., "SPC-EP-7", "BT-SIG-INT"
   notes?: string;
   isActive: boolean;
   metadata: Metadata;
@@ -696,7 +699,10 @@ export class InMemoryCatalogRepository implements ICatalogRepository {
           item.description?.toLowerCase().includes(searchLower) ||
           item.category.toLowerCase().includes(searchLower) ||
           item.supplier?.toLowerCase().includes(searchLower) ||
-          item.sku?.toLowerCase().includes(searchLower)
+          item.sku?.toLowerCase().includes(searchLower) ||
+          item.manufacturer?.toLowerCase().includes(searchLower) ||
+          item.productName?.toLowerCase().includes(searchLower) ||
+          item.modelNumber?.toLowerCase().includes(searchLower)
       );
     }
 
@@ -775,7 +781,10 @@ export class InMemoryCatalogRepository implements ICatalogRepository {
         item.description?.toLowerCase().includes(queryLower) ||
         item.category.toLowerCase().includes(queryLower) ||
         item.supplier?.toLowerCase().includes(queryLower) ||
-        item.sku?.toLowerCase().includes(queryLower)
+        item.sku?.toLowerCase().includes(queryLower) ||
+        item.manufacturer?.toLowerCase().includes(queryLower) ||
+        item.productName?.toLowerCase().includes(queryLower) ||
+        item.modelNumber?.toLowerCase().includes(queryLower)
     );
   }
 

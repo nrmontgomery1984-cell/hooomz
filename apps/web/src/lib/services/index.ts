@@ -67,8 +67,21 @@ import { LoopContextRepository } from '../repositories/loopContext.repository';
 import { LoopIterationRepository } from '../repositories/loopIteration.repository';
 import { LoopManagementService, createLoopManagementService } from './loopManagement.service';
 
+// Calendar / Scheduling
+import { CrewScheduleRepository } from '../repositories/crewSchedule.repository';
+import { type CrewScheduleService, createCrewScheduleService } from './crewSchedule.service';
+import { ScheduleNoteRepository } from '../repositories/scheduleNote.repository';
+import { type ScheduleNoteService, createScheduleNoteService } from './scheduleNote.service';
+
 // Intake Drafts (local-only, no sync, no activity logging)
 import { IntakeDraftRepository } from '../repositories/intakeDraft.repository';
+
+// Discovery Drafts (local-only, no sync, no activity logging)
+import { DiscoveryDraftRepository } from '../repositories/discoveryDraft.repository';
+
+// Cost Catalogue (admin config, local-only)
+import { StoreNames } from '../storage/StorageAdapter';
+import type { CostCatalog } from '../types/costCatalog.types';
 
 /**
  * Repository container - provides access to all offline-first repositories
@@ -125,8 +138,22 @@ export interface Services {
   // Build 3d: Loop Management
   loopManagement: LoopManagementService;
 
+  // Calendar / Scheduling
+  schedule: CrewScheduleService;
+  scheduleNotes: ScheduleNoteService;
+
   // Intake Drafts (local-only, no sync, no activity logging)
   intakeDrafts: IntakeDraftRepository;
+
+  // Discovery Drafts (local-only, no sync, no activity logging)
+  discoveryDrafts: DiscoveryDraftRepository;
+
+  // Cost Catalogue (admin config, local-only singleton)
+  costCatalog: {
+    get(): Promise<CostCatalog | null>;
+    save(catalog: CostCatalog): Promise<void>;
+    remove(): Promise<void>;
+  };
 }
 
 /**
@@ -206,12 +233,18 @@ export async function initializeServices(): Promise<Services> {
     const loopContextRepository = new LoopContextRepository(storage);
     const loopIterationRepository = new LoopIterationRepository(storage);
     const intakeDraftRepository = new IntakeDraftRepository(storage);
+    const discoveryDraftRepository = new DiscoveryDraftRepository(storage);
+    const crewScheduleRepository = new CrewScheduleRepository(storage);
+    const scheduleNoteRepository = new ScheduleNoteRepository(storage);
 
     // Create ActivityService (THE SPINE)
     const activityService = new ActivityService(activityRepository);
 
     // Create BudgetService early so pipeline can use it
     const budgetService = createBudgetService(taskBudgetRepository, activityService);
+
+    // Create Labs services early so pipeline can use workflow service
+    const labsServices = createLabsServices(storage, activityService);
 
     // Use repositories directly for offline-first operation
     const services: Services = {
@@ -242,7 +275,7 @@ export async function initializeServices(): Promise<Services> {
       },
 
       // Labs - Field data collection system
-      labs: createLabsServices(storage, activityService),
+      labs: labsServices,
 
       // Integration - Data Spine services
       integration: {
@@ -275,6 +308,7 @@ export async function initializeServices(): Promise<Services> {
         sopRepo: sopRepository,
         activity: activityService,
         budget: budgetService,
+        workflowService: labsServices.workflows,
       }),
 
       // Build 3c: Crew Members, Training, Budget
@@ -285,8 +319,33 @@ export async function initializeServices(): Promise<Services> {
       // Build 3d: Loop Management
       loopManagement: createLoopManagementService(loopContextRepository, loopIterationRepository, activityService),
 
+      // Calendar / Scheduling
+      schedule: createCrewScheduleService(
+        crewScheduleRepository,
+        taskRepository,
+        new DeployedTaskRepository(storage),
+        activityService,
+      ),
+      scheduleNotes: createScheduleNoteService(scheduleNoteRepository, activityService),
+
       // Intake Drafts (local-only)
       intakeDrafts: intakeDraftRepository,
+
+      // Discovery Drafts (local-only)
+      discoveryDrafts: discoveryDraftRepository,
+
+      // Cost Catalogue (admin config, singleton)
+      costCatalog: {
+        async get() {
+          return storage.get<CostCatalog>(StoreNames.COST_CATALOG, 'cost_catalog');
+        },
+        async save(catalog: CostCatalog) {
+          await storage.set(StoreNames.COST_CATALOG, catalog.id, catalog);
+        },
+        async remove() {
+          await storage.delete(StoreNames.COST_CATALOG, 'cost_catalog');
+        },
+      },
     };
 
     servicesInstance = services;
@@ -505,6 +564,10 @@ export function getLoopManagementService(): LoopManagementService {
   return getServices().loopManagement;
 }
 
+export function getCrewScheduleService(): CrewScheduleService {
+  return getServices().schedule;
+}
+
 // Re-export service types for convenience
 export type {
   ProjectService,
@@ -525,4 +588,5 @@ export type {
   TrainingService,
   BudgetService,
   LoopManagementService,
+  CrewScheduleService,
 };

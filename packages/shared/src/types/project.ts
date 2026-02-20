@@ -15,6 +15,7 @@ export interface Project {
 
 export type ProjectStatus =
   | 'lead'
+  | 'discovery'
   | 'estimate'
   | 'quoted'
   | 'approved'

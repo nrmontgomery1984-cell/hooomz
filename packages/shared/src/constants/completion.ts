@@ -50,7 +50,8 @@ export const PROJECT_COMPLETION_CHECKLIST: CompletionChecklistItem[] = [
  * Key is current status, value is array of allowed next statuses.
  */
 export const PROJECT_STATUS_TRANSITIONS: Record<ProjectStatus, ProjectStatus[]> = {
-  lead: ['estimate', 'cancelled'],
+  lead: ['discovery', 'estimate', 'cancelled'],
+  discovery: ['estimate', 'cancelled'],
   estimate: ['quoted', 'cancelled'],
   quoted: ['approved', 'estimate', 'cancelled'],
   approved: ['in_progress', 'on_hold', 'cancelled'],

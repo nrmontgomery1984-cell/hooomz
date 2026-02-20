@@ -66,7 +66,7 @@ export default function IntakePage() {
 
     try {
       const intakeService = createIntakeService(services);
-      const result = await intakeService.processHomeownerIntake(data);
+      await intakeService.processHomeownerIntake(data);
 
       // Mark draft as submitted
       if (activeDraftId) {
@@ -74,7 +74,7 @@ export default function IntakePage() {
         queryClient.invalidateQueries({ queryKey: LOCAL_QUERY_KEYS.intakeDrafts.all });
       }
 
-      router.push(`/projects/${result.project_id}`);
+      router.push('/leads');
     } catch (err) {
       console.error('Error processing homeowner intake:', err);
       setError('Failed to create project. Please try again.');
@@ -93,7 +93,7 @@ export default function IntakePage() {
 
     try {
       const intakeService = createIntakeService(services);
-      const result = await intakeService.processContractorIntake(data);
+      await intakeService.processContractorIntake(data);
 
       // Mark draft as submitted
       if (activeDraftId) {
@@ -101,7 +101,7 @@ export default function IntakePage() {
         queryClient.invalidateQueries({ queryKey: LOCAL_QUERY_KEYS.intakeDrafts.all });
       }
 
-      router.push(`/projects/${result.project_id}`);
+      router.push('/leads');
     } catch (err) {
       console.error('Error processing contractor intake:', err);
       setError('Failed to create project. Please try again.');

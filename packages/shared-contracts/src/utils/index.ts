@@ -268,6 +268,8 @@ export function isOverBudget(actualCost: number, estimatedCost: number): boolean
  */
 const PROJECT_STATUS_COLORS: Record<ProjectStatus, string> = {
   [ProjectStatus.LEAD]: '#9CA3AF', // gray
+  [ProjectStatus.DISCOVERY]: '#14B8A6', // teal
+  [ProjectStatus.SITE_VISIT]: '#6366F1', // indigo
   [ProjectStatus.QUOTED]: '#60A5FA', // blue
   [ProjectStatus.APPROVED]: '#34D399', // green
   [ProjectStatus.IN_PROGRESS]: '#FBBF24', // yellow
@@ -360,7 +362,9 @@ export function getPriorityColor(priority: TaskPriority): string {
  * Valid project status transitions
  */
 const PROJECT_STATUS_TRANSITIONS: Record<ProjectStatus, ProjectStatus[]> = {
-  [ProjectStatus.LEAD]: [ProjectStatus.QUOTED, ProjectStatus.CANCELLED],
+  [ProjectStatus.LEAD]: [ProjectStatus.DISCOVERY, ProjectStatus.QUOTED, ProjectStatus.CANCELLED],
+  [ProjectStatus.DISCOVERY]: [ProjectStatus.SITE_VISIT, ProjectStatus.QUOTED, ProjectStatus.CANCELLED],
+  [ProjectStatus.SITE_VISIT]: [ProjectStatus.QUOTED, ProjectStatus.CANCELLED],
   [ProjectStatus.QUOTED]: [ProjectStatus.APPROVED, ProjectStatus.CANCELLED],
   [ProjectStatus.APPROVED]: [ProjectStatus.IN_PROGRESS, ProjectStatus.CANCELLED],
   [ProjectStatus.IN_PROGRESS]: [ProjectStatus.ON_HOLD, ProjectStatus.COMPLETE, ProjectStatus.CANCELLED],

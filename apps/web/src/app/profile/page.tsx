@@ -22,6 +22,8 @@ import {
 } from 'lucide-react';
 import { useLocalProjects, useLocalRecentActivity } from '@/lib/hooks/useLocalData';
 import { useServicesContext } from '@/lib/services/ServicesContext';
+import { useViewMode, VIEW_MODE_LABELS } from '@/lib/viewmode';
+import type { ViewMode } from '@/lib/viewmode';
 
 const TIER_LABELS: Record<string, string> = {
   master: 'Master',
@@ -52,6 +54,7 @@ export default function ProfilePage() {
   const { data: activityData } = useLocalRecentActivity(100);
   const { services } = useServicesContext();
   const [crew, setCrew] = useState<CrewMemberInfo[]>([]);
+  const { viewMode, setViewMode } = useViewMode();
 
   const projects = projectsResult?.projects || [];
   const activityCount = activityData?.events?.length || 0;
@@ -115,6 +118,36 @@ export default function ProfilePage() {
           <StatCard icon={Briefcase} label="Projects" value={projects.length} color="#3B82F6" />
           <StatCard icon={Users} label="Crew" value={crew.length} color="#0F766E" />
           <StatCard icon={Activity} label="Events" value={activityCount} color="#F59E0B" />
+        </div>
+
+        {/* View Mode (mobile access) */}
+        <div
+          className="rounded-xl p-3"
+          style={{ background: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}
+        >
+          <label
+            className="block text-[11px] font-semibold uppercase tracking-wider mb-1.5"
+            style={{ color: '#6B7280' }}
+            htmlFor="profile-view-mode"
+          >
+            View As
+          </label>
+          <select
+            id="profile-view-mode"
+            value={viewMode}
+            onChange={(e) => setViewMode(e.target.value as ViewMode)}
+            className="w-full px-3 py-2 text-sm font-medium rounded-lg border"
+            style={{
+              color: '#374151',
+              borderColor: '#E5E7EB',
+              background: '#FFFFFF',
+              minHeight: '44px',
+            }}
+          >
+            {(Object.entries(VIEW_MODE_LABELS) as [ViewMode, string][]).map(([mode, label]) => (
+              <option key={mode} value={mode}>{label}</option>
+            ))}
+          </select>
         </div>
 
         {/* Completion rate */}

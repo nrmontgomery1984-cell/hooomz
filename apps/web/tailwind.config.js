@@ -67,8 +67,9 @@ module.exports = {
       },
 
       fontFamily: {
-        sans: ['var(--theme-font, Inter)', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-        mono: ['var(--theme-font-mono, "JetBrains Mono")', '"Fira Code"', 'monospace'],
+        sans: ['IBM Plex Sans', 'system-ui', 'sans-serif'],
+        mono: ['IBM Plex Mono', 'JetBrains Mono', 'monospace'],
+        cond: ['Barlow Condensed', 'system-ui', 'sans-serif'],
       },
 
       borderRadius: {

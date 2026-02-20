@@ -125,6 +125,9 @@ export const TaskSchema = z.object({
   loopIterationId: z.string().optional(),
   // Labs Bridge: flag task for labs observation capture
   labsFlagged: z.boolean().optional(),
+  // Workflow: construction sequencing
+  sortOrder: z.number().optional(),
+  workflowId: z.string().optional(),
 });
 
 // LineItem Base Schema (without refinement for .omit() compatibility)
@@ -144,6 +147,10 @@ export const LineItemBaseSchema = z.object({
   loopContextLabel: z.string().optional(),
   isLooped: z.boolean().optional(),
   estimatedHoursPerUnit: z.number().optional(),
+  // Three-axis tagging (optional for backward compatibility)
+  workCategoryCode: z.string().optional(),
+  stageCode: z.string().optional(),
+  locationLabel: z.string().optional(),
 });
 
 // LineItem Schema with validation refinement
@@ -227,6 +234,33 @@ export const CatalogItemSchema = z.object({
   metadata: MetadataSchema,
 });
 
+// Workflow Schemas (Labs — construction sequencing)
+
+export const WorkflowStatusSchema = z.enum(['active', 'draft', 'archived']);
+
+export const WorkflowPhaseSchema = z.object({
+  phaseCode: z.string(),
+  name: z.string(),
+  order: z.number(),
+  stageCode: z.string(),
+  tradeCodes: z.array(z.string()),
+  sopCodes: z.array(z.string()),
+  description: z.string().optional(),
+});
+
+export const WorkflowSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string().optional(),
+  status: WorkflowStatusSchema,
+  isDefault: z.boolean(),
+  phases: z.array(WorkflowPhaseSchema),
+  metadata: MetadataSchema,
+});
+
+export const CreateWorkflowSchema = WorkflowSchema.omit({ id: true, metadata: true });
+export const UpdateWorkflowSchema = WorkflowSchema.partial().required({ id: true });
+
 // Create Schemas (without id and metadata)
 
 export const CreateProjectSchema = ProjectSchema.omit({ id: true, metadata: true }).extend({
@@ -307,6 +341,12 @@ export type EstimateStatus = z.infer<typeof EstimateStatusSchema>;
 export type CatalogItem = z.infer<typeof CatalogItemSchema>;
 export type Address = z.infer<typeof AddressSchema>;
 export type Metadata = z.infer<typeof MetadataSchema>;
+
+export type WorkflowPhase = z.infer<typeof WorkflowPhaseSchema>;
+export type Workflow = z.infer<typeof WorkflowSchema>;
+export type WorkflowStatus = z.infer<typeof WorkflowStatusSchema>;
+export type CreateWorkflow = z.infer<typeof CreateWorkflowSchema>;
+export type UpdateWorkflow = z.infer<typeof UpdateWorkflowSchema>;
 
 export type CreateProject = z.infer<typeof CreateProjectSchema>;
 export type CreateCustomer = z.infer<typeof CreateCustomerSchema>;

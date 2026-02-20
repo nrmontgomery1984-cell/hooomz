@@ -32,50 +32,31 @@ import { getActiveTradesFromScopes, TRADE_CODES } from '@/lib/types/intake.types
 import { RoomScopeBuilder } from './RoomScopeBuilder';
 
 // =============================================================================
-// Bundle definitions
+// Service definitions for mix-and-match selection
 // =============================================================================
 
-const BUNDLES: {
-  value: ProjectType;
-  label: string;
-  price: string;
+const SERVICES: {
+  code: string;
+  name: string;
   description: string;
-  trades: string[];
   icon: React.ReactNode;
 }[] = [
-  {
-    value: 'floor_refresh',
-    label: 'Floor Refresh',
-    price: '~$5,400',
-    description: 'New flooring + baseboard throughout',
-    trades: ['Flooring', 'Baseboard'],
-    icon: <Layers size={24} />,
-  },
-  {
-    value: 'room_refresh',
-    label: 'Room Refresh',
-    price: '~$8,200',
-    description: 'Flooring + fresh paint + new baseboard',
-    trades: ['Flooring', 'Paint', 'Baseboard'],
-    icon: <Paintbrush size={24} />,
-  },
-  {
-    value: 'full_interior',
-    label: 'Full Interior',
-    price: '~$11,800',
-    description: 'Flooring + paint + full trim + tile + drywall',
-    trades: ['Flooring', 'Paint', 'Trim', 'Tile', 'Drywall'],
-    icon: <Hammer size={24} />,
-  },
-  {
-    value: 'custom',
-    label: 'Custom',
-    price: 'Varies',
-    description: 'Custom scope of work',
-    trades: ['We\'ll discuss your needs'],
-    icon: <Wrench size={24} />,
-  },
+  { code: 'FL', name: 'Flooring', description: 'LVP, hardwood, laminate, carpet', icon: <Layers size={22} /> },
+  { code: 'PT', name: 'Paint', description: 'Walls, ceilings, trim paint', icon: <Paintbrush size={22} /> },
+  { code: 'FC', name: 'Trim & Baseboard', description: 'Baseboard, casing, crown moulding', icon: <Hammer size={22} /> },
+  { code: 'TL', name: 'Tile', description: 'Floor tile, backsplash, walls', icon: <Wrench size={22} /> },
+  { code: 'DW', name: 'Drywall', description: 'Patching, taping, new install', icon: <Layers size={22} /> },
 ];
+
+/** Derive project_type from selected trades for backward compat */
+function deriveProjectType(trades: string[]): ProjectType {
+  const sorted = [...trades].sort();
+  const key = sorted.join(',');
+  if (key === 'FC,FL') return 'floor_refresh';
+  if (key === 'FC,FL,PT') return 'room_refresh';
+  if (key === 'DW,FC,FL,PT,TL') return 'full_interior';
+  return 'custom';
+}
 
 // =============================================================================
 // Step Components
@@ -209,70 +190,78 @@ function ClientStep({ data, updateField, errors }: StepProps) {
   );
 }
 
-// Step 2: Bundle Selection
-function BundleStep({ data, updateField }: StepProps) {
+// Step 2: Services Selection (mix-and-match)
+function ServicesStep({ data, updateField, errors }: StepProps) {
+  const selected = data.project.selected_trades ?? [];
+
+  const toggleTrade = (code: string) => {
+    const next = selected.includes(code)
+      ? selected.filter((c) => c !== code)
+      : [...selected, code];
+    updateField('project.selected_trades', next);
+    updateField('project.project_type', deriveProjectType(next));
+  };
+
   return (
     <div className="space-y-5">
       <div>
-        <h2 className="text-xl font-semibold" style={{ color: '#111827' }}>Choose a Bundle</h2>
-        <p className="text-sm mt-1" style={{ color: '#6B7280' }}>What level of work are you looking for?</p>
+        <h2 className="text-xl font-semibold" style={{ color: '#111827' }}>What do you need?</h2>
+        <p className="text-sm mt-1" style={{ color: '#6B7280' }}>Select all the services you&apos;re interested in.</p>
       </div>
 
-      <div className="space-y-3">
-        {BUNDLES.map((bundle) => {
-          const isSelected = data.project.project_type === bundle.value;
+      {errors['project.selected_trades'] && (
+        <p className="text-xs" style={{ color: '#EF4444' }}>{errors['project.selected_trades']}</p>
+      )}
+
+      <div className="space-y-2">
+        {SERVICES.map((svc) => {
+          const isOn = selected.includes(svc.code);
           return (
             <button
-              key={bundle.value}
+              key={svc.code}
               type="button"
-              onClick={() => updateField('project.project_type', bundle.value)}
-              className="w-full text-left rounded-xl p-4 transition-all min-h-[80px]"
+              onClick={() => toggleTrade(svc.code)}
+              className="w-full flex items-center gap-3 rounded-xl p-4 min-h-[64px] text-left transition-all"
               style={{
-                background: isSelected ? '#F0FDFA' : '#FFFFFF',
-                border: isSelected ? '2px solid #0F766E' : '2px solid #E5E7EB',
+                background: isOn ? '#F0FDFA' : '#FFFFFF',
+                border: isOn ? '2px solid #0F766E' : '2px solid #E5E7EB',
               }}
             >
-              <div className="flex items-start gap-3">
-                <div
-                  className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
-                  style={{
-                    background: isSelected ? '#0F766E' : '#F3F4F6',
-                    color: isSelected ? '#FFFFFF' : '#6B7280',
-                  }}
-                >
-                  {bundle.icon}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between">
-                    <span className="font-semibold" style={{ color: '#111827' }}>{bundle.label}</span>
-                    <span className="text-sm font-medium" style={{ color: '#0F766E' }}>{bundle.price}</span>
-                  </div>
-                  <p className="text-sm mt-0.5" style={{ color: '#6B7280' }}>{bundle.description}</p>
-                  <div className="flex flex-wrap gap-1.5 mt-2">
-                    {bundle.trades.map((trade) => (
-                      <span
-                        key={trade}
-                        className="text-xs px-2 py-0.5 rounded-full"
-                        style={{ background: '#F3F4F6', color: '#374151' }}
-                      >
-                        {trade}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                {isSelected && (
-                  <div
-                    className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
-                    style={{ background: '#0F766E' }}
-                  >
-                    <Check size={14} color="#FFFFFF" />
-                  </div>
-                )}
+              <div
+                className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                style={{
+                  background: isOn ? '#0F766E' : '#F3F4F6',
+                  color: isOn ? '#FFFFFF' : '#6B7280',
+                }}
+              >
+                {svc.icon}
               </div>
+              <div className="flex-1 min-w-0">
+                <span className="font-semibold text-sm" style={{ color: '#111827' }}>{svc.name}</span>
+                <p className="text-xs mt-0.5" style={{ color: '#9CA3AF' }}>{svc.description}</p>
+              </div>
+              {isOn && (
+                <div
+                  className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
+                  style={{ background: '#0F766E' }}
+                >
+                  <Check size={14} color="#FFFFFF" />
+                </div>
+              )}
             </button>
           );
         })}
       </div>
+
+      {selected.length > 0 && (
+        <div className="rounded-xl p-3" style={{ background: '#F0FDFA' }}>
+          <p className="text-sm" style={{ color: '#0F766E' }}>
+            <span className="font-medium">{selected.length} service{selected.length !== 1 ? 's' : ''} selected</span>
+            {' — '}
+            {selected.map((c) => SERVICES.find((s) => s.code === c)?.name).filter(Boolean).join(', ')}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
@@ -303,7 +292,7 @@ function RoomsStep({ data, updateField, errors }: StepProps) {
       <RoomScopeBuilder
         rooms={roomScopes}
         onChange={handleRoomsChange}
-        bundleType={data.project.project_type}
+        enabledTrades={data.project.selected_trades}
       />
     </div>
   );
@@ -311,7 +300,8 @@ function RoomsStep({ data, updateField, errors }: StepProps) {
 
 // Step 4: Notes & Submit
 function NotesStep({ data, updateField }: StepProps) {
-  const bundleLabel = BUNDLES.find((b) => b.value === data.project.project_type)?.label || 'Custom';
+  const selectedTrades = data.project.selected_trades ?? [];
+  const serviceNames = selectedTrades.map((c) => SERVICES.find((s) => s.code === c)?.name).filter(Boolean);
   const roomScopes = data.project.room_scopes ?? [];
   const totalSqft = roomScopes.reduce((sum, r) => sum + (r.measurements.sqft ?? 0), 0);
 
@@ -332,8 +322,8 @@ function NotesStep({ data, updateField }: StepProps) {
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-sm" style={{ color: '#6B7280' }}>Bundle</span>
-            <span className="text-sm font-medium" style={{ color: '#0F766E' }}>{bundleLabel}</span>
+            <span className="text-sm" style={{ color: '#6B7280' }}>Services</span>
+            <span className="text-sm font-medium" style={{ color: '#0F766E' }}>{serviceNames.join(', ') || 'None'}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-sm" style={{ color: '#6B7280' }}>Rooms</span>
@@ -425,7 +415,7 @@ function NotesStep({ data, updateField }: StepProps) {
           value={data.project.name}
           onChange={(e) => updateField('project.name', e.target.value)}
           className="input"
-          placeholder={`${data.contact.first_name || 'Client'}'s ${bundleLabel}`}
+          placeholder={`${data.contact.first_name || 'Client'}'s ${serviceNames.join(' + ') || 'Project'}`}
         />
         <p className="text-xs mt-1" style={{ color: '#9CA3AF' }}>
           Leave blank to auto-generate
@@ -455,7 +445,7 @@ function NotesStep({ data, updateField }: StepProps) {
 
 const STEPS = [
   { id: 'client', name: 'Client', component: ClientStep },
-  { id: 'bundle', name: 'Bundle', component: BundleStep },
+  { id: 'services', name: 'Services', component: ServicesStep },
   { id: 'rooms', name: 'Rooms', component: RoomsStep },
   { id: 'notes', name: 'Review', component: NotesStep },
 ];
@@ -480,7 +470,8 @@ const initialData: HomeownerIntakeData = {
   project: {
     name: '',
     address: { street: '', city: '', province: 'NB', postal_code: '' },
-    project_type: 'room_refresh',
+    project_type: 'custom',
+    selected_trades: [],
     selected_rooms: [],
     room_scopes: [],
   },
@@ -549,6 +540,12 @@ export function IntakeWizard({
       if (!formData.project.address.street.trim()) newErrors['project.address'] = 'Required';
     }
 
+    if (step.id === 'services') {
+      if ((formData.project.selected_trades ?? []).length === 0) {
+        newErrors['project.selected_trades'] = 'Select at least one service';
+      }
+    }
+
     if (step.id === 'rooms') {
       if ((formData.project.room_scopes ?? []).length === 0) {
         newErrors['project.selected_rooms'] = 'Add at least one room';
@@ -569,8 +566,11 @@ export function IntakeWizard({
         // Auto-generate project name if blank
         const finalData = { ...formData };
         if (!finalData.project.name.trim()) {
-          const bundleLabel = BUNDLES.find((b) => b.value === finalData.project.project_type)?.label || 'Project';
-          finalData.project.name = `${finalData.contact.first_name}'s ${bundleLabel}`;
+          const trades = finalData.project.selected_trades ?? [];
+          const serviceLabel = trades.length > 0
+            ? trades.map((c) => SERVICES.find((s) => s.code === c)?.name).filter(Boolean).join(' + ')
+            : 'Project';
+          finalData.project.name = `${finalData.contact.first_name}'s ${serviceLabel}`;
         }
         onComplete(finalData);
       }
@@ -591,14 +591,14 @@ export function IntakeWizard({
   const isLastStep = currentStep === STEPS.length - 1;
 
   return (
-    <div className="min-h-screen" style={{ background: '#0F766E' }}>
+    <div className="min-h-screen" style={{ background: '#F3F4F6' }}>
       {/* Header */}
-      <div className="px-4 pt-4 pb-3">
-        <div className="max-w-lg mx-auto flex items-center justify-between">
+      <div className="sticky top-0 z-10" style={{ background: '#FFFFFF', borderBottom: '1px solid #E5E7EB' }}>
+        <div className="max-w-lg mx-auto px-4 py-3 flex items-center justify-between">
           <button
             onClick={handleBack}
             className="flex items-center gap-1 text-sm font-medium min-h-[48px] min-w-[48px]"
-            style={{ color: 'rgba(255,255,255,0.9)' }}
+            style={{ color: '#6B7280' }}
           >
             <ChevronLeft size={18} />
             {currentStep === 0 ? 'Cancel' : 'Back'}
@@ -613,25 +613,25 @@ export function IntakeWizard({
                 style={{
                   width: i === currentStep ? 10 : 8,
                   height: i === currentStep ? 10 : 8,
-                  background: i <= currentStep ? '#FFFFFF' : 'rgba(255,255,255,0.35)',
+                  background: i <= currentStep ? '#0F766E' : '#D1D5DB',
                 }}
               />
             ))}
           </div>
 
-          <span className="text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>
+          <span className="text-sm" style={{ color: '#9CA3AF' }}>
             {currentStep + 1} of {STEPS.length}
           </span>
         </div>
       </div>
 
       {/* Card */}
-      <div className="px-4 pb-4">
+      <div className="px-4 py-6">
         <div
           className="max-w-lg mx-auto rounded-2xl p-5"
           style={{
             background: '#FFFFFF',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.12)',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
             minHeight: 'calc(100vh - 140px)',
             display: 'flex',
             flexDirection: 'column',

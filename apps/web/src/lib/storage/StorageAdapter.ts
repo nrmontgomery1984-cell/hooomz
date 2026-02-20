@@ -103,12 +103,27 @@ export const StoreNames = {
   // Build 3d: Loop Management
   LOOP_CONTEXTS: 'loopContexts',
   LOOP_ITERATIONS: 'loopIterations',
+  // Discovery Drafts (Prompt 2)
+  DISCOVERY_DRAFTS: 'discoveryDrafts',
   // Intake Drafts
   INTAKE_DRAFTS: 'intakeDrafts',
   // Tool Research
   TOOL_PLATFORMS: 'toolPlatforms',
   TOOL_RESEARCH_ITEMS: 'toolResearchItems',
   TOOL_INVENTORY: 'toolInventory',
+  // Admin: Cost Catalogue
+  COST_CATALOG: 'costCatalog',
+  // Workflows (Labs — construction sequencing)
+  WORKFLOWS: 'workflows',
+  // Labs Integration: Tokens, Tests, Voting, Material Changes
+  LABS_TOKENS: 'labsTokens',
+  LABS_TESTS: 'labsTests',
+  LABS_VOTE_BALLOTS: 'labsVoteBallots',
+  LABS_VOTES: 'labsVotes',
+  LABS_MATERIAL_CHANGES: 'labsMaterialChanges',
+  // Calendar / Scheduling
+  CREW_SCHEDULE_BLOCKS: 'crewScheduleBlocks',
+  SCHEDULE_NOTES: 'scheduleNotes',
 } as const;
 
 export type StoreName = (typeof StoreNames)[keyof typeof StoreNames];

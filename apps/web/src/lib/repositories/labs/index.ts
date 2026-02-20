@@ -38,3 +38,10 @@ export { PendingBatchObservationRepository } from './pendingBatchObservation.rep
 export { ToolPlatformRepository } from './toolPlatform.repository';
 export { ToolResearchItemRepository } from './toolResearchItem.repository';
 export { ToolInventoryRepository } from './toolInventory.repository';
+
+// Labs Integration: Tokens, Tests, Voting, Material Changes
+export { LabsTokenRepository } from './labsToken.repository';
+export { LabsTestRepository } from './labsTest.repository';
+export { LabsVoteBallotRepository } from './labsVoteBallot.repository';
+export { LabsVoteRepository } from './labsVote.repository';
+export { LabsMaterialChangeRepository } from './labsMaterialChange.repository';

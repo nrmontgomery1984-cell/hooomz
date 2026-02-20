@@ -29,6 +29,16 @@ import type {
   ToolInventoryItem,
   ToolResearchCategory,
   MaintenanceEntry,
+  LabsToken,
+  LabsTokenStatus,
+  LabsTest,
+  LabsTestStatus,
+  LabsTestCategory,
+  LabsVoteBallot,
+  BallotStatus,
+  PartnerTier,
+  LabsMaterialChange,
+  ScriptPhase,
 } from '@hooomz/shared-contracts';
 
 // ============================================================================
@@ -128,6 +138,51 @@ export const LABS_QUERY_KEYS = {
     platforms: ['labs', 'toolResearch', 'platforms'] as const,
     researchItems: (category?: string) => ['labs', 'toolResearch', 'items', category] as const,
     inventory: (filters?: Record<string, string>) => ['labs', 'toolResearch', 'inventory', filters] as const,
+  },
+  // Workflows
+  workflows: {
+    all: ['labs', 'workflows'] as const,
+    default: ['labs', 'workflows', 'default'] as const,
+    detail: (id: string) => ['labs', 'workflows', 'detail', id] as const,
+  },
+  // Labs Tokens
+  tokens: {
+    all: ['labs', 'tokens'] as const,
+    detail: (id: string) => ['labs', 'tokens', 'detail', id] as const,
+    byCategory: (category: string) => ['labs', 'tokens', 'category', category] as const,
+    byStatus: (status: string) => ['labs', 'tokens', 'status', status] as const,
+    validated: ['labs', 'tokens', 'validated'] as const,
+    map: ['labs', 'tokens', 'map'] as const,
+  },
+  // Labs Tests
+  tests: {
+    all: ['labs', 'tests'] as const,
+    detail: (id: string) => ['labs', 'tests', 'detail', id] as const,
+    byStatus: (status: string) => ['labs', 'tests', 'status', status] as const,
+    byCategory: (category: string) => ['labs', 'tests', 'category', category] as const,
+    active: ['labs', 'tests', 'active'] as const,
+    pipeline: ['labs', 'tests', 'pipeline'] as const,
+    byToken: (tokenId: string) => ['labs', 'tests', 'token', tokenId] as const,
+  },
+  // Labs Voting
+  voting: {
+    ballots: ['labs', 'voting', 'ballots'] as const,
+    ballot: (id: string) => ['labs', 'voting', 'ballot', id] as const,
+    activeBallot: ['labs', 'voting', 'active'] as const,
+    ballotsByStatus: (status: string) => ['labs', 'voting', 'status', status] as const,
+    results: (ballotId: string) => ['labs', 'voting', 'results', ballotId] as const,
+    hasVoted: (ballotId: string, partnerId: string) => ['labs', 'voting', 'hasVoted', ballotId, partnerId] as const,
+  },
+  // Labs Material Changes
+  materialChanges: {
+    all: ['labs', 'materialChanges'] as const,
+    byToken: (tokenId: string) => ['labs', 'materialChanges', 'token', tokenId] as const,
+    byTest: (testId: string) => ['labs', 'materialChanges', 'test', testId] as const,
+    recent: (limit: number) => ['labs', 'materialChanges', 'recent', limit] as const,
+  },
+  // SOP SCRIPT Phases
+  scriptPhases: {
+    bySop: (sopId: string) => ['labs', 'scriptPhases', sopId] as const,
   },
 };
 
@@ -1166,6 +1221,423 @@ export function useAddMaintenanceEntry() {
       services!.labs.toolResearch.addMaintenanceEntry(data.id, data.entry),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['labs', 'toolResearch'] });
+    },
+  });
+}
+
+// ============================================================================
+// Workflow Hooks
+// ============================================================================
+
+export function useWorkflows() {
+  const { services, isLoading } = useServicesContext();
+
+  return useQuery({
+    queryKey: LABS_QUERY_KEYS.workflows.all,
+    queryFn: () => services!.labs.workflows.getAll(),
+    enabled: !isLoading && !!services,
+  });
+}
+
+export function useDefaultWorkflow() {
+  const { services, isLoading } = useServicesContext();
+
+  return useQuery({
+    queryKey: LABS_QUERY_KEYS.workflows.default,
+    queryFn: () => services!.labs.workflows.getDefault(),
+    enabled: !isLoading && !!services,
+  });
+}
+
+// ============================================================================
+// Labs Tokens
+// ============================================================================
+
+export function useLabsTokens() {
+  const { services, isLoading } = useServicesContext();
+  return useQuery<LabsToken[]>({
+    queryKey: LABS_QUERY_KEYS.tokens.all,
+    queryFn: () => services!.labs.tokens.findAll(),
+    enabled: !isLoading && !!services,
+  });
+}
+
+export function useLabsToken(id: string) {
+  const { services, isLoading } = useServicesContext();
+  return useQuery<LabsToken | null>({
+    queryKey: LABS_QUERY_KEYS.tokens.detail(id),
+    queryFn: () => services!.labs.tokens.findById(id),
+    enabled: !isLoading && !!services && !!id,
+  });
+}
+
+export function useLabsTokensByCategory(category: string) {
+  const { services, isLoading } = useServicesContext();
+  return useQuery<LabsToken[]>({
+    queryKey: LABS_QUERY_KEYS.tokens.byCategory(category),
+    queryFn: () => services!.labs.tokens.findByCategory(category),
+    enabled: !isLoading && !!services && !!category,
+  });
+}
+
+export function useLabsTokensByStatus(status: LabsTokenStatus) {
+  const { services, isLoading } = useServicesContext();
+  return useQuery<LabsToken[]>({
+    queryKey: LABS_QUERY_KEYS.tokens.byStatus(status),
+    queryFn: () => services!.labs.tokens.findByStatus(status),
+    enabled: !isLoading && !!services && !!status,
+  });
+}
+
+export function useLabsValidatedTokens() {
+  const { services, isLoading } = useServicesContext();
+  return useQuery<LabsToken[]>({
+    queryKey: LABS_QUERY_KEYS.tokens.validated,
+    queryFn: () => services!.labs.tokens.findValidated(),
+    enabled: !isLoading && !!services,
+  });
+}
+
+/** Pre-built Map<string, LabsToken> for fast token resolution */
+export function useLabsTokenMap() {
+  const { services, isLoading } = useServicesContext();
+  return useQuery<Map<string, LabsToken>>({
+    queryKey: LABS_QUERY_KEYS.tokens.map,
+    queryFn: () => services!.labs.tokens.getTokenMap(),
+    enabled: !isLoading && !!services,
+  });
+}
+
+export function useCreateLabsToken() {
+  const { services } = useServicesContext();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: Omit<LabsToken, 'createdAt' | 'updatedAt' | 'syncStatus'>) =>
+      services!.labs.tokens.createToken(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['labs', 'tokens'] });
+    },
+  });
+}
+
+export function useUpdateLabsToken() {
+  const { services } = useServicesContext();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: { id: string; changes: Partial<LabsToken> }) =>
+      services!.labs.tokens.updateToken(data.id, data.changes),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['labs', 'tokens'] });
+      queryClient.invalidateQueries({ queryKey: LABS_QUERY_KEYS.tokens.detail(variables.id) });
+    },
+  });
+}
+
+// ============================================================================
+// Labs Tests
+// ============================================================================
+
+export function useLabsTests() {
+  const { services, isLoading } = useServicesContext();
+  return useQuery<LabsTest[]>({
+    queryKey: LABS_QUERY_KEYS.tests.all,
+    queryFn: () => services!.labs.tests.findAll(),
+    enabled: !isLoading && !!services,
+  });
+}
+
+export function useLabsTest(id: string) {
+  const { services, isLoading } = useServicesContext();
+  return useQuery<LabsTest | null>({
+    queryKey: LABS_QUERY_KEYS.tests.detail(id),
+    queryFn: () => services!.labs.tests.findById(id),
+    enabled: !isLoading && !!services && !!id,
+  });
+}
+
+export function useLabsTestsByStatus(status: LabsTestStatus) {
+  const { services, isLoading } = useServicesContext();
+  return useQuery<LabsTest[]>({
+    queryKey: LABS_QUERY_KEYS.tests.byStatus(status),
+    queryFn: () => services!.labs.tests.findByStatus(status),
+    enabled: !isLoading && !!services && !!status,
+  });
+}
+
+export function useLabsTestsByCategory(category: LabsTestCategory) {
+  const { services, isLoading } = useServicesContext();
+  return useQuery<LabsTest[]>({
+    queryKey: LABS_QUERY_KEYS.tests.byCategory(category),
+    queryFn: () => services!.labs.tests.findByCategory(category),
+    enabled: !isLoading && !!services && !!category,
+  });
+}
+
+export function useLabsActiveTests() {
+  const { services, isLoading } = useServicesContext();
+  return useQuery<LabsTest[]>({
+    queryKey: LABS_QUERY_KEYS.tests.active,
+    queryFn: () => services!.labs.tests.findActive(),
+    enabled: !isLoading && !!services,
+  });
+}
+
+export function useLabsTestPipeline() {
+  const { services, isLoading } = useServicesContext();
+  return useQuery<Record<LabsTestStatus, LabsTest[]>>({
+    queryKey: LABS_QUERY_KEYS.tests.pipeline,
+    queryFn: () => services!.labs.tests.getPipeline(),
+    enabled: !isLoading && !!services,
+  });
+}
+
+export function useLabsTestsByToken(tokenId: string) {
+  const { services, isLoading } = useServicesContext();
+  return useQuery<LabsTest[]>({
+    queryKey: LABS_QUERY_KEYS.tests.byToken(tokenId),
+    queryFn: () => services!.labs.tests.findByTokenId(tokenId),
+    enabled: !isLoading && !!services && !!tokenId,
+  });
+}
+
+export function useProposeLabsTest() {
+  const { services } = useServicesContext();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: Omit<LabsTest, 'id' | 'createdAt' | 'updatedAt' | 'syncStatus' | 'status' | 'voteCount' | 'votedBy'>) =>
+      services!.labs.tests.proposeTest(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['labs', 'tests'] });
+    },
+  });
+}
+
+export function useAdvanceLabsTestStatus() {
+  const { services } = useServicesContext();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: { id: string; status: LabsTestStatus }) =>
+      services!.labs.tests.advanceStatus(data.id, data.status),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['labs', 'tests'] });
+      queryClient.invalidateQueries({ queryKey: LABS_QUERY_KEYS.tests.detail(variables.id) });
+    },
+  });
+}
+
+export function useCompleteLabsTest() {
+  const { services } = useServicesContext();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: { id: string; checkResults: LabsTest['checkResults'] }) =>
+      services!.labs.tests.completeTest(data.id, data.checkResults),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['labs', 'tests'] });
+      queryClient.invalidateQueries({ queryKey: LABS_QUERY_KEYS.tests.detail(variables.id) });
+    },
+  });
+}
+
+export function usePublishLabsTest() {
+  const { services } = useServicesContext();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: { id: string; actChanges: LabsTest['actChanges'] }) =>
+      services!.labs.tests.publishTest(data.id, data.actChanges),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['labs', 'tests'] });
+      queryClient.invalidateQueries({ queryKey: LABS_QUERY_KEYS.tests.detail(variables.id) });
+      queryClient.invalidateQueries({ queryKey: ['labs', 'tokens'] });
+    },
+  });
+}
+
+// ============================================================================
+// Labs Voting
+// ============================================================================
+
+export function useLabsBallots() {
+  const { services, isLoading } = useServicesContext();
+  return useQuery<LabsVoteBallot[]>({
+    queryKey: LABS_QUERY_KEYS.voting.ballots,
+    queryFn: () => services!.labs.voting.findAllBallots(),
+    enabled: !isLoading && !!services,
+  });
+}
+
+export function useLabsBallot(id: string) {
+  const { services, isLoading } = useServicesContext();
+  return useQuery<LabsVoteBallot | null>({
+    queryKey: LABS_QUERY_KEYS.voting.ballot(id),
+    queryFn: () => services!.labs.voting.findBallotById(id),
+    enabled: !isLoading && !!services && !!id,
+  });
+}
+
+export function useLabsActiveBallot() {
+  const { services, isLoading } = useServicesContext();
+  return useQuery<LabsVoteBallot | null>({
+    queryKey: LABS_QUERY_KEYS.voting.activeBallot,
+    queryFn: () => services!.labs.voting.findActiveBallot(),
+    enabled: !isLoading && !!services,
+  });
+}
+
+export function useLabsBallotsByStatus(status: BallotStatus) {
+  const { services, isLoading } = useServicesContext();
+  return useQuery<LabsVoteBallot[]>({
+    queryKey: LABS_QUERY_KEYS.voting.ballotsByStatus(status),
+    queryFn: () => services!.labs.voting.findBallotsByStatus(status),
+    enabled: !isLoading && !!services && !!status,
+  });
+}
+
+export function useLabsBallotResults(ballotId: string) {
+  const { services, isLoading } = useServicesContext();
+  return useQuery({
+    queryKey: LABS_QUERY_KEYS.voting.results(ballotId),
+    queryFn: () => services!.labs.voting.getResults(ballotId),
+    enabled: !isLoading && !!services && !!ballotId,
+  });
+}
+
+export function useLabsHasVoted(ballotId: string, partnerId: string) {
+  const { services, isLoading } = useServicesContext();
+  return useQuery<boolean>({
+    queryKey: LABS_QUERY_KEYS.voting.hasVoted(ballotId, partnerId),
+    queryFn: () => services!.labs.voting.hasVoted(ballotId, partnerId),
+    enabled: !isLoading && !!services && !!ballotId && !!partnerId,
+  });
+}
+
+export function useCreateLabsBallot() {
+  const { services } = useServicesContext();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: Omit<LabsVoteBallot, 'createdAt' | 'updatedAt' | 'syncStatus'>) =>
+      services!.labs.voting.createBallot(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['labs', 'voting'] });
+    },
+  });
+}
+
+export function useCastLabsVote() {
+  const { services } = useServicesContext();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: { ballotId: string; testId: string; partnerId: string; partnerTier: PartnerTier }) =>
+      services!.labs.voting.castVote(data.ballotId, data.testId, data.partnerId, data.partnerTier),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['labs', 'voting'] });
+      queryClient.invalidateQueries({ queryKey: LABS_QUERY_KEYS.voting.hasVoted(variables.ballotId, variables.partnerId) });
+    },
+  });
+}
+
+export function useCloseLabsBallot() {
+  const { services } = useServicesContext();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (ballotId: string) =>
+      services!.labs.voting.closeBallot(ballotId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['labs', 'voting'] });
+    },
+  });
+}
+
+// ============================================================================
+// Labs Material Changes
+// ============================================================================
+
+export function useLabsMaterialChanges() {
+  const { services, isLoading } = useServicesContext();
+  return useQuery<LabsMaterialChange[]>({
+    queryKey: LABS_QUERY_KEYS.materialChanges.all,
+    queryFn: () => services!.labs.materialChanges.findAll(),
+    enabled: !isLoading && !!services,
+  });
+}
+
+export function useLabsMaterialChangesByToken(tokenId: string) {
+  const { services, isLoading } = useServicesContext();
+  return useQuery<LabsMaterialChange[]>({
+    queryKey: LABS_QUERY_KEYS.materialChanges.byToken(tokenId),
+    queryFn: () => services!.labs.materialChanges.findByTokenId(tokenId),
+    enabled: !isLoading && !!services && !!tokenId,
+  });
+}
+
+export function useLabsRecentMaterialChanges(limit: number = 5) {
+  const { services, isLoading } = useServicesContext();
+  return useQuery<LabsMaterialChange[]>({
+    queryKey: LABS_QUERY_KEYS.materialChanges.recent(limit),
+    queryFn: () => services!.labs.materialChanges.findRecent(limit),
+    enabled: !isLoading && !!services,
+  });
+}
+
+export function useRecordMaterialChange() {
+  const { services } = useServicesContext();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: Omit<LabsMaterialChange, 'id' | 'createdAt' | 'updatedAt' | 'syncStatus'>) =>
+      services!.labs.materialChanges.recordChange(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['labs', 'materialChanges'] });
+      queryClient.invalidateQueries({ queryKey: ['labs', 'tokens'] });
+    },
+  });
+}
+
+// ============================================================================
+// SOP SCRIPT Phases
+// ============================================================================
+
+export function useSopScriptPhases(sopId: string) {
+  const { services, isLoading } = useServicesContext();
+  return useQuery<Record<ScriptPhase | 'unassigned', SopChecklistItemTemplate[]>>({
+    queryKey: LABS_QUERY_KEYS.scriptPhases.bySop(sopId),
+    queryFn: () => services!.labs.sops.getChecklistByScriptPhase(sopId),
+    enabled: !isLoading && !!services && !!sopId,
+  });
+}
+
+export function useAssignScriptPhase() {
+  const { services } = useServicesContext();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: { itemId: string; phase: ScriptPhase | null; sopId: string }) =>
+      services!.labs.sops.assignScriptPhase(data.itemId, data.phase),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: LABS_QUERY_KEYS.scriptPhases.bySop(variables.sopId) });
+      queryClient.invalidateQueries({ queryKey: LABS_QUERY_KEYS.sops.checklist(variables.sopId) });
+    },
+  });
+}
+
+export function useBulkAssignScriptPhases() {
+  const { services } = useServicesContext();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: { assignments: { itemId: string; phase: ScriptPhase }[]; sopId: string }) =>
+      services!.labs.sops.bulkAssignScriptPhases(data.assignments),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: LABS_QUERY_KEYS.scriptPhases.bySop(variables.sopId) });
+      queryClient.invalidateQueries({ queryKey: LABS_QUERY_KEYS.sops.checklist(variables.sopId) });
     },
   });
 }

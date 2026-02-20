@@ -3,10 +3,10 @@
  *
  * Responsibilities:
  * 1. Create projects from intake data
- * 2. Generate loops based on scope (three-axis tagging)
- * 3. Create tasks from bundle type per room
- * 4. Log all activity events
+ * 2. Generate line items (rough estimate) from scope
+ * 3. Log all activity events
  *
+ * Tasks and loops are created later at quote approval (useApproveEstimateWithPipeline).
  * THE ACTIVITY LOG IS THE SPINE - every action creates an event.
  */
 
@@ -16,8 +16,6 @@ import {
   ProjectStatus,
   ProjectType as ContractProjectType,
   ContactMethod,
-  TaskStatus,
-  TaskPriority,
   CostCategory,
   UnitOfMeasure,
 } from '@hooomz/shared-contracts';
@@ -29,74 +27,12 @@ import type {
   HomeownerIntakeData,
   ContractorIntakeData,
   IntakeResult,
-  GeneratedLoop,
-  GeneratedTask,
   ScopeItem,
   ProjectType,
   RoomScope,
 } from '@/lib/types/intake.types';
-import { ROOM_LOCATIONS, TRADE_CODES, STAGE_CODES } from '@/lib/types/intake.types';
-import { getSOPForTask } from '@/lib/data/sops';
+import { ROOM_LOCATIONS } from '@/lib/types/intake.types';
 import type { Services } from './index';
-
-// Wet rooms get tile tasks in Full Interior bundle
-const WET_ROOMS = ['master-bath', 'guest-bath', 'kitchen', 'laundry'];
-
-/**
- * Task templates per bundle type.
- * Each entry: { title, stage, trade }
- */
-const FLOOR_REFRESH_TASKS = [
-  { title: 'Remove existing flooring', stage: 'ST-DM', trade: 'FL' },
-  { title: 'Remove existing baseboard', stage: 'ST-DM', trade: 'FC' },
-  { title: 'Floor prep and leveling', stage: 'ST-PR', trade: 'FL' },
-  { title: 'LVP installation', stage: 'ST-FN', trade: 'FL' },
-  { title: 'Baseboard installation', stage: 'ST-FN', trade: 'FC' },
-  { title: 'Transitions', stage: 'ST-FN', trade: 'FL' },
-  { title: 'Touch-ups', stage: 'ST-PL', trade: 'OH' },
-  { title: 'Final walkthrough', stage: 'ST-CL', trade: 'OH' },
-  { title: 'Cleaning', stage: 'ST-CL', trade: 'OH' },
-];
-
-const ROOM_REFRESH_TASKS = [
-  { title: 'Remove existing flooring', stage: 'ST-DM', trade: 'FL' },
-  { title: 'Remove existing baseboard', stage: 'ST-DM', trade: 'FC' },
-  { title: 'Floor prep and leveling', stage: 'ST-PR', trade: 'FL' },
-  { title: 'Wall patching', stage: 'ST-PR', trade: 'DW' },
-  { title: 'Priming', stage: 'ST-PR', trade: 'PT' },
-  { title: 'LVP installation', stage: 'ST-FN', trade: 'FL' },
-  { title: 'Baseboard installation', stage: 'ST-FN', trade: 'FC' },
-  { title: 'Wall painting', stage: 'ST-FN', trade: 'PT' },
-  { title: 'Transitions', stage: 'ST-FN', trade: 'FL' },
-  { title: 'Touch-ups', stage: 'ST-PL', trade: 'OH' },
-  { title: 'Final walkthrough', stage: 'ST-CL', trade: 'OH' },
-  { title: 'Cleaning', stage: 'ST-CL', trade: 'OH' },
-];
-
-const FULL_INTERIOR_TASKS = [
-  { title: 'Remove existing flooring', stage: 'ST-DM', trade: 'FL' },
-  { title: 'Remove existing baseboard', stage: 'ST-DM', trade: 'FC' },
-  { title: 'Remove existing trim', stage: 'ST-DM', trade: 'FC' },
-  { title: 'Floor prep and leveling', stage: 'ST-PR', trade: 'FL' },
-  { title: 'Wall patching', stage: 'ST-PR', trade: 'DW' },
-  { title: 'Drywall repair', stage: 'ST-PR', trade: 'DW' },
-  { title: 'Priming', stage: 'ST-PR', trade: 'PT' },
-  { title: 'LVP installation', stage: 'ST-FN', trade: 'FL' },
-  { title: 'Baseboard installation', stage: 'ST-FN', trade: 'FC' },
-  { title: 'Casing installation', stage: 'ST-FN', trade: 'FC' },
-  { title: 'Shoe molding', stage: 'ST-FN', trade: 'FC' },
-  { title: 'Crown molding', stage: 'ST-FN', trade: 'FC' },
-  { title: 'Wall painting', stage: 'ST-FN', trade: 'PT' },
-  { title: 'Ceiling painting', stage: 'ST-FN', trade: 'PT' },
-  { title: 'Trim painting', stage: 'ST-FN', trade: 'PT' },
-  { title: 'Transitions', stage: 'ST-FN', trade: 'FL' },
-  { title: 'Touch-ups', stage: 'ST-PL', trade: 'OH' },
-  { title: 'Final walkthrough', stage: 'ST-CL', trade: 'OH' },
-  { title: 'Cleaning', stage: 'ST-CL', trade: 'OH' },
-];
-
-// Tile task added for wet rooms only in Full Interior
-const TILE_TASK = { title: 'Tile work', stage: 'ST-FN', trade: 'TL' };
 
 // =============================================================================
 // Cost Estimates & Mapping (NB market rates, per unit)
@@ -152,34 +88,6 @@ function mapUnitOfMeasure(unit: string): UnitOfMeasure {
     case 'ea': return UnitOfMeasure.EACH;
     case 'hr': return UnitOfMeasure.HOUR;
     default: return UnitOfMeasure.EACH;
-  }
-}
-
-/**
- * Get task templates for a bundle type + room
- */
-function getTasksForBundle(bundleType: ProjectType, roomId: string): { title: string; stage: string; trade: string }[] {
-  switch (bundleType) {
-    case 'floor_refresh':
-      return FLOOR_REFRESH_TASKS;
-    case 'room_refresh':
-      return ROOM_REFRESH_TASKS;
-    case 'full_interior':
-    case 'custom': {
-      const tasks = [...FULL_INTERIOR_TASKS];
-      if (WET_ROOMS.includes(roomId)) {
-        // Insert tile task before the transitions task
-        const transitionIdx = tasks.findIndex((t) => t.title === 'Transitions');
-        if (transitionIdx >= 0) {
-          tasks.splice(transitionIdx, 0, TILE_TASK);
-        } else {
-          tasks.push(TILE_TASK);
-        }
-      }
-      return tasks;
-    }
-    default:
-      return FULL_INTERIOR_TASKS;
   }
 }
 
@@ -509,9 +417,13 @@ export class IntakeService {
   }
 
   /**
-   * Process homeowner intake and create project structure
+   * Process homeowner intake and create project structure.
+   * Pass existingCustomerId to link to an existing lead/customer instead of creating a new one.
    */
-  async processHomeownerIntake(data: HomeownerIntakeData): Promise<IntakeResult> {
+  async processHomeownerIntake(
+    data: HomeownerIntakeData,
+    options?: { existingCustomerId?: string }
+  ): Promise<IntakeResult> {
     const intakeId = generateId('intake');
     const projectId = generateId('project');
     const activityEventIds: string[] = [];
@@ -523,9 +435,25 @@ export class IntakeService {
     });
     activityEventIds.push(startEvent.id);
 
-    // 2. Create customer if contact info provided
-    let customerId: string | undefined;
-    if (data.contact.email) {
+    // 2. Use existing customer (from lead) or create new one
+    let customerId: string | undefined = options?.existingCustomerId;
+    if (customerId) {
+      // Update existing customer with latest contact info from intake
+      await this.services.customers.update(customerId, {
+        firstName: data.contact.first_name,
+        lastName: data.contact.last_name,
+        email: data.contact.email || undefined,
+        phone: data.contact.phone || undefined,
+        address: {
+          street: data.project.address.street,
+          city: data.project.address.city,
+          province: data.project.address.province,
+          postalCode: data.project.address.postal_code.toUpperCase().replace(/\s/g, ''),
+          country: 'CA',
+        },
+        preferredContactMethod: mapContactMethod(data.contact.preferred_contact),
+      });
+    } else if (data.contact.email) {
       customerId = generateCustomerId();
       const customer: CreateCustomer = {
         firstName: data.contact.first_name,
@@ -591,41 +519,21 @@ export class IntakeService {
     );
     activityEventIds.push(projectEvent.id);
 
-    // 4. Generate loops and tasks — room-scope-aware when available
+    // 4. Generate line items only — tasks/loops are created later at quote approval
     const roomScopes = data.project.room_scopes;
-    let loops: GeneratedLoop[];
-    let tasks: GeneratedTask[];
 
     if (roomScopes && roomScopes.length > 0) {
-      // Derive enabled trades from room scopes for loop hierarchy
-      const enabledTrades = new Set<string>();
-      roomScopes.forEach((r) => {
-        if (r.trades.flooring?.enabled) enabledTrades.add('FL');
-        if (r.trades.paint?.enabled) enabledTrades.add('PT');
-        if (r.trades.trim?.enabled) enabledTrades.add('FC');
-        if (r.trades.tile?.enabled) enabledTrades.add('TL');
-        if (r.trades.drywall?.enabled) enabledTrades.add('DW');
-      });
-      loops = await this.generateLoopsFromRoomScopes(
-        actualProjectId, roomScopes, Array.from(enabledTrades), activityEventIds
-      );
       const scopeItems = deriveScopeItemsFromRooms(roomScopes);
-      tasks = await this.generateTasksFromContractorScope(actualProjectId, scopeItems, loops, activityEventIds);
       await this.generateLineItemsFromScope(actualProjectId, scopeItems, activityEventIds);
-    } else {
-      // Legacy path: simple selected_rooms list
-      loops = await this.generateLoopsFromRooms(actualProjectId, data.project.selected_rooms, activityEventIds);
-      tasks = await this.generateTasksFromBundle(
-        actualProjectId, data.project.project_type, data.project.selected_rooms, loops, activityEventIds
-      );
     }
+    // Legacy path (simple selected_rooms list) — no line items to generate
 
-    // 5b. Transfer photos from room scopes to photos store
+    // 4b. Transfer photos from room scopes to photos store
     if (roomScopes && roomScopes.length > 0) {
       await this.transferPhotosFromRoomScopes(actualProjectId, roomScopes, activityEventIds);
     }
 
-    // 6. Log intake completed
+    // 5. Log intake completed
     const completeEvent = await this.services.activity.logIntakeEvent('intake.submitted', intakeId, {
       intake_type: 'homeowner',
       project_name: projectName,
@@ -635,8 +543,8 @@ export class IntakeService {
 
     return {
       project_id: actualProjectId,
-      loops,
-      tasks,
+      loops: [],
+      tasks: [],
       activity_events: activityEventIds,
     };
   }
@@ -729,29 +637,20 @@ export class IntakeService {
     );
     activityEventIds.push(projectEvent.id);
 
-    // 4. Derive scope items from room scopes if available, otherwise use provided items
+    // 4. Generate line items only — tasks/loops are created later at quote approval
     const roomScopes = data.scope.room_scopes;
     const scopeItems = (roomScopes && roomScopes.length > 0)
       ? deriveScopeItemsFromRooms(roomScopes)
       : data.scope.items;
 
-    // 4b. Generate loops — room-based when room scopes exist, trade-based otherwise
-    const loops = (roomScopes && roomScopes.length > 0)
-      ? await this.generateLoopsFromRoomScopes(actualProjectId, roomScopes, data.scope.enabled_trades, activityEventIds)
-      : await this.generateLoopsFromContractorScope(actualProjectId, data, activityEventIds);
-
-    // 5. Generate tasks from scope items (already have three-axis tags)
-    const tasks = await this.generateTasksFromContractorScope(actualProjectId, scopeItems, loops, activityEventIds);
-
-    // 5b. Generate pre-populated line items from scope (estimate page ready)
     await this.generateLineItemsFromScope(actualProjectId, scopeItems, activityEventIds);
 
-    // 5c. Transfer photos from room scopes to photos store
+    // 4b. Transfer photos from room scopes to photos store
     if (roomScopes && roomScopes.length > 0) {
       await this.transferPhotosFromRoomScopes(actualProjectId, roomScopes, activityEventIds);
     }
 
-    // 6. Log intake completed
+    // 5. Log intake completed
     const completeEvent = await this.services.activity.logIntakeEvent('intake.submitted', intakeId, {
       intake_type: 'contractor',
       project_name: projectName,
@@ -761,270 +660,15 @@ export class IntakeService {
 
     return {
       project_id: actualProjectId,
-      loops,
-      tasks,
+      loops: [],
+      tasks: [],
       activity_events: activityEventIds,
     };
   }
 
-  /**
-   * Generate one loop per selected room
-   */
-  private async generateLoopsFromRooms(
-    projectId: string,
-    selectedRooms: string[],
-    activityEventIds: string[]
-  ): Promise<GeneratedLoop[]> {
-    const loops: GeneratedLoop[] = [];
-
-    for (const roomId of selectedRooms) {
-      const roomInfo = ROOM_LOCATIONS[`loc-${roomId}` as keyof typeof ROOM_LOCATIONS];
-      const loopId = generateId('loop');
-      const loop: GeneratedLoop = {
-        id: loopId,
-        name: roomInfo?.name || roomId,
-        parent_id: null,
-        loop_type: 'location',
-        status: 'not-started',
-        health_score: 100,
-        work_category_code: '',
-        stage_code: '',
-        location_id: `loc-${roomId}`,
-      };
-
-      loops.push(loop);
-
-      const loopEvent = await this.services.activity.logLoopEvent('loop.created', projectId, loopId, {
-        loop_name: loop.name,
-        loop_type: 'location',
-        parent_loop_id: null,
-        location_id: loop.location_id,
-      });
-      activityEventIds.push(loopEvent.id);
-    }
-
-    return loops;
-  }
-
-  /**
-   * Generate loops from RoomScope[] — one location loop per room,
-   * grouped under a parent trade loop per enabled trade.
-   */
-  private async generateLoopsFromRoomScopes(
-    projectId: string,
-    roomScopes: RoomScope[],
-    enabledTrades: string[],
-    activityEventIds: string[]
-  ): Promise<GeneratedLoop[]> {
-    const loops: GeneratedLoop[] = [];
-
-    // Create a parent loop per trade
-    const tradeLoopMap = new Map<string, string>(); // tradeCode → loopId
-    for (const tradeCode of enabledTrades) {
-      const tradeInfo = TRADE_CODES[tradeCode as keyof typeof TRADE_CODES];
-      const loopId = generateId('loop');
-      const loop: GeneratedLoop = {
-        id: loopId,
-        name: tradeInfo?.name || tradeCode,
-        parent_id: null,
-        loop_type: 'trade',
-        status: 'not-started',
-        health_score: 100,
-        work_category_code: tradeCode,
-        stage_code: '',
-        location_id: '',
-      };
-      loops.push(loop);
-      tradeLoopMap.set(tradeCode, loopId);
-
-      const loopEvent = await this.services.activity.logLoopEvent('loop.created', projectId, loopId, {
-        loop_name: loop.name,
-        loop_type: 'trade',
-        parent_loop_id: null,
-        work_category_code: tradeCode,
-      });
-      activityEventIds.push(loopEvent.id);
-    }
-
-    // Create a location loop per room, nested under each relevant trade
-    for (const room of roomScopes) {
-      // Determine which trades are active in this room
-      const roomTrades: string[] = [];
-      if (room.trades.flooring?.enabled) roomTrades.push('FL');
-      if (room.trades.paint?.enabled) roomTrades.push('PT');
-      if (room.trades.trim?.enabled) roomTrades.push('FC');
-      if (room.trades.tile?.enabled) roomTrades.push('TL');
-      if (room.trades.drywall?.enabled) roomTrades.push('DW');
-
-      for (const tradeCode of roomTrades) {
-        const parentId = tradeLoopMap.get(tradeCode);
-        if (!parentId) continue;
-
-        const tradeInfo = TRADE_CODES[tradeCode as keyof typeof TRADE_CODES];
-        const loopId = generateId('loop');
-        const loop: GeneratedLoop = {
-          id: loopId,
-          name: `${tradeInfo?.name || tradeCode} — ${room.name}`,
-          parent_id: parentId,
-          loop_type: 'location',
-          status: 'not-started',
-          health_score: 100,
-          work_category_code: tradeCode,
-          stage_code: '',
-          location_id: room.id,
-        };
-        loops.push(loop);
-
-        const loopEvent = await this.services.activity.logLoopEvent('loop.created', projectId, loopId, {
-          loop_name: loop.name,
-          loop_type: 'location',
-          parent_loop_id: parentId,
-          work_category_code: tradeCode,
-          location_id: room.id,
-        });
-        activityEventIds.push(loopEvent.id);
-      }
-    }
-
-    return loops;
-  }
-
-  /**
-   * Generate tasks from bundle type per room
-   */
-  private async generateTasksFromBundle(
-    projectId: string,
-    bundleType: ProjectType,
-    selectedRooms: string[],
-    loops: GeneratedLoop[],
-    activityEventIds: string[]
-  ): Promise<GeneratedTask[]> {
-    const tasks: GeneratedTask[] = [];
-
-    for (const roomId of selectedRooms) {
-      const locationId = `loc-${roomId}`;
-      const roomLoop = loops.find((l) => l.location_id === locationId);
-      if (!roomLoop) continue;
-
-      const roomName = roomLoop.name;
-      const taskTemplates = getTasksForBundle(bundleType, roomId);
-
-      for (const template of taskTemplates) {
-        const taskTitle = `${template.title} — ${roomName}`;
-        const tradeName = TRADE_CODES[template.trade as keyof typeof TRADE_CODES]?.name || template.trade;
-        const stageName = STAGE_CODES[template.stage as keyof typeof STAGE_CODES]?.name || template.stage;
-
-        // Look up linked SOP for this task
-        const sopId = getSOPForTask(template.title, template.trade);
-
-        // Persist task to IndexedDB
-        const persistedTask = await this.services.scheduling.tasks.create({
-          projectId,
-          title: taskTitle,
-          description: `${stageName} · ${tradeName}${sopId ? `\nsopId:${sopId}` : ''}`,
-          status: TaskStatus.NOT_STARTED,
-          priority: TaskPriority.MEDIUM,
-          dependencies: [],
-        });
-
-        const task: GeneratedTask = {
-          id: persistedTask.id,
-          loop_id: roomLoop.id,
-          title: taskTitle,
-          status: 'not-started',
-          priority: 'medium',
-          work_category_code: template.trade,
-          stage_code: template.stage,
-          location_id: locationId,
-        };
-
-        tasks.push(task);
-
-        const taskEvent = await this.services.activity.logTaskEvent('task.instance_created', projectId, persistedTask.id, {
-          task_title: task.title,
-          work_category_code: task.work_category_code,
-          stage_code: task.stage_code,
-          location_id: task.location_id,
-        });
-        activityEventIds.push(taskEvent.id);
-      }
-    }
-
-    return tasks;
-  }
-
-  /**
-   * Generate loops from contractor scope (trade-based hierarchy)
-   */
-  private async generateLoopsFromContractorScope(
-    projectId: string,
-    data: ContractorIntakeData,
-    activityEventIds: string[]
-  ): Promise<GeneratedLoop[]> {
-    const loops: GeneratedLoop[] = [];
-    const { TRADE_CODES } = await import('@/lib/types/intake.types');
-
-    for (const tradeCode of data.scope.enabled_trades) {
-      const tradeInfo = TRADE_CODES[tradeCode as keyof typeof TRADE_CODES];
-
-      const loopId = generateId('loop');
-      const loop: GeneratedLoop = {
-        id: loopId,
-        name: tradeInfo?.name || tradeCode,
-        parent_id: null,
-        loop_type: 'trade',
-        status: 'not-started',
-        health_score: 100,
-        work_category_code: tradeCode,
-        stage_code: '',
-        location_id: '',
-      };
-
-      loops.push(loop);
-
-      const loopEvent = await this.services.activity.logLoopEvent('loop.created', projectId, loopId, {
-        loop_name: loop.name,
-        loop_type: 'trade',
-        parent_loop_id: null,
-        work_category_code: tradeCode,
-      });
-      activityEventIds.push(loopEvent.id);
-
-      // Get unique locations for this trade's scope items
-      const tradeItems = data.scope.items.filter((item) => item.trade_code === tradeCode);
-      const uniqueLocations = [...new Set(tradeItems.map((item) => item.location_id))];
-
-      for (const locationId of uniqueLocations) {
-        const locationInfo = ROOM_LOCATIONS[locationId as keyof typeof ROOM_LOCATIONS];
-
-        const locationLoopId = generateId('loop');
-        const locationLoop: GeneratedLoop = {
-          id: locationLoopId,
-          name: `${tradeInfo?.name || tradeCode} — ${locationInfo?.name || locationId}`,
-          parent_id: loopId,
-          loop_type: 'location',
-          status: 'not-started',
-          health_score: 100,
-          work_category_code: tradeCode,
-          stage_code: '',
-          location_id: locationId,
-        };
-
-        loops.push(locationLoop);
-
-        const locationEvent = await this.services.activity.logLoopEvent('loop.created', projectId, locationLoopId, {
-          loop_name: locationLoop.name,
-          loop_type: 'location',
-          parent_loop_id: loopId,
-          work_category_code: tradeCode,
-          location_id: locationId,
-        });
-        activityEventIds.push(locationEvent.id);
-      }
-    }
-
-    return loops;
-  }
+  // NOTE: Task and loop generation methods were removed from intake.
+  // Tasks and loops are now created at quote approval via useApproveEstimateWithPipeline.
+  // Intake only produces line items (the rough estimate).
 
   /**
    * Generate line items from scope items (pre-populated estimate)
@@ -1050,7 +694,7 @@ export class IntakeService {
       // Use intake material cost when available, otherwise fall back to defaults
       const materialUnitCost = item.materialCostPerUnit ?? costs.materialCost;
 
-      // Material line item
+      // Material line item (no sopCodes — tasks come from labor items only)
       if (materialUnitCost > 0) {
         const totalCost = materialUnitCost * item.quantity;
         const desc = item.materialDescription
@@ -1065,10 +709,11 @@ export class IntakeService {
           unitCost: materialUnitCost,
           totalCost,
           isLabor: false,
-          sopCodes: item.sopCodes,
           isLooped: item.isLooped,
           loopContextLabel: item.loopContextLabel,
-          estimatedHoursPerUnit: item.estimatedHoursPerUnit,
+          workCategoryCode: item.work_category_code,
+          stageCode: item.stage_code,
+          locationLabel: ROOM_LOCATIONS[item.location_id as keyof typeof ROOM_LOCATIONS]?.name || item.loopContextLabel || 'General',
         });
 
         this.services.activity.logEstimateLineItemEvent(
@@ -1104,6 +749,9 @@ export class IntakeService {
           isLooped: item.isLooped,
           loopContextLabel: item.loopContextLabel,
           estimatedHoursPerUnit: item.estimatedHoursPerUnit,
+          workCategoryCode: item.work_category_code,
+          stageCode: item.stage_code,
+          locationLabel: ROOM_LOCATIONS[item.location_id as keyof typeof ROOM_LOCATIONS]?.name || item.loopContextLabel || 'General',
         });
 
         this.services.activity.logEstimateLineItemEvent(
@@ -1122,65 +770,6 @@ export class IntakeService {
         activityEventIds.push(lineItem.id);
       }
     }
-  }
-
-  /**
-   * Generate tasks from contractor scope items
-   */
-  private async generateTasksFromContractorScope(
-    projectId: string,
-    scopeItems: ScopeItem[],
-    loops: GeneratedLoop[],
-    activityEventIds: string[]
-  ): Promise<GeneratedTask[]> {
-    const tasks: GeneratedTask[] = [];
-
-    for (const item of scopeItems) {
-      const loop = loops.find(
-        (l) =>
-          l.work_category_code === item.trade_code &&
-          l.location_id === item.location_id &&
-          l.loop_type === 'location'
-      ) || loops.find(
-        (l) => l.work_category_code === item.trade_code && !l.parent_id
-      );
-
-      if (!loop) continue;
-
-      const persistedTask = await this.services.scheduling.tasks.create({
-        projectId,
-        title: item.item_name,
-        description: item.notes,
-        status: TaskStatus.NOT_STARTED,
-        priority: TaskPriority.MEDIUM,
-        dependencies: [],
-      });
-
-      const task: GeneratedTask = {
-        id: persistedTask.id,
-        loop_id: loop.id,
-        title: item.item_name,
-        description: item.notes,
-        status: 'not-started',
-        priority: 'medium',
-        source_scope_item_id: item.id,
-        work_category_code: item.work_category_code,
-        stage_code: item.stage_code,
-        location_id: item.location_id,
-      };
-
-      tasks.push(task);
-
-      const taskEvent = await this.services.activity.logTaskEvent('task.instance_created', projectId, persistedTask.id, {
-        task_title: task.title,
-        work_category_code: task.work_category_code,
-        stage_code: task.stage_code,
-        location_id: task.location_id,
-      });
-      activityEventIds.push(taskEvent.id);
-    }
-
-    return tasks;
   }
 
   /**

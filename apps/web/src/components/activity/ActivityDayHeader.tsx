@@ -17,15 +17,27 @@ export function ActivityDayHeader({ label, isSticky = true }: ActivityDayHeaderP
 
   return (
     <div
-      className={`${isSticky ? 'sticky top-0 z-10' : ''} py-2 -mx-1 px-1`}
-      style={{ background: 'rgba(243,244,246,0.95)', backdropFilter: 'blur(4px)' }}
+      style={{
+        position: isSticky ? 'sticky' : undefined,
+        top: isSticky ? 0 : undefined,
+        zIndex: isSticky ? 10 : undefined,
+        padding: '4px 12px',
+        background: 'var(--surface-2)',
+        backdropFilter: 'blur(4px)',
+      }}
     >
-      <h3
-        className="text-xs font-semibold uppercase tracking-wider"
-        style={{ color: isSpecial ? '#0F766E' : '#9CA3AF' }}
+      <span
+        style={{
+          fontFamily: 'var(--font-cond)',
+          fontSize: 9,
+          fontWeight: 700,
+          letterSpacing: '0.12em',
+          textTransform: 'uppercase',
+          color: isSpecial ? 'var(--blue)' : 'var(--text-3)',
+        }}
       >
         {label}
-      </h3>
+      </span>
     </div>
   );
 }

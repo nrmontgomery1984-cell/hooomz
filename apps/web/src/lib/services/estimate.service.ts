@@ -109,14 +109,18 @@ export class EstimateService {
     const deleted = await this.services.estimating.lineItems.delete(lineItemId);
 
     if (deleted) {
-      // Log deletion (non-blocking)
+      // Log deletion with full line item data for elimination tracking
       this.services.activity.logEstimateLineItemEvent(
         'estimate.line_item_deleted',
         projectId,
         lineItemId,
         {
           description: context?.description || existing?.description || 'Unknown',
-          work_category_code: context?.work_category_code,
+          quantity: existing?.quantity,
+          unit: existing?.unit,
+          total: existing?.totalCost,
+          category: existing?.category,
+          work_category_code: context?.work_category_code || existing?.workCategoryCode,
           trade: context?.trade,
           location_id: context?.location_id,
         }

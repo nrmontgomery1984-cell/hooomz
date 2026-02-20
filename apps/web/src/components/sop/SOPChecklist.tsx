@@ -121,7 +121,7 @@ export function SOPChecklist({ taskId, sopId, projectId, onOpenSOP, onOpenKnowle
     return (
       <button
         onClick={() => setExpanded(true)}
-        className="w-full mt-3 rounded-xl p-3 flex items-center justify-between min-h-[44px]"
+        className="w-full mt-2 rounded-xl p-2.5 flex items-center justify-between min-h-[38px]"
         style={{ background: '#F3F4F6', border: '1px solid #E5E7EB' }}
       >
         <div className="flex items-center gap-2">
@@ -143,12 +143,12 @@ export function SOPChecklist({ taskId, sopId, projectId, onOpenSOP, onOpenKnowle
 
   return (
     <div
-      className="mt-3 rounded-xl overflow-hidden"
+      className="mt-2 rounded-xl overflow-hidden"
       style={{ border: '1px solid #E5E7EB', borderLeft: '3px solid #0F766E' }}
     >
       {/* Header */}
       <div
-        className="w-full p-3 flex items-center justify-between min-h-[44px]"
+        className="w-full p-2.5 flex items-center justify-between min-h-[38px]"
         style={{ background: '#F9FAFB' }}
       >
         <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -190,7 +190,7 @@ export function SOPChecklist({ taskId, sopId, projectId, onOpenSOP, onOpenKnowle
       </div>
 
       {/* Progress bar */}
-      <div className="px-3">
+      <div className="px-2.5">
         <div className="w-full h-1 rounded-full" style={{ background: '#E5E7EB' }}>
           <div
             className="h-1 rounded-full transition-all"
@@ -204,11 +204,11 @@ export function SOPChecklist({ taskId, sopId, projectId, onOpenSOP, onOpenKnowle
 
       {/* STOP conditions */}
       {sop.stopConditions.length > 0 && (
-        <div className="px-3 pt-3 space-y-2">
+        <div className="px-2.5 pt-2.5 space-y-1.5">
           {sop.stopConditions.map((condition, i) => (
             <div
               key={i}
-              className="rounded-lg p-2.5 flex items-start gap-2"
+              className="rounded-lg p-2 flex items-start gap-2"
               style={{ background: '#FEF2F2', borderLeft: '3px solid #EF4444' }}
             >
               <AlertTriangle size={14} style={{ color: '#EF4444', flexShrink: 0, marginTop: 1 }} />
@@ -219,7 +219,7 @@ export function SOPChecklist({ taskId, sopId, projectId, onOpenSOP, onOpenKnowle
       )}
 
       {/* Steps */}
-      <div className="px-3 py-2">
+      <div className="px-2.5 py-1.5">
         {sop.steps.map((step) => {
           const isChecked = isStepCompleted(completedSteps, step.order);
           return (
@@ -237,7 +237,7 @@ export function SOPChecklist({ taskId, sopId, projectId, onOpenSOP, onOpenKnowle
 
       {/* Inline observation confirm card (Build 2: on_check triggers) */}
       {triggerResult?.action === 'immediate_confirm' && activeDraft && projectId && crewMemberId && (
-        <div className="px-3 py-2">
+        <div className="px-2.5 py-1.5">
           <ObservationConfirmCard
             draft={activeDraft}
             isPending={confirmObservation.isPending}
@@ -259,7 +259,7 @@ export function SOPChecklist({ taskId, sopId, projectId, onOpenSOP, onOpenKnowle
 
       {/* Critical standards / Lab badges */}
       {sop.criticalStandards.length > 0 && (
-        <div className="px-3 pb-3 space-y-1.5">
+        <div className="px-2.5 pb-2.5 space-y-1">
           <div className="text-[10px] font-medium uppercase tracking-wide" style={{ color: '#9CA3AF' }}>
             Lab Evidence
           </div>
@@ -297,7 +297,7 @@ function StepRow({
   return (
     <button
       onClick={onToggle}
-      className="w-full flex items-start gap-3 py-2.5 min-h-[44px] text-left"
+      className="w-full flex items-start gap-2.5 py-2 min-h-[36px] text-left"
       style={{ borderBottom: '1px solid #F3F4F6' }}
     >
       {/* Checkbox */}

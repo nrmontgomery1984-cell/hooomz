@@ -271,6 +271,8 @@ export function isStageInDivision(stage: ProjectStage, division: Division): bool
 
 export enum ProjectStatus {
   LEAD = 'lead',
+  DISCOVERY = 'discovery',
+  SITE_VISIT = 'site-visit',
   QUOTED = 'quoted',
   APPROVED = 'approved',
   IN_PROGRESS = 'in-progress',

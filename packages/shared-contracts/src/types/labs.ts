@@ -595,3 +595,167 @@ export interface ToolInventoryItem {
   maintenanceLog?: MaintenanceEntry[];
   metadata: Metadata;
 }
+
+// ============================================================================
+// Labs Token System — Dynamic material references in SOPs
+// ============================================================================
+
+export type LabsTokenStatus = 'validated' | 'planned' | 'standard';
+
+export interface LabsTokenPreviousRecommendation {
+  product: string;
+  replacedDate: string;
+  replacedByTestId: string;
+  reason: string;
+}
+
+export interface LabsToken {
+  id: string;                    // Token slug, e.g., "floor-protection"
+  category: string;              // e.g., "protection", "adhesive", "primer"
+  context: string;               // e.g., "trim-to-wall", "shower-floor"
+  displayName: string;           // Human-readable: "Floor Protection Product"
+  currentRecommendation: string; // e.g., "Ram Board"
+  recommendationDetail: string | null;
+  status: LabsTokenStatus;
+  labsTestId: string | null;
+  labsTestUrl: string | null;
+  previousRecommendations: LabsTokenPreviousRecommendation[];
+  sopReferences: string[];       // SOP IDs that use this token
+  division: string[];            // Which divisions: ["interiors", "exteriors"]
+  createdAt: string;
+  updatedAt: string;
+  syncStatus: 'synced' | 'pending' | 'conflict';
+}
+
+// ============================================================================
+// Labs Test Management — PDCA methodology
+// ============================================================================
+
+export type LabsTestStatus = 'proposed' | 'voting' | 'planned' | 'in-progress' | 'complete' | 'published';
+
+export type LabsTestCategory = 'product' | 'technique' | 'tool' | 'system' | 'durability';
+
+export interface LabsTestPlan {
+  question: string;
+  variables: string[];
+  protocol: string;
+  successCriteria: string;
+}
+
+export interface LabsTestDoData {
+  startDate: string;
+  endDate: string | null;
+  notes: string;
+  photos: string[];
+}
+
+export interface LabsTestCheckResults {
+  summary: string;
+  winner: string | null;
+  data: string;
+}
+
+export interface LabsTestSopUpdate {
+  sopId: string;
+  tokenId: string;
+  oldValue: string;
+  newValue: string;
+}
+
+export interface LabsTestContentPublished {
+  type: 'video' | 'blog' | 'short' | 'social';
+  url: string;
+  publishDate: string;
+}
+
+export interface LabsTestActChanges {
+  sopUpdates: LabsTestSopUpdate[];
+  contentPublished: LabsTestContentPublished[];
+}
+
+export interface LabsTest {
+  id: string;
+  title: string;
+  description: string;
+  category: LabsTestCategory;
+  status: LabsTestStatus;
+
+  // PDCA phases
+  plan: LabsTestPlan | null;
+  doData: LabsTestDoData | null;
+  checkResults: LabsTestCheckResults | null;
+  actChanges: LabsTestActChanges | null;
+
+  // Voting data
+  voteCount: number;
+  votedBy: string[];
+
+  // Connections
+  tokenIds: string[];
+  sopIds: string[];
+  divisionsImpacted: string[];
+  priority: number;
+
+  createdAt: string;
+  updatedAt: string;
+  syncStatus: 'synced' | 'pending' | 'conflict';
+}
+
+// ============================================================================
+// Partner Research Voting
+// ============================================================================
+
+export type BallotStatus = 'draft' | 'active' | 'closed';
+
+export interface BallotOption {
+  testId: string;
+  title: string;
+  description: string;
+  voteCount: number;
+}
+
+export interface LabsVoteBallot {
+  id: string;                // e.g., "2026-W08"
+  weekStart: string;
+  weekEnd: string;
+  status: BallotStatus;
+  options: BallotOption[];
+  totalVotes: number;
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+  syncStatus: 'synced' | 'pending' | 'conflict';
+}
+
+export type PartnerTier = 'tier1' | 'tier2' | 'tier3' | 'fieldlab';
+
+export interface LabsVote {
+  id: string;
+  ballotId: string;
+  testId: string;
+  partnerId: string;
+  partnerTier: PartnerTier;
+  votedAt: string;
+  createdAt: string;
+  updatedAt: string;
+  syncStatus: 'synced' | 'pending' | 'conflict';
+}
+
+// ============================================================================
+// Labs Material Change Log — Audit trail for recommendation changes
+// ============================================================================
+
+export interface LabsMaterialChange {
+  id: string;
+  tokenId: string;
+  testId: string;
+  oldRecommendation: string;
+  newRecommendation: string;
+  reason: string;
+  changedAt: string;
+  sopIds: string[];
+  voteCount: number;
+  createdAt: string;
+  updatedAt: string;
+  syncStatus: 'synced' | 'pending' | 'conflict';
+}

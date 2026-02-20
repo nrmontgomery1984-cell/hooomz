@@ -6,3 +6,4 @@
 export * from './project.repository';
 export * from './customer.repository';
 export * from './activity.repository';
+export * from './workflow.repository';

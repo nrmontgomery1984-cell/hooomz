@@ -174,6 +174,9 @@ export type ChecklistCategory = 'safety' | 'quality' | 'procedure' | 'inspection
 
 export type TriggerTiming = 'batch' | 'on_check';
 
+// SCRIPT Framework — 6 phases for SOP organization
+export type ScriptPhase = 'shield' | 'clear' | 'ready' | 'install' | 'punch' | 'turnover';
+
 export interface TimingFollowup {
   enabled: boolean;
   delayMinutes: number;
@@ -245,6 +248,9 @@ export interface SopChecklistItemTemplate {
   defaultProductId: string | null;
   defaultTechniqueId: string | null;
   defaultToolId: string | null;
+
+  // SCRIPT Framework phase assignment (null = not yet categorized)
+  scriptPhase: ScriptPhase | null;
 
   metadata: Metadata;
 }
@@ -455,4 +461,52 @@ export interface TaskBudget {
   efficiency: number | null;
   status: 'active' | 'complete' | 'over_budget';
   metadata: Metadata;
+}
+
+// ============================================================================
+// Calendar / Scheduling
+// ============================================================================
+
+export type CrewScheduleStatus = 'scheduled' | 'in_progress' | 'completed' | 'skipped';
+
+export interface CrewScheduleBlock {
+  id: string;
+  taskId: string;
+  projectId: string;
+  crewMemberId: string;
+  date: string;
+  startTime: string | null;
+  endTime: string | null;
+  estimatedHours: number;
+  actualHours: number;
+  status: CrewScheduleStatus;
+  trade: string;
+  workflowPhase: string;
+  title: string;
+  sopCode: string | null;
+  syncStatus: 'pending' | 'synced';
+  createdAt: string;
+  updatedAt: string;
+}
+
+// ============================================================================
+// Schedule Notes (Scoped Manager Notes)
+// ============================================================================
+
+export type NoteAudience = 'crew_all' | 'site_all' | 'task_crew' | 'person';
+
+export interface ScheduleNote {
+  id: string;
+  blockId: string;
+  projectId: string;
+  date: string;
+  authorId: string;
+  authorName: string;
+  audience: NoteAudience;
+  targetCrewMemberId: string | null;
+  targetCrewMemberName: string | null;
+  body: string;
+  syncStatus: 'pending' | 'synced';
+  createdAt: string;
+  updatedAt: string;
 }

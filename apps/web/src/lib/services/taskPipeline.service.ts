@@ -27,6 +27,8 @@ import type { TaskRepository } from '../repositories/task.repository';
 import type { ActivityService } from '../repositories/activity.repository';
 import type { SopRepository } from '../repositories/labs/sop.repository';
 import type { BudgetService } from './budget.service';
+import type { WorkflowService } from './labs/workflow.service';
+import type { Workflow } from '@hooomz/shared-contracts';
 
 export interface TaskPipelineServiceDeps {
   blueprintRepo: SopTaskBlueprintRepository;
@@ -35,6 +37,7 @@ export interface TaskPipelineServiceDeps {
   sopRepo: SopRepository;
   activity: ActivityService;
   budget?: BudgetService;
+  workflowService?: WorkflowService;
 }
 
 export class TaskPipelineService {
@@ -44,6 +47,7 @@ export class TaskPipelineService {
   private sopRepo: SopRepository;
   private activity: ActivityService;
   private budget?: BudgetService;
+  private workflowService?: WorkflowService;
 
   constructor(deps: TaskPipelineServiceDeps) {
     this.blueprintRepo = deps.blueprintRepo;
@@ -52,6 +56,7 @@ export class TaskPipelineService {
     this.sopRepo = deps.sopRepo;
     this.activity = deps.activity;
     this.budget = deps.budget;
+    this.workflowService = deps.workflowService;
   }
 
   // ============================================================================
@@ -66,16 +71,34 @@ export class TaskPipelineService {
   async generateFromEstimate(
     projectId: string,
     lineItems: LineItem[]
-  ): Promise<{ blueprints: SopTaskBlueprint[]; deployed: DeployedTask[] }> {
+  ): Promise<{
+    blueprints: SopTaskBlueprint[];
+    deployed: DeployedTask[];
+    missingSopCodes: string[];
+    loopedPending: number;
+  }> {
     const blueprints: SopTaskBlueprint[] = [];
     const deployed: DeployedTask[] = [];
+    const missingSopCodes: string[] = [];
+    let loopedPending = 0;
+
+    // Pre-fetch default workflow for sort order assignment (avoid N+1)
+    const workflow = this.workflowService
+      ? await this.workflowService.getDefault()
+      : null;
 
     for (const li of lineItems) {
       if (!li.sopCodes || li.sopCodes.length === 0) continue;
 
       for (const sopCode of li.sopCodes) {
         const sop = await this.sopRepo.getCurrentBySopCode(sopCode);
-        if (!sop) continue;
+        if (!sop) {
+          if (!missingSopCodes.includes(sopCode)) {
+            missingSopCodes.push(sopCode);
+          }
+          console.warn(`[Pipeline] SOP not found in database: ${sopCode} (line item: ${li.description})`);
+          continue;
+        }
 
         const blueprint = await this.blueprintRepo.create({
           projectId,
@@ -93,11 +116,15 @@ export class TaskPipelineService {
         });
         blueprints.push(blueprint);
 
-        // Auto-deploy non-looped blueprints
-        if (!blueprint.isLooped) {
-          const result = await this.deployBlueprint(blueprint.id);
-          if (result) deployed.push(result.deployedTask);
-        }
+        // Auto-deploy all blueprints (looped ones use their room context label)
+        const result = await this.deployBlueprint(
+          blueprint.id,
+          blueprint.isLooped ? blueprint.loopContextLabel : undefined,
+          undefined,
+          workflow,
+          li
+        );
+        if (result) deployed.push(result.deployedTask);
       }
     }
 
@@ -106,9 +133,11 @@ export class TaskPipelineService {
       project_id: projectId,
       blueprints_created: blueprints.length,
       auto_deployed: deployed.length,
+      missing_sop_codes: missingSopCodes,
+      looped_pending: loopedPending,
     }).catch((err) => console.error('Failed to log pipeline.estimate_generated:', err));
 
-    return { blueprints, deployed };
+    return { blueprints, deployed, missingSopCodes, loopedPending };
   }
 
   /**
@@ -172,11 +201,28 @@ export class TaskPipelineService {
   async deployBlueprint(
     blueprintId: string,
     loopBindingLabel?: string,
-    loopIterationId?: string
+    loopIterationId?: string,
+    workflow?: Workflow | null,
+    sourceLineItem?: LineItem
   ): Promise<{ task: Task; deployedTask: DeployedTask } | null> {
     const blueprint = await this.blueprintRepo.findById(blueprintId);
     if (!blueprint) return null;
     if (blueprint.status === 'deployed') return null;
+
+    // Resolve sort order from workflow if available
+    let sortOrder: number | undefined;
+    let workflowId: string | undefined;
+    if (workflow && this.workflowService) {
+      sortOrder = this.workflowService.resolveSortOrder(
+        {
+          sopCode: blueprint.sopCode,
+          stageCode: sourceLineItem?.stageCode,
+          workCategoryCode: sourceLineItem?.workCategoryCode,
+        },
+        workflow
+      );
+      workflowId = workflow.id;
+    }
 
     // Create the task
     const taskData: CreateTask = {
@@ -195,6 +241,8 @@ export class TaskPipelineService {
       estimateLineItemId: blueprint.workSource === 'estimate' ? blueprint.workSourceId : undefined,
       blueprintId: blueprint.id,
       loopIterationId,
+      sortOrder,
+      workflowId,
     };
 
     const task = await this.taskRepo.create(taskData);

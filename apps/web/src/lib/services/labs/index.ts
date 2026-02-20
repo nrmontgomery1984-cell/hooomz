@@ -28,6 +28,11 @@ import {
   ToolPlatformRepository,
   ToolResearchItemRepository,
   ToolInventoryRepository,
+  LabsTokenRepository,
+  LabsTestRepository,
+  LabsVoteBallotRepository,
+  LabsVoteRepository,
+  LabsMaterialChangeRepository,
 } from '../../repositories/labs';
 
 // Services
@@ -43,6 +48,12 @@ import { ObservationLinkingService } from './observationLinking.service';
 import { SopService } from './sop.service';
 import { ObservationTriggerService } from './observationTrigger.service';
 import { ToolResearchService } from './toolResearch.service';
+import { WorkflowService } from './workflow.service';
+import { WorkflowRepository } from '../../repositories/workflow.repository';
+import { LabsTokenService } from './labsToken.service';
+import { LabsTestService } from './labsTest.service';
+import { LabsVotingService } from './labsVoting.service';
+import { LabsMaterialChangeService } from './labsMaterialChange.service';
 
 export interface LabsServices {
   // Phase 1: Passive Data Capture
@@ -73,6 +84,15 @@ export interface LabsServices {
 
   // Tool Research
   toolResearch: ToolResearchService;
+
+  // Workflows (Labs — construction sequencing)
+  workflows: WorkflowService;
+
+  // Labs Integration: Tokens, Tests, Voting, Material Changes
+  tokens: LabsTokenService;
+  tests: LabsTestService;
+  voting: LabsVotingService;
+  materialChanges: LabsMaterialChangeService;
 }
 
 export function createLabsServices(
@@ -148,6 +168,19 @@ export function createLabsServices(
       new ToolInventoryRepository(storage),
       activity,
     ),
+
+    // Workflows (Labs — construction sequencing)
+    workflows: new WorkflowService(new WorkflowRepository(storage), activity),
+
+    // Labs Integration: Tokens, Tests, Voting, Material Changes
+    tokens: new LabsTokenService(new LabsTokenRepository(storage), activity),
+    tests: new LabsTestService(new LabsTestRepository(storage), activity),
+    voting: new LabsVotingService(
+      new LabsVoteBallotRepository(storage),
+      new LabsVoteRepository(storage),
+      activity
+    ),
+    materialChanges: new LabsMaterialChangeService(new LabsMaterialChangeRepository(storage), activity),
   };
 }
 
@@ -164,3 +197,8 @@ export { ObservationLinkingService } from './observationLinking.service';
 export { SopService } from './sop.service';
 export { ObservationTriggerService } from './observationTrigger.service';
 export { ToolResearchService } from './toolResearch.service';
+export { WorkflowService } from './workflow.service';
+export { LabsTokenService } from './labsToken.service';
+export { LabsTestService } from './labsTest.service';
+export { LabsVotingService } from './labsVoting.service';
+export { LabsMaterialChangeService } from './labsMaterialChange.service';

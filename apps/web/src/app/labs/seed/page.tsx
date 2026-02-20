@@ -14,7 +14,7 @@ import { Database, Trash2, Loader2, CheckCircle2, AlertCircle, Users } from 'luc
 import { useServicesContext } from '@/lib/services/ServicesContext';
 import { useActiveCrew } from '@/lib/crew/ActiveCrewContext';
 import { seedAllLabsData, type SeedResult } from '@/lib/data/seedAll';
-import { seedCustomers, seedProjects, seedLineItems, seedTasks, seedActivityEvents, hasExistingData } from '@/lib/seed/seedData';
+import { seedCustomers, seedProjects, seedLineItems, seedTasks, seedActivityEvents, seedLeads, hasExistingData } from '@/lib/seed/seedData';
 
 type SeedState = 'idle' | 'seeding' | 'done' | 'error' | 'clearing';
 
@@ -40,7 +40,29 @@ export default function SeedPage() {
 
     try {
       const seedResult = await seedAllLabsData(services, addLog);
-      setResult(seedResult);
+
+      // Also seed demo data (customers, projects, tasks) so schedule has data
+      addLog('Seeding demo scenario...');
+      const customerIds = await seedCustomers(services);
+      addLog(`  Created ${customerIds.length} customers`);
+      const projectIds = await seedProjects(services, customerIds);
+      addLog(`  Created ${projectIds.length} projects`);
+      const lineItemCount = await seedLineItems(services, projectIds);
+      addLog(`  Created ${lineItemCount} line items`);
+      const taskCount = await seedTasks(services, projectIds);
+      addLog(`  Created ${taskCount} tasks`);
+      await seedActivityEvents(services, projectIds);
+      addLog('  Activity events created');
+      const leadCount = await seedLeads(services);
+      addLog(`  Created ${leadCount} leads`);
+
+      setResult({
+        ...seedResult,
+        customers: customerIds.length,
+        projects: projectIds.length,
+        tasks: taskCount,
+        leads: leadCount,
+      });
       queryClient.removeQueries();
       setState('done');
     } catch (err) {
@@ -61,80 +83,96 @@ export default function SeedPage() {
     try {
       addLog('Clearing existing data...');
 
-      // Clear line items (estimates)
-      const { lineItems } = await services.estimating.lineItems.findAll();
-      for (const li of lineItems) {
-        await services.estimating.lineItems.delete(li.id);
-      }
-      if (lineItems.length > 0) addLog(`  Deleted ${lineItems.length} line items`);
-
-      // Clear demo data (customers + projects + tasks)
-      const { projects } = await services.projects.findAll();
-      let deletedTasks = 0;
-      for (const p of projects) {
-        const tasks = await services.scheduling.tasks.findByProjectId(p.id);
-        for (const t of tasks) {
-          await services.scheduling.tasks.delete(t.id);
-          deletedTasks++;
+      // Try granular clear first; if IndexedDB stores are missing, nuke the DB
+      try {
+        // Clear line items (estimates)
+        const { lineItems } = await services.estimating.lineItems.findAll();
+        for (const li of lineItems) {
+          await services.estimating.lineItems.delete(li.id);
         }
-        await services.projects.delete(p.id);
-      }
-      if (projects.length > 0) addLog(`  Deleted ${projects.length} projects and ${deletedTasks} tasks`);
+        if (lineItems.length > 0) addLog(`  Deleted ${lineItems.length} line items`);
 
-      // Clear customers
-      const { customers } = await services.customers.findAll();
-      for (const c of customers) {
-        await services.customers.delete(c.id);
-      }
-      if (customers.length > 0) addLog(`  Deleted ${customers.length} customers`);
+        // Clear demo data (customers + projects + tasks)
+        const { projects } = await services.projects.findAll();
+        let deletedTasks = 0;
+        for (const p of projects) {
+          const tasks = await services.scheduling.tasks.findByProjectId(p.id);
+          for (const t of tasks) {
+            await services.scheduling.tasks.delete(t.id);
+            deletedTasks++;
+          }
+          await services.projects.delete(p.id);
+        }
+        if (projects.length > 0) addLog(`  Deleted ${projects.length} projects and ${deletedTasks} tasks`);
 
-      // Clear active crew session so CrewGate re-appears
-      await endSession();
-      addLog('  Cleared crew session');
+        // Clear customers
+        const { customers } = await services.customers.findAll();
+        for (const c of customers) {
+          await services.customers.delete(c.id);
+        }
+        if (customers.length > 0) addLog(`  Deleted ${customers.length} customers`);
 
-      // Clear SOPs
-      const existingSops = await services.labs.sops.findAll();
-      for (const sop of existingSops) {
-        await services.labs.sops.archiveSop(sop.id);
-      }
-      addLog(`  Archived ${existingSops.length} SOPs`);
+        // Clear active crew session so CrewGate re-appears
+        await endSession();
+        addLog('  Cleared crew session');
 
-      // Clear knowledge items
-      const existingKnowledge = await services.labs.knowledge.findAll();
-      for (const item of existingKnowledge) {
-        await services.labs.knowledge.delete(item.id);
-      }
-      addLog(`  Deleted ${existingKnowledge.length} knowledge items`);
+        // Clear SOPs
+        const existingSops = await services.labs.sops.findAll();
+        for (const sop of existingSops) {
+          await services.labs.sops.archiveSop(sop.id);
+        }
+        addLog(`  Archived ${existingSops.length} SOPs`);
 
-      // Clear catalog
-      const existingProducts = await services.labs.catalog.findAllProducts();
-      for (const p of existingProducts) {
-        await services.labs.catalog.deleteProduct(p.id);
-      }
-      const existingTechniques = await services.labs.catalog.findAllTechniques();
-      for (const t of existingTechniques) {
-        await services.labs.catalog.deleteTechnique(t.id);
-      }
-      const existingTools = await services.labs.catalog.findAllToolMethods();
-      for (const tm of existingTools) {
-        await services.labs.catalog.deleteToolMethod(tm.id);
-      }
-      addLog(`  Deleted ${existingProducts.length} products, ${existingTechniques.length} techniques, ${existingTools.length} tools`);
+        // Clear knowledge items
+        const existingKnowledge = await services.labs.knowledge.findAll();
+        for (const item of existingKnowledge) {
+          await services.labs.knowledge.delete(item.id);
+        }
+        addLog(`  Deleted ${existingKnowledge.length} knowledge items`);
 
-      // Clear crew members
-      const existingCrew = await services.crew.findAll();
-      for (const c of existingCrew) {
-        await services.crew.delete(c.id);
+        // Clear catalog
+        const existingProducts = await services.labs.catalog.findAllProducts();
+        for (const p of existingProducts) {
+          await services.labs.catalog.deleteProduct(p.id);
+        }
+        const existingTechniques = await services.labs.catalog.findAllTechniques();
+        for (const t of existingTechniques) {
+          await services.labs.catalog.deleteTechnique(t.id);
+        }
+        const existingTools = await services.labs.catalog.findAllToolMethods();
+        for (const tm of existingTools) {
+          await services.labs.catalog.deleteToolMethod(tm.id);
+        }
+        addLog(`  Deleted ${existingProducts.length} products, ${existingTechniques.length} techniques, ${existingTools.length} tools`);
+
+        // Clear crew members
+        const existingCrew = await services.crew.findAll();
+        for (const c of existingCrew) {
+          await services.crew.delete(c.id);
+        }
+        addLog(`  Deleted ${existingCrew.length} crew members`);
+
+        // Clear loop structure (Build 3d)
+        await services.loopManagement.clearAll();
+        addLog('  Cleared loop contexts and iterations');
+
+        // Clear tool research data
+        await services.labs.toolResearch.clearAll();
+        addLog('  Cleared tool research data');
+
+      } catch (clearErr) {
+        // IndexedDB stores missing — delete entire database and reinitialize
+        addLog('  Store mismatch detected — deleting database and recreating...');
+        await new Promise<void>((resolve, reject) => {
+          const req = window.indexedDB.deleteDatabase('hooomz_db');
+          req.onsuccess = () => resolve();
+          req.onerror = () => reject(new Error('Failed to delete database'));
+        });
+        // Reload the page to reinitialize the DB with all stores
+        addLog('  Database deleted. Reloading...');
+        window.location.reload();
+        return;
       }
-      addLog(`  Deleted ${existingCrew.length} crew members`);
-
-      // Clear loop structure (Build 3d)
-      await services.loopManagement.clearAll();
-      addLog('  Cleared loop contexts and iterations');
-
-      // Clear tool research data
-      await services.labs.toolResearch.clearAll();
-      addLog('  Cleared tool research data');
 
       addLog('Clear complete. Re-seeding Labs + Demo...');
 
@@ -154,11 +192,16 @@ export default function SeedPage() {
       await seedActivityEvents(services, projectIds);
       addLog('  Activity events created');
 
+      addLog('Seeding leads...');
+      const leadCount = await seedLeads(services);
+      addLog(`  Created ${leadCount} leads`);
+
       setResult({
         ...seedResult,
         customers: customerIds.length,
         projects: projectIds.length,
         tasks: taskCount,
+        leads: leadCount,
       });
       queryClient.removeQueries();
       setState('done');
@@ -208,6 +251,10 @@ export default function SeedPage() {
       await seedActivityEvents(services, projectIds);
       addLog('  Activity events created');
 
+      addLog('Creating leads...');
+      const leadCount = await seedLeads(services);
+      addLog(`  Created ${leadCount} leads`);
+
       setResult({
         sops: 0,
         checklistItems: 0,
@@ -220,6 +267,7 @@ export default function SeedPage() {
         customers: customerIds.length,
         projects: projectIds.length,
         tasks: taskCount,
+        leads: leadCount,
       });
 
       addLog('Demo scenario complete!');
@@ -235,7 +283,7 @@ export default function SeedPage() {
 
   const isWorking = state === 'seeding' || state === 'clearing';
   const total = result
-    ? result.sops + result.checklistItems + result.knowledgeItems + result.products + result.techniques + result.toolMethods + result.crewMembers + result.catalogItems + (result.customers || 0) + (result.projects || 0) + (result.tasks || 0)
+    ? result.sops + result.checklistItems + result.knowledgeItems + result.products + result.techniques + result.toolMethods + result.crewMembers + result.catalogItems + (result.customers || 0) + (result.projects || 0) + (result.tasks || 0) + (result.leads || 0)
     : 0;
 
   return (
@@ -369,6 +417,7 @@ export default function SeedPage() {
                 ...(result.customers ? [{ label: 'Customers', count: result.customers }] : []),
                 ...(result.projects ? [{ label: 'Projects', count: result.projects }] : []),
                 ...(result.tasks ? [{ label: 'Tasks', count: result.tasks }] : []),
+                ...(result.leads ? [{ label: 'Leads', count: result.leads }] : []),
               ].map((item) => (
                 <div key={item.label} className="flex justify-between text-xs px-2 py-1 rounded" style={{ background: '#F0FDF4' }}>
                   <span style={{ color: '#374151' }}>{item.label}</span>
@@ -413,6 +462,7 @@ export default function SeedPage() {
           <div className="space-y-2">
             {[
               { href: '/', label: 'Dashboard', desc: 'Should show active projects' },
+              { href: '/schedule', label: 'Schedule', desc: 'Calendar with 18 seeded tasks' },
               { href: '/leads', label: 'Lead Pipeline', desc: 'Pipeline overview' },
               { href: '/labs/sops', label: 'SOPs', desc: 'Should show 21 SOPs' },
               { href: '/labs/knowledge', label: 'Knowledge Base', desc: 'Should show lab test findings' },

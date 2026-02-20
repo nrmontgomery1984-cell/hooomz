@@ -26,7 +26,7 @@ import {
   XOctagon, Truck, UserPlus, Home,
   AlertTriangle, MessageSquare, CloudRain, Play,
   Calendar, CheckCircle2, XCircle, Receipt,
-  Unlock, UserMinus, Shield,
+  Unlock, UserMinus, Shield, FlaskConical,
   ArrowLeft, ChevronDown, X,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -35,6 +35,11 @@ import { ProjectSelector } from './ProjectSelector';
 import { useActivityService } from '@/lib/services/ServicesContext';
 import { useToast } from '@/components/ui/Toast';
 import { useLocalTasks, useCompleteTask } from '@/lib/hooks/useLocalData';
+import { useCreateObservation } from '@/lib/hooks/useLabsData';
+import { useActiveCrew } from '@/lib/crew/ActiveCrewContext';
+import { StarRating } from '@/components/labs/StarRating';
+import type { KnowledgeType } from '@hooomz/shared-contracts';
+import { useViewMode, isQuickAddAllowed } from '@/lib/viewmode';
 
 // ============================================================================
 // Types
@@ -76,10 +81,11 @@ const FREQUENT_ACTIONS: QuickAddAction[] = [
   { id: 'blocked', eventType: 'task.blocked', label: 'Blocked', icon: XOctagon, entityType: 'task', homeownerVisible: false },
   { id: 'delivery', eventType: 'delivery.received', label: 'Delivery', icon: Truck, entityType: 'delivery', homeownerVisible: true },
   { id: 'sub_in', eventType: 'sub.arrived', label: 'Sub In', icon: UserPlus, entityType: 'site_visit', homeownerVisible: false },
-  { id: 'visit', eventType: 'site.visit', label: 'Visit', icon: Home, entityType: 'site_visit', homeownerVisible: true },
+  { id: 'labs', eventType: 'labs.observation', label: 'Labs', icon: FlaskConical, entityType: 'field_observation', homeownerVisible: false },
 ];
 
 const MORE_ACTIONS: QuickAddAction[] = [
+  { id: 'visit', eventType: 'site.visit', label: 'Visit', icon: Home, entityType: 'site_visit', homeownerVisible: true },
   { id: 'issue', eventType: 'issue.reported', label: 'Issue', icon: AlertTriangle, entityType: 'field_note', homeownerVisible: true },
   { id: 'request', eventType: 'client.request', label: 'Request', icon: MessageSquare, entityType: 'client_request', homeownerVisible: true },
   { id: 'weather', eventType: 'weather.delay', label: 'Weather', icon: CloudRain, entityType: 'delay', homeownerVisible: true },
@@ -389,6 +395,7 @@ export function QuickAddSheet() {
   const { isOpen, close } = useQuickAdd();
   const activityService = useActivityService();
   const { showToast } = useToast();
+  const { viewMode } = useViewMode();
 
   const [sheetState, setSheetState] = useState<SheetState>('grid');
   const [selectedAction, setSelectedAction] = useState<QuickAddAction | null>(null);
@@ -538,44 +545,58 @@ export function QuickAddSheet() {
 
             {/* Frequent Actions — 4 columns */}
             <div className="grid grid-cols-4 gap-3 mb-4">
-              {FREQUENT_ACTIONS.map((action) => (
+              {FREQUENT_ACTIONS.filter(a => isQuickAddAllowed(a.id, viewMode)).map((action) => (
                 <ActionButton key={action.id} action={action} onClick={() => handleSelectAction(action)} />
               ))}
             </div>
 
             {/* More Toggle */}
-            <button
-              onClick={() => setShowMore(!showMore)}
-              className="w-full py-3 mb-4 flex items-center justify-center gap-2 text-sm font-medium rounded-xl border transition-colors"
-              style={{
-                color: 'var(--theme-secondary)',
-                borderColor: 'var(--theme-border)',
-              }}
-            >
-              <span>{showMore ? 'Less' : 'More Actions'}</span>
-              <ChevronDown
-                size={16}
-                strokeWidth={1.5}
-                className={`transition-transform ${showMore ? 'rotate-180' : ''}`}
-                style={{ color: 'var(--theme-secondary)' }}
-              />
-            </button>
+            {MORE_ACTIONS.some(a => isQuickAddAllowed(a.id, viewMode)) && (
+              <>
+                <button
+                  onClick={() => setShowMore(!showMore)}
+                  className="w-full py-3 mb-4 flex items-center justify-center gap-2 text-sm font-medium rounded-xl border transition-colors"
+                  style={{
+                    color: 'var(--theme-secondary)',
+                    borderColor: 'var(--theme-border)',
+                  }}
+                >
+                  <span>{showMore ? 'Less' : 'More Actions'}</span>
+                  <ChevronDown
+                    size={16}
+                    strokeWidth={1.5}
+                    className={`transition-transform ${showMore ? 'rotate-180' : ''}`}
+                    style={{ color: 'var(--theme-secondary)' }}
+                  />
+                </button>
 
-            {/* More Actions */}
-            {showMore && (
-              <div className="grid grid-cols-4 gap-3">
-                {MORE_ACTIONS.map((action) => (
-                  <ActionButton key={action.id} action={action} onClick={() => handleSelectAction(action)} />
-                ))}
-              </div>
+                {/* More Actions */}
+                {showMore && (
+                  <div className="grid grid-cols-4 gap-3">
+                    {MORE_ACTIONS.filter(a => isQuickAddAllowed(a.id, viewMode)).map((action) => (
+                      <ActionButton key={action.id} action={action} onClick={() => handleSelectAction(action)} />
+                    ))}
+                  </div>
+                )}
+              </>
             )}
           </div>
         )}
 
         {/* ================================================================ */}
+        {/* LABS CAPTURE STATE */}
+        {/* ================================================================ */}
+        {sheetState === 'form' && selectedAction?.id === 'labs' && (
+          <LabsCaptureForm
+            onBack={handleBack}
+            onClose={close}
+          />
+        )}
+
+        {/* ================================================================ */}
         {/* FORM STATE */}
         {/* ================================================================ */}
-        {sheetState === 'form' && selectedAction && config && (
+        {sheetState === 'form' && selectedAction && selectedAction.id !== 'labs' && config && (
           <div className="px-4 pb-8">
             {/* Form Header */}
             <div className="flex items-center gap-3 mb-4">
@@ -704,6 +725,181 @@ function ActionButton({ action, onClick }: { action: QuickAddAction; onClick: ()
         {action.label}
       </span>
     </button>
+  );
+}
+
+// ============================================================================
+// Labs Capture Form — standalone observation capture (no task context needed)
+// ============================================================================
+
+interface LabsCategoryOption {
+  id: string;
+  label: string;
+  knowledgeType: KnowledgeType;
+}
+
+const LABS_CATEGORIES: LabsCategoryOption[] = [
+  { id: 'product_feedback', label: 'Product feedback', knowledgeType: 'product' },
+  { id: 'technique_note', label: 'Technique note', knowledgeType: 'technique' },
+  { id: 'time_estimate', label: 'Time was off', knowledgeType: 'timing' },
+  { id: 'customer_comment', label: 'Customer comment', knowledgeType: 'procedure' },
+];
+
+type LabsStep = 'category' | 'form';
+
+function LabsCaptureForm({
+  onBack,
+  onClose,
+}: {
+  onBack: () => void;
+  onClose: () => void;
+}) {
+  const [step, setStep] = useState<LabsStep>('category');
+  const [selectedCategory, setSelectedCategory] = useState<LabsCategoryOption | null>(null);
+  const [notes, setNotes] = useState('');
+  const [rating, setRating] = useState(0);
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const createObservation = useCreateObservation();
+  const { crewMemberId, projectId: activeProjectId } = useActiveCrew();
+  const { showToast } = useToast();
+
+  // Pre-fill project from active crew session
+  const effectiveProjectId = selectedProjectId ?? activeProjectId;
+
+  const handleSelectCategory = (category: LabsCategoryOption) => {
+    setSelectedCategory(category);
+    setStep('form');
+  };
+
+  const handleBackToCategories = () => {
+    setStep('category');
+    setSelectedCategory(null);
+    setNotes('');
+    setRating(0);
+  };
+
+  const handleSave = async () => {
+    if (!selectedCategory || !notes.trim() || !effectiveProjectId || !crewMemberId) return;
+
+    setIsSubmitting(true);
+    try {
+      await createObservation.mutateAsync({
+        projectId: effectiveProjectId,
+        knowledgeType: selectedCategory.knowledgeType,
+        crewMemberId,
+        captureMethod: 'manual',
+        notes: notes.trim(),
+        quality: rating > 0 ? (rating as 1 | 2 | 3 | 4 | 5) : undefined,
+      });
+      showToast({ message: 'Observation saved', variant: 'success', duration: 2000 });
+      onClose();
+    } catch (err) {
+      console.error('Failed to save observation:', err);
+      showToast({ message: 'Failed to save. Try again.', variant: 'error', duration: 4000 });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="px-4 pb-8">
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-4">
+        <button
+          onClick={step === 'category' ? onBack : handleBackToCategories}
+          className="p-2 -ml-2 min-w-[44px] min-h-[44px] flex items-center justify-center"
+          aria-label="Back"
+        >
+          <ArrowLeft size={20} strokeWidth={1.5} style={{ color: 'var(--theme-muted)' }} />
+        </button>
+        <div className="flex items-center gap-2">
+          <FlaskConical size={20} strokeWidth={1.5} style={{ color: 'var(--theme-accent)' }} />
+          <h2 className="text-lg font-semibold" style={{ color: 'var(--theme-primary)' }}>
+            {step === 'category' ? 'Labs Observation' : selectedCategory?.label}
+          </h2>
+        </div>
+      </div>
+
+      {/* Category picker */}
+      {step === 'category' && (
+        <>
+          <p className="text-sm mb-4" style={{ color: 'var(--theme-secondary)' }}>
+            What did you notice?
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            {LABS_CATEGORIES.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => handleSelectCategory(cat)}
+                className="min-h-[52px] px-3 py-3 rounded-xl text-sm font-medium text-left transition-colors border"
+                style={{
+                  backgroundColor: 'var(--theme-background)',
+                  color: 'var(--theme-primary)',
+                  borderColor: 'var(--theme-border)',
+                }}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* Observation form */}
+      {step === 'form' && selectedCategory && (
+        <>
+          {/* Project selector */}
+          <ProjectSelector
+            value={effectiveProjectId}
+            onChange={setSelectedProjectId}
+          />
+
+          {/* Notes */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-1" style={{ color: 'var(--theme-secondary)' }}>
+              Notes <span style={{ color: 'var(--theme-status-red)' }} className="ml-1">*</span>
+            </label>
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="What did you notice?"
+              rows={3}
+              className="textarea"
+              autoFocus
+            />
+          </div>
+
+          {/* Star rating */}
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-sm font-medium" style={{ color: 'var(--theme-secondary)' }}>
+              Quality (optional)
+            </span>
+            <StarRating value={rating} onChange={setRating} size={20} />
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-3 mt-6">
+            <button
+              onClick={onClose}
+              disabled={isSubmitting}
+              className="btn flex-1 min-h-[48px]"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSave}
+              disabled={isSubmitting || !notes.trim() || !effectiveProjectId || !crewMemberId}
+              className="flex-1 min-h-[48px] rounded-xl font-medium text-white transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
+              style={{ backgroundColor: 'var(--theme-accent)', borderRadius: 'var(--theme-radius)' }}
+            >
+              {isSubmitting ? 'Saving...' : 'Save'}
+            </button>
+          </div>
+        </>
+      )}
+    </div>
   );
 }
 

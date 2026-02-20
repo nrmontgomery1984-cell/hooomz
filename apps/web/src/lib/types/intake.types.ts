@@ -278,6 +278,8 @@ export type ProjectType =
 
 export type SpecLevel = 'good' | 'better' | 'best';
 
+export type LeadSource = 'website' | 'referral' | 'social_media' | 'home_show' | 'repeat' | 'other';
+
 // =============================================================================
 // Homeowner Intake Data (4 steps)
 // =============================================================================
@@ -297,11 +299,13 @@ export interface HomeownerIntakeData {
     name: string;
     address: {
       street: string;
+      unit?: string;
       city: string;
       province: string;
       postal_code: string;
     };
     project_type: ProjectType;
+    selected_trades?: string[];  // ["FL", "PT", "FC"] — trade codes from TRADE_CODES
     selected_rooms: string[];  // ["kitchen", "master-bath", "living"]
     room_scopes?: RoomScope[]; // detailed per-room scope with measurements
   };
@@ -448,11 +452,11 @@ export const TRADE_CODES = {
  * From three-axis model: Demolition → Prime & Prep → Finish → Punch List → Closeout
  */
 export const STAGE_CODES = {
-  'ST-DM': { name: 'Demolition', order: 1 },
-  'ST-PR': { name: 'Prime & Prep', order: 2 },
-  'ST-FN': { name: 'Finish', order: 3 },
-  'ST-PL': { name: 'Punch List', order: 4 },
-  'ST-CL': { name: 'Closeout', order: 5 },
+  'ST-DM': { name: 'Demolition', order: 1, color: '#EF4444' },
+  'ST-PR': { name: 'Prime & Prep', order: 2, color: '#F59E0B' },
+  'ST-FN': { name: 'Finish', order: 3, color: '#3B82F6' },
+  'ST-PL': { name: 'Punch List', order: 4, color: '#8B5CF6' },
+  'ST-CL': { name: 'Closeout', order: 5, color: '#10B981' },
 } as const;
 
 export const ROOM_LOCATIONS = {

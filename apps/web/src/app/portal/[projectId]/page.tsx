@@ -8,7 +8,7 @@
  */
 
 import { useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { PageErrorBoundary } from '@/components/ui/PageErrorBoundary';
 import {
   Lock,
@@ -21,9 +21,11 @@ import {
   MessageCircle,
   X,
   Check,
+  ArrowLeft,
 } from 'lucide-react';
 import { groupEventsByDayArray } from '@hooomz/shared';
 import { usePortalData } from '@/lib/hooks/usePortalData';
+import { useViewMode } from '@/lib/viewmode';
 import type { PortalUpdate, TradeProgressItem, PortalTeamMember } from '@/lib/hooks/usePortalData';
 import type { Photo } from '@hooomz/shared-contracts';
 
@@ -33,10 +35,17 @@ import type { Photo } from '@hooomz/shared-contracts';
 
 export default function PortalPage() {
   const params = useParams();
+  const router = useRouter();
   const projectId = params.projectId as string;
   const portal = usePortalData(projectId);
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
   const [showMessageModal, setShowMessageModal] = useState(false);
+  const { viewMode, setViewMode } = useViewMode();
+
+  const exitHomeownerView = () => {
+    setViewMode('manager');
+    router.push('/');
+  };
 
   if (portal.isLoading) {
     return (
@@ -60,6 +69,16 @@ export default function PortalPage() {
           <p className="text-base" style={{ color: '#6B7280' }}>
             This link may have expired or the project may have been removed.
           </p>
+          {viewMode === 'homeowner' && (
+            <button
+              onClick={exitHomeownerView}
+              className="mt-4 inline-flex items-center gap-2 px-4 min-h-[44px] rounded-lg text-sm font-medium text-white"
+              style={{ background: '#0F766E' }}
+            >
+              <ArrowLeft size={16} />
+              Back to Manager View
+            </button>
+          )}
         </div>
       </div>
     );
@@ -224,6 +243,20 @@ export default function PortalPage() {
             </button>
           </PortalCard>
         </div>
+
+        {/* Exit Homeowner View (dev toggle) */}
+        {viewMode === 'homeowner' && (
+          <div className="mt-6">
+            <button
+              onClick={exitHomeownerView}
+              className="w-full flex items-center justify-center gap-2 min-h-[44px] rounded-xl text-sm font-medium transition-colors border"
+              style={{ color: '#6B7280', borderColor: '#E5E7EB', background: '#FFFFFF' }}
+            >
+              <ArrowLeft size={16} />
+              Exit Homeowner View
+            </button>
+          </div>
+        )}
 
         {/* Footer */}
         <div className="mt-8 text-center">

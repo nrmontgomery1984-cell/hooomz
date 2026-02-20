@@ -13,6 +13,8 @@ import { TRADE_CODES, STAGE_CODES } from '@/lib/types/intake.types';
 import type { EnrichedTask } from '@/lib/utils/taskParsing';
 import { getRoomIcon } from '@/lib/utils/taskParsing';
 
+export type ProjectGroupMode = 'location' | 'category' | 'stage';
+
 export interface ProjectFilterValues {
   tradeCode: string | null;
   stageCode: string | null;
@@ -23,9 +25,17 @@ interface ProjectFilterBarProps {
   tasks: EnrichedTask[];
   filters: ProjectFilterValues;
   onFiltersChange: (filters: ProjectFilterValues) => void;
+  groupMode: ProjectGroupMode;
+  onGroupModeChange: (mode: ProjectGroupMode) => void;
 }
 
-export function ProjectFilterBar({ tasks, filters, onFiltersChange }: ProjectFilterBarProps) {
+const GROUP_MODES: { key: ProjectGroupMode; label: string }[] = [
+  { key: 'location', label: 'Location' },
+  { key: 'category', label: 'Trade' },
+  { key: 'stage', label: 'Stage' },
+];
+
+export function ProjectFilterBar({ tasks, filters, onFiltersChange, groupMode, onGroupModeChange }: ProjectFilterBarProps) {
   // Derive unique trades present in project tasks
   const availableTrades = useMemo(() => {
     const codes = new Set<string>();
@@ -99,6 +109,28 @@ export function ProjectFilterBar({ tasks, filters, onFiltersChange }: ProjectFil
 
   return (
     <div className="space-y-2">
+      {/* Group mode segmented control */}
+      <div
+        className="inline-flex rounded-lg overflow-hidden"
+        style={{ border: '1px solid #E5E7EB' }}
+      >
+        {GROUP_MODES.map(({ key, label }) => (
+          <button
+            key={key}
+            onClick={() => onGroupModeChange(key)}
+            className="text-[11px] font-medium px-3 py-1.5 transition-colors"
+            style={{
+              minHeight: '30px',
+              background: groupMode === key ? '#0F766E' : '#FFFFFF',
+              color: groupMode === key ? '#FFFFFF' : '#374151',
+              borderRight: key !== 'stage' ? '1px solid #E5E7EB' : 'none',
+            }}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
       {/* Trade pills */}
       {availableTrades.length > 1 && (
         <div className="flex gap-1.5 flex-wrap">

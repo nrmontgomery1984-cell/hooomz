@@ -7,7 +7,7 @@ import type { StorageAdapter } from './StorageAdapter';
 import { StoreNames } from './StorageAdapter';
 
 const DB_NAME = 'hooomz_db';
-const DB_VERSION = 13; // v13: added toolPlatforms, toolResearchItems, toolInventory (Tool Research)
+const DB_VERSION = 19; // v19: ScheduleNotes for scoped manager notes
 
 export class IndexedDBAdapter implements StorageAdapter {
   private db: IDBDatabase | null = null;
@@ -103,8 +103,17 @@ export class IndexedDBAdapter implements StorageAdapter {
           }
         }
 
-        // Build 3b migration: fix timeEntries indexes (crewMemberId → team_member_id)
         const oldVersion = event.oldVersion;
+
+        // v17 migration: add scriptPhase index to existing checklist items store
+        if (oldVersion < 17 && db.objectStoreNames.contains(StoreNames.SOP_CHECKLIST_ITEM_TEMPLATES)) {
+          const clStore = tx.objectStore(StoreNames.SOP_CHECKLIST_ITEM_TEMPLATES);
+          if (!clStore.indexNames.contains('scriptPhase')) {
+            clStore.createIndex('scriptPhase', 'scriptPhase', { unique: false });
+          }
+        }
+
+        // Build 3b migration: fix timeEntries indexes (crewMemberId → team_member_id)
         if (oldVersion < 9 && db.objectStoreNames.contains(StoreNames.TIME_ENTRIES)) {
           const teStore = tx.objectStore(StoreNames.TIME_ENTRIES);
           // Remove wrong index names from v8
@@ -197,6 +206,17 @@ export class IndexedDBAdapter implements StorageAdapter {
       [StoreNames.TOOL_PLATFORMS]: ['tier', 'name'],
       [StoreNames.TOOL_RESEARCH_ITEMS]: ['category', 'priority'],
       [StoreNames.TOOL_INVENTORY]: ['status', 'platform', 'category', 'brand'],
+      // Workflows (Labs construction sequencing)
+      [StoreNames.WORKFLOWS]: ['isDefault', 'status'],
+      // Labs Integration: Tokens, Tests, Voting, Material Changes
+      [StoreNames.LABS_TOKENS]: ['category', 'status', 'context'],
+      [StoreNames.LABS_TESTS]: ['status', 'priority', 'category'],
+      [StoreNames.LABS_VOTE_BALLOTS]: ['status'],
+      [StoreNames.LABS_VOTES]: ['ballotId', 'partnerId'],
+      [StoreNames.LABS_MATERIAL_CHANGES]: ['tokenId', 'testId', 'changedAt'],
+      // Calendar / Scheduling
+      [StoreNames.CREW_SCHEDULE_BLOCKS]: ['date', 'crewMemberId', 'projectId', 'taskId', 'status'],
+      [StoreNames.SCHEDULE_NOTES]: ['blockId', 'projectId', 'date', 'authorId', 'targetCrewMemberId'],
     };
 
     const storeIndexes = indexes[storeName] || [];
@@ -306,7 +326,8 @@ export class IndexedDBAdapter implements StorageAdapter {
   }
 
   /**
-   * Set a single item
+   * Set a single item.
+   * Waits for transaction.oncomplete to ensure data is committed to disk.
    */
   async set<T>(storeName: string, key: string, value: T): Promise<void> {
     const db = await this.ensureInitialized();
@@ -317,20 +338,25 @@ export class IndexedDBAdapter implements StorageAdapter {
 
       // Ensure the value has the id field
       const valueWithId = { ...value, id: key } as any;
-      const request = objectStore.put(valueWithId);
+      objectStore.put(valueWithId);
 
-      request.onsuccess = () => {
+      transaction.oncomplete = () => {
         resolve();
       };
 
-      request.onerror = () => {
-        reject(new Error(`Failed to set item in ${storeName}`));
+      transaction.onerror = () => {
+        reject(new Error(`Failed to set item in ${storeName}: ${transaction.error?.message}`));
+      };
+
+      transaction.onabort = () => {
+        reject(new Error(`Transaction aborted while setting item in ${storeName}: ${transaction.error?.message}`));
       };
     });
   }
 
   /**
-   * Delete a single item
+   * Delete a single item.
+   * Waits for transaction.oncomplete to ensure deletion is committed.
    */
   async delete(storeName: string, key: string): Promise<void> {
     const db = await this.ensureInitialized();
@@ -338,20 +364,25 @@ export class IndexedDBAdapter implements StorageAdapter {
     return new Promise<void>((resolve, reject) => {
       const transaction = db.transaction([storeName], 'readwrite');
       const objectStore = transaction.objectStore(storeName);
-      const request = objectStore.delete(key);
+      objectStore.delete(key);
 
-      request.onsuccess = () => {
+      transaction.oncomplete = () => {
         resolve();
       };
 
-      request.onerror = () => {
-        reject(new Error(`Failed to delete item from ${storeName}`));
+      transaction.onerror = () => {
+        reject(new Error(`Failed to delete item from ${storeName}: ${transaction.error?.message}`));
+      };
+
+      transaction.onabort = () => {
+        reject(new Error(`Transaction aborted while deleting from ${storeName}: ${transaction.error?.message}`));
       };
     });
   }
 
   /**
-   * Clear all items from a store
+   * Clear all items from a store.
+   * Waits for transaction.oncomplete to ensure clear is committed.
    */
   async clear(storeName: string): Promise<void> {
     const db = await this.ensureInitialized();
@@ -359,14 +390,18 @@ export class IndexedDBAdapter implements StorageAdapter {
     return new Promise<void>((resolve, reject) => {
       const transaction = db.transaction([storeName], 'readwrite');
       const objectStore = transaction.objectStore(storeName);
-      const request = objectStore.clear();
+      objectStore.clear();
 
-      request.onsuccess = () => {
+      transaction.oncomplete = () => {
         resolve();
       };
 
-      request.onerror = () => {
-        reject(new Error(`Failed to clear ${storeName}`));
+      transaction.onerror = () => {
+        reject(new Error(`Failed to clear ${storeName}: ${transaction.error?.message}`));
+      };
+
+      transaction.onabort = () => {
+        reject(new Error(`Transaction aborted while clearing ${storeName}: ${transaction.error?.message}`));
       };
     });
   }

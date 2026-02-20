@@ -16,26 +16,21 @@ import {
 import type { ActivityEvent } from '@/lib/api/hooks/useActivity';
 import type { ThreeAxisFilterValues } from './ThreeAxisFilters';
 
-/** Map event types to status dot colors per spec */
+/** Map event types to status dot colors using CSS vars */
 function getEventDotColor(eventType: string): string {
-  // Red = problem/blocked
   if (eventType.includes('blocked') || eventType.includes('failed') || eventType.includes('shortage')) {
-    return '#EF4444';
+    return 'var(--red)';
   }
-  // Green = completion/success
   if (eventType.includes('completed') || eventType.includes('passed') || eventType === 'milestone.reached') {
-    return '#10B981';
+    return 'var(--green)';
   }
-  // Blue = new/message/info
   if (eventType.includes('created') || eventType.includes('message') || eventType.includes('sent')) {
-    return '#3B82F6';
+    return 'var(--blue)';
   }
-  // Amber = in-progress/attention
   if (eventType.includes('started') || eventType.includes('scheduled') || eventType.includes('delay')) {
-    return '#F59E0B';
+    return 'var(--amber)';
   }
-  // Gray = everything else
-  return '#9CA3AF';
+  return 'var(--text-3)';
 }
 
 interface ActivityEventRowProps {
@@ -98,75 +93,84 @@ export function ActivityEventRow({
       onClick={handleToggle}
       onKeyDown={handleKeyDown}
       aria-expanded={isExpanded}
-      className="cursor-pointer select-none min-h-[48px] py-3 px-4 transition-colors"
       style={{
+        display: 'flex',
+        flexDirection: 'column',
+        padding: '7px 12px',
+        cursor: 'pointer',
+        userSelect: 'none',
         opacity: isPending ? 0.6 : 1,
-        background: isExpanded ? '#F9FAFB' : 'transparent',
+        background: isExpanded ? 'var(--surface-2)' : 'transparent',
+        transition: 'background 0.1s',
+        minHeight: 36,
       }}
     >
-      {/* Main row: dot + message + timestamp */}
-      <div className="flex items-start gap-3">
-        {/* Status dot — 8-10px per spec */}
+      {/* Main row: dot + content + who + time */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+        {/* Status dot */}
         <div
-          className="w-2.5 h-2.5 rounded-full flex-shrink-0 mt-1.5"
-          style={{ background: dotColor }}
+          style={{
+            width: 7,
+            height: 7,
+            borderRadius: '50%',
+            background: dotColor,
+            flexShrink: 0,
+            marginTop: 4,
+          }}
         />
 
-        {/* Content */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-2">
-            <p className="text-sm font-medium leading-snug" style={{ color: '#111827' }}>
-              {message}
-            </p>
-            <span className="flex items-center gap-1.5 flex-shrink-0 mt-0.5">
-              {hasExpandedContent && (
-                <span
-                  className="text-[10px] transition-transform"
-                  style={{ color: '#9CA3AF', display: 'inline-block', transform: isExpanded ? 'rotate(90deg)' : 'none' }}
-                >
-                  ▸
-                </span>
-              )}
-              <time
-                dateTime={event.timestamp}
-                className="text-xs whitespace-nowrap"
-                style={{ color: '#9CA3AF' }}
-              >
-                {relativeTime}
-              </time>
-            </span>
-          </div>
+        {/* Message */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text)', lineHeight: 1.4 }}>
+            {message}
+          </span>
 
-          {/* Project name subtitle */}
-          {showProjectName && event.project_name && (
-            <p className="text-xs mt-0.5" style={{ color: '#6B7280' }}>
-              {event.project_name}
-            </p>
+          {/* Who + project name */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
+            {event.actor_name && (
+              <span style={{ fontSize: 10, color: 'var(--blue)', fontWeight: 500, fontFamily: 'var(--font-cond)', letterSpacing: '0.02em' }}>
+                {event.actor_name}
+              </span>
+            )}
+            {showProjectName && event.project_name && (
+              <span style={{ fontSize: 10, color: 'var(--text-3)' }}>
+                {event.project_name}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Timestamp */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+          {hasExpandedContent && (
+            <span style={{ fontSize: 9, color: 'var(--text-3)', display: 'inline-block', transform: isExpanded ? 'rotate(90deg)' : 'none', transition: 'transform 0.15s' }}>
+              ▸
+            </span>
           )}
+          <time dateTime={event.timestamp} style={{ fontSize: 10, color: 'var(--text-3)', whiteSpace: 'nowrap' }}>
+            {relativeTime}
+          </time>
         </div>
       </div>
 
       {/* Expanded details */}
       {isExpanded && hasExpandedContent && (
-        <div className="mt-2 ml-5 pl-3 space-y-1.5" style={{ borderLeft: '2px solid #E5E7EB' }}>
+        <div style={{ marginTop: 6, marginLeft: 15, paddingLeft: 8, borderLeft: '2px solid var(--border)' }}>
           {(details || notes) && (
-            <p className="text-xs" style={{ color: '#6B7280' }}>
+            <p style={{ fontSize: 11, color: 'var(--text-2)', marginBottom: 2 }}>
               {details || notes}
             </p>
           )}
           {reason && (
-            <p className="text-xs" style={{ color: '#EF4444' }}>
+            <p style={{ fontSize: 11, color: 'var(--red)', marginBottom: 2 }}>
               {reason}
             </p>
           )}
-          {/* Show event_data fields as key-value pairs */}
           {extraFields.length > 0 && (
-            <div className="flex flex-wrap gap-x-3 gap-y-1">
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2px 10px' }}>
               {extraFields.map(([key, value]) => (
-                <span key={key} className="text-[11px]" style={{ color: '#6B7280' }}>
-                  <span className="font-medium" style={{ color: '#9CA3AF' }}>
-                    {key.replace(/_/g, ' ')}:
-                  </span>{' '}
+                <span key={key} style={{ fontSize: 10, color: 'var(--text-2)' }}>
+                  <span style={{ color: 'var(--text-3)' }}>{key.replace(/_/g, ' ')}:</span>{' '}
                   {typeof value === 'number' && key.includes('amount')
                     ? `$${value.toLocaleString()}`
                     : String(value)}
@@ -176,12 +180,8 @@ export function ActivityEventRow({
           )}
           {event.entity_type && event.entity_id && onEntityClick && (
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onEntityClick(event.entity_type, event.entity_id);
-              }}
-              className="text-xs font-medium min-h-[36px] px-3 rounded-lg"
-              style={{ color: '#0F766E' }}
+              onClick={(e) => { e.stopPropagation(); onEntityClick(event.entity_type, event.entity_id); }}
+              style={{ fontSize: 11, color: 'var(--blue)', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0', minHeight: 36 }}
             >
               View {event.entity_type.replace(/_/g, ' ')}
             </button>
@@ -197,11 +197,11 @@ export function ActivityEventRow({
  */
 export function ActivityEventRowSkeleton() {
   return (
-    <div className="flex items-start gap-3 py-3 px-4 animate-pulse">
-      <div className="w-2.5 h-2.5 rounded-full mt-1.5" style={{ background: '#E5E7EB' }} />
-      <div className="flex-1 space-y-2">
-        <div className="h-4 rounded w-3/4" style={{ background: '#E5E7EB' }} />
-        <div className="h-3 rounded w-1/3" style={{ background: '#F3F4F6' }} />
+    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '7px 12px', animation: 'pulse 1.5s infinite' }}>
+      <div style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--border)', flexShrink: 0, marginTop: 4 }} />
+      <div style={{ flex: 1 }}>
+        <div style={{ height: 12, borderRadius: 2, background: 'var(--border)', width: '70%', marginBottom: 4 }} />
+        <div style={{ height: 10, borderRadius: 2, background: 'var(--surface-3)', width: '30%' }} />
       </div>
     </div>
   );

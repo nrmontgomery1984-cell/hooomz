@@ -54,7 +54,7 @@ export function BottomSheet({ isOpen, onClose, title, children }: BottomSheetPro
         style={{
           background: '#FFFFFF',
           borderRadius: '16px 16px 0 0',
-          maxHeight: '70vh',
+          maxHeight: '85vh',
           minHeight: '40vh',
           display: 'flex',
           flexDirection: 'column',

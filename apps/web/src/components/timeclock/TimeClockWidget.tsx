@@ -6,9 +6,6 @@
  * Persistent floating widget above BottomNav.
  * Collapsed: pill with task name + running timer.
  * Expanded: today's entries, controls (Break/Switch/Done/Clock Out).
- *
- * Timer recalculates from stored timestamp — survives background/nav.
- * Position: fixed bottom-[72px] right-4 z-50 (above BottomNav z-40).
  */
 
 import { useState, useEffect } from 'react';
@@ -102,7 +99,6 @@ export function TimeClockWidget() {
     tick();
     const interval = setInterval(tick, 1000);
 
-    // Recalculate on visibility change (tab comes back to foreground)
     function onVisibility() {
       if (document.visibilityState === 'visible') tick();
     }
@@ -117,6 +113,9 @@ export function TimeClockWidget() {
   // Don't render if no crew session
   if (!hasActiveSession || !crewMemberId || !crewMemberName || !projectId) return null;
 
+  // Active state color
+  const activeColor = isOnBreak ? 'var(--amber)' : 'var(--blue)';
+
   // Not clocked in — show clock-in pill
   if (!isClockedIn) {
     return (
@@ -124,7 +123,7 @@ export function TimeClockWidget() {
         <button
           onClick={() => setShowClockInPicker(true)}
           className="fixed bottom-[72px] right-4 z-50 flex items-center gap-2 px-4 py-2.5 rounded-full shadow-lg min-h-[44px]"
-          style={{ background: '#0F766E', color: '#FFFFFF' }}
+          style={{ background: 'var(--blue)', color: '#FFFFFF' }}
         >
           <Clock size={16} />
           <span className="text-sm font-medium">Clock In</span>
@@ -134,13 +133,7 @@ export function TimeClockWidget() {
           <TaskPicker
             projectId={projectId}
             onSelect={(taskId, taskTitle) => {
-              clockIn.mutate({
-                crewMemberId,
-                crewMemberName,
-                projectId,
-                taskId,
-                taskTitle,
-              });
+              clockIn.mutate({ crewMemberId, crewMemberName, projectId, taskId, taskTitle });
               setShowClockInPicker(false);
             }}
             onClose={() => setShowClockInPicker(false)}
@@ -156,10 +149,7 @@ export function TimeClockWidget() {
       <button
         onClick={() => setExpanded(true)}
         className="fixed bottom-[72px] right-4 z-50 flex items-center gap-2 px-4 py-2.5 rounded-full shadow-lg min-h-[44px]"
-        style={{
-          background: isOnBreak ? '#F59E0B' : '#0F766E',
-          color: '#FFFFFF',
-        }}
+        style={{ background: activeColor, color: '#FFFFFF' }}
       >
         {isOnBreak ? <Coffee size={16} /> : <Clock size={16} />}
         <span className="text-sm font-medium truncate max-w-[120px]">
@@ -176,50 +166,41 @@ export function TimeClockWidget() {
   return (
     <>
       {/* Backdrop */}
-      <div
-        className="fixed inset-0 z-50 bg-black/20"
-        onClick={() => setExpanded(false)}
-      />
+      <div className="fixed inset-0 z-50 bg-black/20" onClick={() => setExpanded(false)} />
 
       {/* Widget card */}
       <div
         className="fixed bottom-[72px] right-4 left-4 z-50 rounded-2xl shadow-2xl overflow-hidden"
-        style={{ background: '#FFFFFF', maxWidth: '400px', marginLeft: 'auto' }}
+        style={{ background: 'var(--surface-1)', maxWidth: '400px', marginLeft: 'auto', border: '1px solid var(--border)' }}
       >
         {/* Header */}
         <div
           className="px-4 py-3 flex items-center justify-between"
-          style={{ background: isOnBreak ? '#F59E0B' : '#0F766E' }}
+          style={{ background: activeColor }}
         >
-          <div className="flex items-center gap-2 text-white">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#FFFFFF' }}>
             {isOnBreak ? <Coffee size={16} /> : <Clock size={16} />}
-            <span className="text-xs font-semibold uppercase tracking-wide">
+            <span style={{ fontSize: 11, fontWeight: 600, fontFamily: 'var(--font-cond)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
               {isOnBreak ? 'On Break' : 'Clocked In'} — {crewMemberName}
             </span>
           </div>
-          <button
-            onClick={() => setExpanded(false)}
-            className="text-white/80 hover:text-white p-1"
-          >
+          <button onClick={() => setExpanded(false)} style={{ color: 'rgba(255,255,255,0.8)', background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
             <X size={16} />
           </button>
         </div>
 
         {/* Current task + timer */}
-        <div className="px-4 py-3" style={{ borderBottom: '1px solid #E5E7EB' }}>
-          <div className="flex items-center justify-between">
-            <div className="flex-1 min-w-0">
-              <div className="text-xs" style={{ color: '#9CA3AF' }}>
+        <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 10, color: 'var(--text-3)', fontFamily: 'var(--font-cond)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                 {isOnBreak ? 'Break' : 'Current Task'}
               </div>
-              <div className="text-sm font-medium truncate" style={{ color: '#111827' }}>
+              <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {isOnBreak ? 'Taking a break' : currentTaskTitle || 'No task selected'}
               </div>
             </div>
-            <div
-              className="text-xl font-mono tabular-nums font-semibold"
-              style={{ color: isOnBreak ? '#F59E0B' : '#0F766E' }}
-            >
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 20, fontWeight: 600, color: activeColor }}>
               {formatElapsed(elapsed)}
             </div>
           </div>
@@ -227,28 +208,28 @@ export function TimeClockWidget() {
 
         {/* Today's entries summary */}
         {todayEntries.length > 0 && (
-          <div className="px-4 py-2" style={{ borderBottom: '1px solid #E5E7EB' }}>
-            <div className="text-[10px] font-medium uppercase tracking-wide mb-1" style={{ color: '#9CA3AF' }}>
+          <div style={{ padding: '8px 16px', borderBottom: '1px solid var(--border)' }}>
+            <div style={{ fontSize: 9, fontWeight: 700, fontFamily: 'var(--font-cond)', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: 4 }}>
               Today — {formatMinutes(todayTotal)}
             </div>
-            <div className="space-y-1 max-h-[120px] overflow-y-auto">
-              {todayEntries.slice(0, 5).map(entry => {
+            <div style={{ maxHeight: 120, overflowY: 'auto' }}>
+              {todayEntries.slice(0, 5).map((entry) => {
                 const isRunning = !entry.clock_out;
                 const mins = entry.total_hours != null
                   ? Math.round(entry.total_hours * 60)
                   : isRunning ? '...' : 0;
-                const taskName = tasksList.find(t => t.id === entry.task_instance_id)?.title
+                const taskName = tasksList.find((t) => t.id === entry.task_instance_id)?.title
                   || (entry.entryType === 'break' ? 'Break' : 'Task');
 
                 return (
-                  <div key={entry.id} className="flex items-center gap-2 text-xs">
-                    <span style={{ color: isRunning ? '#0F766E' : entry.entryType === 'break' ? '#F59E0B' : '#9CA3AF' }}>
+                  <div key={entry.id} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, marginBottom: 2 }}>
+                    <span style={{ color: isRunning ? 'var(--blue)' : entry.entryType === 'break' ? 'var(--amber)' : 'var(--text-3)', flexShrink: 0 }}>
                       {isRunning ? '▶' : entry.entryType === 'break' ? '⏸' : '✓'}
                     </span>
-                    <span className="flex-1 truncate" style={{ color: '#374151' }}>
+                    <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--text)' }}>
                       {taskName}
                     </span>
-                    <span className="font-mono tabular-nums" style={{ color: '#9CA3AF' }}>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-3)', flexShrink: 0 }}>
                       {typeof mins === 'number' ? `${mins}m` : mins}
                     </span>
                   </div>
@@ -259,15 +240,11 @@ export function TimeClockWidget() {
         )}
 
         {/* Controls */}
-        <div className="px-4 py-3 flex gap-2">
+        <div style={{ padding: '10px 16px', display: 'flex', gap: 8 }}>
           {isOnBreak ? (
             <button
-              onClick={() => {
-                endBreak.mutate({ crewMemberId });
-                setExpanded(false);
-              }}
-              className="flex-1 flex items-center justify-center gap-1.5 py-3 rounded-xl text-sm font-medium min-h-[48px]"
-              style={{ background: '#0F766E', color: '#FFFFFF' }}
+              onClick={() => { endBreak.mutate({ crewMemberId }); setExpanded(false); }}
+              style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '10px 0', borderRadius: 8, fontSize: 13, fontWeight: 600, background: 'var(--blue)', color: '#FFFFFF', border: 'none', cursor: 'pointer', minHeight: 44 }}
             >
               <ArrowRight size={16} />
               Resume
@@ -275,19 +252,15 @@ export function TimeClockWidget() {
           ) : (
             <>
               <button
-                onClick={() => {
-                  startBreak.mutate({ crewMemberId });
-                }}
-                className="flex-1 flex items-center justify-center gap-1.5 py-3 rounded-xl text-sm font-medium min-h-[48px]"
-                style={{ background: '#FEF3C7', color: '#92400E' }}
+                onClick={() => { startBreak.mutate({ crewMemberId }); }}
+                style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '10px 0', borderRadius: 8, fontSize: 13, fontWeight: 600, background: 'var(--amber-dim)', color: 'var(--amber)', border: 'none', cursor: 'pointer', minHeight: 44 }}
               >
                 <Coffee size={14} />
                 Break
               </button>
               <button
                 onClick={() => setShowTaskPicker(true)}
-                className="flex-1 flex items-center justify-center gap-1.5 py-3 rounded-xl text-sm font-medium min-h-[48px]"
-                style={{ background: '#F3F4F6', color: '#374151' }}
+                style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '10px 0', borderRadius: 8, fontSize: 13, fontWeight: 600, background: 'var(--surface-3)', color: 'var(--text-2)', border: 'none', cursor: 'pointer', minHeight: 44 }}
               >
                 <ArrowRight size={14} />
                 Switch
@@ -305,8 +278,7 @@ export function TimeClockWidget() {
                   });
                   setExpanded(false);
                 }}
-                className="flex-1 flex items-center justify-center gap-1.5 py-3 rounded-xl text-sm font-medium min-h-[48px]"
-                style={{ background: '#D1FAE5', color: '#065F46' }}
+                style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '10px 0', borderRadius: 8, fontSize: 13, fontWeight: 600, background: 'var(--green-dim)', color: 'var(--green)', border: 'none', cursor: 'pointer', minHeight: 44 }}
               >
                 <Check size={14} />
                 Done
@@ -316,14 +288,10 @@ export function TimeClockWidget() {
         </div>
 
         {/* Clock Out */}
-        <div className="px-4 pb-3">
+        <div style={{ padding: '0 16px 12px' }}>
           <button
-            onClick={() => {
-              clockOut.mutate({ crewMemberId, crewMemberName });
-              setExpanded(false);
-            }}
-            className="w-full py-3 rounded-xl text-sm font-medium min-h-[48px]"
-            style={{ background: '#FEE2E2', color: '#991B1B' }}
+            onClick={() => { clockOut.mutate({ crewMemberId, crewMemberName }); setExpanded(false); }}
+            style={{ width: '100%', padding: '10px 0', borderRadius: 8, fontSize: 13, fontWeight: 600, background: 'var(--red-dim)', color: 'var(--red)', border: 'none', cursor: 'pointer', minHeight: 44 }}
           >
             Clock Out
           </button>
@@ -357,19 +325,9 @@ export function TimeClockWidget() {
         <IdlePrompt
           taskTitle={currentTaskTitle}
           onStillWorking={dismissIdle}
-          onSwitchTask={() => {
-            dismissIdle();
-            setShowTaskPicker(true);
-            setExpanded(true);
-          }}
-          onBreak={() => {
-            dismissIdle();
-            startBreak.mutate({ crewMemberId });
-          }}
-          onClockOut={() => {
-            dismissIdle();
-            clockOut.mutate({ crewMemberId, crewMemberName });
-          }}
+          onSwitchTask={() => { dismissIdle(); setShowTaskPicker(true); setExpanded(true); }}
+          onBreak={() => { dismissIdle(); startBreak.mutate({ crewMemberId }); }}
+          onClockOut={() => { dismissIdle(); clockOut.mutate({ crewMemberId, crewMemberName }); }}
         />
       )}
 

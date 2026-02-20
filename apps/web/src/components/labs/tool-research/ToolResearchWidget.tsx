@@ -3,9 +3,9 @@
 import Link from 'next/link';
 import { useToolResearchItems, useToolInventory } from '@/lib/hooks/useLabsData';
 
-const TEAL = '#2A9D8F';
-const NAVY = '#1B2A4A';
-const CORAL = '#E76F51';
+const TEAL = '#0F766E';
+const NAVY = '#111827';
+const CORAL = '#EF4444';
 
 export function ToolResearchWidget() {
   const { data: items = [] } = useToolResearchItems();

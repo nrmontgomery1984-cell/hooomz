@@ -30,7 +30,7 @@ interface SortableTableProps<T> {
   onRowClick?: (row: T) => void;
 }
 
-export function SortableTable<T extends Record<string, unknown>>({
+export function SortableTable<T extends object>({
   columns,
   data,
   defaultSort = 0,
@@ -43,8 +43,8 @@ export function SortableTable<T extends Record<string, unknown>>({
   const sorted = useMemo(() => {
     const key = columns[sortCol].key;
     return [...data].sort((a, b) => {
-      const va = a[key] ?? '';
-      const vb = b[key] ?? '';
+      const va = (a as Record<string, unknown>)[key] ?? '';
+      const vb = (b as Record<string, unknown>)[key] ?? '';
       if (typeof va === 'number' && typeof vb === 'number') {
         return sortDir === 'asc' ? va - vb : vb - va;
       }
@@ -109,7 +109,7 @@ export function SortableTable<T extends Record<string, unknown>>({
               style={{ background: ri % 2 === 0 ? 'white' : LIGHT_BG, cursor: onRowClick ? 'pointer' : undefined, ...rowStyle?.(row) }}
             >
               {columns.map((col, ci) => {
-                const val = row[col.key];
+                const val = (row as Record<string, unknown>)[col.key];
                 const isPriority =
                   col.key === 'priority' && typeof val === 'string' && PRIORITY_COLORS[val];
                 return (

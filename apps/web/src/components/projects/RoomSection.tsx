@@ -51,8 +51,8 @@ export function RoomSection({
       {/* Room Header — full-width tap target */}
       <button
         onClick={onToggleCollapse}
-        className="w-full px-4 py-3 flex items-center gap-3 text-left"
-        style={{ minHeight: '48px' }}
+        className="w-full px-3 py-2.5 flex items-center gap-2.5 text-left"
+        style={{ minHeight: '40px' }}
       >
         {/* Collapse chevron */}
         <ChevronDown
@@ -93,7 +93,7 @@ export function RoomSection({
       </button>
 
       {/* Progress bar */}
-      <div className="px-4 pb-2">
+      <div className="px-3 pb-1.5">
         <div className="w-full h-1.5 rounded-full" style={{ background: '#F3F4F6' }}>
           <div
             className="h-1.5 rounded-full transition-all duration-400"

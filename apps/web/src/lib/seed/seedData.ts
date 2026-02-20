@@ -75,6 +75,97 @@ const DEMO_CUSTOMERS: CreateCustomer[] = [
 ];
 
 // ============================================================================
+// Demo Leads — New structured tag format for lead capture flow
+// ============================================================================
+
+const PLACEHOLDER_LEAD_ADDRESS = {
+  street: 'TBD',
+  city: 'Moncton',
+  province: 'NB',
+  postalCode: 'E1A 0A1',
+  country: 'Canada',
+};
+
+const DEMO_LEADS: CreateCustomer[] = [
+  {
+    type: 'residential',
+    firstName: 'Sarah',
+    lastName: 'Mitchell',
+    email: 'sarah.m.homeshow@email.com',
+    phone: '506-555-8001',
+    preferredContactMethod: ContactMethod.TEXT,
+    address: PLACEHOLDER_LEAD_ADDRESS,
+    tags: [
+      'lead', 'source:home_show',
+      'scope:floors', 'scope:paint', 'scope:trim',
+      'interest:flooring', 'interest:paint', 'interest:trim',
+      'timeline:asap', 'budget:5k-10k', 'rooms:4',
+      'sqft:540', 'material-floors:lvp', 'material-paint:walls_ceiling', 'material-trim:baseboard',
+      'preferred-contact:text', 'temperature:hot',
+      'estimate-low:4000', 'estimate-mid:5500', 'estimate-high:7000',
+    ],
+    notes: 'Home Show lead. Main floor refresh — 4 rooms, 540 sqft. LVP + paint + baseboard.',
+  },
+  {
+    type: 'residential',
+    firstName: 'David',
+    lastName: 'Park',
+    email: 'david.park@email.com',
+    phone: '506-555-8002',
+    preferredContactMethod: ContactMethod.PHONE,
+    address: PLACEHOLDER_LEAD_ADDRESS,
+    tags: [
+      'lead', 'source:referral',
+      'scope:floors',
+      'interest:flooring',
+      'timeline:few_months', 'budget:10k-20k', 'rooms:6',
+      'sqft:900', 'material-floors:hardwood',
+      'preferred-contact:call', 'temperature:hot',
+      'referral-source:Ritchies',
+      'estimate-low:7500', 'estimate-mid:10000', 'estimate-high:12500',
+    ],
+    notes: 'Referred by Ritchies. Whole main floor hardwood, 900 sqft. Timeline: few months.',
+  },
+  {
+    type: 'residential',
+    firstName: 'Amanda',
+    lastName: 'Torres',
+    email: 'amanda.torres@email.com',
+    phone: '506-555-8003',
+    preferredContactMethod: ContactMethod.EMAIL,
+    address: PLACEHOLDER_LEAD_ADDRESS,
+    tags: [
+      'lead', 'source:website',
+      'scope:not_sure',
+      'interest:other',
+      'timeline:exploring', 'budget:unknown', 'rooms:whole-floor',
+      'preferred-contact:email', 'temperature:cool',
+      'estimate-low:7000', 'estimate-mid:11000', 'estimate-high:16000',
+    ],
+    notes: 'Website inquiry. Not sure what they need yet. Just exploring options.',
+  },
+  {
+    type: 'residential',
+    firstName: 'Mike',
+    lastName: 'Chen',
+    email: 'mike.chen@email.com',
+    phone: '506-555-8004',
+    preferredContactMethod: ContactMethod.TEXT,
+    address: PLACEHOLDER_LEAD_ADDRESS,
+    tags: [
+      'lead', 'source:google',
+      'scope:floors', 'scope:tile',
+      'interest:flooring', 'interest:tile',
+      'timeline:few_months', 'budget:20k+', 'rooms:3',
+      'sqft:320', 'material-floors:lvp', 'material-tile:shower',
+      'preferred-contact:text', 'temperature:warm',
+      'estimate-low:6500', 'estimate-mid:9000', 'estimate-high:11000',
+    ],
+    notes: 'Google lead. Bathroom shower tile + hallway LVP. 3 rooms, 320 sqft.',
+  },
+];
+
+// ============================================================================
 // Demo Projects - Real Trades Work
 // ============================================================================
 
@@ -175,6 +266,31 @@ export async function seedCustomers(_services: Services): Promise<string[]> {
 }
 
 /**
+ * Seed demo leads into IndexedDB (new structured tag format).
+ * Idempotent: skips leads whose email already exists.
+ */
+export async function seedLeads(_services: Services): Promise<number> {
+  const services = getServices();
+  const loggedServices = getLoggedServices();
+  let count = 0;
+
+  const { customers: existing } = await services.customers.findAll();
+
+  for (const leadData of DEMO_LEADS) {
+    const match = existing.find((c) => c.email === leadData.email);
+    if (match) {
+      console.log(`Lead exists (skipped): ${match.firstName} ${match.lastName}`);
+      continue;
+    }
+    await loggedServices.customers.create(leadData);
+    count++;
+    console.log(`Created lead: ${leadData.firstName} ${leadData.lastName}`);
+  }
+
+  return count;
+}
+
+/**
  * Seed demo projects into IndexedDB.
  * Idempotent: skips projects whose name already exists.
  */
@@ -212,13 +328,6 @@ export async function seedLineItems(
   services: Services,
   projectIds: string[]
 ): Promise<number> {
-  // Check if line items already exist for these projects
-  const existing = await services.estimating.lineItems.findByProjectId(projectIds[0] || '');
-  if (existing.length > 0) {
-    console.log('Line items already exist, skipping');
-    return 0;
-  }
-
   let count = 0;
 
   const createItem = async (item: Parameters<typeof services.estimating.lineItems.create>[0]) => {
@@ -226,11 +335,17 @@ export async function seedLineItems(
     count++;
   };
 
+  // Helper: skip projects that already have line items
+  const shouldSeed = async (pid: string) => {
+    const existing = await services.estimating.lineItems.findByProjectId(pid);
+    return existing.length === 0;
+  };
+
   // ======================================================================
   // Mitchell Main Floor — Room Refresh ($14,200)
   // Living Room + Dining Room: LVP, baseboard, paint
   // ======================================================================
-  if (projectIds[0]) {
+  if (projectIds[0] && await shouldSeed(projectIds[0])) {
     const pid = projectIds[0];
 
     // Materials ($6,140)
@@ -253,7 +368,7 @@ export async function seedLineItems(
   // Cole Whole-Home Flooring ($9,800)
   // 1,400 sqft LVP, baseboard, shoe molding
   // ======================================================================
-  if (projectIds[1]) {
+  if (projectIds[1] && await shouldSeed(projectIds[1])) {
     const pid = projectIds[1];
 
     // Materials ($6,800)
@@ -273,7 +388,7 @@ export async function seedLineItems(
   // Bradley Rental Refresh ($6,400)
   // 3 bedrooms + hallway: LVP, baseboard, ceiling paint
   // ======================================================================
-  if (projectIds[2]) {
+  if (projectIds[2] && await shouldSeed(projectIds[2])) {
     const pid = projectIds[2];
 
     // Materials ($3,580)
@@ -599,6 +714,60 @@ export async function seedActivityEvents(
 }
 
 /**
+ * Seed discovery drafts for demo projects.
+ * Creates a completed discovery for Mitchell (projectIds[0]).
+ */
+export async function seedDiscoveryDrafts(
+  _services: Services,
+  projectIds: string[]
+): Promise<number> {
+  const services = getServices();
+  let count = 0;
+
+  // Mitchell Main Floor — completed discovery
+  if (projectIds[0]) {
+    const existing = await services.discoveryDrafts.findByProjectId(projectIds[0]);
+    if (!existing) {
+      const now = new Date().toISOString();
+      await services.discoveryDrafts.create({
+        projectId: projectIds[0],
+        currentStep: 2,
+        property: {
+          address: { street: '45 Highfield St', city: 'Moncton', province: 'NB', postalCode: 'E1C 5N2' },
+          homeType: 'detached',
+          homeAge: '25-50',
+          storeys: 2,
+          totalSqft: 1400,
+          parking: 'driveway',
+          occupancy: 'occupied',
+          pets: true,
+          petDetails: '1 cat',
+          accessNotes: 'Side door preferred. Ring doorbell.',
+        },
+        preferences: {
+          style: 'transitional',
+          colorDirection: 'warm',
+          floorLook: 'warm_wood',
+          trimStyle: 'match_existing',
+          priorities: ['durability', 'appearance', 'pet_friendly'],
+          inspirationNotes: 'Likes the warm oak look from Ritchies showroom. Wants something the cat can\'t scratch up.',
+        },
+        status: 'complete',
+        customerName: 'Sarah Mitchell',
+        createdAt: now,
+        updatedAt: now,
+      });
+      count++;
+      console.log('Created discovery draft: Mitchell Main Floor');
+    } else {
+      console.log('Discovery draft exists (skipped): Mitchell Main Floor');
+    }
+  }
+
+  return count;
+}
+
+/**
  * Seed all demo data
  */
 export async function seedAllData(): Promise<{
@@ -612,6 +781,10 @@ export async function seedAllData(): Promise<{
   // Seed customers first
   const customerIds = await seedCustomers(services);
   console.log(`✅ Created ${customerIds.length} customers`);
+
+  // Seed leads (new structured tag format)
+  const leadCount = await seedLeads(services);
+  console.log(`✅ Created ${leadCount} leads`);
 
   // Seed projects with customer references
   const projectIds = await seedProjects(services, customerIds);
@@ -628,6 +801,10 @@ export async function seedAllData(): Promise<{
   // Seed activity events
   await seedActivityEvents(services, projectIds);
   console.log('✅ Created activity events');
+
+  // Seed discovery drafts
+  const discoveryCount = await seedDiscoveryDrafts(services, projectIds);
+  console.log(`✅ Created ${discoveryCount} discovery drafts`);
 
   console.log('🎉 Demo data seed complete!');
 

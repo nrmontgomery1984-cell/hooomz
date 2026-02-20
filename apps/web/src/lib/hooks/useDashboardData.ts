@@ -8,6 +8,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useServicesContext } from '../services/ServicesContext';
 import { useLocalBusinessHealth, useLocalRecentActivity, useIntakeDrafts } from './useLocalData';
+import { useLeadPipeline } from './useLeadData';
 import { useOverBudgetTasks, useTrainingRecords, useActiveCrewMembers } from './useCrewData';
 import type { TaskBudget, TrainingRecord, ChangeOrder, CrewMember } from '@hooomz/shared-contracts';
 
@@ -53,6 +54,11 @@ export interface DashboardData {
   // Intake drafts
   draftCount: number;
 
+  // Lead temperature
+  hotLeadCount: number;
+  warmLeadCount: number;
+  hotLeadsNeedingContact: Array<{ name: string; source: string; customerId: string }>;
+
   // State
   isLoading: boolean;
 }
@@ -81,6 +87,9 @@ export function useDashboardData(): DashboardData {
 
   // Intake drafts
   const { data: drafts = [] } = useIntakeDrafts();
+
+  // Lead pipeline data
+  const leadPipeline = useLeadPipeline();
 
   // Pending change orders — iterate over active projects
   const projectIds = health.projects.map((p) => p.id);
@@ -131,6 +140,16 @@ export function useDashboardData(): DashboardData {
     (t) => t.status === 'review_ready'
   );
 
+  // Lead temperature computations
+  const hotLeads = leadPipeline.leads.filter((l) => l.temperature === 'hot');
+  const hotLeadsNeedingContact = hotLeads
+    .filter((l) => l.stage === 'new')
+    .map((l) => ({
+      name: `${l.customer.firstName} ${l.customer.lastName}`.trim(),
+      source: l.source.replace(/_/g, ' '),
+      customerId: l.customer.id,
+    }));
+
   return {
     healthScore: health.healthScore,
     activeProjectCount: activeProjects.length,
@@ -153,6 +172,10 @@ export function useDashboardData(): DashboardData {
 
     draftCount: drafts.length,
 
-    isLoading: health.isLoading,
+    hotLeadCount: hotLeads.length,
+    warmLeadCount: leadPipeline.leads.filter((l) => l.temperature === 'warm').length,
+    hotLeadsNeedingContact,
+
+    isLoading: health.isLoading || leadPipeline.isLoading,
   };
 }

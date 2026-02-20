@@ -46,25 +46,25 @@ export interface HooomzTheme {
 export const defaultTheme: HooomzTheme = {
   logo: '/hooomz-logo.svg',
   companyName: 'Hooomz',
-  fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-  fontFamilyMono: '"JetBrains Mono", "Fira Code", "Cascadia Code", monospace',
-  primary: '#111827',
-  secondary: '#6B7280',
-  muted: '#9CA3AF',
-  textBody: '#374151',
-  background: '#F3F4F6',
-  surface: '#FFFFFF',
-  border: '#E5E7EB',
-  accent: '#0F766E',
-  accentDark: '#0D5F58',
-  accentLight: '#F0FDFA',
-  statusGreen: '#10B981',
-  statusBlue: '#3B82F6',
-  statusAmber: '#F59E0B',
-  statusRed: '#EF4444',
-  statusGray: '#9CA3AF',
-  borderRadius: '12px',
-  cardShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+  fontFamily: 'var(--font-sans)',
+  fontFamilyMono: 'var(--font-mono)',
+  primary: 'var(--text)',
+  secondary: 'var(--text-2)',
+  muted: 'var(--text-3)',
+  textBody: 'var(--text-2)',
+  background: 'var(--bg)',
+  surface: 'var(--surface-1)',
+  border: 'var(--border)',
+  accent: 'var(--blue)',
+  accentDark: 'var(--blue-hover)',
+  accentLight: 'var(--blue-dim)',
+  statusGreen: 'var(--green)',
+  statusBlue: 'var(--blue)',
+  statusAmber: 'var(--amber)',
+  statusRed: 'var(--red)',
+  statusGray: 'var(--text-3)',
+  borderRadius: 'var(--radius)',
+  cardShadow: 'var(--shadow-card)',
 };
 
 /**
@@ -73,7 +73,7 @@ export const defaultTheme: HooomzTheme = {
  */
 export function getScoreColor(score: number, _theme: HooomzTheme = defaultTheme): string {
   if (score >= 90) return '#10B981';  // Green
-  if (score >= 70) return '#14B8A6';  // Teal
+  if (score >= 70) return 'var(--blue)';  // Blue (was teal #14B8A6)
   if (score >= 50) return '#F59E0B';  // Amber
   if (score >= 30) return '#F97316';  // Orange
   return '#EF4444';                    // Red

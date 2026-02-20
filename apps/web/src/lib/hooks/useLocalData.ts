@@ -48,6 +48,10 @@ export const LOCAL_QUERY_KEYS = {
     inProgress: ['local', 'intakeDrafts', 'inProgress'] as const,
     detail: (id: string) => ['local', 'intakeDrafts', 'detail', id] as const,
   },
+  discoveryDrafts: {
+    all: ['local', 'discoveryDrafts'] as const,
+    byProject: (projectId: string) => ['local', 'discoveryDrafts', 'project', projectId] as const,
+  },
 };
 
 // ============================================================================
@@ -103,6 +107,8 @@ export function useLocalProject(id: string | undefined) {
       return services.projects.findById(id!);
     },
     enabled: !servicesLoading && !!services && !!id,
+    staleTime: 0,
+    refetchOnMount: 'always',
   });
 }
 
@@ -185,7 +191,8 @@ export function useLocalTasks(projectId: string | null, statusFilter?: string | 
       return result;
     },
     enabled: !servicesLoading && !!services && !!projectId,
-    staleTime: 5 * 1000,
+    staleTime: 0,
+    refetchOnMount: 'always',
   });
 }
 

@@ -88,7 +88,7 @@ export function BatchConfirmModal({
             className="h-full rounded-full transition-all"
             style={{
               width: `${totalCount > 0 ? (processedCount / totalCount) * 100 : 0}%`,
-              background: '#0F766E',
+              background: 'var(--blue)',
             }}
           />
         </div>
@@ -119,7 +119,7 @@ export function BatchConfirmModal({
             onClick={handleConfirmAll}
             disabled={isProcessing}
             className="flex-1 py-3 text-sm font-semibold text-white rounded-xl transition-colors disabled:opacity-50"
-            style={{ background: '#0F766E', minHeight: '48px' }}
+            style={{ background: 'var(--blue)', minHeight: '48px' }}
           >
             {isProcessing ? 'Processing...' : `Confirm All (${remaining.length})`}
           </button>

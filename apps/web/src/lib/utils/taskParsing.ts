@@ -24,6 +24,8 @@ export interface EnrichedTask {
   blueprintId?: string;
   loopIterationId?: string;
   labsFlagged?: boolean;
+  sortOrder?: number;
+  workflowId?: string;
   // Parsed fields
   taskName: string;
   room: string;

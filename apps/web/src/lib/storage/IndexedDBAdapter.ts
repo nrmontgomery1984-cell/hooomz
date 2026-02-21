@@ -7,7 +7,7 @@ import type { StorageAdapter } from './StorageAdapter';
 import { StoreNames } from './StorageAdapter';
 
 const DB_NAME = 'hooomz_db';
-const DB_VERSION = 19; // v19: ScheduleNotes for scoped manager notes
+const DB_VERSION = 20; // v20: Financial Forecasting (forecastConfigs + forecastSnapshots)
 
 export class IndexedDBAdapter implements StorageAdapter {
   private db: IDBDatabase | null = null;
@@ -217,6 +217,9 @@ export class IndexedDBAdapter implements StorageAdapter {
       // Calendar / Scheduling
       [StoreNames.CREW_SCHEDULE_BLOCKS]: ['date', 'crewMemberId', 'projectId', 'taskId', 'status'],
       [StoreNames.SCHEDULE_NOTES]: ['blockId', 'projectId', 'date', 'authorId', 'targetCrewMemberId'],
+      // Financial Forecasting
+      [StoreNames.FORECAST_CONFIGS]: ['isActive', 'scenario'],
+      [StoreNames.FORECAST_SNAPSHOTS]: ['configId', 'periodType', 'snapshotDate'],
     };
 
     const storeIndexes = indexes[storeName] || [];

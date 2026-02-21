@@ -83,6 +83,11 @@ import { DiscoveryDraftRepository } from '../repositories/discoveryDraft.reposit
 import { StoreNames } from '../storage/StorageAdapter';
 import type { CostCatalog } from '../types/costCatalog.types';
 
+// Financial Forecasting
+import { ForecastConfigRepository } from '../repositories/forecastConfig.repository';
+import { ForecastSnapshotRepository } from '../repositories/forecastSnapshot.repository';
+import { FinancialActualsService } from './financialActuals.service';
+
 /**
  * Repository container - provides access to all offline-first repositories
  * Use this for read operations and internal access.
@@ -153,6 +158,13 @@ export interface Services {
     get(): Promise<CostCatalog | null>;
     save(catalog: CostCatalog): Promise<void>;
     remove(): Promise<void>;
+  };
+
+  // Financial Forecasting
+  forecast: {
+    configs: ForecastConfigRepository;
+    snapshots: ForecastSnapshotRepository;
+    actuals: FinancialActualsService;
   };
 }
 
@@ -345,6 +357,13 @@ export async function initializeServices(): Promise<Services> {
         async remove() {
           await storage.delete(StoreNames.COST_CATALOG, 'cost_catalog');
         },
+      },
+
+      // Financial Forecasting
+      forecast: {
+        configs: new ForecastConfigRepository(storage),
+        snapshots: new ForecastSnapshotRepository(storage),
+        actuals: new FinancialActualsService(storage),
       },
     };
 

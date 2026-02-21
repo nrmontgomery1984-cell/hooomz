@@ -124,6 +124,9 @@ export const StoreNames = {
   // Calendar / Scheduling
   CREW_SCHEDULE_BLOCKS: 'crewScheduleBlocks',
   SCHEDULE_NOTES: 'scheduleNotes',
+  // Financial Forecasting
+  FORECAST_CONFIGS: 'forecastConfigs',
+  FORECAST_SNAPSHOTS: 'forecastSnapshots',
 } as const;
 
 export type StoreName = (typeof StoreNames)[keyof typeof StoreNames];

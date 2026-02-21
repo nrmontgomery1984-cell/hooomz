@@ -20,6 +20,7 @@ import {
   Tag,
   TestTube2,
   Vote,
+  TrendingUp,
   Sun,
   Moon,
 } from 'lucide-react';
@@ -53,6 +54,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Tag,
   TestTube2,
   Vote,
+  TrendingUp,
 };
 
 // Cycle order for view mode

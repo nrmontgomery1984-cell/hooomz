@@ -70,6 +70,7 @@ export const SIDEBAR_SECTIONS: SidebarSection[] = [
     label: 'MANAGE',
     items: [
       { href: '/admin/rates', label: 'Cost Catalogue', iconName: 'DollarSign', allowedModes: ['manager'] },
+      { href: '/forecast', label: 'Forecast', iconName: 'TrendingUp', allowedModes: ['manager'] },
       { href: '/profile', label: 'Profile', iconName: 'User', allowedModes: ['manager'] },
     ],
   },

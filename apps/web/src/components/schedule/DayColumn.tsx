@@ -15,10 +15,11 @@ interface DayColumnProps {
   onBlockClick?: (block: CrewScheduleBlock) => void;
   activeTaskId?: string;
   isExpanded?: boolean;
+  isSelected?: boolean;
   crewMap?: Record<string, string>;
 }
 
-export function DayColumn({ date, blocks, onBlockClick, activeTaskId, isExpanded = true, crewMap }: DayColumnProps) {
+export function DayColumn({ date, blocks, onBlockClick, activeTaskId, isExpanded = true, isSelected, crewMap }: DayColumnProps) {
   const today = new Date();
   const isToday = isSameDay(date, today);
   const totalScheduled = blocks.reduce((s, b) => s + b.estimatedHours, 0);
@@ -48,7 +49,15 @@ export function DayColumn({ date, blocks, onBlockClick, activeTaskId, isExpanded
   }
 
   return (
-    <div className="space-y-2">
+    <div
+      className="space-y-2"
+      style={isSelected ? {
+        background: 'var(--surface-2, #F7F9FC)',
+        borderRadius: 8,
+        padding: 8,
+        border: '1px solid var(--blue, #2563EB)',
+      } : undefined}
+    >
       {/* Day header */}
       <div className="flex items-center justify-between px-1">
         <div>
@@ -66,8 +75,15 @@ export function DayColumn({ date, blocks, onBlockClick, activeTaskId, isExpanded
 
       {/* Task cards */}
       {blocks.length === 0 ? (
-        <div className="text-center py-6 text-xs text-gray-400 border border-dashed border-gray-200 rounded-lg">
-          No tasks scheduled
+        <div
+          className="flex items-center justify-center text-xs border border-dashed rounded-lg"
+          style={{
+            minHeight: 120,
+            borderColor: 'var(--border, #E5E7EB)',
+            color: 'var(--text-3, #9CA3AF)',
+          }}
+        >
+          No tasks
         </div>
       ) : (
         <div className="space-y-2">

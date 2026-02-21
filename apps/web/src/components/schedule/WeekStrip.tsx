@@ -25,7 +25,7 @@ export function WeekStrip({ weekStart, selectedDate, onSelectDate, onPrevWeek, o
   return (
     <div className="bg-white border-b border-gray-200">
       {/* Week nav */}
-      <div className="flex items-center justify-between px-4 py-2">
+      <div className="flex items-center justify-between px-4 md:px-6 py-2">
         <button
           onClick={onPrevWeek}
           className="p-2 text-gray-500 hover:text-gray-800 transition-colors"
@@ -54,7 +54,7 @@ export function WeekStrip({ weekStart, selectedDate, onSelectDate, onPrevWeek, o
       </div>
 
       {/* Day pills */}
-      <div className="flex px-2 pb-2 gap-1">
+      <div className="flex px-2 md:px-4 pb-2 gap-1 md:gap-2">
         {days.map((day, i) => {
           const isToday = isSameDay(day, today);
           const isSelected = isSameDay(day, selectedDate);

@@ -33,9 +33,12 @@ interface QuarterDef {
   quarter: number;
 }
 
-function getQuarters(): QuarterDef[] {
+function getQuarters(configCreatedYear?: number): QuarterDef[] {
   const now = new Date();
   const y = now.getFullYear();
+  const baseYear = configCreatedYear ?? y;
+  // Forecast year: 1 if current year matches config start, 2 if next year, etc. Clamped 1-3.
+  const forecastYear = Math.max(1, Math.min(3, y - baseYear + 1));
   const quarters: QuarterDef[] = [];
   for (let q = 1; q <= 4; q++) {
     const startMonth = (q - 1) * 3 + 1;
@@ -45,7 +48,7 @@ function getQuarters(): QuarterDef[] {
       label: `Q${q} ${y}`,
       from: `${y}-${String(startMonth).padStart(2, '0')}-01`,
       to: `${y}-${String(endMonth).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`,
-      year: 1,
+      year: forecastYear,
       quarter: q,
     });
   }
@@ -53,11 +56,11 @@ function getQuarters(): QuarterDef[] {
 }
 
 export default function VariancePage() {
-  const quarters = useMemo(() => getQuarters(), []);
+  const { data: config } = useActiveForecastConfig();
+  const configYear = config ? new Date(config.createdAt).getFullYear() : undefined;
+  const quarters = useMemo(() => getQuarters(configYear), [configYear]);
   const [selectedQ, setSelectedQ] = useState(0);
   const q = quarters[selectedQ];
-
-  const { data: config } = useActiveForecastConfig();
   const { data: projection } = useForecastProjection(config ?? null);
   const { data: actuals, isLoading: actualsLoading } = useFinancialActuals(q.from, q.to);
   const { data: snapshots } = useForecastSnapshots();

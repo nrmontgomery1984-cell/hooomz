@@ -238,3 +238,22 @@ export const DEFAULT_FORECAST_VALUES = {
 } as const;
 
 export const MATERIAL_COST_PCT = 0.25;
+
+// Scenario presets — multipliers applied to base defaults
+export const SCENARIO_MULTIPLIERS = {
+  conservative: {
+    jobsPerWeek: { y1: 0.8, y2: 0.85, y3: 0.9 },
+    avgJobValue: { y1: 0.9, y2: 0.9, y3: 0.95 },
+    operatingWeeks: { y1: 34, y2: 42, y3: 46 },
+  },
+  base: {
+    jobsPerWeek: { y1: 1, y2: 1, y3: 1 },
+    avgJobValue: { y1: 1, y2: 1, y3: 1 },
+    operatingWeeks: { y1: 36, y2: 46, y3: 50 },
+  },
+  aggressive: {
+    jobsPerWeek: { y1: 1.2, y2: 1.3, y3: 1.4 },
+    avgJobValue: { y1: 1.1, y2: 1.15, y3: 1.2 },
+    operatingWeeks: { y1: 40, y2: 48, y3: 50 },
+  },
+} as const;

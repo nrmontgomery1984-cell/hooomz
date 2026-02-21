@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   useActiveForecastConfig,
   useCreateForecastConfig,
@@ -9,7 +9,7 @@ import {
 } from '@/lib/hooks/useForecast';
 import { useServicesContext } from '@/lib/services/ServicesContext';
 import type { ForecastConfig } from '@/lib/types/forecast.types';
-import { DEFAULT_FORECAST_VALUES } from '@/lib/types/forecast.types';
+import { DEFAULT_FORECAST_VALUES, SCENARIO_MULTIPLIERS } from '@/lib/types/forecast.types';
 import type { YearForecast } from '@/lib/types/forecast.types';
 
 function fmt(n: number): string {
@@ -27,6 +27,8 @@ export default function ProjectionsPage() {
   const saveConfig = useSaveForecastConfig();
   const [draft, setDraft] = useState<ForecastConfig | null>(null);
   const [activeYear, setActiveYear] = useState(1);
+  const creatingRef = useRef(false);
+  const isDirtyRef = useRef(false);
 
   // Initialize draft from active config or create default
   useEffect(() => {
@@ -39,13 +41,14 @@ export default function ProjectionsPage() {
   // Create default config on first load if none exists
   useEffect(() => {
     if (configLoading || servicesLoading || !services) return;
-    if (activeConfig === null && !draft) {
+    if (activeConfig === null && !draft && !creatingRef.current) {
+      creatingRef.current = true;
       // Try to pull crew rates from IndexedDB
       services.crew.findAll().then((members) => {
         const nathan = members.find((m) => m.name.toLowerCase().includes('nathan'));
         const nishant = members.find((m) => m.name.toLowerCase().includes('nishant'));
         createConfig.mutate({
-          name: 'Base Case 2026',
+          name: `Base Case ${new Date().getFullYear()}`,
           isActive: true,
           scenario: 'base',
           nathanWageRate: nathan?.wageRate ?? DEFAULT_FORECAST_VALUES.nathanWageRate,
@@ -62,7 +65,7 @@ export default function ProjectionsPage() {
         });
       });
     }
-  }, [activeConfig, configLoading, servicesLoading, services, draft, createConfig]);
+  }, [activeConfig, configLoading, servicesLoading, services, draft]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Sync created config into draft
   useEffect(() => {
@@ -74,15 +77,16 @@ export default function ProjectionsPage() {
   const { data: projection } = useForecastProjection(draft);
 
   const updateField = useCallback(<K extends keyof ForecastConfig>(key: K, value: ForecastConfig[K]) => {
+    isDirtyRef.current = true;
     setDraft((prev) => {
       if (!prev) return prev;
       return { ...prev, [key]: value };
     });
   }, []);
 
-  // Auto-save on draft changes (debounced)
+  // Auto-save on draft changes (debounced) — only when user has edited
   useEffect(() => {
-    if (!draft || !draft.id) return;
+    if (!draft || !draft.id || !isDirtyRef.current) return;
     const timer = setTimeout(() => {
       saveConfig.mutate(draft);
     }, 800);
@@ -102,7 +106,29 @@ export default function ProjectionsPage() {
         {(['conservative', 'base', 'aggressive'] as const).map((s) => (
           <button
             key={s}
-            onClick={() => updateField('scenario', s)}
+            onClick={() => {
+              if (!draft) return;
+              const m = SCENARIO_MULTIPLIERS[s];
+              isDirtyRef.current = true;
+              setDraft((prev) => {
+                if (!prev) return prev;
+                return {
+                  ...prev,
+                  scenario: s,
+                  operatingWeeks: { ...m.operatingWeeks },
+                  jobsPerWeek: {
+                    y1: DEFAULT_FORECAST_VALUES.jobsPerWeek.y1 * m.jobsPerWeek.y1,
+                    y2: DEFAULT_FORECAST_VALUES.jobsPerWeek.y2 * m.jobsPerWeek.y2,
+                    y3: DEFAULT_FORECAST_VALUES.jobsPerWeek.y3 * m.jobsPerWeek.y3,
+                  },
+                  avgJobValue: {
+                    y1: DEFAULT_FORECAST_VALUES.avgJobValue.y1 * m.avgJobValue.y1,
+                    y2: DEFAULT_FORECAST_VALUES.avgJobValue.y2 * m.avgJobValue.y2,
+                    y3: DEFAULT_FORECAST_VALUES.avgJobValue.y3 * m.avgJobValue.y3,
+                  },
+                };
+              });
+            }}
             style={{
               padding: '6px 14px', fontSize: 12, fontWeight: draft.scenario === s ? 600 : 500,
               borderRadius: 6, border: '1px solid var(--border, #E5E7EB)',
@@ -119,7 +145,7 @@ export default function ProjectionsPage() {
         )}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 20 }}>
         {/* LEFT: Config inputs */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, minWidth: 0 }}>
           {/* Crew Rates */}

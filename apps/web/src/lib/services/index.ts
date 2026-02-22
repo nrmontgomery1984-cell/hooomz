@@ -88,6 +88,10 @@ import { ForecastConfigRepository } from '../repositories/forecastConfig.reposit
 import { ForecastSnapshotRepository } from '../repositories/forecastSnapshot.repository';
 import { FinancialActualsService } from './financialActuals.service';
 
+// Labour Estimation Engine
+import { SkillRateConfigRepository } from '../repositories/skillRateConfig.repository';
+import { LabourEstimationService, createLabourEstimationService } from './labourEstimation.service';
+
 /**
  * Repository container - provides access to all offline-first repositories
  * Use this for read operations and internal access.
@@ -166,6 +170,10 @@ export interface Services {
     snapshots: ForecastSnapshotRepository;
     actuals: FinancialActualsService;
   };
+
+  // Labour Estimation Engine
+  labourEstimation: LabourEstimationService;
+  skillRateConfig: SkillRateConfigRepository;
 }
 
 /**
@@ -247,6 +255,7 @@ export async function initializeServices(): Promise<Services> {
     const intakeDraftRepository = new IntakeDraftRepository(storage);
     const discoveryDraftRepository = new DiscoveryDraftRepository(storage);
     const crewScheduleRepository = new CrewScheduleRepository(storage);
+    const skillRateConfigRepository = new SkillRateConfigRepository(storage);
     const scheduleNoteRepository = new ScheduleNoteRepository(storage);
 
     // Create ActivityService (THE SPINE)
@@ -365,6 +374,16 @@ export async function initializeServices(): Promise<Services> {
         snapshots: new ForecastSnapshotRepository(storage),
         actuals: new FinancialActualsService(storage),
       },
+
+      // Labour Estimation Engine
+      labourEstimation: createLabourEstimationService(
+        skillRateConfigRepository,
+        new DeployedTaskRepository(storage),
+        new SopTaskBlueprintRepository(storage),
+        crewMemberRepository,
+        activityService,
+      ),
+      skillRateConfig: skillRateConfigRepository,
     };
 
     servicesInstance = services;

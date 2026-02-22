@@ -28,6 +28,7 @@ import { TRADE_CODES } from '@/lib/types/intake.types';
 import { SOPChecklist } from '@/components/sop/SOPChecklist';
 import type { EnrichedTask } from '@/lib/utils/taskParsing';
 import type { CostCatalog } from '@/lib/types/costCatalog.types';
+import type { TaskLabourEstimate, LabourActual } from '@/lib/types/labourEstimation.types';
 import { resolveTaskBreakdown } from '@/lib/utils/lineItemMaterials';
 
 // =============================================================================
@@ -65,6 +66,8 @@ interface TaskCardProps {
   onSaveNote: (taskId: string, newDescription: string) => void;
   isCompleting: boolean;
   isUndoing: boolean;
+  labourEstimate?: TaskLabourEstimate | null;
+  labourActual?: LabourActual | null;
   onOpenSOP?: (sopId: string) => void;
   onOpenKnowledge?: (sourceId: string) => void;
   onToggleLabsFlag?: (taskId: string, flagged: boolean) => void;
@@ -101,6 +104,8 @@ export function TaskCard({
   onSaveNote,
   isCompleting,
   isUndoing,
+  labourEstimate,
+  labourActual,
   onOpenSOP,
   onOpenKnowledge,
   onToggleLabsFlag,
@@ -355,6 +360,74 @@ export function TaskCard({
               </div>
             );
           })()}
+
+          {/* Labour Budget */}
+          {labourEstimate && (
+            <div style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 6, padding: '10px 12px' }}>
+              <p className="text-[11px] font-medium mb-1.5" style={{ color: 'var(--text-2)' }}>Labour Budget</p>
+              <div className="space-y-1">
+                <div className="flex justify-between text-xs">
+                  <span style={{ color: 'var(--text-3)' }}>Sell Budget</span>
+                  <span className="font-medium" style={{ color: 'var(--text)', fontFamily: 'var(--font-mono)' }}>
+                    ${labourEstimate.sellBudget.toLocaleString('en-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span style={{ color: 'var(--text-3)' }}>Cost Budget ({Math.round(labourEstimate.marginApplied * 100)}%)</span>
+                  <span className="font-medium" style={{ color: 'var(--text)', fontFamily: 'var(--font-mono)' }}>
+                    ${labourEstimate.costBudget.toLocaleString('en-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span style={{ color: 'var(--text-3)' }}>Budgeted Hours</span>
+                  <span className="font-medium" style={{ color: 'var(--text)', fontFamily: 'var(--font-mono)' }}>
+                    {labourEstimate.budgetedHours.toFixed(1)}h @ ${labourEstimate.optimalCostRate}/hr
+                  </span>
+                </div>
+              </div>
+              {labourActual && (
+                <div className="mt-2 pt-2" style={{ borderTop: '1px solid var(--border)' }}>
+                  {labourActual.actualHours !== null && labourActual.actualCost !== null ? (
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-xs">
+                        <span style={{ color: 'var(--text-3)' }}>Actual</span>
+                        <span
+                          className="font-medium"
+                          style={{
+                            fontFamily: 'var(--font-mono)',
+                            color: labourActual.schedulingVariance !== null && labourActual.schedulingVariance > 0.15
+                              ? 'var(--red)' : 'var(--text)',
+                          }}
+                        >
+                          {labourActual.actualHours.toFixed(1)}h · ${labourActual.actualCost.toLocaleString('en-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </span>
+                      </div>
+                      {labourActual.schedulingVariance !== null && (
+                        <div className="flex justify-between text-xs">
+                          <span style={{ color: 'var(--text-3)' }}>Variance</span>
+                          <span
+                            className="font-medium"
+                            style={{
+                              fontFamily: 'var(--font-mono)',
+                              color: labourActual.schedulingVariance > 0.15 ? 'var(--red)'
+                                : labourActual.schedulingVariance > 0 ? 'var(--amber)'
+                                : 'var(--green)',
+                            }}
+                          >
+                            {labourActual.schedulingVariance > 0 ? '+' : ''}{Math.round(labourActual.schedulingVariance * 100)}%
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="text-xs" style={{ color: 'var(--text-3)' }}>
+                      Crew assigned · ${labourActual.assignedCostRate}/hr
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Training status */}
           {trainingRecord && crewMemberId && (

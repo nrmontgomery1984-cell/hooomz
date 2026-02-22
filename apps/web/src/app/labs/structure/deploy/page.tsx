@@ -15,8 +15,10 @@ import { Rocket, MapPin, Check, AlertCircle } from 'lucide-react';
 import { usePendingBlueprints, useDeployBlueprint } from '@/lib/hooks/useTaskPipeline';
 import { useLoopTree } from '@/lib/hooks/useLoopManagement';
 import { useActiveCrew } from '@/lib/crew/ActiveCrewContext';
+import { useSkillRateConfig, useEstimatePreview } from '@/lib/hooks/useLabourEstimation';
 import type { SopTaskBlueprint } from '@hooomz/shared-contracts';
 import type { IterationTreeNode } from '@/lib/services/loopManagement.service';
+import type { EstimateParams } from '@/lib/types/labourEstimation.types';
 
 const FALLBACK_PROJECT_ID = 'project_demo_structure';
 
@@ -124,6 +126,19 @@ function BlueprintDeployCard({
 }) {
   const [selectedIterationId, setSelectedIterationId] = useState<string | null>(null);
   const [selectedLabel, setSelectedLabel] = useState('');
+  const [skillLevel, setSkillLevel] = useState(blueprint.minSkillLevel ?? 0);
+  const { data: config } = useSkillRateConfig();
+
+  // Estimate preview params — uses the blueprint's estimatedHoursPerUnit as a proxy sell rate
+  const estimateParams: EstimateParams | null = config && blueprint.totalUnits > 0 && blueprint.estimatedHoursPerUnit > 0
+    ? {
+        catalogueSellRate: blueprint.estimatedHoursPerUnit, // placeholder sell rate per unit
+        quantity: blueprint.totalUnits,
+        unit: 'EA',
+        minSkillLevel: skillLevel,
+      }
+    : null;
+  const { data: preview } = useEstimatePreview(estimateParams);
 
   // Flatten tree into selectable room iterations
   const roomOptions: { id: string; label: string }[] = [];
@@ -160,6 +175,60 @@ function BlueprintDeployCard({
           </div>
         </div>
       </div>
+
+      {/* Skill level selector */}
+      {config && (
+        <div className="mb-3">
+          <label className="text-xs font-medium block mb-1" style={{ color: '#6B7280' }}>
+            Minimum skill level:
+          </label>
+          <select
+            value={skillLevel}
+            onChange={(e) => setSkillLevel(Number(e.target.value))}
+            className="w-full text-sm px-3 py-2 rounded-lg appearance-none"
+            style={{ border: '1px solid #D1D5DB', background: '#FFFFFF', outline: 'none' }}
+          >
+            {config.skillLevels.map((sl) => (
+              <option key={sl.level} value={sl.level}>
+                {sl.label} · ${sl.costRate}/hr
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      {/* Estimate preview */}
+      {preview && (
+        <div className="mb-3 rounded-lg p-3" style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
+          <div className="text-[10px] font-medium mb-2" style={{ color: '#6B7280' }}>
+            Estimate Preview
+          </div>
+          <div className="space-y-1">
+            <div className="flex justify-between text-xs">
+              <span style={{ color: '#6B7280' }}>Sell Budget</span>
+              <span className="font-medium" style={{ color: '#111827' }}>
+                ${preview.sellBudget.toLocaleString('en-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </span>
+            </div>
+            <div className="flex justify-between text-xs">
+              <span style={{ color: '#6B7280' }}>
+                Cost Budget <span className="text-[10px]">({Math.round(preview.marginApplied * 100)}% margin)</span>
+              </span>
+              <span className="font-medium" style={{ color: '#111827' }}>
+                ${preview.costBudget.toLocaleString('en-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </span>
+            </div>
+            <div className="flex justify-between text-xs">
+              <span style={{ color: '#6B7280' }}>
+                Budgeted Hours <span className="text-[10px]">({config?.skillLevels.find((s) => s.level === preview.optimalSkillLevel)?.label ?? `L${preview.optimalSkillLevel}`} · ${preview.optimalCostRate}/hr)</span>
+              </span>
+              <span className="font-medium" style={{ color: '#111827' }}>
+                {preview.budgetedHours.toFixed(1)}h
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Location selector */}
       <div className="mb-3">

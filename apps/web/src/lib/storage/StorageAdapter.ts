@@ -127,6 +127,8 @@ export const StoreNames = {
   // Financial Forecasting
   FORECAST_CONFIGS: 'forecastConfigs',
   FORECAST_SNAPSHOTS: 'forecastSnapshots',
+  // Labour Estimation Engine
+  SKILL_RATE_CONFIG: 'skillRateConfig',
 } as const;
 
 export type StoreName = (typeof StoreNames)[keyof typeof StoreNames];

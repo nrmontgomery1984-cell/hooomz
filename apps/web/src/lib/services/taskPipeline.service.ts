@@ -112,6 +112,7 @@ export class TaskPipelineService {
           totalUnits: li.quantity,
           loopContextLabel: li.loopContextLabel,
           isLooped: li.isLooped ?? false,
+          minSkillLevel: 0,
           status: 'pending',
         });
         blueprints.push(blueprint);
@@ -170,6 +171,7 @@ export class TaskPipelineService {
         estimatedHoursPerUnit: coLi.estimatedHours,
         totalUnits: 1,
         isLooped: false,
+        minSkillLevel: 0,
         status: 'pending',
       });
       blueprints.push(blueprint);
@@ -256,6 +258,8 @@ export class TaskPipelineService {
       sopVersion: blueprint.sopVersion,
       loopBindingLabel,
       loopIterationId,
+      labourEstimate: null,
+      labourActual: null,
     });
 
     // Mark blueprint as deployed

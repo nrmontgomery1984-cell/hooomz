@@ -63,6 +63,29 @@ export class DeployedTaskRepository {
     );
   }
 
+  async update(id: string, data: Partial<Omit<DeployedTask, 'id' | 'createdAt'>>): Promise<DeployedTask | null> {
+    const existing = await this.storage.get<DeployedTask>(this.storeName, id);
+    if (!existing) return null;
+    const updated: DeployedTask = {
+      ...existing,
+      ...data,
+      id: existing.id,
+      createdAt: existing.createdAt,
+    };
+    await this.storage.set(this.storeName, id, updated);
+    await this.syncQueue.queueUpdate(this.storeName, id, updated);
+    return updated;
+  }
+
+  async findByProjectBlueprints(blueprintIds: string[]): Promise<DeployedTask[]> {
+    if (blueprintIds.length === 0) return [];
+    const idSet = new Set(blueprintIds);
+    return this.storage.query<DeployedTask>(
+      this.storeName,
+      (d) => idSet.has(d.blueprintId)
+    );
+  }
+
   async delete(id: string): Promise<boolean> {
     const existing = await this.storage.get<DeployedTask>(this.storeName, id);
     if (!existing) return false;

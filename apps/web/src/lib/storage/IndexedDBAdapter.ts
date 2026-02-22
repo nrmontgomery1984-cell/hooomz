@@ -7,7 +7,7 @@ import type { StorageAdapter } from './StorageAdapter';
 import { StoreNames } from './StorageAdapter';
 
 const DB_NAME = 'hooomz_db';
-const DB_VERSION = 20; // v20: Financial Forecasting (forecastConfigs + forecastSnapshots)
+const DB_VERSION = 21; // v21: Labour Estimation Engine (skillRateConfig)
 
 export class IndexedDBAdapter implements StorageAdapter {
   private db: IDBDatabase | null = null;

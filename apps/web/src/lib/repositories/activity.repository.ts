@@ -1262,6 +1262,72 @@ export class ActivityService {
   }
 
   /**
+   * Log labour estimation events
+   */
+  async logLabourEvent(
+    eventType:
+      | 'labour.estimate_applied'
+      | 'labour.crew_assigned'
+      | 'labour.hours_recorded'
+      | 'labour.variance_recorded'
+      | 'labour.variance_warning'
+      | 'labour.config_updated'
+      | 'labour.estimates_recalculated',
+    projectId: string,
+    entityId: string,
+    data: {
+      sell_budget?: number;
+      cost_budget?: number;
+      budgeted_hours?: number;
+      actual_hours?: number;
+      actual_cost?: number;
+      scheduling_variance?: number;
+      variance_pct?: number;
+      skill_level?: number;
+      margin?: number;
+      crew_member_id?: string;
+      crew_name?: string;
+      cost_rate?: number;
+      tasks_updated?: number;
+      [key: string]: unknown;
+    } = {}
+  ): Promise<ActivityEvent> {
+    let summary: string;
+    switch (eventType) {
+      case 'labour.estimate_applied':
+        summary = `Labour estimate applied — $${data.sell_budget?.toFixed(2) || '?'} sell, ${data.budgeted_hours?.toFixed(1) || '?'}h budgeted`;
+        break;
+      case 'labour.crew_assigned':
+        summary = `Crew assigned: ${data.crew_name || 'Crew'} at $${data.cost_rate || '?'}/hr`;
+        break;
+      case 'labour.hours_recorded':
+        summary = `Actual hours recorded: ${data.actual_hours?.toFixed(1) || '?'}h`;
+        break;
+      case 'labour.variance_recorded':
+        summary = `Variance recorded — $${data.scheduling_variance?.toFixed(2) || '?'}`;
+        break;
+      case 'labour.variance_warning':
+        summary = `Variance warning: ${data.variance_pct?.toFixed(0) || '?'}% over cost budget`;
+        break;
+      case 'labour.config_updated':
+        summary = 'Skill rate config updated';
+        break;
+      case 'labour.estimates_recalculated':
+        summary = `Labour estimates recalculated — ${data.tasks_updated || 0} tasks updated`;
+        break;
+    }
+
+    return this.repository.create({
+      event_type: eventType,
+      project_id: projectId,
+      entity_type: 'labour_estimate',
+      entity_id: entityId,
+      summary,
+      event_data: data,
+    });
+  }
+
+  /**
    * Get repository for direct access to query methods
    */
   getRepository(): ActivityRepository {

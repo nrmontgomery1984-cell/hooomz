@@ -367,6 +367,8 @@ export interface SopTaskBlueprint {
   totalUnits: number;
   loopContextLabel?: string;
   isLooped: boolean;
+  /** Minimum skill level (0-4) for labour estimation. Default 0. */
+  minSkillLevel: number;
   status: BlueprintStatus;
   createdAt: string;
   updatedAt: string;
@@ -382,6 +384,30 @@ export interface DeployedTask {
   sopVersion: number;
   loopBindingLabel?: string;
   loopIterationId?: string;
+
+  /** Labour estimate — set at deployment time (calculated from blueprint + quantity) */
+  labourEstimate: {
+    quantity: number;
+    unit: string;
+    sellBudget: number;
+    costBudget: number;
+    budgetedHours: number;
+    optimalSkillLevel: number;
+    optimalCostRate: number;
+    marginApplied: number;
+    calculatedAt: string;
+  } | null;
+
+  /** Labour actual — set at assignment time, completed when task finishes */
+  labourActual: {
+    assignedCrewMemberId: string;
+    assignedCostRate: number;
+    actualHours: number | null;
+    actualCost: number | null;
+    schedulingVariance: number | null;
+    variantReason?: string;
+  } | null;
+
   createdAt: string;
 }
 

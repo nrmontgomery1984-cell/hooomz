@@ -156,6 +156,57 @@ export function useDeclineChangeOrder() {
   });
 }
 
+export function useSubmitForApproval() {
+  const { services } = useServicesContext();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) =>
+      services!.integration.changeOrders.submitForApproval(id),
+    onSuccess: (result) => {
+      queryClient.invalidateQueries({
+        queryKey: INTEGRATION_QUERY_KEYS.changeOrders.byProject(result.projectId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: INTEGRATION_QUERY_KEYS.changeOrders.detail(result.id),
+      });
+    },
+  });
+}
+
+export function useCancelChangeOrder() {
+  const { services } = useServicesContext();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) =>
+      services!.integration.changeOrders.cancelChangeOrder(id),
+    onSuccess: (result) => {
+      queryClient.invalidateQueries({
+        queryKey: INTEGRATION_QUERY_KEYS.changeOrders.byProject(result.projectId),
+      });
+    },
+  });
+}
+
+export function useRemoveChangeOrderLineItem() {
+  const { services } = useServicesContext();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: { changeOrderId: string; lineItemId: string }) =>
+      services!.integration.changeOrders.removeLineItem(data.changeOrderId, data.lineItemId),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: INTEGRATION_QUERY_KEYS.changeOrders.lineItems(variables.changeOrderId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: INTEGRATION_QUERY_KEYS.changeOrders.detail(variables.changeOrderId),
+      });
+    },
+  });
+}
+
 // ============================================================================
 // Project Budget (includes CO impact)
 // ============================================================================

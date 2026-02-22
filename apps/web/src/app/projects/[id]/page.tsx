@@ -43,6 +43,8 @@ import { RiskAttentionPanel } from '@/components/projects/RiskAttentionPanel';
 import { TimelinePanel } from '@/components/projects/TimelinePanel';
 import { CrewTrainingPanel } from '@/components/projects/CrewTrainingPanel';
 import { ChangeOrderPanel } from '@/components/projects/ChangeOrderPanel';
+import { CreateChangeOrderSheet } from '@/components/projects/CreateChangeOrderSheet';
+import { ChangeOrderDetailSheet } from '@/components/projects/ChangeOrderDetailSheet';
 import { ScriptPipeline } from '@/components/projects/ScriptPipeline';
 import { LoopRow } from '@/components/loops/LoopRow';
 import type { LoopStatus } from '@/components/loops/LoopRow';
@@ -110,6 +112,8 @@ export default function ProjectDetailPage() {
   const [sopSheetId, setSopSheetId] = useState<string | null>(null);
   const [knowledgeSheetId, setKnowledgeSheetId] = useState<string | null>(null);
   const [quickCaptureTask, setQuickCaptureTask] = useState<EnrichedTask | null>(null);
+  const [showCreateCO, setShowCreateCO] = useState(false);
+  const [selectedCOId, setSelectedCOId] = useState<string | null>(null);
 
   // Labs flag toggle
   const toggleLabsFlag = useToggleLabsFlag();
@@ -686,12 +690,12 @@ export default function ProjectDetailPage() {
                   pendingChangeOrders={pendingCOs}
                   trainingGaps={trainingGaps}
                 />
-                {changeOrders.length > 0 && (
-                  <ChangeOrderPanel
-                    changeOrders={changeOrders}
-                    budgetImpact={coBudgetImpact || null}
-                  />
-                )}
+                <ChangeOrderPanel
+                  changeOrders={changeOrders}
+                  budgetImpact={coBudgetImpact || null}
+                  onCreateCO={() => setShowCreateCO(true)}
+                  onSelectCO={(id) => setSelectedCOId(id)}
+                />
                 <CrewTrainingPanel
                   crewMembers={allCrewMembers}
                   trainingRecords={allTrainingRecords}
@@ -754,6 +758,20 @@ export default function ProjectDetailPage() {
             <BottomSheet isOpen={!!knowledgeSheetId} onClose={() => setKnowledgeSheetId(null)} title="Lab Evidence">
               {knowledgeSheetId && <KnowledgeSheetContent knowledgeId={knowledgeSheetId} />}
             </BottomSheet>
+
+            {/* ── Create Change Order Sheet ── */}
+            <CreateChangeOrderSheet
+              isOpen={showCreateCO}
+              onClose={() => setShowCreateCO(false)}
+              projectId={projectId}
+            />
+
+            {/* ── Change Order Detail Sheet ── */}
+            <ChangeOrderDetailSheet
+              isOpen={!!selectedCOId}
+              onClose={() => setSelectedCOId(null)}
+              changeOrderId={selectedCOId || ''}
+            />
 
           </div>
         );

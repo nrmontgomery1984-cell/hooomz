@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
-  Home, Activity, Calculator, FlaskConical, Plus, Sun, Moon, UserCircle,
+  Home, Activity, Calculator, FlaskConical, TrendingUp, Plus, Sun, Moon, UserCircle,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useQuickAdd } from '@/components/activity/QuickAddContext';
@@ -23,6 +23,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Home,
   Activity,
   Calculator,
+  TrendingUp,
   FlaskConical,
 };
 

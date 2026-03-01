@@ -8,12 +8,20 @@
 import type { TaskBudget, SopTaskBlueprint, DeployedTask } from '@hooomz/shared-contracts';
 import type { TaskBudgetRepository } from '../repositories/taskBudget.repository';
 import type { ActivityService } from '../repositories/activity.repository';
+import type { ExpenseRepository } from '../repositories/expense.repository';
 
 export class BudgetService {
+  private expenseRepo: ExpenseRepository | null = null;
+
   constructor(
     private budgetRepo: TaskBudgetRepository,
     private activity: ActivityService,
   ) {}
+
+  /** Late-bind expense repo to avoid circular init order */
+  setExpenseRepo(repo: ExpenseRepository): void {
+    this.expenseRepo = repo;
+  }
 
   /**
    * Auto-create a TaskBudget when a blueprint is deployed.
@@ -129,6 +137,24 @@ export class BudgetService {
     budgets: TaskBudget[];
   }> {
     const budgets = await this.budgetRepo.findByProject(projectId);
+
+    // Derive actualMaterialCost from expenses (Option B: read-time enrichment)
+    if (this.expenseRepo) {
+      const projectExpenses = await this.expenseRepo.findByProject(projectId);
+      const taskExpenseMap = new Map<string, number>();
+      for (const exp of projectExpenses) {
+        if (exp.taskId) {
+          taskExpenseMap.set(exp.taskId, (taskExpenseMap.get(exp.taskId) || 0) + exp.amount);
+        }
+      }
+      for (const budget of budgets) {
+        const expenseTotal = taskExpenseMap.get(budget.taskId);
+        if (expenseTotal !== undefined) {
+          budget.actualMaterialCost = expenseTotal;
+        }
+      }
+    }
+
     const totalBudgetedHours = budgets.reduce((sum, b) => sum + b.budgetedHours, 0);
     const totalActualHours = budgets.reduce((sum, b) => sum + b.actualHours, 0);
 

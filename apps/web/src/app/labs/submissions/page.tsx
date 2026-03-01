@@ -8,6 +8,9 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useLabsSubmissions } from '@/lib/hooks/useLabsData';
 import { SubmissionCard } from '@/components/labs';
+import { SECTION_COLORS } from '@/lib/viewmode';
+
+const LABS_COLOR = SECTION_COLORS.labs;
 
 type StatusFilter = 'all' | 'submitted' | 'reviewed' | 'resolved';
 
@@ -40,8 +43,8 @@ export default function SubmissionsPage() {
       <div style={{ background: '#FFFFFF', borderBottom: '1px solid #E5E7EB' }}>
         <div className="max-w-lg mx-auto px-4 py-4">
           <div className="flex items-center gap-2 mb-1">
-            <Link href="/labs" className="text-sm text-teal-700 hover:underline">Labs</Link>
-            <span className="text-xs text-gray-400">/</span>
+            <Link href="/labs" className="text-sm hover:underline" style={{ color: LABS_COLOR }}>Labs</Link>
+            <span className="text-xs" style={{ color: 'var(--text-3)' }}>/</span>
           </div>
           <h1 className="text-xl font-bold" style={{ color: '#111827' }}>Submissions</h1>
           <p className="text-xs" style={{ color: '#9CA3AF' }}>Field-initiated observations and discoveries</p>
@@ -54,11 +57,12 @@ export default function SubmissionsPage() {
               <button
                 key={f.key}
                 onClick={() => setFilter(f.key)}
-                className={`px-3 py-1.5 text-xs font-medium rounded-full whitespace-nowrap transition-colors ${
+                className="px-3 py-1.5 text-xs font-medium rounded-full whitespace-nowrap transition-colors"
+                style={
                   filter === f.key
-                    ? 'bg-teal-700 text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
+                    ? { background: LABS_COLOR, color: '#fff' }
+                    : { background: 'var(--surface-2)', color: 'var(--text-2)' }
+                }
               >
                 {f.label}
               </button>
@@ -71,12 +75,12 @@ export default function SubmissionsPage() {
         {isLoading ? (
           <div className="text-center py-8">
             <div className="w-8 h-8 border-3 rounded-full animate-spin mx-auto mb-3" style={{ borderColor: '#E5E7EB', borderTopColor: '#0F766E' }} />
-            <p className="text-sm text-gray-400">Loading submissions...</p>
+            <p className="text-sm" style={{ color: 'var(--text-3)' }}>Loading submissions...</p>
           </div>
         ) : sorted.length === 0 ? (
           <div className="text-center py-8">
-            <p className="text-sm text-gray-400">No submissions yet</p>
-            <p className="text-xs text-gray-300 mt-1">Use the Labs button to flag something from the field</p>
+            <p className="text-sm" style={{ color: 'var(--text-3)' }}>No submissions yet</p>
+            <p className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>Use the Labs button to flag something from the field</p>
           </div>
         ) : (
           sorted.map((sub) => (

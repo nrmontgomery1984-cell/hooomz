@@ -473,12 +473,17 @@ export interface KnowledgeChallenge {
 // ============================================================================
 
 export type NotificationType =
+  // Labs
   | 'labs_submission_update'
   | 'experiment_checkpoint'
   | 'experiment_invitation'
   | 'confidence_alert'
   | 'challenge_update'
-  | 'general';
+  | 'general'
+  // Production
+  | 'quote_accepted'
+  | 'quote_declined'
+  | 'portal_question';
 
 export interface LabsNotification {
   id: string;

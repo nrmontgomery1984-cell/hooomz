@@ -127,6 +127,7 @@ interface CompleteDiscoveryInput {
   draftId: string;
   projectId: string;
   customerName: string;
+  customerId: string;
   property: Partial<PropertyData>;
   preferences: Partial<DesignPreferences>;
 }
@@ -171,12 +172,44 @@ export function useCompleteDiscovery() {
         event_data: { preferences: input.preferences },
       }).catch((err) => console.error('Failed to log preferences_captured:', err));
 
+      // Auto-create ConsultationRecord if none exists for this project
+      if (services && input.customerId) {
+        try {
+          const existing = await services.consultations.findByProject(input.projectId);
+          if (!existing) {
+            const record = await services.consultations.create({
+              customerId: input.customerId,
+              projectId: input.projectId,
+              scheduledDate: null,
+              completedDate: new Date().toISOString(),
+              sitePhotoIds: [],
+              measurements: input.property as Record<string, unknown>,
+              scopeNotes: (input.preferences as Record<string, unknown>)?.inspirationNotes
+                ? String((input.preferences as Record<string, unknown>).inspirationNotes)
+                : '',
+              status: 'completed',
+              discoveryDraftId: input.draftId,
+            });
+            await services.activity.create({
+              event_type: 'consultation_completed',
+              project_id: input.projectId,
+              entity_type: 'consultation',
+              entity_id: record.id,
+              summary: `Consultation completed for ${input.customerName}`,
+            });
+          }
+        } catch (err) {
+          console.error('Failed to create consultation from discovery:', err);
+        }
+      }
+
       // Invalidate queries
       queryClient.invalidateQueries({
         queryKey: LOCAL_QUERY_KEYS.discoveryDrafts.byProject(input.projectId),
       });
       queryClient.invalidateQueries({ queryKey: LOCAL_QUERY_KEYS.projects.all });
       queryClient.invalidateQueries({ queryKey: LOCAL_QUERY_KEYS.activity.all });
+      queryClient.invalidateQueries({ queryKey: ['consultations'] });
     },
   });
 }

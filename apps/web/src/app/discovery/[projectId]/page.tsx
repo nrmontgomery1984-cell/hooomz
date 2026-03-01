@@ -259,7 +259,7 @@ export default function DiscoveryPage() {
   // Load project + customer
   const { data: project, isLoading: projectLoading } = useLocalProject(projectId);
   const { data: customer, isLoading: customerLoading } = useLocalCustomer(
-    project?.clientId
+    project?.customerId
   );
 
   // Load or create discovery draft
@@ -286,7 +286,9 @@ export default function DiscoveryPage() {
   useEffect(() => {
     if (draftId || existingDraft) return; // don't overwrite an existing draft
 
-    const addr = project?.address || customer?.address;
+    // V2 customers have nested `address`, legacy have flat `propertyAddress`
+    type Addr = { street: string; city: string; province: string; postalCode: string };
+    const addr: Addr | undefined = project?.address || (customer && 'address' in customer ? (customer as unknown as { address: Addr }).address : undefined);
     if (addr) {
       setProperty((prev) => ({
         ...prev,
@@ -390,11 +392,12 @@ export default function DiscoveryPage() {
       draftId,
       projectId,
       customerName,
+      customerId: project?.customerId || '',
       property,
       preferences,
     });
-    router.push('/leads');
-  }, [draftId, immediateSave, completeMutation, projectId, customerName, property, preferences, router]);
+    router.push(`/discovery/${projectId}/review`);
+  }, [draftId, immediateSave, completeMutation, projectId, customerName, project?.customerId, property, preferences, router]);
 
   // ── Loading ──
   if (projectLoading || customerLoading || draftLoading) {

@@ -8,7 +8,10 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCreateSop } from '@/lib/hooks/useLabsData';
+import { SECTION_COLORS } from '@/lib/viewmode';
 import type { ObservationMode, CertificationLevel, SopStatus } from '@hooomz/shared-contracts';
+
+const LABS_COLOR = SECTION_COLORS.labs;
 
 const TRADE_FAMILIES = ['Flooring', 'Paint', 'Finish Carpentry', 'Drywall', 'Tile', 'General'];
 const OBSERVATION_MODES: { value: ObservationMode; label: string; desc: string }[] = [

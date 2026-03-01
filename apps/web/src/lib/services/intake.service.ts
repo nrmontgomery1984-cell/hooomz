@@ -495,7 +495,7 @@ export class IntakeService {
       },
       projectType: mapProjectType(data.project.project_type),
       status: ProjectStatus.LEAD,
-      clientId: customerId || 'homeowner_direct',
+      customerId: customerId || 'homeowner_direct',
       dates: {
         startDate: now,
         estimatedEndDate: now,
@@ -614,7 +614,7 @@ export class IntakeService {
       },
       projectType: mapProjectType(data.project.project_type),
       status: ProjectStatus.LEAD,
-      clientId: customerId || 'contractor_internal',
+      customerId: customerId || 'contractor_internal',
       dates: {
         startDate: data.schedule.estimated_start || now,
         estimatedEndDate: now,

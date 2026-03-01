@@ -8,7 +8,10 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useLabsTokens } from '@/lib/hooks/useLabsData';
 import { TOKEN_STATUS_COLORS } from '@/lib/constants/scriptPhases';
+import { SECTION_COLORS } from '@/lib/viewmode';
 import type { LabsTokenStatus } from '@hooomz/shared-contracts';
+
+const LABS_COLOR = SECTION_COLORS.labs;
 
 const STATUS_FILTERS: { value: LabsTokenStatus | 'all'; label: string }[] = [
   { value: 'all', label: 'All' },
@@ -30,52 +33,59 @@ export default function LabsTokensPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen pb-24" style={{ background: '#F3F4F6' }}>
+      <div style={{ minHeight: '100vh', paddingBottom: 96, background: 'var(--bg)' }}>
         <div className="max-w-lg mx-auto px-4 py-12 text-center">
-          <div className="w-8 h-8 border-3 rounded-full animate-spin mx-auto mb-3" style={{ borderColor: '#E5E7EB', borderTopColor: '#0F766E' }} />
-          <p className="text-sm text-gray-400">Loading tokens...</p>
+          <div className="w-8 h-8 border-3 rounded-full animate-spin mx-auto mb-3" style={{ borderColor: 'var(--border)', borderTopColor: 'var(--blue)' }} />
+          <p className="text-sm" style={{ color: 'var(--text-3)' }}>Loading tokens...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen pb-24" style={{ background: '#F3F4F6' }}>
+    <div style={{ minHeight: '100vh', paddingBottom: 96, background: 'var(--bg)' }}>
       {/* Header */}
-      <div style={{ background: '#FFFFFF', borderBottom: '1px solid #E5E7EB' }}>
+      <div style={{ background: 'var(--surface-1)', borderBottom: '1px solid var(--border)' }}>
         <div className="max-w-lg mx-auto px-4 py-4">
           <div className="flex items-center gap-2 mb-1">
-            <Link href="/labs" className="text-sm text-teal-700 hover:underline">Labs</Link>
-            <span className="text-xs text-gray-400">/</span>
+            <Link href="/labs" className="text-sm hover:underline" style={{ color: LABS_COLOR }}>Labs</Link>
+            <span className="text-xs" style={{ color: 'var(--text-3)' }}>/</span>
           </div>
-          <h1 className="text-xl font-bold" style={{ color: '#111827' }}>Material Tokens</h1>
-          <p className="text-xs text-gray-500 mt-0.5">{tokens.length} dynamic material references across SOPs</p>
+          <h1 className="text-xl font-bold" style={{ color: 'var(--text)' }}>Material Tokens</h1>
+          <p className="text-xs mt-0.5" style={{ color: 'var(--text-3)' }}>{tokens.length} dynamic material references across SOPs</p>
+        </div>
+
+        {/* Status filter tabs */}
+        <div className="max-w-lg mx-auto px-4" style={{ display: 'flex', gap: 0, borderTop: '1px solid var(--border)', overflowX: 'auto' }}>
+          {STATUS_FILTERS.map((f) => {
+            const active = statusFilter === f.value;
+            return (
+              <button
+                key={f.value}
+                onClick={() => setStatusFilter(f.value)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 5,
+                  padding: '8px 14px', minHeight: 40,
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  borderBottom: active ? `2px solid ${LABS_COLOR}` : '2px solid transparent',
+                  color: active ? LABS_COLOR : 'var(--text-3)',
+                  fontSize: 12, fontWeight: active ? 700 : 500,
+                  whiteSpace: 'nowrap', flexShrink: 0,
+                  transition: 'color 150ms',
+                }}
+              >
+                {f.label}
+              </button>
+            );
+          })}
         </div>
       </div>
 
       <div className="max-w-lg mx-auto px-4 mt-4 space-y-4">
-        {/* Status filter */}
-        <div className="flex gap-2 overflow-x-auto pb-1">
-          {STATUS_FILTERS.map((f) => (
-            <button
-              key={f.value}
-              onClick={() => setStatusFilter(f.value)}
-              className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-colors flex-shrink-0 ${
-                statusFilter === f.value
-                  ? 'border-teal-600 bg-teal-50 text-teal-700'
-                  : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-              }`}
-              style={{ minHeight: '36px' }}
-            >
-              {f.label}
-            </button>
-          ))}
-        </div>
-
         {filtered.length === 0 ? (
-          <div className="bg-white rounded-xl border border-gray-200 p-8 text-center shadow-sm">
-            <p className="text-sm text-gray-500">No tokens found.</p>
-            <Link href="/labs/seed" className="text-sm text-teal-700 hover:underline mt-2 inline-block">
+          <div style={{ background: 'var(--surface-1)', borderRadius: 'var(--radius)', border: '1px solid var(--border)', padding: 32, textAlign: 'center', boxShadow: 'var(--shadow-card)' }}>
+            <p className="text-sm" style={{ color: 'var(--text-3)' }}>No tokens found.</p>
+            <Link href="/labs/seed" className="text-sm hover:underline mt-2 inline-block" style={{ color: LABS_COLOR }}>
               Seed data
             </Link>
           </div>
@@ -84,7 +94,7 @@ export default function LabsTokensPage() {
             const categoryTokens = filtered.filter((t) => t.category === category);
             return (
               <div key={category}>
-                <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 px-1">
+                <h2 className="text-xs font-semibold uppercase tracking-wider mb-2 px-1" style={{ color: 'var(--text-3)' }}>
                   {category} ({categoryTokens.length})
                 </h2>
                 <div className="space-y-2">
@@ -92,7 +102,8 @@ export default function LabsTokensPage() {
                     <Link
                       key={token.id}
                       href={`/labs/tokens/${token.id}`}
-                      className="block bg-white rounded-xl border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow"
+                      className="block p-4 hover:shadow-md transition-shadow"
+                      style={{ background: 'var(--surface-1)', borderRadius: 'var(--radius)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-card)', display: 'block' }}
                     >
                       <div className="flex items-start justify-between mb-1">
                         <div className="flex items-center gap-2">
@@ -100,15 +111,15 @@ export default function LabsTokensPage() {
                             className="w-2 h-2 rounded-full flex-shrink-0"
                             style={{ backgroundColor: TOKEN_STATUS_COLORS[token.status] || '#888' }}
                           />
-                          <span className="text-sm font-semibold text-gray-900">{token.displayName}</span>
+                          <span className="text-sm font-semibold" style={{ color: 'var(--text)' }}>{token.displayName}</span>
                         </div>
-                        <span className="text-xs text-gray-400">{token.status}</span>
+                        <span className="text-xs" style={{ color: 'var(--text-3)' }}>{token.status}</span>
                       </div>
-                      <p className="text-sm text-gray-700 mb-1">{token.currentRecommendation}</p>
+                      <p className="text-sm mb-1" style={{ color: 'var(--text-2)' }}>{token.currentRecommendation}</p>
                       {token.recommendationDetail && (
-                        <p className="text-xs text-gray-500 line-clamp-1">{token.recommendationDetail}</p>
+                        <p className="text-xs line-clamp-1" style={{ color: 'var(--text-3)' }}>{token.recommendationDetail}</p>
                       )}
-                      <div className="flex items-center gap-3 mt-2 text-xs text-gray-400">
+                      <div className="flex items-center gap-3 mt-2 text-xs" style={{ color: 'var(--text-3)' }}>
                         <span>{token.sopReferences.length} SOP{token.sopReferences.length !== 1 ? 's' : ''}</span>
                         <span className="font-mono">{'{{LAB:' + token.id + '}}'}</span>
                       </div>

@@ -7,6 +7,9 @@
 import Link from 'next/link';
 import { useLabsBallots, useLabsActiveBallot, useCastLabsVote, useLabsHasVoted } from '@/lib/hooks/useLabsData';
 import { VoteBallotCard, VoteResultsChart } from '@/components/labs';
+import { SECTION_COLORS } from '@/lib/viewmode';
+
+const LABS_COLOR = SECTION_COLORS.labs;
 
 export default function LabsVotingPage() {
   const { data: allBallots = [], isLoading } = useLabsBallots();
@@ -26,26 +29,26 @@ export default function LabsVotingPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen pb-24" style={{ background: '#F3F4F6' }}>
+      <div style={{ minHeight: '100vh', paddingBottom: 96, background: 'var(--bg)' }}>
         <div className="max-w-lg mx-auto px-4 py-12 text-center">
-          <div className="w-8 h-8 border-3 rounded-full animate-spin mx-auto mb-3" style={{ borderColor: '#E5E7EB', borderTopColor: '#0F766E' }} />
-          <p className="text-sm text-gray-400">Loading voting...</p>
+          <div className="w-8 h-8 border-3 rounded-full animate-spin mx-auto mb-3" style={{ borderColor: 'var(--border)', borderTopColor: 'var(--blue)' }} />
+          <p className="text-sm" style={{ color: 'var(--text-3)' }}>Loading voting...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen pb-24" style={{ background: '#F3F4F6' }}>
+    <div style={{ minHeight: '100vh', paddingBottom: 96, background: 'var(--bg)' }}>
       {/* Header */}
-      <div style={{ background: '#FFFFFF', borderBottom: '1px solid #E5E7EB' }}>
+      <div style={{ background: 'var(--surface-1)', borderBottom: '1px solid var(--border)' }}>
         <div className="max-w-lg mx-auto px-4 py-4">
           <div className="flex items-center gap-2 mb-1">
-            <Link href="/labs" className="text-sm text-teal-700 hover:underline">Labs</Link>
-            <span className="text-xs text-gray-400">/</span>
+            <Link href="/labs" className="text-sm hover:underline" style={{ color: LABS_COLOR }}>Labs</Link>
+            <span className="text-xs" style={{ color: 'var(--text-3)' }}>/</span>
           </div>
-          <h1 className="text-xl font-bold" style={{ color: '#111827' }}>Partner Voting</h1>
-          <p className="text-xs text-gray-500 mt-0.5">Weekly research priority ballots</p>
+          <h1 className="text-xl font-bold" style={{ color: 'var(--text)' }}>Partner Voting</h1>
+          <p className="text-xs mt-0.5" style={{ color: 'var(--text-3)' }}>Weekly research priority ballots</p>
         </div>
       </div>
 
@@ -53,7 +56,7 @@ export default function LabsVotingPage() {
         {/* Active Ballot */}
         {activeBallot ? (
           <div>
-            <h2 className="text-sm font-semibold text-gray-700 mb-2 px-1">Active Ballot</h2>
+            <h2 className="text-sm font-semibold mb-2 px-1" style={{ color: 'var(--text-2)' }}>Active Ballot</h2>
             <VoteBallotCard
               ballot={activeBallot}
               hasVoted={hasVoted}
@@ -66,24 +69,24 @@ export default function LabsVotingPage() {
             />
           </div>
         ) : (
-          <div className="bg-white rounded-xl border border-gray-200 p-6 text-center shadow-sm">
-            <p className="text-sm text-gray-500">No active ballot this week.</p>
+          <div style={{ background: 'var(--surface-1)', borderRadius: 'var(--radius)', border: '1px solid var(--border)', padding: 24, textAlign: 'center', boxShadow: 'var(--shadow-card)' }}>
+            <p className="text-sm" style={{ color: 'var(--text-3)' }}>No active ballot this week.</p>
           </div>
         )}
 
         {/* Past Ballots */}
         {closedBallots.length > 0 && (
           <div>
-            <h2 className="text-sm font-semibold text-gray-700 mb-2 px-1">Past Ballots</h2>
+            <h2 className="text-sm font-semibold mb-2 px-1" style={{ color: 'var(--text-2)' }}>Past Ballots</h2>
             <div className="space-y-3">
               {closedBallots.map((ballot) => (
-                <div key={ballot.id} className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+                <div key={ballot.id} style={{ background: 'var(--surface-1)', borderRadius: 'var(--radius)', border: '1px solid var(--border)', padding: 16, boxShadow: 'var(--shadow-card)' }}>
                   <div className="flex items-center justify-between mb-3">
                     <div>
-                      <h3 className="text-sm font-semibold text-gray-900">Week {ballot.id}</h3>
-                      <p className="text-xs text-gray-500">{ballot.weekStart} — {ballot.weekEnd}</p>
+                      <h3 className="text-sm font-semibold" style={{ color: 'var(--text)' }}>Week {ballot.id}</h3>
+                      <p className="text-xs" style={{ color: 'var(--text-3)' }}>{ballot.weekStart} — {ballot.weekEnd}</p>
                     </div>
-                    <span className="text-xs text-gray-400">{ballot.totalVotes} votes</span>
+                    <span className="text-xs" style={{ color: 'var(--text-3)' }}>{ballot.totalVotes} votes</span>
                   </div>
                   <VoteResultsChart
                     results={ballot.options.map((o) => ({
@@ -101,9 +104,9 @@ export default function LabsVotingPage() {
         )}
 
         {allBallots.length === 0 && (
-          <div className="bg-white rounded-xl border border-gray-200 p-8 text-center shadow-sm">
-            <p className="text-sm text-gray-500">No ballots yet.</p>
-            <Link href="/labs/seed" className="text-sm text-teal-700 hover:underline mt-2 inline-block">
+          <div style={{ background: 'var(--surface-1)', borderRadius: 'var(--radius)', border: '1px solid var(--border)', padding: 32, textAlign: 'center', boxShadow: 'var(--shadow-card)' }}>
+            <p className="text-sm" style={{ color: 'var(--text-3)' }}>No ballots yet.</p>
+            <Link href="/labs/seed" className="text-sm hover:underline mt-2 inline-block" style={{ color: LABS_COLOR }}>
               Seed data
             </Link>
           </div>

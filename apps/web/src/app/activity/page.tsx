@@ -8,11 +8,13 @@
  * Per spec Section 5C: Inbox/notifications style.
  */
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { Activity, Filter } from 'lucide-react';
 import { PageErrorBoundary } from '@/components/ui/PageErrorBoundary';
 import { useLocalRecentActivity } from '@/lib/hooks/useLocalData';
 import { SimpleActivityFeed } from '@/components/activity';
+import { resolveEntityLink } from '@/lib/utils/entityLinks';
 
 type EventFilter = 'all' | 'tasks' | 'estimates' | 'system';
 
@@ -51,9 +53,18 @@ function filterEvents(
 }
 
 export default function ActivityPage() {
+  const router = useRouter();
   const { data: activityData, isLoading } = useLocalRecentActivity(100);
   const recentEvents = activityData?.events || [];
   const [activeFilter, setActiveFilter] = useState<EventFilter>('all');
+
+  const handleEntityClick = useCallback(
+    (entityType: string, entityId: string, projectId?: string) => {
+      const link = resolveEntityLink(entityType, entityId, projectId);
+      if (link) router.push(link);
+    },
+    [router]
+  );
 
   const filteredEvents = filterEvents(recentEvents as Array<{ event_type: string }>, activeFilter);
 
@@ -124,7 +135,7 @@ export default function ActivityPage() {
               </p>
             </div>
           ) : (
-            <SimpleActivityFeed events={filteredEvents as any} maxItems={100} showProjectName />
+            <SimpleActivityFeed events={filteredEvents as any} maxItems={100} showProjectName onEntityClick={handleEntityClick} />
           )}
         </div>
       </div>

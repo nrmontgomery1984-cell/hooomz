@@ -23,6 +23,7 @@ import type {
   TileScope,
   DrywallScope,
   FlooringMaterial,
+  FlooringComparisonOption,
   PaintMaterial,
   TrimMaterial,
   TileMaterial,
@@ -707,6 +708,250 @@ function TileMaterialForm({
 }
 
 // =============================================================================
+// Flooring Comparison
+// =============================================================================
+
+const FLOORING_CATEGORY_LABELS: Record<FlooringMaterial['category'], string> = {
+  lvp: 'LVP / LVT',
+  hardwood: 'Hardwood',
+  laminate: 'Laminate',
+  tile: 'Tile',
+  carpet: 'Carpet',
+  other: 'Other',
+};
+
+/** Default $/sqft by type + grade from cost catalog seed */
+const DEFAULT_PRICES: Record<string, Record<QualityTier, number>> = {
+  lvp:        { good: 2.99, better: 3.99, best: 5.49 },
+  hardwood:   { good: 5.49, better: 6.99, best: 9.99 },
+  laminate:   { good: 1.79, better: 2.49, best: 3.49 },
+  tile:       { good: 3.49, better: 5.99, best: 8.99 },
+  carpet:     { good: 1.99, better: 3.49, best: 5.99 },
+  engineered: { good: 4.49, better: 5.99, best: 7.99 },
+  other:      { good: 3.00, better: 5.00, best: 7.00 },
+};
+
+function FlooringComparisonSection({
+  options,
+  onChange,
+  onSelectOption,
+  roomSqft,
+}: {
+  options: FlooringComparisonOption[];
+  onChange: (opts: FlooringComparisonOption[]) => void;
+  onSelectOption: (opt: FlooringComparisonOption) => void;
+  roomSqft: number;
+}) {
+  const [expanded, setExpanded] = useState(true);
+
+  const addOption = () => {
+    if (options.length >= 4) return;
+    const newOpt: FlooringComparisonOption = {
+      id: `fco-${Date.now()}-${Math.random().toString(36).slice(2, 5)}`,
+      category: 'lvp',
+      grade: 'good',
+      pricePerSqft: DEFAULT_PRICES.lvp.good,
+    };
+    onChange([...options, newOpt]);
+  };
+
+  const updateOption = (id: string, partial: Partial<FlooringComparisonOption>) => {
+    onChange(options.map((o) => {
+      if (o.id !== id) return o;
+      const updated = { ...o, ...partial };
+      // Auto-fill price when type or grade changes
+      if (('category' in partial || 'grade' in partial) && !('pricePerSqft' in partial)) {
+        const cat = updated.category;
+        const grade = updated.grade;
+        const defaultPrice = DEFAULT_PRICES[cat]?.[grade];
+        if (defaultPrice) updated.pricePerSqft = defaultPrice;
+      }
+      return updated;
+    }));
+  };
+
+  const removeOption = (id: string) => {
+    onChange(options.filter((o) => o.id !== id));
+  };
+
+  return (
+    <div className="mt-3 pt-3" style={{ borderTop: '1px dashed #E5E7EB' }}>
+      <button
+        type="button"
+        onClick={() => setExpanded(!expanded)}
+        className="flex items-center justify-between w-full mb-2"
+      >
+        <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: '#3B82F6' }}>
+          Compare Options ({options.length})
+        </span>
+        <span className="text-[10px] font-medium" style={{ color: '#9CA3AF' }}>
+          {expanded ? '▾' : '▸'}
+        </span>
+      </button>
+
+      {expanded && (
+        <div className="space-y-2">
+          {/* Option rows */}
+          {options.map((opt, idx) => (
+            <div
+              key={opt.id}
+              className="rounded-lg p-2.5"
+              style={{ background: '#FFFFFF', border: '1px solid #E5E7EB' }}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[10px] font-bold" style={{ color: '#374151' }}>
+                  Option {idx + 1}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => removeOption(opt.id)}
+                  className="text-[10px] font-medium"
+                  style={{ color: '#EF4444', background: 'none', border: 'none', cursor: 'pointer' }}
+                >
+                  Remove
+                </button>
+              </div>
+
+              {/* Type + Grade */}
+              <div className="grid grid-cols-2 gap-2 mb-2">
+                <div>
+                  <label className="block text-[10px] font-medium mb-0.5" style={{ color: '#6B7280' }}>Type</label>
+                  <select
+                    value={opt.category}
+                    onChange={(e) => updateOption(opt.id, { category: e.target.value as FlooringMaterial['category'] })}
+                    className="input w-full text-xs"
+                    style={{ minHeight: 36 }}
+                  >
+                    {Object.entries(FLOORING_CATEGORY_LABELS).map(([val, label]) => (
+                      <option key={val} value={val}>{label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[10px] font-medium mb-0.5" style={{ color: '#6B7280' }}>Grade</label>
+                  <div className="flex gap-1">
+                    {(['good', 'better', 'best'] as QualityTier[]).map((g) => (
+                      <button
+                        key={g}
+                        type="button"
+                        onClick={() => updateOption(opt.id, { grade: g })}
+                        className="flex-1 min-h-[36px] rounded-lg text-[10px] font-medium"
+                        style={{
+                          background: opt.grade === g ? '#0F766E' : '#F3F4F6',
+                          color: opt.grade === g ? '#FFFFFF' : '#6B7280',
+                        }}
+                      >
+                        {g.charAt(0).toUpperCase() + g.slice(1)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Price + Product */}
+              <div className="grid grid-cols-2 gap-2 mb-2">
+                <div>
+                  <label className="block text-[10px] font-medium mb-0.5" style={{ color: '#6B7280' }}>$/sqft</label>
+                  <input
+                    type="number"
+                    inputMode="decimal"
+                    step="0.01"
+                    min="0"
+                    value={opt.pricePerSqft}
+                    onChange={(e) => updateOption(opt.id, { pricePerSqft: parseFloat(e.target.value) || 0 })}
+                    className="input w-full text-xs"
+                    style={{ minHeight: 36 }}
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-medium mb-0.5" style={{ color: '#6B7280' }}>Product</label>
+                  <input
+                    type="text"
+                    value={opt.productName ?? ''}
+                    onChange={(e) => updateOption(opt.id, { productName: e.target.value || undefined })}
+                    placeholder="Optional"
+                    className="input w-full text-xs"
+                    style={{ minHeight: 36 }}
+                  />
+                </div>
+              </div>
+
+              {/* Total + Select */}
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold" style={{ color: '#374151', fontFamily: 'var(--font-mono, monospace)' }}>
+                  Total: ${(opt.pricePerSqft * roomSqft).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => onSelectOption(opt)}
+                  className="px-3 min-h-[32px] rounded-lg text-[10px] font-semibold"
+                  style={{ background: '#F0FDFA', color: '#0F766E', border: '1px solid #0F766E' }}
+                >
+                  Use This
+                </button>
+              </div>
+            </div>
+          ))}
+
+          {/* Comparison table (when 2+ options) */}
+          {options.length >= 2 && (
+            <div className="rounded-lg overflow-hidden" style={{ border: '1px solid #E5E7EB' }}>
+              <table style={{ width: '100%', fontSize: 10, borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr style={{ background: '#F9FAFB' }}>
+                    <th style={{ padding: '6px 8px', textAlign: 'left', fontWeight: 600, color: '#6B7280' }}>Type</th>
+                    <th style={{ padding: '6px 8px', textAlign: 'center', fontWeight: 600, color: '#6B7280' }}>Grade</th>
+                    <th style={{ padding: '6px 8px', textAlign: 'right', fontWeight: 600, color: '#6B7280' }}>$/sqft</th>
+                    <th style={{ padding: '6px 8px', textAlign: 'right', fontWeight: 600, color: '#6B7280' }}>Total ({roomSqft} sqft)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {options
+                    .slice()
+                    .sort((a, b) => a.pricePerSqft * roomSqft - b.pricePerSqft * roomSqft)
+                    .map((opt) => {
+                      const total = opt.pricePerSqft * roomSqft;
+                      return (
+                        <tr key={opt.id} style={{ borderTop: '1px solid #E5E7EB' }}>
+                          <td style={{ padding: '6px 8px', color: '#374151' }}>
+                            {FLOORING_CATEGORY_LABELS[opt.category]}
+                            {opt.productName && <span style={{ color: '#9CA3AF' }}> — {opt.productName}</span>}
+                          </td>
+                          <td style={{ padding: '6px 8px', textAlign: 'center', color: '#374151', textTransform: 'capitalize' }}>
+                            {opt.grade}
+                          </td>
+                          <td style={{ padding: '6px 8px', textAlign: 'right', fontFamily: 'var(--font-mono, monospace)', color: '#374151' }}>
+                            ${opt.pricePerSqft.toFixed(2)}
+                          </td>
+                          <td style={{ padding: '6px 8px', textAlign: 'right', fontWeight: 700, fontFamily: 'var(--font-mono, monospace)', color: '#374151' }}>
+                            ${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* Add option button */}
+          {options.length < 4 && (
+            <button
+              type="button"
+              onClick={addOption}
+              className="w-full min-h-[36px] rounded-lg text-xs font-medium"
+              style={{ background: '#EFF6FF', color: '#3B82F6', border: '1px dashed #93C5FD' }}
+            >
+              + Add Option to Compare
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// =============================================================================
 // Photo Capture
 // =============================================================================
 
@@ -1170,6 +1415,26 @@ export function RoomDetailPanel({
               <FlooringMaterialForm
                 material={room.materials?.flooring}
                 onChange={(m) => onChange({ ...room, materials: { ...room.materials, flooring: m } })}
+              />
+              <FlooringComparisonSection
+                options={room.flooringComparison ?? []}
+                onChange={(opts) => onChange({ ...room, flooringComparison: opts })}
+                onSelectOption={(opt) => onChange({
+                  ...room,
+                  materials: {
+                    ...room.materials,
+                    flooring: {
+                      category: opt.category,
+                      grade: opt.grade,
+                      pricePerSqft: opt.pricePerSqft,
+                      product: opt.productName,
+                      color: opt.color,
+                    },
+                  },
+                })}
+                roomSqft={room.measurements.sqft || (room.measurements.length_ft && room.measurements.width_ft
+                  ? Math.round(room.measurements.length_ft * room.measurements.width_ft)
+                  : 0) || 100}
               />
             </div>
           </div>

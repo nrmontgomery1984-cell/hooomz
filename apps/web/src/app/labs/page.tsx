@@ -3,8 +3,8 @@
 /**
  * Labs Dashboard — Mission Control
  *
- * Overview: stats, active experiments, recent field data,
- * knowledge ready for content, flywheel, quick access grid.
+ * Overview: stats, active tests, recent observations, flywheel, quick access.
+ * Follows the same visual pattern as Standards / Production dashboards.
  */
 
 import { useState } from 'react';
@@ -16,300 +16,280 @@ import {
   ClipboardList,
   Package,
   BookOpen,
-  FileCheck,
   Plus,
-  ArrowRight,
+  ChevronRight,
   Beaker,
   Wrench,
-  Database,
   TestTube2,
   Tag,
   Zap,
+  Vote,
+  Lightbulb,
+  Eye,
 } from 'lucide-react';
-import { useLabsDashboardData, useLabsActiveTests, useLabsTests, useLabsTokens } from '@/lib/hooks/useLabsData';
-import { ObservationCard, ExperimentCard, ExperimentCreateModal } from '@/components/labs';
-import { ToolResearchWidget } from '@/components/labs/tool-research';
-import { BottomSheet } from '@/components/ui/BottomSheet';
-import { ObservationDetailContent } from '@/components/labs/ObservationDetailContent';
+import { useLabsDashboardData, useLabsActiveTests, useLabsTokens } from '@/lib/hooks/useLabsData';
+import { ExperimentCreateModal } from '@/components/labs';
 import { SECTION_COLORS } from '@/lib/viewmode';
-import type { FieldObservation } from '@hooomz/shared-contracts';
 
-const LABS_COLOR = SECTION_COLORS.labs;
+const COLOR = SECTION_COLORS.labs;
 
 export default function LabsPage() {
   const router = useRouter();
   const dashboard = useLabsDashboardData();
   const { data: activeTests = [] } = useLabsActiveTests();
-  const { data: allTests = [] } = useLabsTests();
   const { data: tokens = [] } = useLabsTokens();
   const [showCreateExperiment, setShowCreateExperiment] = useState(false);
-  const [selectedObservation, setSelectedObservation] = useState<FieldObservation | null>(null);
 
   if (dashboard.isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg)' }}>
-        <div className="text-center">
-          <div
-            className="w-12 h-12 border-4 rounded-full animate-spin mx-auto mb-4"
-            style={{ borderColor: 'var(--border)', borderTopColor: LABS_COLOR }}
-          />
-          <p style={{ color: 'var(--text-3)' }}>Loading Labs...</p>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ width: 32, height: 32, border: '2px solid var(--border)', borderTopColor: COLOR, borderRadius: '50%', animation: 'spin 0.7s linear infinite', margin: '0 auto 8px' }} />
+          <p style={{ fontSize: 11, color: 'var(--text-3)' }}>Loading Labs...</p>
         </div>
       </div>
     );
   }
 
   const { stats, recentObservations, contentReadyItems, activeExperimentsList } = dashboard;
-  const publishedTests = allTests.filter((t) => t.status === 'published').length;
 
   return (
     <PageErrorBoundary>
-    <div className="min-h-screen pb-24" style={{ background: 'var(--bg)' }}>
-      {/* Header */}
-      <div style={{ background: 'var(--surface-1)', borderBottom: '1px solid var(--border)' }}>
-        <div className="max-w-lg md:max-w-full mx-auto px-4 md:px-6 py-3 md:py-4">
-          <div className="flex items-center gap-2">
-            <div style={{ width: 8, height: 8, borderRadius: '50%', background: LABS_COLOR }} />
-            <h1 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', fontFamily: 'var(--font-cond)', letterSpacing: '0.02em' }}>
-              Labs Dashboard
-            </h1>
-          </div>
-          <p className="text-xs mt-0.5" style={{ color: 'var(--text-3)' }}>
-            Field data collection &amp; knowledge engine
-          </p>
-        </div>
-      </div>
+      <div style={{ minHeight: '100vh', paddingBottom: 96, background: 'var(--bg)' }}>
 
-      <div className="max-w-lg md:max-w-full mx-auto px-4 md:px-6">
-
-        {/* Stat Row — 4 cards */}
-        <div
-          style={{ marginTop: 16, display: 'grid', gap: 10 }}
-          className="grid-cols-2 md:grid-cols-4"
-        >
-          <StatCard icon={<TestTube2 size={14} />} label="Active Tests" value={activeTests.length} color={LABS_COLOR} />
-          <StatCard icon={<FileCheck size={14} />} label="Published" value={publishedTests} color={LABS_COLOR} />
-          <StatCard icon={<Zap size={14} />} label="Revenue Streams" value={5} color={LABS_COLOR} />
-          <StatCard icon={<Tag size={14} />} label="Tokens Issued" value={tokens.length} color={LABS_COLOR} />
-        </div>
-
-        {/* Overview Stats Strip */}
-        <div className="mt-4 -mx-4 px-4 overflow-x-auto">
-          <div className="flex gap-2" style={{ minWidth: 'max-content' }}>
-            <SmallPill label="Active Expts" value={stats.activeExperiments} />
-            <SmallPill label="Field Obs." value={stats.fieldObservations} />
-            <SmallPill label="Knowledge" value={stats.knowledgeItems} />
-            <SmallPill label="Content Ready" value={stats.contentReady} accent />
-            <SmallPill label="Products Rated" value={stats.productsRated} />
+        {/* Header */}
+        <div style={{ background: 'var(--surface-1)', borderBottom: '1px solid var(--border)' }}>
+          <div className="max-w-lg md:max-w-full mx-auto px-4 md:px-6 py-3 md:py-4 flex items-center justify-between">
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: COLOR }} />
+                <h1 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', fontFamily: 'var(--font-cond)', letterSpacing: '0.02em' }}>
+                  Labs
+                </h1>
+              </div>
+              <p style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 2 }}>Field data collection &amp; knowledge engine</p>
+            </div>
+            <button
+              onClick={() => setShowCreateExperiment(true)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 6,
+                padding: '6px 12px', borderRadius: 8, border: 'none', cursor: 'pointer',
+                background: COLOR, color: '#fff', fontSize: 12, fontWeight: 600,
+              }}
+            >
+              <Plus size={14} />
+              New
+            </button>
           </div>
         </div>
 
-        {/* Active Experiments */}
-        <div className="mt-6">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-semibold" style={{ color: 'var(--text)' }}>
-              Active Experiments
-            </h2>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setShowCreateExperiment(true)}
-                className="flex items-center gap-1 text-xs font-medium px-2.5 min-h-[32px] rounded-lg"
-                style={{ background: LABS_COLOR, color: '#FFFFFF' }}
-              >
-                <Plus size={14} />
-                New
-              </button>
-              {activeExperimentsList.length > 0 && (
+        <div className="max-w-lg md:max-w-full mx-auto px-4 md:px-6">
+
+          {/* Stat Row */}
+          <div style={{ marginTop: 16, display: 'grid', gap: 10 }} className="grid-cols-2 md:grid-cols-4">
+            <StatCard icon={<TestTube2 size={14} />} label="Active Tests" value={activeTests.length} color={COLOR} href="/labs/tests" />
+            <StatCard icon={<Eye size={14} />} label="Observations" value={stats.fieldObservations} color={COLOR} href="/labs/observations" />
+            <StatCard icon={<Zap size={14} />} label="Content Ready" value={stats.contentReady} color={COLOR} href="/labs/knowledge" />
+            <StatCard icon={<Tag size={14} />} label="Tokens Issued" value={tokens.length} color={COLOR} href="/labs/tokens" />
+          </div>
+
+          {/* Two-column content grid */}
+          <div style={{ marginTop: 20, display: 'grid', gap: 16 }} className="md:grid-cols-2">
+
+            {/* Recent Observations */}
+            <div>
+              <SectionHeader title="Recent Observations" />
+              <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
+                {recentObservations.length === 0 ? (
+                  <div style={{ padding: 24, textAlign: 'center' }}>
+                    <ClipboardList size={20} style={{ color: 'var(--text-3)', margin: '0 auto 8px' }} />
+                    <p style={{ fontSize: 12, color: 'var(--text-3)' }}>No observations yet</p>
+                    <p style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 4 }}>Captured as crew members work on projects</p>
+                  </div>
+                ) : (
+                  recentObservations.slice(0, 5).map((obs, i) => (
+                    <div
+                      key={obs.id}
+                      style={{
+                        padding: '10px 12px', minHeight: 44,
+                        display: 'flex', alignItems: 'center', gap: 10,
+                        borderBottom: i < Math.min(recentObservations.length, 5) - 1 ? '1px solid var(--border)' : 'none',
+                      }}
+                    >
+                      <div style={{ width: 6, height: 6, borderRadius: '50%', background: COLOR, flexShrink: 0 }} />
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <p style={{ fontSize: 12, fontWeight: 500, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {obs.notes ? obs.notes.slice(0, 60) : obs.knowledgeType.replace(/_/g, ' ')}
+                        </p>
+                        <p style={{ fontSize: 10, color: 'var(--text-3)', marginTop: 1 }}>
+                          {obs.trade ?? obs.knowledgeType.replace(/_/g, ' ')}
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                )}
+                <Link
+                  href="/labs/observations"
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
+                    padding: '8px 12px', fontSize: 11, fontWeight: 600,
+                    color: COLOR, textDecoration: 'none',
+                    borderTop: '1px solid var(--border)',
+                  }}
+                >
+                  View All Observations <ChevronRight size={10} />
+                </Link>
+              </div>
+            </div>
+
+            {/* Active Experiments */}
+            <div>
+              <SectionHeader title="Active Experiments" />
+              <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
+                {activeExperimentsList.length === 0 ? (
+                  <div style={{ padding: 24, textAlign: 'center' }}>
+                    <Beaker size={20} style={{ color: 'var(--text-3)', margin: '0 auto 8px' }} />
+                    <p style={{ fontSize: 12, color: 'var(--text-3)' }}>No active experiments</p>
+                    <p style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 4 }}>Start one to track field learnings</p>
+                  </div>
+                ) : (
+                  activeExperimentsList.slice(0, 5).map((exp, i) => (
+                    <button
+                      key={exp.id}
+                      onClick={() => router.push(`/labs/experiments/${exp.id}`)}
+                      style={{
+                        width: '100%', textAlign: 'left', padding: '10px 12px', minHeight: 44,
+                        display: 'flex', alignItems: 'center', gap: 10,
+                        background: 'none', border: 'none', cursor: 'pointer',
+                        borderBottom: i < Math.min(activeExperimentsList.length, 5) - 1 ? '1px solid var(--border)' : 'none',
+                      }}
+                    >
+                      <div style={{ width: 6, height: 6, borderRadius: '50%', background: COLOR, flexShrink: 0 }} />
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <p style={{ fontSize: 12, fontWeight: 500, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {exp.title}
+                        </p>
+                        <p style={{ fontSize: 10, color: 'var(--text-3)', marginTop: 1 }}>
+                          {exp.knowledgeType.replace(/_/g, ' ')} · {exp.status}
+                        </p>
+                      </div>
+                      <ChevronRight size={11} style={{ color: 'var(--border-strong)', flexShrink: 0 }} />
+                    </button>
+                  ))
+                )}
                 <Link
                   href="/labs/experiments"
-                  className="flex items-center gap-0.5 text-xs font-medium min-h-[32px]"
-                  style={{ color: LABS_COLOR }}
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
+                    padding: '8px 12px', fontSize: 11, fontWeight: 600,
+                    color: COLOR, textDecoration: 'none',
+                    borderTop: '1px solid var(--border)',
+                  }}
                 >
-                  View All <ArrowRight size={12} />
+                  View All Experiments <ChevronRight size={10} />
                 </Link>
-              )}
+              </div>
             </div>
+
           </div>
 
-          {activeExperimentsList.length === 0 ? (
-            <div
-              className="rounded-xl p-4 text-center"
-              style={{ background: 'var(--surface-1)', border: '1px solid var(--border)' }}
-            >
-              <Beaker size={24} style={{ color: 'var(--text-3)' }} className="mx-auto mb-2" />
-              <p className="text-sm" style={{ color: 'var(--text-3)' }}>
-                No active experiments. Start one to track field learnings.
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {activeExperimentsList.slice(0, 3).map((exp) => (
-                <ExperimentCard
-                  key={exp.id}
-                  experiment={exp}
-                  onClick={() => router.push(`/labs/experiments/${exp.id}`)}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Recent Field Data */}
-        <div className="mt-6">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-semibold" style={{ color: 'var(--text)' }}>
-              Recent Field Data
-            </h2>
-            {recentObservations.length > 0 && (
-              <Link
-                href="/labs/observations"
-                className="flex items-center gap-0.5 text-xs font-medium min-h-[32px]"
-                style={{ color: LABS_COLOR }}
-              >
-                View All <ArrowRight size={12} />
-              </Link>
-            )}
-          </div>
-
-          {recentObservations.length === 0 ? (
-            <div
-              className="rounded-xl p-4 text-center"
-              style={{ background: 'var(--surface-1)', border: '1px solid var(--border)' }}
-            >
-              <ClipboardList size={24} style={{ color: 'var(--text-3)' }} className="mx-auto mb-2" />
-              <p className="text-sm" style={{ color: 'var(--text-3)' }}>
-                No observations yet. Complete tasks to start capturing field data.
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {recentObservations.slice(0, 5).map((obs) => (
-                <ObservationCard
-                  key={obs.id}
-                  observation={obs}
-                  onClick={() => setSelectedObservation(obs)}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Knowledge Ready for Content */}
-        {contentReadyItems.length > 0 && (
-          <div className="mt-6">
-            <h2 className="text-sm font-semibold mb-3" style={{ color: 'var(--text)' }}>
-              Ready for Content
-            </h2>
-            <div className="space-y-2">
-              {contentReadyItems.slice(0, 5).map((item) => (
-                <Link
-                  key={item.id}
-                  href={`/labs/knowledge/${item.id}`}
-                  className="flex items-center gap-3 rounded-xl p-3"
-                  style={{ background: 'var(--surface-1)', border: '1px solid var(--border)' }}
-                >
-                  <div
-                    className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-                    style={{ background: `${LABS_COLOR}15` }}
+          {/* Content Ready for Knowledge */}
+          {contentReadyItems.length > 0 && (
+            <div style={{ marginTop: 16 }}>
+              <SectionHeader title="Ready for Content" />
+              <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
+                {contentReadyItems.slice(0, 5).map((item, i) => (
+                  <Link
+                    key={item.id}
+                    href={`/labs/knowledge/${item.id}`}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 10,
+                      padding: '10px 12px', minHeight: 44, textDecoration: 'none',
+                      borderBottom: i < Math.min(contentReadyItems.length, 5) - 1 ? '1px solid var(--border)' : 'none',
+                    }}
                   >
-                    <BookOpen size={16} style={{ color: LABS_COLOR }} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate" style={{ color: 'var(--text)' }}>
-                      {item.title}
-                    </p>
-                    <p className="text-[11px]" style={{ color: 'var(--text-3)' }}>
-                      {item.observationCount} observations · {item.confidenceScore}% confidence
-                    </p>
-                  </div>
-                  <ArrowRight size={14} style={{ color: 'var(--text-3)' }} />
+                    <BookOpen size={14} style={{ color: COLOR, flexShrink: 0 }} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ fontSize: 12, fontWeight: 500, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {item.title}
+                      </p>
+                      <p style={{ fontSize: 10, color: 'var(--text-3)', marginTop: 1 }}>
+                        {item.observationCount} observations · {item.confidenceScore}% confidence
+                      </p>
+                    </div>
+                    <ChevronRight size={11} style={{ color: 'var(--border-strong)', flexShrink: 0 }} />
+                  </Link>
+                ))}
+                <Link
+                  href="/labs/knowledge"
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
+                    padding: '8px 12px', fontSize: 11, fontWeight: 600,
+                    color: COLOR, textDecoration: 'none',
+                    borderTop: '1px solid var(--border)',
+                  }}
+                >
+                  View Knowledge Base <ChevronRight size={10} />
                 </Link>
-              ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Flywheel — Revenue Feeds */}
-        <div className="mt-6">
-          <h2 className="text-sm font-semibold mb-3" style={{ color: 'var(--text)' }}>
-            Revenue Flywheel
-          </h2>
-          <div
-            style={{
-              background: 'var(--surface-1)',
-              border: '1px solid var(--border)',
-              borderRadius: 'var(--radius)',
-              padding: 16,
-              boxShadow: 'var(--shadow-card)',
-            }}
-          >
-            <p style={{ fontSize: 11, color: 'var(--text-3)', marginBottom: 12 }}>
-              Every test generates 5 revenue streams:
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {/* Revenue Flywheel */}
+          <div style={{ marginTop: 16 }}>
+            <SectionHeader title="Revenue Flywheel" />
+            <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
+              <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--border)' }}>
+                <p style={{ fontSize: 11, color: 'var(--text-3)' }}>Every test generates 5 revenue streams</p>
+              </div>
               {[
-                { label: 'YouTube Content', icon: '1' },
-                { label: 'Affiliate Revenue', icon: '2' },
-                { label: 'Cost Catalogue Data', icon: '3' },
-                { label: 'Partner Referrals', icon: '4' },
-                { label: 'DIY Kit Development', icon: '5' },
-              ].map((feed) => (
-                <div key={feed.label} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{
-                    width: 22, height: 22, borderRadius: '50%',
-                    background: `${LABS_COLOR}20`,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700, color: LABS_COLOR,
-                    flexShrink: 0,
-                  }}>
+                { label: 'YouTube Content', icon: '01' },
+                { label: 'Affiliate Revenue', icon: '02' },
+                { label: 'Cost Catalogue Data', icon: '03' },
+                { label: 'Partner Referrals', icon: '04' },
+                { label: 'DIY Kit Development', icon: '05' },
+              ].map((feed, i, arr) => (
+                <div
+                  key={feed.label}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 10,
+                    padding: '10px 12px', minHeight: 40,
+                    borderBottom: i < arr.length - 1 ? '1px solid var(--border)' : 'none',
+                  }}
+                >
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700, color: COLOR, flexShrink: 0, minWidth: 20 }}>
                     {feed.icon}
-                  </div>
+                  </span>
                   <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text)' }}>{feed.label}</span>
                 </div>
               ))}
             </div>
           </div>
-        </div>
 
-        {/* Tool Research */}
-        <div className="mt-6">
-          <ToolResearchWidget />
-        </div>
-
-        {/* Quick Access Grid */}
-        <div className="mt-6">
-          <h2 className="text-sm font-semibold mb-3" style={{ color: 'var(--text)' }}>
-            Quick Access
-          </h2>
-          <div className="grid grid-cols-2 gap-2">
-            <QuickAccessCard href="/labs/sops" icon={FileCheck} label="SOPs" />
-            <QuickAccessCard href="/labs/knowledge" icon={BookOpen} label="Knowledge" />
-            <QuickAccessCard href="/labs/catalogs" icon={Package} label="Catalogs" />
-            <QuickAccessCard href="/labs/observations" icon={ClipboardList} label="Observations" />
-            <QuickAccessCard href="/labs/experiments" icon={FlaskConical} label="Experiments" />
-            <QuickAccessCard href="/labs/tool-research" icon={Wrench} label="Tool Research" />
-            <QuickAccessCard href="/labs/seed" icon={Database} label="Seed Data" />
+          {/* Quick Access Grid */}
+          <div style={{ marginTop: 16 }}>
+            <SectionHeader title="Quick Access" />
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+              <QuickAccessCard href="/labs/observations" icon={ClipboardList} label="Observations" />
+              <QuickAccessCard href="/labs/tests" icon={TestTube2} label="Tests" />
+              <QuickAccessCard href="/labs/voting" icon={Vote} label="Voting" />
+              <QuickAccessCard href="/labs/tokens" icon={Tag} label="Tokens" />
+              <QuickAccessCard href="/labs/catalogs" icon={Package} label="Catalogs" />
+              <QuickAccessCard href="/labs/knowledge" icon={Lightbulb} label="Knowledge" />
+              <QuickAccessCard href="/labs/experiments" icon={FlaskConical} label="Experiments" />
+              <QuickAccessCard href="/labs/tool-research" icon={Wrench} label="Tool Research" />
+            </div>
           </div>
+
         </div>
+
+        {/* Create Experiment Modal */}
+        <ExperimentCreateModal
+          isOpen={showCreateExperiment}
+          onClose={() => setShowCreateExperiment(false)}
+        />
+
       </div>
-
-      {/* Create Experiment Modal */}
-      <ExperimentCreateModal
-        isOpen={showCreateExperiment}
-        onClose={() => setShowCreateExperiment(false)}
-      />
-
-      {/* Observation Detail Sheet */}
-      <BottomSheet
-        isOpen={!!selectedObservation}
-        onClose={() => setSelectedObservation(null)}
-        title="Observation Detail"
-      >
-        {selectedObservation && (
-          <ObservationDetailContent observation={selectedObservation} />
-        )}
-      </BottomSheet>
-    </div>
     </PageErrorBoundary>
   );
 }
@@ -318,50 +298,44 @@ export default function LabsPage() {
 // Sub-components
 // ============================================================================
 
-function StatCard({ icon, label, value, color }: {
-  icon: React.ReactNode;
-  label: string;
-  value: string | number;
-  color: string;
-}) {
+function SectionHeader({ title }: { title: string }) {
   return (
-    <div style={{
-      padding: '12px 14px',
-      borderRadius: 'var(--radius)',
-      background: 'var(--surface-1)',
-      border: '1px solid var(--border)',
-      boxShadow: 'var(--shadow-card)',
-    }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-        <div style={{ color }}>{icon}</div>
-        <span style={{ fontFamily: 'var(--font-cond)', fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-3)' }}>
-          {label}
-        </span>
-      </div>
-      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 22, fontWeight: 700, color: 'var(--text)' }}>
-        {value}
+    <div style={{ marginBottom: 8 }}>
+      <span style={{ fontFamily: 'var(--font-cond)', fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-3)' }}>
+        {title}
       </span>
     </div>
   );
 }
 
-function SmallPill({ label, value, accent }: { label: string; value: number; accent?: boolean }) {
+function StatCard({ icon, label, value, color, href }: {
+  icon: React.ReactNode;
+  label: string;
+  value: string | number;
+  color: string;
+  href: string;
+}) {
   return (
-    <div
-      className="rounded-xl px-3 py-2 flex-shrink-0"
-      style={{
-        background: accent ? `${LABS_COLOR}10` : 'var(--surface-1)',
-        border: accent ? `1px solid ${LABS_COLOR}30` : '1px solid var(--border)',
-        minWidth: '90px',
-      }}
-    >
-      <p className="text-lg font-bold" style={{ color: accent ? LABS_COLOR : 'var(--text)' }}>
-        {value}
-      </p>
-      <p className="text-[10px] font-medium" style={{ color: accent ? LABS_COLOR : 'var(--text-3)' }}>
-        {label}
-      </p>
-    </div>
+    <Link href={href} style={{ textDecoration: 'none' }}>
+      <div style={{
+        padding: '12px 14px',
+        borderRadius: 'var(--radius)',
+        background: 'var(--surface-1)',
+        border: '1px solid var(--border)',
+        boxShadow: 'var(--shadow-card)',
+        cursor: 'pointer',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+          <div style={{ color }}>{icon}</div>
+          <span style={{ fontFamily: 'var(--font-cond)', fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-3)' }}>
+            {label}
+          </span>
+        </div>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 22, fontWeight: 700, color: 'var(--text)' }}>
+          {value}
+        </span>
+      </div>
+    </Link>
   );
 }
 
@@ -377,11 +351,15 @@ function QuickAccessCard({
   return (
     <Link
       href={href}
-      className="flex items-center gap-2.5 rounded-xl p-3 min-h-[48px]"
-      style={{ background: 'var(--surface-1)', border: '1px solid var(--border)' }}
+      style={{
+        display: 'flex', alignItems: 'center', gap: 10,
+        borderRadius: 'var(--radius)', padding: '10px 12px', minHeight: 44,
+        background: 'var(--surface-1)', border: '1px solid var(--border)',
+        textDecoration: 'none', boxShadow: 'var(--shadow-card)',
+      }}
     >
-      <Icon size={18} style={{ color: LABS_COLOR }} strokeWidth={1.5} />
-      <span className="text-sm font-medium" style={{ color: 'var(--text)' }}>{label}</span>
+      <Icon size={16} style={{ color: COLOR }} strokeWidth={1.5} />
+      <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text)' }}>{label}</span>
     </Link>
   );
 }

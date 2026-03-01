@@ -8,8 +8,8 @@
  * Sorted by temperature (hot first) then age within each stage.
  */
 
-import { useState, useMemo, type ReactNode } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, useMemo, type ReactNode } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { PageErrorBoundary } from '@/components/ui/PageErrorBoundary';
 import {
   Plus,
@@ -208,11 +208,26 @@ const MATERIAL_FULL_LABELS: Record<string, Record<string, string>> = {
 
 export default function LeadPipelinePage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const highlightId = searchParams.get('highlight');
   const pipeline = useLeadPipeline();
   const [stageFilter, setStageFilter] = useState<LeadStage | 'all'>('all');
   const [collapsedStages, setCollapsedStages] = useState<Set<LeadStage>>(
-    new Set(['won', 'lost'])
+    new Set(STAGE_ORDER)
   );
+
+  // Auto-expand the stage containing the highlighted lead
+  useEffect(() => {
+    if (!highlightId || pipeline.isLoading) return;
+    const match = pipeline.leads.find((l) => l.customer.id === highlightId);
+    if (match) {
+      setCollapsedStages((prev) => {
+        const next = new Set(prev);
+        next.delete(match.stage);
+        return next;
+      });
+    }
+  }, [highlightId, pipeline.isLoading, pipeline.leads]);
 
   const toggleCollapse = (stage: LeadStage) => {
     setCollapsedStages((prev) => {
@@ -391,7 +406,7 @@ export default function LeadPipelinePage() {
             {!collapsedStages.has(stage) && (
               <div className="space-y-2">
                 {leads.map((lead) => (
-                  <LeadCard key={lead.customer.id} lead={lead} />
+                  <LeadCard key={lead.customer.id} lead={lead} defaultExpanded={lead.customer.id === highlightId} />
                 ))}
               </div>
             )}
@@ -526,7 +541,7 @@ const EDIT_MATERIAL_OPTIONS: Record<string, { value: string; label: string }[]> 
   ],
 };
 
-function LeadCard({ lead }: { lead: LeadRecord }) {
+function LeadCard({ lead, defaultExpanded = false }: { lead: LeadRecord; defaultExpanded?: boolean }) {
   const router = useRouter();
   const passLead = usePassLead();
   const restoreLead = useRestoreLead();
@@ -539,7 +554,7 @@ function LeadCard({ lead }: { lead: LeadRecord }) {
   const setFollowUp = useSetFollowUp();
   const catalog = useEffectiveCatalog();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(defaultExpanded);
   const [editing, setEditing] = useState(false);
   const [editData, setEditData] = useState<EditData | null>(null);
   const [showNoteInput, setShowNoteInput] = useState(false);

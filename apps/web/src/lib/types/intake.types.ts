@@ -95,6 +95,16 @@ export interface FlooringMaterial {
   notes?: string;
 }
 
+/** Flooring comparison option — used to compare multiple flooring types side-by-side */
+export interface FlooringComparisonOption {
+  id: string;
+  category: FlooringMaterial['category'];
+  grade: QualityTier;
+  pricePerSqft: number;
+  productName?: string;
+  color?: string;
+}
+
 export interface PaintMaterial {
   brand?: string;
   product?: string;
@@ -170,6 +180,7 @@ export interface RoomScope {
   priority: 'high' | 'medium' | 'low';
   trades: RoomTradeScopes;
   materials?: RoomMaterials;
+  flooringComparison?: FlooringComparisonOption[];
   photos?: RoomPhoto[];
   notes?: string;
 }
@@ -449,14 +460,15 @@ export const TRADE_CODES = {
 
 /**
  * INTERIORS Project Stage Codes
- * From three-axis model: Demolition → Prime & Prep → Finish → Punch List → Closeout
+ * SCRIPT pipeline: Shield → Clear → Ready → Install → Punch → Turnover
  */
 export const STAGE_CODES = {
-  'ST-DM': { name: 'Demolition', order: 1, color: '#EF4444' },
-  'ST-PR': { name: 'Prime & Prep', order: 2, color: '#F59E0B' },
-  'ST-FN': { name: 'Finish', order: 3, color: '#3B82F6' },
-  'ST-PL': { name: 'Punch List', order: 4, color: '#8B5CF6' },
-  'ST-CL': { name: 'Closeout', order: 5, color: '#10B981' },
+  'ST-SH': { name: 'Shield',     order: 0, color: '#0EA5E9' }, // Protect the home
+  'ST-DM': { name: 'Demolition', order: 1, color: '#EF4444' }, // Clear — remove existing
+  'ST-PR': { name: 'Prime & Prep', order: 2, color: '#F59E0B' }, // Ready
+  'ST-FN': { name: 'Finish',     order: 3, color: '#3B82F6' }, // Install
+  'ST-PL': { name: 'Punch List', order: 4, color: '#8B5CF6' }, // Punch
+  'ST-CL': { name: 'Closeout',   order: 5, color: '#10B981' }, // Turnover
 } as const;
 
 export const ROOM_LOCATIONS = {

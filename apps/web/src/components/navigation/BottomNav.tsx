@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   Home, Activity, Calculator, FlaskConical, TrendingUp, Plus, Sun, Moon, UserCircle,
+  Users, HardHat,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useQuickAdd } from '@/components/activity/QuickAddContext';
@@ -25,6 +26,8 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Calculator,
   TrendingUp,
   FlaskConical,
+  Users,
+  HardHat,
 };
 
 const ALL_MODES: ViewMode[] = ['manager', 'operator', 'installer', 'homeowner'];

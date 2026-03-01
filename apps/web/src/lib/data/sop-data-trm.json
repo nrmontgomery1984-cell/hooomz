@@ -1,0 +1,2211 @@
+[
+  {
+    "id": "2e5b2bc6-f7d9-4ffe-85f3-c01d2e8159a3",
+    "code": "HI-SOP-TR-001",
+    "title": "Layout & Planning",
+    "version": "1.0",
+    "trade": "Trim",
+    "status": "active",
+    "sourceRef": {
+      "tgCode": "TG-TRM-001",
+      "moduleCode": "TG-TRM-001-M02",
+      "moduleOrder": 2
+    },
+    "introduction": "Good trim work starts with thorough planning. Surveying conditions, planning sequences, and calculating materials before you cut saves time and prevents callbacks.",
+    "learningObjectives": [
+      "Survey rooms and identify layout challenges before cutting",
+      "Plan trim sequences to minimize visible joints",
+      "Calculate material quantities with appropriate waste factors",
+      "Identify out-of-square and out-of-level conditions and plan corrections"
+    ],
+    "criticalStandards": [
+      {
+        "code": "CS-TRM-005",
+        "description": "Always check walls for plumb and floors for level before cutting — never assume square",
+        "category": "specification"
+      },
+      {
+        "code": "CS-TRM-006",
+        "description": "Plan scarf joints to fall over studs and face away from primary sight lines",
+        "category": "technique"
+      }
+    ],
+    "procedures": [
+      {
+        "id": "c74709cd-97e5-4fac-9f5b-55f9dfdeb1ef",
+        "order": 1,
+        "title": "Room Survey Protocol",
+        "body": "Before cutting any trim, survey each room to identify conditions that affect layout and joinery.",
+        "steps": [
+          "Check floor for level using 4' level — note high and low spots",
+          "Check walls for plumb at corners and door locations",
+          "Check ceiling for level if installing crown",
+          "Measure room dimensions and note irregularities",
+          "Identify stud locations (use stud finder, confirm with probe)",
+          "Note any obstructions: outlets, vents, pipes, built-ins",
+          "Photograph any pre-existing damage or conditions"
+        ],
+        "tables": null,
+        "callouts": [
+          {
+            "type": "tip",
+            "title": "The 10-Minute Investment",
+            "content": "Spending 10 minutes surveying a room prevents hours of rework. Most trim problems come from cutting without checking conditions first."
+          }
+        ],
+        "checkpoints": null,
+        "tests": null
+      },
+      {
+        "id": "32c66f9d-98d2-445e-ac50-5ab8518b4757",
+        "order": 2,
+        "title": "Trim Sequence Planning",
+        "body": "The order you install trim affects joint visibility and efficiency. Plan the sequence before you start.",
+        "steps": [
+          "Identify primary sight lines (main entry, focal points)",
+          "Plan to work away from primary sight lines — joints face away from view",
+          "For baseboard: start at door casings, work around room",
+          "For crown: start at focal wall, work outward",
+          "Plan scarf joint locations over studs, away from sight lines",
+          "Determine cope vs miter strategy for inside corners"
+        ],
+        "tables": [
+          {
+            "caption": "Installation Sequence by Trim Type",
+            "headers": [
+              "Trim Type",
+              "Starting Point",
+              "Direction",
+              "End Point"
+            ],
+            "rows": [
+              [
+                "Baseboard",
+                "Door casing",
+                "Around room",
+                "Return to door"
+              ],
+              [
+                "Door casing",
+                "Head casing",
+                "Down both sides",
+                "Floor"
+              ],
+              [
+                "Window casing",
+                "Stool",
+                "Up to head",
+                "Apron last"
+              ],
+              [
+                "Crown",
+                "Focal wall",
+                "Outward",
+                "Least visible corner"
+              ]
+            ]
+          }
+        ],
+        "callouts": null,
+        "checkpoints": null,
+        "tests": null
+      },
+      {
+        "id": "abd4cf06-d7fc-4944-8832-a4451bda329e",
+        "order": 3,
+        "title": "Material Calculation",
+        "body": "Accurate takeoffs prevent mid-job supply runs and ensure consistent material from the same lot.",
+        "steps": [
+          "Measure total linear feet of each trim type needed",
+          "Add waste factor: 10% for straight runs, 15% for complex rooms",
+          "Round up to nearest stock length",
+          "Add extra for setup cuts and test pieces",
+          "Order 5-10% extra from same lot for repairs/callbacks"
+        ],
+        "tables": null,
+        "callouts": [
+          {
+            "type": "info",
+            "content": "Stock lengths are typically 8', 10', 12', or 16'. Plan cuts to minimize waste — a 14' wall is better served by one 16' piece than two 8' pieces with a scarf joint."
+          }
+        ],
+        "checkpoints": null,
+        "tests": null
+      },
+      {
+        "id": "6fdb523a-b0ab-41b5-8a05-0adf9584f748",
+        "order": 4,
+        "title": "Dealing with Out-of-Square Conditions",
+        "body": "Real-world rooms are rarely perfectly square. Plan your approach before cutting.",
+        "steps": [
+          "Identify the worst corners (most out of square)",
+          "Decide: split the difference or favor one side",
+          "For miters: adjust angles by half the error",
+          "For copes: the coped piece follows the wall regardless of angle",
+          "Back-cut miters slightly to ensure tight face fit",
+          "Document angles for future reference"
+        ],
+        "tables": null,
+        "callouts": [
+          {
+            "type": "tip",
+            "content": "When corners are badly out of square (>2° off 90°), coped inside corners are more forgiving than miters. The cope follows the wall plane naturally."
+          }
+        ],
+        "checkpoints": null,
+        "tests": null
+      }
+    ],
+    "labsReferences": [
+      "{{LABS:laser-level}}",
+      "{{LABS:angle-finder-digital}}",
+      "{{LABS:stud-finder}}"
+    ],
+    "checklist": {
+      "id": "aabbfb15-e567-4f6d-b6f2-25d0d44e76a5",
+      "sections": [
+        {
+          "id": "procedures",
+          "title": "Procedure Verification",
+          "fields": [
+            {
+              "id": "proc-1",
+              "type": "checkbox",
+              "label": "1. Room Survey Protocol",
+              "required": true
+            },
+            {
+              "id": "proc-2",
+              "type": "checkbox",
+              "label": "2. Trim Sequence Planning",
+              "required": true
+            },
+            {
+              "id": "proc-3",
+              "type": "checkbox",
+              "label": "3. Material Calculation",
+              "required": true
+            },
+            {
+              "id": "proc-4",
+              "type": "checkbox",
+              "label": "4. Dealing with Out-of-Square Conditions",
+              "required": true
+            }
+          ]
+        },
+        {
+          "id": "photos",
+          "title": "Photo Documentation",
+          "fields": [
+            {
+              "id": "photos",
+              "type": "photo",
+              "label": "Add photos",
+              "required": false
+            }
+          ]
+        },
+        {
+          "id": "notes",
+          "title": "Notes",
+          "fields": [
+            {
+              "id": "notes",
+              "type": "text",
+              "label": "Additional notes",
+              "required": false
+            }
+          ]
+        }
+      ]
+    },
+    "metadata": {
+      "estimatedDuration": "30-60 minutes",
+      "difficulty": "standard",
+      "createdAt": "2026-02-26T02:33:23.510Z",
+      "updatedAt": "2026-02-26T02:33:23.511Z"
+    }
+  },
+  {
+    "id": "0a6181aa-9e2b-40b8-8784-7b72dd25f19c",
+    "code": "HI-SOP-TR-002",
+    "title": "Cutting & Joinery",
+    "version": "1.0",
+    "trade": "Trim",
+    "status": "active",
+    "sourceRef": {
+      "tgCode": "TG-TRM-001",
+      "moduleCode": "TG-TRM-001-M03",
+      "moduleOrder": 3
+    },
+    "introduction": "Clean, accurate cuts are the foundation of professional trim work. This module covers the cutting techniques for every joint type you'll encounter.",
+    "learningObjectives": [
+      "Set up and calibrate miter saw for accurate cuts",
+      "Execute clean miter joints at various angles",
+      "Perform coped joints for inside corners",
+      "Cut scarf joints for splicing long runs",
+      "Troubleshoot common cutting problems"
+    ],
+    "criticalStandards": [
+      {
+        "code": "CS-TRM-007",
+        "description": "Always verify miter saw is square (90° crosscut, 45° miter) before starting — check with known square",
+        "category": "stop-condition"
+      },
+      {
+        "code": "CS-TRM-008",
+        "description": "Support long stock to prevent binding and kickback — never let unsupported ends droop",
+        "category": "technique"
+      },
+      {
+        "code": "CS-TRM-009",
+        "description": "Cope cuts must be back-cut at least 5° to ensure tight face fit",
+        "category": "technique"
+      }
+    ],
+    "procedures": [
+      {
+        "id": "b9390f1c-0082-4615-b4e7-dd5e8616f951",
+        "order": 1,
+        "title": "Miter Saw Setup & Calibration",
+        "body": "A miter saw that's even slightly out of calibration produces joints that won't close. Verify setup before every job.",
+        "steps": [
+          "Clean sawdust from miter detents and pivot points",
+          "Set saw to 0° (90° crosscut)",
+          "Cut test piece from scrap",
+          "Check cut against known square — adjust if needed",
+          "Set saw to 45° left, cut test piece",
+          "Set saw to 45° right, cut test piece",
+          "Place 45° cuts together — should form perfect 90°",
+          "Verify blade is sharp — dull blades tear and burn",
+          "Check fence is straight and secure"
+        ],
+        "tables": null,
+        "callouts": [
+          {
+            "type": "warning",
+            "content": "A blade that's 0.5° out of square produces a gap that opens 1/16\" over a 6\" piece. Always verify calibration before starting."
+          }
+        ],
+        "checkpoints": null,
+        "tests": null
+      },
+      {
+        "id": "e251efa4-e980-413b-961e-4d7ccb676d07",
+        "order": 2,
+        "title": "Miter Cuts (Outside Corners)",
+        "body": "Outside corners are mitered. The angle is typically 45° for 90° corners, but real corners are rarely perfect.",
+        "steps": [
+          "Measure corner angle with angle finder",
+          "Divide angle by 2 for miter setting (90° corner = 45° each piece)",
+          "Mark piece at exact length on the long point",
+          "Position material flat on saw table (baseboard) or against fence (crown)",
+          "Align blade to waste side of mark",
+          "Hold material firmly — never cross hands over blade path",
+          "Let blade reach full speed before cutting",
+          "Cut in single smooth motion",
+          "Check fit before moving to next piece"
+        ],
+        "tables": [
+          {
+            "caption": "Miter Angles for Common Corner Angles",
+            "headers": [
+              "Corner Angle",
+              "Miter Setting (each piece)",
+              "Common Situation"
+            ],
+            "rows": [
+              [
+                "90°",
+                "45°",
+                "Standard corner"
+              ],
+              [
+                "135°",
+                "22.5°",
+                "Bay window, octagon"
+              ],
+              [
+                "92°",
+                "46°",
+                "Slightly out-of-square"
+              ],
+              [
+                "88°",
+                "44°",
+                "Slightly out-of-square"
+              ]
+            ]
+          }
+        ],
+        "callouts": null,
+        "checkpoints": null,
+        "tests": null
+      },
+      {
+        "id": "6e1daa99-bf8a-44b4-ab99-8b60071446de",
+        "order": 3,
+        "title": "Coped Joints (Inside Corners)",
+        "body": "Coped joints handle inside corners better than miters because they follow the wall plane and hide gaps from seasonal movement.",
+        "steps": [
+          "Cut first piece square, run it into the corner",
+          "Cut second piece at 45° to expose the profile",
+          "Use coping saw to cut along the profile line",
+          "Back-cut at 5-10° angle — remove material behind the face",
+          "Test fit against scrap piece of same profile",
+          "Adjust with file or sandpaper until tight fit",
+          "Final piece should slip over first piece with no gaps at face"
+        ],
+        "tables": null,
+        "callouts": [
+          {
+            "type": "critical",
+            "content": "The cope cut must be back-cut. If the back of the cope touches before the face, you get a gap at the visible surface. Always remove more material behind the face."
+          },
+          {
+            "type": "tip",
+            "content": "Highlight the profile line with pencil before coping — it's easier to follow a marked line than the raw miter edge."
+          }
+        ],
+        "checkpoints": null,
+        "tests": null
+      },
+      {
+        "id": "8bb99a73-9565-4a89-a2b1-87c59be009d5",
+        "order": 4,
+        "title": "Scarf Joints (Splicing Long Runs)",
+        "body": "When stock isn't long enough for a single piece, scarf joints create an invisible splice.",
+        "steps": [
+          "Locate splice over a stud (must nail both sides)",
+          "Cut first piece at 30-45° angle, long point toward room",
+          "Cut second piece at matching angle",
+          "Apply wood glue to both mating surfaces",
+          "Install first piece, nail before and after joint",
+          "Install second piece, aligning faces perfectly",
+          "Nail through joint into stud",
+          "Sand joint lightly if needed"
+        ],
+        "tables": null,
+        "callouts": [
+          {
+            "type": "info",
+            "content": "Scarf joints should face away from the primary entry or sight line. When you walk into a room, you should never see the 'open' side of a scarf joint."
+          }
+        ],
+        "checkpoints": null,
+        "tests": null
+      }
+    ],
+    "labsReferences": [
+      "{{LABS:miter-saw-blade-trim}}",
+      "{{LABS:coping-saw}}",
+      "{{LABS:angle-finder-digital}}"
+    ],
+    "checklist": {
+      "id": "101045af-d9c2-443d-9f8b-e17dc079fc41",
+      "sections": [
+        {
+          "id": "procedures",
+          "title": "Procedure Verification",
+          "fields": [
+            {
+              "id": "proc-1",
+              "type": "checkbox",
+              "label": "1. Miter Saw Setup & Calibration",
+              "required": true
+            },
+            {
+              "id": "proc-2",
+              "type": "checkbox",
+              "label": "2. Miter Cuts (Outside Corners)",
+              "required": true
+            },
+            {
+              "id": "proc-3",
+              "type": "checkbox",
+              "label": "3. Coped Joints (Inside Corners)",
+              "required": true
+            },
+            {
+              "id": "proc-4",
+              "type": "checkbox",
+              "label": "4. Scarf Joints (Splicing Long Runs)",
+              "required": true
+            }
+          ]
+        },
+        {
+          "id": "stop-conditions",
+          "title": "Stop Condition Verification",
+          "fields": [
+            {
+              "id": "sc-cs_trm_007",
+              "type": "checkbox",
+              "label": "CS-TRM-007: Always verify miter saw is square (90° crosscut, 45° miter) ...",
+              "required": true,
+              "linkedStandard": "CS-TRM-007"
+            }
+          ]
+        },
+        {
+          "id": "photos",
+          "title": "Photo Documentation",
+          "fields": [
+            {
+              "id": "photos",
+              "type": "photo",
+              "label": "Add photos",
+              "required": false
+            }
+          ]
+        },
+        {
+          "id": "notes",
+          "title": "Notes",
+          "fields": [
+            {
+              "id": "notes",
+              "type": "text",
+              "label": "Additional notes",
+              "required": false
+            }
+          ]
+        }
+      ]
+    },
+    "metadata": {
+      "estimatedDuration": "30-60 minutes",
+      "difficulty": "standard",
+      "createdAt": "2026-02-26T02:33:23.518Z",
+      "updatedAt": "2026-02-26T02:33:23.518Z"
+    }
+  },
+  {
+    "id": "99311767-0a60-4131-87ab-c9e4c1673777",
+    "code": "HI-SOP-TR-003",
+    "title": "Baseboard Installation",
+    "version": "1.0",
+    "trade": "Trim",
+    "status": "active",
+    "sourceRef": {
+      "tgCode": "TG-TRM-001",
+      "moduleCode": "TG-TRM-001-M04",
+      "moduleOrder": 4
+    },
+    "introduction": "Baseboard is the most common trim installation. Proper technique here sets the standard for all your trim work.",
+    "learningObjectives": [
+      "Install baseboard with consistent reveals and tight joints",
+      "Handle out-of-level floors and out-of-plumb walls",
+      "Execute proper inside and outside corner treatments",
+      "Install shoe molding and quarter round"
+    ],
+    "criticalStandards": [
+      {
+        "code": "CS-TRM-010",
+        "description": "Baseboard must be tight to floor OR consistent gap with shoe molding — never random gaps",
+        "category": "specification"
+      },
+      {
+        "code": "CS-TRM-011",
+        "description": "Nail baseboard to studs (not just drywall) with 15-16 gauge finish nails — minimum two nails per stud",
+        "category": "specification"
+      }
+    ],
+    "procedures": [
+      {
+        "id": "4a5dba8a-8603-4fe0-ad72-7c266e9b7c04",
+        "order": 1,
+        "title": "Baseboard Layout",
+        "body": "Plan the installation sequence to minimize visible joints and optimize workflow.",
+        "steps": [
+          "Identify starting point (usually at door casing)",
+          "Mark stud locations on wall — light pencil at top where baseboard will cover",
+          "Identify inside corners (cope or miter)",
+          "Identify outside corners (miter)",
+          "Plan scarf joint locations over studs if needed",
+          "Determine if shoe molding is needed to cover floor gaps"
+        ],
+        "tables": null,
+        "callouts": null,
+        "checkpoints": null,
+        "tests": null
+      },
+      {
+        "id": "1a20c860-d87f-45f8-8e63-02ac748846ec",
+        "order": 2,
+        "title": "Installing to Door Casings",
+        "body": "Where baseboard meets door casing, the joint must be tight and properly aligned.",
+        "steps": [
+          "Measure from door casing to corner",
+          "Cut baseboard square at casing end",
+          "Cut opposite end for corner (cope or miter)",
+          "Test fit — should be snug against casing with no gap",
+          "If baseboard is thicker than casing: scribe and plane edge",
+          "If baseboard is thinner than casing: acceptable as-is",
+          "Nail baseboard to studs, starting at casing end"
+        ],
+        "tables": null,
+        "callouts": [
+          {
+            "type": "info",
+            "content": "The baseboard-to-casing joint is highly visible. Take extra time to ensure this joint is perfect — it's the first thing people notice."
+          }
+        ],
+        "checkpoints": null,
+        "tests": null
+      },
+      {
+        "id": "5b90770a-9371-491d-8174-f699fb2c0363",
+        "order": 3,
+        "title": "Inside Corner Treatment",
+        "body": "Inside corners can be coped or mitered. Coped joints are more reliable for paint-grade work.",
+        "steps": [
+          "First piece: cut square, run into corner",
+          "Nail first piece in place",
+          "Second piece: cope to fit over first piece profile",
+          "Test fit cope against installed piece",
+          "Adjust cope as needed until tight fit",
+          "Nail second piece, starting at coped end"
+        ],
+        "tables": null,
+        "callouts": [
+          {
+            "type": "tip",
+            "title": "Coping Strategy",
+            "content": "For rooms with multiple inside corners, work around the room so you're always coping the piece you're installing onto the piece already in place. Never try to cope both ends of a single piece."
+          }
+        ],
+        "checkpoints": null,
+        "tests": null
+      },
+      {
+        "id": "46a06239-392b-446d-bfc8-af3eda4c412c",
+        "order": 4,
+        "title": "Outside Corner Treatment",
+        "body": "Outside corners are always mitered. The key is tight face contact even if the corner isn't perfectly square.",
+        "steps": [
+          "Measure corner angle with angle finder",
+          "Cut first piece at half the corner angle (typically 45°)",
+          "Install first piece, nail except near corner",
+          "Cut second piece at matching angle",
+          "Dry fit — adjust angle if needed",
+          "Apply wood glue to miter faces",
+          "Install second piece, align faces perfectly",
+          "Nail through corner to lock joint",
+          "Wipe excess glue immediately"
+        ],
+        "tables": null,
+        "callouts": [
+          {
+            "type": "warning",
+            "content": "Back-cut miters slightly (1-2°) to ensure the face closes tight. A miter that touches at the back before the face will show a gap."
+          }
+        ],
+        "checkpoints": null,
+        "tests": null
+      },
+      {
+        "id": "3ad989d8-03f6-4dfb-863b-03a921f3e04b",
+        "order": 5,
+        "title": "Shoe Molding Installation",
+        "body": "Shoe molding (or quarter round) covers the gap between baseboard and floor. It's especially useful over hard flooring that requires expansion gaps.",
+        "steps": [
+          "Install all baseboard first",
+          "Measure and cut shoe molding",
+          "Inside corners: cope or miter",
+          "Outside corners: miter",
+          "Nail shoe to baseboard only — never to floor",
+          "Use 18-gauge brad nails, angled slightly upward",
+          "Set nails and fill"
+        ],
+        "tables": null,
+        "callouts": [
+          {
+            "type": "critical",
+            "content": "Never nail shoe molding to the floor. The shoe must float with the baseboard while the floor moves independently. Nailing to the floor can crack the shoe when the floor expands."
+          }
+        ],
+        "checkpoints": null,
+        "tests": null
+      }
+    ],
+    "labsReferences": [
+      "{{LABS:finish-nailer-15ga}}",
+      "{{LABS:brad-nailer-18ga}}",
+      "{{LABS:wood-glue}}"
+    ],
+    "checklist": {
+      "id": "5e4f89f8-010a-4705-8d0c-e0f198c26518",
+      "sections": [
+        {
+          "id": "procedures",
+          "title": "Procedure Verification",
+          "fields": [
+            {
+              "id": "proc-1",
+              "type": "checkbox",
+              "label": "1. Baseboard Layout",
+              "required": true
+            },
+            {
+              "id": "proc-2",
+              "type": "checkbox",
+              "label": "2. Installing to Door Casings",
+              "required": true
+            },
+            {
+              "id": "proc-3",
+              "type": "checkbox",
+              "label": "3. Inside Corner Treatment",
+              "required": true
+            },
+            {
+              "id": "proc-4",
+              "type": "checkbox",
+              "label": "4. Outside Corner Treatment",
+              "required": true
+            },
+            {
+              "id": "proc-5",
+              "type": "checkbox",
+              "label": "5. Shoe Molding Installation",
+              "required": true
+            }
+          ]
+        },
+        {
+          "id": "photos",
+          "title": "Photo Documentation",
+          "fields": [
+            {
+              "id": "photos",
+              "type": "photo",
+              "label": "Add photos",
+              "required": false
+            }
+          ]
+        },
+        {
+          "id": "notes",
+          "title": "Notes",
+          "fields": [
+            {
+              "id": "notes",
+              "type": "text",
+              "label": "Additional notes",
+              "required": false
+            }
+          ]
+        }
+      ]
+    },
+    "metadata": {
+      "estimatedDuration": "30-60 minutes",
+      "difficulty": "standard",
+      "createdAt": "2026-02-26T02:33:23.518Z",
+      "updatedAt": "2026-02-26T02:33:23.518Z"
+    }
+  },
+  {
+    "id": "13cd685a-a75f-447e-a8e9-ac017ac0e33c",
+    "code": "HI-SOP-TR-004",
+    "title": "Door & Window Casing",
+    "version": "1.0",
+    "trade": "Trim",
+    "status": "active",
+    "sourceRef": {
+      "tgCode": "TG-TRM-001",
+      "moduleCode": "TG-TRM-001-M05",
+      "moduleOrder": 5
+    },
+    "introduction": "Door and window casing frames the most prominent features in a room. Consistent reveals and tight joints are essential.",
+    "learningObjectives": [
+      "Install door casing with consistent reveals",
+      "Handle out-of-square jambs and openings",
+      "Install window casing including stool and apron",
+      "Execute picture frame and Craftsman-style casing"
+    ],
+    "criticalStandards": [
+      {
+        "code": "CS-TRM-012",
+        "description": "Maintain consistent reveal (typically 3/16\" to 1/4\") from jamb edge to casing edge on all sides",
+        "category": "specification"
+      },
+      {
+        "code": "CS-TRM-013",
+        "description": "Head casing miter joints must align perfectly with leg casing — no step or gap visible",
+        "category": "specification"
+      }
+    ],
+    "procedures": [
+      {
+        "id": "0a741e83-3722-4068-b3f2-6172c807701e",
+        "order": 1,
+        "title": "Setting Reveal Lines",
+        "body": "The reveal is the small step between the jamb face and the casing. Consistent reveals are a hallmark of quality trim work.",
+        "steps": [
+          "Determine reveal dimension (typically 3/16\" to 1/4\")",
+          "Set combination square to reveal distance",
+          "Mark reveal line on head jamb",
+          "Mark reveal line on both side jambs",
+          "Verify reveal marks form square corners",
+          "Adjust if jamb is out of square"
+        ],
+        "tables": null,
+        "callouts": [
+          {
+            "type": "tip",
+            "content": "A reveal gauge speeds up marking. Set it once and use it consistently across all openings for uniform appearance."
+          }
+        ],
+        "checkpoints": null,
+        "tests": null
+      },
+      {
+        "id": "838bf9ff-573a-4af4-b890-31d0e759eb8f",
+        "order": 2,
+        "title": "Door Casing Installation (Mitered)",
+        "body": "Standard mitered door casing with head piece and two leg pieces.",
+        "steps": [
+          "Measure head jamb reveal-to-reveal",
+          "Cut head casing with 45° miters at both ends, long point to long point",
+          "Tack head casing in place with one nail",
+          "Measure leg length from floor to head casing miter",
+          "Cut leg casing with 45° miter at top, square at bottom",
+          "Test fit leg to head — adjust miter if needed",
+          "Apply glue to miter joint",
+          "Nail leg in place, starting at miter",
+          "Repeat for opposite leg",
+          "Secure head casing fully",
+          "Pin miters with 23-gauge pin or brad"
+        ],
+        "tables": null,
+        "callouts": [
+          {
+            "type": "info",
+            "content": "Work from the head casing down. This allows you to fine-tune leg length to achieve perfect miter alignment at the head."
+          }
+        ],
+        "checkpoints": null,
+        "tests": null
+      },
+      {
+        "id": "715a40da-2816-4a61-b072-74250f73b8fd",
+        "order": 3,
+        "title": "Window Casing with Stool & Apron",
+        "body": "Traditional window casing includes a stool (interior sill) and apron below the stool.",
+        "steps": [
+          "Measure rough opening and window frame",
+          "Cut stool to length — extends past casing width plus horn (typically 1\")",
+          "Notch stool to fit around window frame",
+          "Level and install stool — shim if needed",
+          "Mark reveal lines on jambs",
+          "Install head casing",
+          "Install leg casings down to stool",
+          "Measure apron length (matches head casing length)",
+          "Cut apron with returned ends or square ends",
+          "Install apron tight under stool, centered"
+        ],
+        "tables": null,
+        "callouts": null,
+        "checkpoints": null,
+        "tests": null
+      },
+      {
+        "id": "a9bcbf4a-7787-4273-9a8b-b7e08c059e65",
+        "order": 4,
+        "title": "Craftsman/Butt Joint Casing",
+        "body": "Craftsman style uses butt joints with the head casing sitting on top of the legs, often with a slight overhang.",
+        "steps": [
+          "Measure and install leg casings first (square cuts top and bottom)",
+          "Determine head casing overhang (typically 1/4\" to 1/2\")",
+          "Cut head casing to span legs plus overhang on each end",
+          "Install head casing, resting on legs",
+          "Nail through head into leg tops for solid joint",
+          "Fill nail holes"
+        ],
+        "tables": null,
+        "callouts": [
+          {
+            "type": "tip",
+            "content": "Craftsman casing is more forgiving of out-of-square openings because butt joints can accommodate angle variations better than miters."
+          }
+        ],
+        "checkpoints": null,
+        "tests": null
+      }
+    ],
+    "labsReferences": [
+      "{{LABS:reveal-gauge}}",
+      "{{LABS:finish-nailer-15ga}}",
+      "{{LABS:pin-nailer-23ga}}"
+    ],
+    "checklist": {
+      "id": "898f0ee3-95eb-4455-8e11-5509a2ee3634",
+      "sections": [
+        {
+          "id": "procedures",
+          "title": "Procedure Verification",
+          "fields": [
+            {
+              "id": "proc-1",
+              "type": "checkbox",
+              "label": "1. Setting Reveal Lines",
+              "required": true
+            },
+            {
+              "id": "proc-2",
+              "type": "checkbox",
+              "label": "2. Door Casing Installation (Mitered)",
+              "required": true
+            },
+            {
+              "id": "proc-3",
+              "type": "checkbox",
+              "label": "3. Window Casing with Stool & Apron",
+              "required": true
+            },
+            {
+              "id": "proc-4",
+              "type": "checkbox",
+              "label": "4. Craftsman/Butt Joint Casing",
+              "required": true
+            }
+          ]
+        },
+        {
+          "id": "photos",
+          "title": "Photo Documentation",
+          "fields": [
+            {
+              "id": "photos",
+              "type": "photo",
+              "label": "Add photos",
+              "required": false
+            }
+          ]
+        },
+        {
+          "id": "notes",
+          "title": "Notes",
+          "fields": [
+            {
+              "id": "notes",
+              "type": "text",
+              "label": "Additional notes",
+              "required": false
+            }
+          ]
+        }
+      ]
+    },
+    "metadata": {
+      "estimatedDuration": "30-60 minutes",
+      "difficulty": "standard",
+      "createdAt": "2026-02-26T02:33:23.518Z",
+      "updatedAt": "2026-02-26T02:33:23.518Z"
+    }
+  },
+  {
+    "id": "989bf5cd-53b6-4949-b7c1-c166147c073a",
+    "code": "HI-SOP-TR-005",
+    "title": "Crown Molding",
+    "version": "1.0",
+    "trade": "Trim",
+    "status": "active",
+    "sourceRef": {
+      "tgCode": "TG-TRM-001",
+      "moduleCode": "TG-TRM-001-M06",
+      "moduleOrder": 6
+    },
+    "introduction": "Crown molding is the most challenging trim to install because it sits at an angle between wall and ceiling. Understanding the geometry is essential before making your first cut.",
+    "learningObjectives": [
+      "Understand crown molding geometry and spring angles",
+      "Install crown using jig-based or flat-cutting methods",
+      "Execute inside and outside corner joints",
+      "Handle out-of-level ceilings and out-of-plumb walls"
+    ],
+    "criticalStandards": [
+      {
+        "code": "CS-TRM-014",
+        "description": "Crown spring angle must match crown profile — 38° or 45° typical. Wrong angle creates gaps",
+        "category": "specification"
+      },
+      {
+        "code": "CS-TRM-015",
+        "description": "Test all crown cuts with scrap pieces before cutting actual material",
+        "category": "technique"
+      }
+    ],
+    "procedures": [
+      {
+        "id": "88d7c1b5-749d-4d3c-a72b-abd03658bb22",
+        "order": 1,
+        "title": "Understanding Crown Geometry",
+        "body": "Crown molding has a spring angle — the angle it projects from the wall/ceiling corner. Most crown is either 38° or 45° spring angle.",
+        "steps": null,
+        "tables": [
+          {
+            "caption": "Crown Spring Angles",
+            "headers": [
+              "Spring Angle",
+              "Wall Contact",
+              "Ceiling Contact",
+              "Common Profiles"
+            ],
+            "rows": [
+              [
+                "38° (38/52)",
+                "52°",
+                "38°",
+                "Traditional, deeper projection"
+              ],
+              [
+                "45° (45/45)",
+                "45°",
+                "45°",
+                "Modern, equal contact"
+              ]
+            ]
+          }
+        ],
+        "callouts": [
+          {
+            "type": "warning",
+            "title": "Check Spring Angle",
+            "content": "Before cutting, verify your crown's spring angle. Place it in the wall/ceiling corner — if it doesn't sit flat on both surfaces, you have the wrong angle setting."
+          }
+        ],
+        "checkpoints": null,
+        "tests": null
+      },
+      {
+        "id": "7b4c8be5-2b78-4cfa-8d15-184472b71cfd",
+        "order": 2,
+        "title": "Cutting Crown — Nested Method",
+        "body": "In the nested method, the crown sits on the saw upside-down and backwards, as if the saw table is the ceiling and the fence is the wall.",
+        "steps": [
+          "Build or buy a crown stop for consistent positioning",
+          "Position crown upside-down: ceiling edge on table, wall edge against fence",
+          "Adjust crown until it sits at correct spring angle",
+          "Secure crown stop to lock position",
+          "For inside corner (left): swing blade right, ceiling on left",
+          "For inside corner (right): swing blade left, ceiling on right",
+          "For outside corner (left): swing blade left, ceiling on left",
+          "For outside corner (right): swing blade right, ceiling on right"
+        ],
+        "tables": null,
+        "callouts": [
+          {
+            "type": "tip",
+            "title": "Remember: Upside Down and Backwards",
+            "content": "The most common crown cutting mistake is forgetting the orientation. The ceiling side is ALWAYS on the saw table. The bottom of the crown (facing the room) is facing UP at you."
+          }
+        ],
+        "checkpoints": null,
+        "tests": null
+      },
+      {
+        "id": "d62e777a-8266-47ea-9f79-a55be27f1b5d",
+        "order": 3,
+        "title": "Cutting Crown — Compound Miter Method",
+        "body": "With compound miter settings, crown can be cut flat on the table. This requires knowing the miter and bevel angles for your spring angle.",
+        "steps": null,
+        "tables": [
+          {
+            "caption": "Compound Miter Settings for 90° Corners",
+            "headers": [
+              "Spring Angle",
+              "Miter Angle",
+              "Bevel Angle"
+            ],
+            "rows": [
+              [
+                "38°",
+                "31.6°",
+                "33.9°"
+              ],
+              [
+                "45°",
+                "35.3°",
+                "30.0°"
+              ]
+            ]
+          }
+        ],
+        "callouts": [
+          {
+            "type": "info",
+            "content": "The compound method is useful when crown is too large for the saw's nested capacity. However, the nested method is generally easier to visualize and execute."
+          }
+        ],
+        "checkpoints": null,
+        "tests": null
+      },
+      {
+        "id": "e72e44b2-c56d-48c1-8f86-002ee3576ae3",
+        "order": 4,
+        "title": "Inside Corner — Coped",
+        "body": "Coped inside corners are more reliable than mitered, especially if walls aren't perfectly square.",
+        "steps": [
+          "Cut first piece square, install into corner",
+          "Cut second piece at inside miter to reveal profile",
+          "Cope along the profile line with coping saw",
+          "Back-cut 5-10° to ensure face contact",
+          "Test fit against scrap piece",
+          "Install, sliding coped end over first piece"
+        ],
+        "tables": null,
+        "callouts": null,
+        "checkpoints": null,
+        "tests": null
+      },
+      {
+        "id": "3abc95d1-f056-4d72-9974-b0ffb241ad43",
+        "order": 5,
+        "title": "Outside Corner — Mitered",
+        "body": "Outside corners are always mitered. The compound geometry makes these joints challenging.",
+        "steps": [
+          "Measure corner angle (usually 90°)",
+          "Cut first piece at outside miter",
+          "Install first piece, nail except near corner",
+          "Cut second piece at opposite outside miter",
+          "Dry fit — check for tight face joint",
+          "Apply glue to miter faces",
+          "Install second piece, align carefully",
+          "Nail to lock joint"
+        ],
+        "tables": null,
+        "callouts": [
+          {
+            "type": "critical",
+            "content": "Always test crown cuts with scrap pieces before cutting actual material. Crown corners are easy to visualize incorrectly."
+          }
+        ],
+        "checkpoints": null,
+        "tests": null
+      }
+    ],
+    "labsReferences": [
+      "{{LABS:crown-stops}}",
+      "{{LABS:miter-saw-sliding-12in}}",
+      "{{LABS:coping-saw}}"
+    ],
+    "checklist": {
+      "id": "e5ef2417-0983-4f15-bed4-8d4c4a019a94",
+      "sections": [
+        {
+          "id": "procedures",
+          "title": "Procedure Verification",
+          "fields": [
+            {
+              "id": "proc-1",
+              "type": "checkbox",
+              "label": "1. Understanding Crown Geometry",
+              "required": true
+            },
+            {
+              "id": "proc-2",
+              "type": "checkbox",
+              "label": "2. Cutting Crown — Nested Method",
+              "required": true
+            },
+            {
+              "id": "proc-3",
+              "type": "checkbox",
+              "label": "3. Cutting Crown — Compound Miter Method",
+              "required": true
+            },
+            {
+              "id": "proc-4",
+              "type": "checkbox",
+              "label": "4. Inside Corner — Coped",
+              "required": true
+            },
+            {
+              "id": "proc-5",
+              "type": "checkbox",
+              "label": "5. Outside Corner — Mitered",
+              "required": true
+            }
+          ]
+        },
+        {
+          "id": "photos",
+          "title": "Photo Documentation",
+          "fields": [
+            {
+              "id": "photos",
+              "type": "photo",
+              "label": "Add photos",
+              "required": false
+            }
+          ]
+        },
+        {
+          "id": "notes",
+          "title": "Notes",
+          "fields": [
+            {
+              "id": "notes",
+              "type": "text",
+              "label": "Additional notes",
+              "required": false
+            }
+          ]
+        }
+      ]
+    },
+    "metadata": {
+      "estimatedDuration": "30-60 minutes",
+      "difficulty": "standard",
+      "createdAt": "2026-02-26T02:33:23.519Z",
+      "updatedAt": "2026-02-26T02:33:23.519Z"
+    }
+  },
+  {
+    "id": "e39a21c8-5cdb-4888-a186-872b89caf5fc",
+    "code": "HI-SOP-TR-006",
+    "title": "Nailing & Fastening",
+    "version": "1.0",
+    "trade": "Trim",
+    "status": "active",
+    "sourceRef": {
+      "tgCode": "TG-TRM-001",
+      "moduleCode": "TG-TRM-001-M07",
+      "moduleOrder": 7
+    },
+    "introduction": "Proper fastening keeps trim in place, closes joints, and prevents callbacks. Understanding nailer setup and nail selection ensures professional results.",
+    "learningObjectives": [
+      "Select appropriate fastener type and gauge for each application",
+      "Set up and adjust pneumatic nailers for consistent results",
+      "Identify proper nailing patterns and stud-hitting techniques",
+      "Troubleshoot common nailing problems"
+    ],
+    "criticalStandards": [
+      {
+        "code": "CS-TRM-016",
+        "description": "15-16 gauge finish nails for structural attachment to studs; 18 gauge for detail attachment",
+        "category": "specification"
+      },
+      {
+        "code": "CS-TRM-017",
+        "description": "Nail length = material thickness + 1\" minimum penetration into substrate",
+        "category": "specification"
+      },
+      {
+        "code": "CS-TRM-018",
+        "description": "Never nail closer than 3/4\" to the end of a board — pre-drill or use adhesive",
+        "category": "technique"
+      }
+    ],
+    "procedures": [
+      {
+        "id": "da075b1e-89b6-49fe-b5d6-827680558667",
+        "order": 1,
+        "title": "Fastener Selection",
+        "body": "Different applications require different fastener types and sizes.",
+        "steps": null,
+        "tables": [
+          {
+            "caption": "Fastener Guide by Application",
+            "headers": [
+              "Application",
+              "Nailer Type",
+              "Gauge",
+              "Length",
+              "Notes"
+            ],
+            "rows": [
+              [
+                "Baseboard to studs",
+                "Finish nailer",
+                "15-16",
+                "2\" - 2-1/2\"",
+                "Two nails per stud"
+              ],
+              [
+                "Casing to jambs",
+                "Finish nailer",
+                "15-16",
+                "1-1/2\" - 2\"",
+                "One per 12\""
+              ],
+              [
+                "Crown to framing",
+                "Finish nailer",
+                "15-16",
+                "2\" - 2-1/2\"",
+                "Into top plate and studs"
+              ],
+              [
+                "Miter joint pinning",
+                "Pin nailer",
+                "23",
+                "1\"",
+                "Lock joint while glue dries"
+              ],
+              [
+                "Shoe molding",
+                "Brad nailer",
+                "18",
+                "1-1/4\"",
+                "Into baseboard only"
+              ],
+              [
+                "MDF trim",
+                "Finish nailer",
+                "15-16",
+                "2\"",
+                "Pre-drill near ends"
+              ]
+            ]
+          }
+        ],
+        "callouts": null,
+        "checkpoints": null,
+        "tests": null
+      },
+      {
+        "id": "2881de45-c282-42f5-9efa-62e58b72af95",
+        "order": 2,
+        "title": "Nailer Setup & Adjustment",
+        "body": "Proper nailer setup ensures consistent depth without blowouts or proud nails.",
+        "steps": [
+          "Connect to appropriate air pressure (70-120 PSI typical)",
+          "Adjust depth on test piece of same material",
+          "Nail should set just below surface (1/32\")",
+          "If nail is proud: increase pressure or depth setting",
+          "If nail blows through: decrease pressure or depth setting",
+          "Test on scrap from each material type — settings differ by density",
+          "Re-verify after changing nail length"
+        ],
+        "tables": null,
+        "callouts": [
+          {
+            "type": "warning",
+            "content": "MDF requires lower pressure than solid wood. High pressure blows through MDF and creates craters that can't be filled cleanly."
+          }
+        ],
+        "checkpoints": null,
+        "tests": null
+      },
+      {
+        "id": "395077b9-1d47-4aec-a492-14966e3de991",
+        "order": 3,
+        "title": "Nailing Patterns",
+        "body": "Consistent nailing patterns ensure trim stays tight to the wall and joints stay closed.",
+        "steps": [
+          "Mark stud locations on wall before installing trim",
+          "Baseboard: two nails per stud — one 3/4\" from top, one 3/4\" from bottom",
+          "Casing: one nail every 12\" along jamb edge, one along wall edge",
+          "Crown: nail both wall edge (into studs) and ceiling edge (into top plate)",
+          "At outside miters: nail through the joint to lock pieces together",
+          "Near ends: stay 3/4\" back or pre-drill to prevent splits"
+        ],
+        "tables": null,
+        "callouts": null,
+        "checkpoints": null,
+        "tests": null
+      },
+      {
+        "id": "ec173b42-1bb1-4b77-9d25-097a353a23bd",
+        "order": 4,
+        "title": "Troubleshooting Nailing Problems",
+        "body": "Common issues and their solutions.",
+        "steps": null,
+        "tables": [
+          {
+            "caption": "Nailing Troubleshooting",
+            "headers": [
+              "Problem",
+              "Cause",
+              "Solution"
+            ],
+            "rows": [
+              [
+                "Nail proud (sticking up)",
+                "Pressure too low, depth too shallow",
+                "Increase pressure, adjust depth wheel"
+              ],
+              [
+                "Nail blows through",
+                "Pressure too high, soft material",
+                "Decrease pressure, switch to smaller gauge"
+              ],
+              [
+                "Nail bends/jams",
+                "Nail too long, hitting hard material",
+                "Use shorter nail, verify stud location"
+              ],
+              [
+                "Wood splits at end",
+                "Nailing too close to end",
+                "Pre-drill, use glue instead, stay 3/4\" back"
+              ],
+              [
+                "Trim doesn't hold tight",
+                "Missing studs, nails too short",
+                "Verify stud locations, use longer nails"
+              ]
+            ]
+          }
+        ],
+        "callouts": null,
+        "checkpoints": null,
+        "tests": null
+      }
+    ],
+    "labsReferences": [
+      "{{LABS:finish-nailer-15ga}}",
+      "{{LABS:brad-nailer-18ga}}",
+      "{{LABS:pin-nailer-23ga}}",
+      "{{LABS:compressor-trim}}"
+    ],
+    "checklist": {
+      "id": "6a166b32-30f3-46ba-9671-14160099ac77",
+      "sections": [
+        {
+          "id": "procedures",
+          "title": "Procedure Verification",
+          "fields": [
+            {
+              "id": "proc-1",
+              "type": "checkbox",
+              "label": "1. Fastener Selection",
+              "required": true
+            },
+            {
+              "id": "proc-2",
+              "type": "checkbox",
+              "label": "2. Nailer Setup & Adjustment",
+              "required": true
+            },
+            {
+              "id": "proc-3",
+              "type": "checkbox",
+              "label": "3. Nailing Patterns",
+              "required": true
+            },
+            {
+              "id": "proc-4",
+              "type": "checkbox",
+              "label": "4. Troubleshooting Nailing Problems",
+              "required": true
+            }
+          ]
+        },
+        {
+          "id": "photos",
+          "title": "Photo Documentation",
+          "fields": [
+            {
+              "id": "photos",
+              "type": "photo",
+              "label": "Add photos",
+              "required": false
+            }
+          ]
+        },
+        {
+          "id": "notes",
+          "title": "Notes",
+          "fields": [
+            {
+              "id": "notes",
+              "type": "text",
+              "label": "Additional notes",
+              "required": false
+            }
+          ]
+        }
+      ]
+    },
+    "metadata": {
+      "estimatedDuration": "30-60 minutes",
+      "difficulty": "standard",
+      "createdAt": "2026-02-26T02:33:23.519Z",
+      "updatedAt": "2026-02-26T02:33:23.519Z"
+    }
+  },
+  {
+    "id": "97297150-4cea-42a3-bc61-a054b984d1e0",
+    "code": "HI-SOP-TR-007",
+    "title": "Filling & Caulking",
+    "version": "1.0",
+    "trade": "Trim",
+    "status": "active",
+    "sourceRef": {
+      "tgCode": "TG-TRM-001",
+      "moduleCode": "TG-TRM-001-M08",
+      "moduleOrder": 8
+    },
+    "introduction": "The filling and caulking stage transforms carpentry into finish work. This is where gaps disappear and joints become seamless.",
+    "learningObjectives": [
+      "Select appropriate filler for each application",
+      "Apply wood filler and spackle for invisible nail holes",
+      "Execute professional caulk joints",
+      "Understand the relationship between trim, caulk, and paint"
+    ],
+    "criticalStandards": [
+      {
+        "code": "CS-TRM-019",
+        "description": "Stainable filler for stain-grade trim; sandable filler for paint-grade — never mix",
+        "category": "specification"
+      },
+      {
+        "code": "CS-TRM-020",
+        "description": "Caulk is not a gap filler — gaps over 1/4\" require backer rod or multiple passes",
+        "category": "technique"
+      }
+    ],
+    "procedures": [
+      {
+        "id": "18793d04-2388-4acb-9a95-b0921c97f733",
+        "order": 1,
+        "title": "Filler Selection",
+        "body": "Different fillers serve different purposes. Match the filler to the application and finish type.",
+        "steps": null,
+        "tables": [
+          {
+            "caption": "Filler Types and Applications",
+            "headers": [
+              "Filler Type",
+              "Application",
+              "Dry Time",
+              "Finish Compatibility"
+            ],
+            "rows": [
+              [
+                "Lightweight spackle",
+                "Nail holes in MDF/paint-grade",
+                "15-30 min",
+                "Paint only"
+              ],
+              [
+                "Wood filler (solvent)",
+                "Nail holes, small gaps in paint-grade",
+                "1-2 hours",
+                "Paint only"
+              ],
+              [
+                "Stainable wood filler",
+                "Stain-grade trim",
+                "1-2 hours",
+                "Stain and clear coat"
+              ],
+              [
+                "Epoxy wood filler",
+                "Structural repairs, exterior",
+                "Varies",
+                "Paint or stain"
+              ],
+              [
+                "Caulk",
+                "Flexible joints, wall-to-trim gaps",
+                "24 hours to paint",
+                "Paint only"
+              ]
+            ]
+          }
+        ],
+        "callouts": null,
+        "checkpoints": null,
+        "tests": null
+      },
+      {
+        "id": "b7dfb502-7ac5-429a-b4e7-d18313e50341",
+        "order": 2,
+        "title": "Filling Nail Holes",
+        "body": "Invisible nail hole repairs require the right technique, not just the right product.",
+        "steps": [
+          "Verify nails are set 1/32\" below surface",
+          "If proud, use nail set to sink",
+          "Apply filler with putty knife — slightly overfill",
+          "Wipe excess immediately",
+          "Allow to dry per product instructions",
+          "Sand flush with 150-180 grit",
+          "Wipe dust before painting"
+        ],
+        "tables": null,
+        "callouts": [
+          {
+            "type": "tip",
+            "content": "For paint-grade work, lightweight spackle is fastest. It dries in minutes, sands easily, and is ready for primer. Don't overthink nail holes on paint-grade trim."
+          }
+        ],
+        "checkpoints": null,
+        "tests": null
+      },
+      {
+        "id": "e4886796-70dc-4479-8848-5ad846c1846f",
+        "order": 3,
+        "title": "Caulking Technique",
+        "body": "Good caulk joints are smooth, consistent, and appropriate for the application.",
+        "steps": [
+          "Cut caulk tube at 45° angle, small opening (1/8\")",
+          "Apply steady bead along joint",
+          "Tool immediately with wet finger or caulk tool",
+          "Work in 3-4 foot sections — caulk skins quickly",
+          "Maintain consistent bead width",
+          "Wipe excess on damp rag",
+          "Allow to dry 24 hours before painting"
+        ],
+        "tables": null,
+        "callouts": [
+          {
+            "type": "critical",
+            "content": "Only caulk joints that will be painted. Caulk yellows over time and cannot be stained. Never caulk stain-grade trim."
+          }
+        ],
+        "checkpoints": null,
+        "tests": null
+      },
+      {
+        "id": "a9cbc400-9390-4876-9d01-29035dcb67b6",
+        "order": 4,
+        "title": "Where to Caulk vs Where to Fill",
+        "body": "Not every gap requires the same treatment.",
+        "steps": null,
+        "tables": [
+          {
+            "caption": "Caulk vs Filler Decision Guide",
+            "headers": [
+              "Location",
+              "Treatment",
+              "Reason"
+            ],
+            "rows": [
+              [
+                "Trim-to-wall gap",
+                "Caulk",
+                "Flexible joint, surfaces may move independently"
+              ],
+              [
+                "Miter joint gap",
+                "Wood filler",
+                "Rigid joint, same material both sides"
+              ],
+              [
+                "Scarf joint gap",
+                "Wood filler",
+                "Rigid joint, same material"
+              ],
+              [
+                "Trim-to-ceiling",
+                "Caulk",
+                "Movement joint"
+              ],
+              [
+                "Nail holes",
+                "Filler",
+                "Rigid, no movement"
+              ],
+              [
+                "Inside corner gap (trim)",
+                "Filler or glue",
+                "Rigid joint"
+              ]
+            ]
+          }
+        ],
+        "callouts": null,
+        "checkpoints": null,
+        "tests": null
+      }
+    ],
+    "labsReferences": [
+      "{{LABS:spackle-lightweight}}",
+      "{{LABS:wood-filler-stainable}}",
+      "{{LABS:caulk-paintable}}",
+      "{{LABS:caulk-gun}}"
+    ],
+    "checklist": {
+      "id": "78004978-57a3-401a-868a-08dbde5e58f9",
+      "sections": [
+        {
+          "id": "procedures",
+          "title": "Procedure Verification",
+          "fields": [
+            {
+              "id": "proc-1",
+              "type": "checkbox",
+              "label": "1. Filler Selection",
+              "required": true
+            },
+            {
+              "id": "proc-2",
+              "type": "checkbox",
+              "label": "2. Filling Nail Holes",
+              "required": true
+            },
+            {
+              "id": "proc-3",
+              "type": "checkbox",
+              "label": "3. Caulking Technique",
+              "required": true
+            },
+            {
+              "id": "proc-4",
+              "type": "checkbox",
+              "label": "4. Where to Caulk vs Where to Fill",
+              "required": true
+            }
+          ]
+        },
+        {
+          "id": "photos",
+          "title": "Photo Documentation",
+          "fields": [
+            {
+              "id": "photos",
+              "type": "photo",
+              "label": "Add photos",
+              "required": false
+            }
+          ]
+        },
+        {
+          "id": "notes",
+          "title": "Notes",
+          "fields": [
+            {
+              "id": "notes",
+              "type": "text",
+              "label": "Additional notes",
+              "required": false
+            }
+          ]
+        }
+      ]
+    },
+    "metadata": {
+      "estimatedDuration": "30-60 minutes",
+      "difficulty": "standard",
+      "createdAt": "2026-02-26T02:33:23.519Z",
+      "updatedAt": "2026-02-26T02:33:23.519Z"
+    }
+  },
+  {
+    "id": "b7d4b9ed-f88c-4b9d-b471-4cdd4af681e0",
+    "code": "HI-SOP-TR-008",
+    "title": "Paint Preparation",
+    "version": "1.0",
+    "trade": "Trim",
+    "status": "active",
+    "sourceRef": {
+      "tgCode": "TG-TRM-001",
+      "moduleCode": "TG-TRM-001-M09",
+      "moduleOrder": 9
+    },
+    "introduction": "The line between trim carpentry and painting isn't always clear. Understanding paint preparation ensures your trim work shows well under finish coats.",
+    "learningObjectives": [
+      "Prepare trim for painter or finish work",
+      "Understand primer requirements for different materials",
+      "Execute final sanding and dust removal",
+      "Coordinate trim completion with painting schedule"
+    ],
+    "criticalStandards": [
+      {
+        "code": "CS-TRM-021",
+        "description": "All bare wood and MDF must be primed before topcoat — including cut ends",
+        "category": "specification"
+      },
+      {
+        "code": "CS-TRM-022",
+        "description": "Final sand with 150-180 grit — coarser leaves visible scratches through paint",
+        "category": "specification"
+      }
+    ],
+    "procedures": [
+      {
+        "id": "c3d79969-0a53-4957-9650-b5c2c1009140",
+        "order": 1,
+        "title": "Pre-Prime Requirements",
+        "body": "Some materials and situations require priming before installation.",
+        "steps": null,
+        "tables": [
+          {
+            "caption": "Pre-Prime Checklist",
+            "headers": [
+              "Material",
+              "Pre-Prime",
+              "Reason"
+            ],
+            "rows": [
+              [
+                "MDF",
+                "All surfaces, especially cuts",
+                "Cut edges absorb paint unevenly"
+              ],
+              [
+                "Finger-jointed pine",
+                "Recommended",
+                "Prevents joint telegraphing"
+              ],
+              [
+                "Bare wood with knots",
+                "Spot-prime knots",
+                "Prevents bleed-through"
+              ],
+              [
+                "Previously painted trim",
+                "If sanding to bare wood",
+                "Seal exposed wood"
+              ],
+              [
+                "Exterior/PVC",
+                "No",
+                "Paint adheres directly"
+              ]
+            ]
+          }
+        ],
+        "callouts": null,
+        "checkpoints": null,
+        "tests": null
+      },
+      {
+        "id": "7e58e19b-f910-4c02-8c87-5027c5b7f9a4",
+        "order": 2,
+        "title": "Final Sanding",
+        "body": "Final sanding creates a smooth surface for paint adhesion.",
+        "steps": [
+          "Verify all filler is fully dry",
+          "Sand filled areas flush with surrounding surface",
+          "Sand entire trim with 150-180 grit",
+          "Pay attention to profiles — don't round edges",
+          "Sand with the grain on visible faces",
+          "Remove all sanding dust with tack cloth or vacuum",
+          "Inspect under raking light for missed spots"
+        ],
+        "tables": null,
+        "callouts": [
+          {
+            "type": "warning",
+            "content": "Don't over-sand factory-primed trim. The factory primer is already smooth — heavy sanding removes it and creates more work."
+          }
+        ],
+        "checkpoints": null,
+        "tests": null
+      },
+      {
+        "id": "657f1ee0-555a-480e-b235-1d54b2088a6a",
+        "order": 3,
+        "title": "Dust Removal",
+        "body": "Dust left on trim creates bumps under paint.",
+        "steps": [
+          "Vacuum all surfaces and joints with brush attachment",
+          "Wipe with tack cloth or damp microfiber",
+          "Wipe top edges of baseboard (dust settles here)",
+          "Clean out inside corners",
+          "Wipe window stools and any horizontal surfaces",
+          "Allow to dry if using damp cloth before painting"
+        ],
+        "tables": null,
+        "callouts": null,
+        "checkpoints": null,
+        "tests": null
+      },
+      {
+        "id": "69bd2522-93ca-4f6a-8a67-9abda799d0a3",
+        "order": 4,
+        "title": "Coordination with Painters",
+        "body": "Trim and paint schedules must align for best results.",
+        "steps": null,
+        "tables": [
+          {
+            "caption": "Trim/Paint Coordination",
+            "headers": [
+              "Phase",
+              "Who",
+              "Notes"
+            ],
+            "rows": [
+              [
+                "Walls primed",
+                "Painter",
+                "Before trim installation"
+              ],
+              [
+                "Trim installed",
+                "Trim carpenter",
+                "Leave nail holes for fill"
+              ],
+              [
+                "Fill & caulk",
+                "Either",
+                "Coordinate who does this"
+              ],
+              [
+                "Prime trim",
+                "Painter",
+                "Or use factory-primed"
+              ],
+              [
+                "First coat walls",
+                "Painter",
+                "Cut in at trim edges"
+              ],
+              [
+                "Topcoat trim",
+                "Painter",
+                "After wall first coat"
+              ],
+              [
+                "Final wall coat",
+                "Painter",
+                "Touch up at trim edges"
+              ]
+            ]
+          }
+        ],
+        "callouts": [
+          {
+            "type": "info",
+            "content": "The best results come when trim is installed after walls are primed. This allows caulk to seal against a stable surface and prevents trim paint from getting on raw drywall."
+          }
+        ],
+        "checkpoints": null,
+        "tests": null
+      }
+    ],
+    "labsReferences": [
+      "{{LABS:primer-shellac}}",
+      "{{LABS:sandpaper-150}}",
+      "{{LABS:tack-cloth}}"
+    ],
+    "checklist": {
+      "id": "5f5d5f33-c233-4ac5-80ae-1f19b789e5fc",
+      "sections": [
+        {
+          "id": "procedures",
+          "title": "Procedure Verification",
+          "fields": [
+            {
+              "id": "proc-1",
+              "type": "checkbox",
+              "label": "1. Pre-Prime Requirements",
+              "required": true
+            },
+            {
+              "id": "proc-2",
+              "type": "checkbox",
+              "label": "2. Final Sanding",
+              "required": true
+            },
+            {
+              "id": "proc-3",
+              "type": "checkbox",
+              "label": "3. Dust Removal",
+              "required": true
+            },
+            {
+              "id": "proc-4",
+              "type": "checkbox",
+              "label": "4. Coordination with Painters",
+              "required": true
+            }
+          ]
+        },
+        {
+          "id": "photos",
+          "title": "Photo Documentation",
+          "fields": [
+            {
+              "id": "photos",
+              "type": "photo",
+              "label": "Add photos",
+              "required": false
+            }
+          ]
+        },
+        {
+          "id": "notes",
+          "title": "Notes",
+          "fields": [
+            {
+              "id": "notes",
+              "type": "text",
+              "label": "Additional notes",
+              "required": false
+            }
+          ]
+        }
+      ]
+    },
+    "metadata": {
+      "estimatedDuration": "30-60 minutes",
+      "difficulty": "standard",
+      "createdAt": "2026-02-26T02:33:23.519Z",
+      "updatedAt": "2026-02-26T02:33:23.519Z"
+    }
+  },
+  {
+    "id": "40e2300c-7a1b-4f1a-a1f6-323e703d8894",
+    "code": "HI-SOP-TR-009",
+    "title": "Quality Inspection & Defect Prevention",
+    "version": "1.0",
+    "trade": "Trim",
+    "status": "active",
+    "sourceRef": {
+      "tgCode": "TG-TRM-001",
+      "moduleCode": "TG-TRM-001-M10",
+      "moduleOrder": 10
+    },
+    "introduction": "A systematic quality inspection catches issues before the painter arrives or the customer does. Taking time now prevents callbacks later.",
+    "learningObjectives": [
+      "Perform systematic quality inspection of completed trim work",
+      "Identify common defects and their causes",
+      "Understand acceptable tolerances and visual standards",
+      "Document and address punch list items"
+    ],
+    "criticalStandards": [
+      {
+        "code": "CS-TRM-023",
+        "description": "No visible gaps at joints when viewed from 6 feet at normal lighting",
+        "category": "specification"
+      },
+      {
+        "code": "CS-TRM-024",
+        "description": "Reveals must be consistent within 1/32\" around each opening",
+        "category": "specification"
+      }
+    ],
+    "procedures": [
+      {
+        "id": "67ce26f1-37c0-46b9-b942-f16a84b4cc0d",
+        "order": 1,
+        "title": "Visual Inspection Protocol",
+        "body": "Inspect all trim work systematically before calling the job complete.",
+        "steps": null,
+        "tables": null,
+        "callouts": null,
+        "checkpoints": [
+          {
+            "checkpoint": "Joint tightness",
+            "acceptable": "Joints closed, no visible gaps at 6'",
+            "unacceptable": "Visible gaps, open miters"
+          },
+          {
+            "checkpoint": "Reveal consistency",
+            "acceptable": "Uniform 3/16\" - 1/4\" reveal, consistent per opening",
+            "unacceptable": "Reveals vary visibly, inconsistent"
+          },
+          {
+            "checkpoint": "Nail set depth",
+            "acceptable": "Slightly below surface, ready for fill",
+            "unacceptable": "Proud nails, blown through"
+          },
+          {
+            "checkpoint": "Fill quality",
+            "acceptable": "Smooth, flush, invisible when primed",
+            "unacceptable": "Lumpy, visible holes, different texture"
+          },
+          {
+            "checkpoint": "Caulk lines",
+            "acceptable": "Smooth, consistent width, no gaps",
+            "unacceptable": "Lumpy, inconsistent, missing sections"
+          },
+          {
+            "checkpoint": "Level & plumb",
+            "acceptable": "Trim follows wall plane consistently",
+            "unacceptable": "Trim deviates from wall, gaps behind"
+          }
+        ],
+        "tests": null
+      },
+      {
+        "id": "98082f20-c6b5-4d27-bbf9-0ec453a240b8",
+        "order": 2,
+        "title": "Common Defects & Prevention",
+        "body": "Understanding defect causes helps prevent them in future work.",
+        "steps": null,
+        "tables": [
+          {
+            "caption": "Trim Defect Matrix",
+            "headers": [
+              "Defect",
+              "Causes",
+              "Prevention",
+              "Remediation"
+            ],
+            "rows": [
+              [
+                "Open miters",
+                "Out of square cut, wood movement, no glue",
+                "Verify saw square, glue joints, acclimate",
+                "Re-cut or fill if minor"
+              ],
+              [
+                "Gaps at wall",
+                "Wall irregularity, trim too rigid",
+                "Scribe to wall, use flexible trim, caulk",
+                "Caulk if minor, re-install if severe"
+              ],
+              [
+                "Visible nail holes",
+                "Insufficient fill, wrong filler, no sand",
+                "Overfill slightly, sand flush",
+                "Re-fill and sand"
+              ],
+              [
+                "Uneven reveals",
+                "Poor marking, jamb out of square",
+                "Use reveal gauge consistently",
+                "Re-install affected pieces"
+              ],
+              [
+                "Crown separation",
+                "Nails missed framing, no glue at joints",
+                "Verify framing location, glue all joints",
+                "Re-nail into framing"
+              ],
+              [
+                "Split ends",
+                "Nailing too close to end",
+                "Pre-drill, stay 3/4\" back, use glue",
+                "Fill if minor, replace if structural"
+              ]
+            ]
+          }
+        ],
+        "callouts": null,
+        "checkpoints": null,
+        "tests": null
+      },
+      {
+        "id": "08b2f6d1-5f73-44b0-9e03-98683cf395de",
+        "order": 3,
+        "title": "Punch List Documentation",
+        "body": "Document all items requiring attention before final sign-off.",
+        "steps": [
+          "Walk entire job with consistent lighting",
+          "Note defects by room and location",
+          "Photograph significant issues",
+          "Categorize: must fix vs. acceptable vs. customer preference",
+          "Address must-fix items before final walkthrough",
+          "Review with customer if preference items exist"
+        ],
+        "tables": null,
+        "callouts": null,
+        "checkpoints": null,
+        "tests": null
+      },
+      {
+        "id": "01e87c0a-9bb4-4c1a-bac5-e31e3cd12415",
+        "order": 4,
+        "title": "Tolerance Standards",
+        "body": "Know what's acceptable and what requires correction.",
+        "steps": null,
+        "tables": [
+          {
+            "caption": "Trim Tolerance Guide",
+            "headers": [
+              "Measurement",
+              "Acceptable",
+              "Action Required"
+            ],
+            "rows": [
+              [
+                "Joint gap",
+                "< 1/32\"",
+                "Fill if visible, re-cut if > 1/16\""
+              ],
+              [
+                "Reveal variation",
+                "± 1/32\"",
+                "Re-install if visible variation"
+              ],
+              [
+                "Scarf alignment",
+                "Flush within 1/64\"",
+                "Sand flush or re-cut"
+              ],
+              [
+                "Crown gap at ceiling",
+                "< 1/16\"",
+                "Caulk if minor"
+              ],
+              [
+                "Baseboard gap at floor",
+                "< 1/8\"",
+                "Shoe molding covers"
+              ]
+            ]
+          }
+        ],
+        "callouts": null,
+        "checkpoints": null,
+        "tests": null
+      }
+    ],
+    "labsReferences": [],
+    "checklist": {
+      "id": "03ff982d-f0f0-4576-a1e3-25e887717186",
+      "sections": [
+        {
+          "id": "procedures",
+          "title": "Procedure Verification",
+          "fields": [
+            {
+              "id": "proc-1",
+              "type": "checkbox",
+              "label": "1. Visual Inspection Protocol",
+              "required": true
+            },
+            {
+              "id": "proc-2",
+              "type": "checkbox",
+              "label": "2. Common Defects & Prevention",
+              "required": true
+            },
+            {
+              "id": "proc-3",
+              "type": "checkbox",
+              "label": "3. Punch List Documentation",
+              "required": true
+            },
+            {
+              "id": "proc-4",
+              "type": "checkbox",
+              "label": "4. Tolerance Standards",
+              "required": true
+            }
+          ]
+        },
+        {
+          "id": "photos",
+          "title": "Photo Documentation",
+          "fields": [
+            {
+              "id": "photos",
+              "type": "photo",
+              "label": "Add photos",
+              "required": false
+            }
+          ]
+        },
+        {
+          "id": "notes",
+          "title": "Notes",
+          "fields": [
+            {
+              "id": "notes",
+              "type": "text",
+              "label": "Additional notes",
+              "required": false
+            }
+          ]
+        }
+      ]
+    },
+    "metadata": {
+      "estimatedDuration": "30-60 minutes",
+      "difficulty": "standard",
+      "createdAt": "2026-02-26T02:33:23.519Z",
+      "updatedAt": "2026-02-26T02:33:23.519Z"
+    }
+  }
+]

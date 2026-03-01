@@ -12,6 +12,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useServicesContext } from '../services/ServicesContext';
 import { getLoggedServices } from '../services';
+import { JOB_STAGE_META, type JobStage } from '@hooomz/shared-contracts';
 import type { CreateProject, UpdateProject } from '@hooomz/shared-contracts';
 import type { ActivityResponse } from '../repositories/activity.repository';
 
@@ -52,6 +53,22 @@ export const LOCAL_QUERY_KEYS = {
     all: ['local', 'discoveryDrafts'] as const,
     byProject: (projectId: string) => ['local', 'discoveryDrafts', 'project', projectId] as const,
   },
+  expenses: {
+    all: ['local', 'expenses'] as const,
+    byProject: (projectId: string) => ['local', 'expenses', 'project', projectId] as const,
+    byTask: (taskId: string) => ['local', 'expenses', 'task', taskId] as const,
+  },
+  invoices: {
+    all: ['local', 'invoices'] as const,
+    byProject: (projectId: string) => ['local', 'invoices', 'project', projectId] as const,
+    byCustomer: (customerId: string) => ['local', 'invoices', 'customer', customerId] as const,
+    detail: (id: string) => ['local', 'invoices', 'detail', id] as const,
+  },
+  payments: {
+    all: ['local', 'payments'] as const,
+    byInvoice: (invoiceId: string) => ['local', 'payments', 'invoice', invoiceId] as const,
+    byProject: (projectId: string) => ['local', 'payments', 'project', projectId] as const,
+  },
 };
 
 // ============================================================================
@@ -60,7 +77,7 @@ export const LOCAL_QUERY_KEYS = {
 
 interface ProjectListParams {
   status?: string | string[];
-  clientId?: string;
+  customerId?: string;
   limit?: number;
   offset?: number;
   [key: string]: unknown; // Index signature for Record<string, unknown> compatibility
@@ -81,7 +98,7 @@ export function useLocalProjects(params: ProjectListParams = {}) {
       const result = await services.projects.findAll({
         filters: {
           status: params.status,
-          clientId: params.clientId,
+          customerId: params.customerId,
         },
         pageSize: params.limit,
         page: params.offset ? Math.floor(params.offset / (params.limit || 20)) + 1 : 1,
@@ -140,6 +157,35 @@ export function useUpdateLocalProject() {
     mutationFn: async ({ id, data }: { id: string; data: UpdateProject }) => {
       const loggedServices = getLoggedServices();
       return loggedServices.projects.update(id, data);
+    },
+    onSuccess: (_, { id }) => {
+      queryClient.invalidateQueries({ queryKey: LOCAL_QUERY_KEYS.projects.detail(id) });
+      queryClient.invalidateQueries({ queryKey: LOCAL_QUERY_KEYS.projects.lists() });
+      queryClient.invalidateQueries({ queryKey: LOCAL_QUERY_KEYS.activity.all });
+    },
+  });
+}
+
+/**
+ * Advance a project's jobStage to the next stage in the pipeline.
+ * Stage advancement is always explicit — never auto.
+ */
+const STAGE_ORDER: JobStage[] = Object.entries(JOB_STAGE_META)
+  .sort(([, a], [, b]) => a.order - b.order)
+  .map(([key]) => key as JobStage);
+
+export function useAdvanceJobStage() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, currentStage }: { id: string; currentStage: JobStage }) => {
+      const loggedServices = getLoggedServices();
+      const idx = STAGE_ORDER.indexOf(currentStage);
+      if (idx === -1 || idx >= STAGE_ORDER.length - 1) {
+        throw new Error(`Cannot advance past ${currentStage}`);
+      }
+      const nextStage = STAGE_ORDER[idx + 1];
+      return loggedServices.projects.update(id, { id, jobStage: nextStage } as UpdateProject);
     },
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: LOCAL_QUERY_KEYS.projects.detail(id) });
@@ -444,6 +490,7 @@ export interface LocalBusinessHealthData {
     id: string;
     name: string;
     status: string;
+    jobStage?: JobStage;
     health_score?: number;
     taskCount: number;
     completedCount: number;
@@ -515,6 +562,7 @@ export function useLocalBusinessHealth(): LocalBusinessHealthData {
       id: p.id,
       name: p.name,
       status: p.status,
+      jobStage: p.jobStage,
       health_score: calculateProjectHealth(projectTasks),
       taskCount: projectTasks.length,
       completedCount,
@@ -566,7 +614,8 @@ export function useLocalCustomers() {
 }
 
 /**
- * Fetch a single customer by ID
+ * Fetch a single customer by ID.
+ * Checks V2 store first (platform-level), falls back to legacy store.
  */
 export function useLocalCustomer(id: string | undefined) {
   const { services, isLoading: servicesLoading } = useServicesContext();
@@ -575,6 +624,8 @@ export function useLocalCustomer(id: string | undefined) {
     queryKey: LOCAL_QUERY_KEYS.customers.detail(id!),
     queryFn: async () => {
       if (!services) throw new Error('Services not initialized');
+      const v2 = await services.customersV2.findById(id!);
+      if (v2) return v2;
       return services.customers.findById(id!);
     },
     enabled: !servicesLoading && !!services && !!id,

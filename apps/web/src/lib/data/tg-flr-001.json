@@ -1,0 +1,1954 @@
+{
+  "id": "tg-flr-001",
+  "code": "TG-FLR-001",
+  "title": "Flooring Installation — Complete Training Guide",
+  "trade": "Flooring",
+  "version": "1.3",
+  "status": "active",
+  "effectiveDate": "2026-02",
+  "modules": [
+    {
+      "id": "tg-flr-001-m01",
+      "code": "TG-FLR-001-M01",
+      "title": "Flooring Fundamentals",
+      "order": 1,
+      "sopCodes": [],
+      "learningObjectives": [
+        "Understand construction and layer composition of LVP, engineered hardwood, tile, and laminate",
+        "Explain how material construction affects installation requirements and failure modes",
+        "Describe thermal expansion and moisture dynamics in flooring systems",
+        "Identify substrate-flooring interaction failures and their prevention",
+        "Apply Climate Zone 6 considerations to product selection and installation timing"
+      ],
+      "criticalStandards": [
+        {
+          "code": "CS-FLR-001",
+          "description": "SPC cores are dimensionally stable but transmit sound; WPC cores are quieter but dent under point loads",
+          "category": "material-science"
+        },
+        {
+          "code": "CS-FLR-002",
+          "description": "Engineered hardwood veneer below 2mm cannot be refinished — sanding will burn through",
+          "category": "material-science"
+        },
+        {
+          "code": "CS-FLR-003",
+          "description": "Porcelain adhesion is purely mechanical — back-buttering is critical",
+          "category": "material-science"
+        },
+        {
+          "code": "CS-FLR-004",
+          "description": "Laminate HDF core swells permanently when exposed to moisture — never returns to original dimension",
+          "category": "material-science"
+        },
+        {
+          "code": "CS-FLR-005",
+          "description": "Expansion gaps are calculated clearances for worst-case seasonal movement, not safety margins",
+          "category": "building-science"
+        },
+        {
+          "code": "CS-FLR-006",
+          "description": "Climate Zone 6 indoor RH swings 30-40% seasonally — acclimate to average annual condition (35-45% RH)",
+          "category": "climate"
+        }
+      ],
+      "content": {
+        "introduction": "Before installing any flooring, you need to understand what you're working with and why it behaves the way it does. This section covers the construction of each flooring type, the building science that governs installation success, and the specific challenges of working in Climate Zone 6.",
+        "sections": [
+          {
+            "title": "Product Construction & Performance",
+            "body": "Every flooring type has a distinct construction that determines its performance characteristics, installation requirements, and failure modes. Understanding these fundamentals helps you anticipate problems before they occur.",
+            "subsections": [
+              {
+                "title": "Luxury Vinyl Plank (LVP) Construction",
+                "body": "LVP consists of multiple layers fused together under heat and pressure. The wear layer thickness (12-28 mil residential) determines longevity — not the overall plank thickness.",
+                "tables": [
+                  {
+                    "caption": "LVP Layer Breakdown",
+                    "headers": [
+                      "Layer",
+                      "Material",
+                      "Function"
+                    ],
+                    "rows": [
+                      [
+                        "Wear Layer",
+                        "Clear urethane/ceramic bead coating",
+                        "Scratch, stain, UV protection (measured in mils)"
+                      ],
+                      [
+                        "Print Film",
+                        "High-resolution photographic layer",
+                        "Visual appearance (wood, stone, etc.)"
+                      ],
+                      [
+                        "Core",
+                        "SPC (stone polymer) or WPC (wood polymer)",
+                        "Rigidity, dimensional stability, click-lock profile"
+                      ],
+                      [
+                        "Backing",
+                        "Cork or IXPE foam (sometimes attached)",
+                        "Sound absorption, comfort, moisture barrier"
+                      ]
+                    ]
+                  }
+                ],
+                "callouts": [
+                  {
+                    "type": "info",
+                    "title": "SPC vs WPC",
+                    "content": "SPC cores are denser and more dimensionally stable but transmit more sound. WPC cores are softer underfoot and quieter but can dent under heavy point loads."
+                  }
+                ]
+              },
+              {
+                "title": "Engineered Hardwood Construction",
+                "body": "Engineered hardwood uses a cross-laminated construction similar to plywood. The cross-laminated core constrains wood movement to approximately 50% of solid hardwood. However, it still moves — especially across the width. A 5\" engineered plank can still gain or lose 1/16\" seasonally.",
+                "tables": [
+                  {
+                    "caption": "Engineered Hardwood Layer Breakdown",
+                    "headers": [
+                      "Layer",
+                      "Material",
+                      "Function"
+                    ],
+                    "rows": [
+                      [
+                        "Wear Layer",
+                        "Real hardwood veneer (0.6mm - 6mm)",
+                        "Appearance, refinishability (thicker = more sanding)"
+                      ],
+                      [
+                        "Core Plies",
+                        "Cross-laminated hardwood, plywood, or HDF",
+                        "Dimensional stability, strength"
+                      ],
+                      [
+                        "Backer",
+                        "Hardwood or softwood veneer",
+                        "Balances construction, prevents warping"
+                      ]
+                    ]
+                  }
+                ],
+                "callouts": [
+                  {
+                    "type": "warning",
+                    "title": "Refinishability",
+                    "content": "The veneer thickness determines if the floor can be refinished: below 2mm, sanding will burn through."
+                  }
+                ]
+              },
+              {
+                "title": "Ceramic & Porcelain Tile Construction",
+                "body": "Tiles are made from clay fired at high temperatures. The firing temperature and clay composition determine the tile type.",
+                "tables": [
+                  {
+                    "caption": "Tile Types Comparison",
+                    "headers": [
+                      "Type",
+                      "Firing Temp",
+                      "Absorption",
+                      "Best Use"
+                    ],
+                    "rows": [
+                      [
+                        "Ceramic",
+                        "1800-2000°F",
+                        ">0.5%",
+                        "Walls, light-traffic floors"
+                      ],
+                      [
+                        "Porcelain",
+                        "2200-2500°F",
+                        "<0.5%",
+                        "All floors, wet areas, exterior"
+                      ],
+                      [
+                        "Through-Body",
+                        "2200-2500°F",
+                        "<0.5%",
+                        "High-traffic commercial"
+                      ]
+                    ]
+                  }
+                ],
+                "callouts": [
+                  {
+                    "type": "critical",
+                    "title": "Porcelain Adhesion",
+                    "content": "Porcelain's near-zero absorption means it won't wick moisture, but it also means thinset can't penetrate the tile body — adhesion is purely mechanical. This is why back-buttering is critical for porcelain."
+                  },
+                  {
+                    "type": "info",
+                    "content": "Ceramic tiles absorb some thinset moisture, creating a stronger chemical bond but making them unsuitable for freeze-thaw environments."
+                  }
+                ]
+              },
+              {
+                "title": "Laminate Flooring Construction",
+                "body": "Laminate flooring consists of four main layers. The HDF core is the critical vulnerability — it's made from wood fibers bonded with resin, essentially compressed sawdust.",
+                "tables": [
+                  {
+                    "caption": "Laminate Layer Breakdown",
+                    "headers": [
+                      "Layer",
+                      "Material",
+                      "Function"
+                    ],
+                    "rows": [
+                      [
+                        "Wear Layer",
+                        "Aluminum oxide infused melamine",
+                        "Scratch and wear protection (AC rating)"
+                      ],
+                      [
+                        "Decorative Layer",
+                        "Printed paper",
+                        "Visual appearance"
+                      ],
+                      [
+                        "Core",
+                        "High-Density Fiberboard (HDF)",
+                        "Structure, click-lock mechanism"
+                      ],
+                      [
+                        "Backing",
+                        "Melamine or balancing paper",
+                        "Moisture resistance (limited), balance"
+                      ]
+                    ]
+                  }
+                ],
+                "callouts": [
+                  {
+                    "type": "critical",
+                    "title": "Moisture Vulnerability",
+                    "content": "Water penetration at edges or through the surface causes irreversible swelling. Unlike solid wood that can dry out, swollen HDF never returns to its original dimension. This is why edge sealing and avoiding wet areas is non-negotiable for laminate."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "Building Science for Installers",
+            "body": "Flooring failures are physics failures. Understanding how heat, moisture, and materials interact prevents callbacks and protects your reputation.",
+            "subsections": [
+              {
+                "title": "Thermal Expansion & Contraction",
+                "body": "All materials expand when heated and contract when cooled. The rate of expansion varies by material. The problem: Flooring expands at a different rate than the substrate and surrounding structure. When expansion is constrained (floor pinned against a wall, under a cabinet, or screwed through), the energy has nowhere to go — it converts to vertical displacement. This is buckling.",
+                "tables": [
+                  {
+                    "caption": "Thermal Expansion Rates",
+                    "headers": [
+                      "Material",
+                      "Expansion Rate",
+                      "Movement per 10°C / 10' run"
+                    ],
+                    "rows": [
+                      [
+                        "LVP (SPC)",
+                        "Low",
+                        "~1/32\""
+                      ],
+                      [
+                        "Hardwood (across grain)",
+                        "Moderate-High",
+                        "~1/8\" (humidity dependent)"
+                      ],
+                      [
+                        "Laminate",
+                        "Moderate",
+                        "~3/32\""
+                      ],
+                      [
+                        "Tile",
+                        "Very Low",
+                        "Negligible"
+                      ],
+                      [
+                        "Concrete substrate",
+                        "Low",
+                        "~1/16\""
+                      ]
+                    ]
+                  }
+                ],
+                "callouts": [
+                  {
+                    "type": "info",
+                    "title": "The Expansion Gap Principle",
+                    "content": "Expansion gaps aren't optional safety margins — they're calculated clearances that accommodate the worst-case seasonal movement for your flooring type. A 1/4\" gap on LVP isn't conservative; it's the minimum physics requires."
+                  }
+                ]
+              },
+              {
+                "title": "Moisture Dynamics",
+                "body": "Moisture moves from high concentration to low concentration (wet to dry) and from warm to cold. In flooring, this creates several effects:",
+                "callouts": [
+                  {
+                    "type": "info",
+                    "content": "Hygroscopic expansion: Wood fibers absorb moisture from humid air and swell. This is different from thermal expansion — it's chemical absorption."
+                  },
+                  {
+                    "type": "info",
+                    "content": "Vapor drive: Moisture in concrete migrates upward toward the drier interior. Without a vapor barrier, this moisture enters wood-based flooring from below."
+                  },
+                  {
+                    "type": "info",
+                    "content": "Cupping vs crowning: When the bottom of a board is wetter than the top, edges curl up (cupping). When the top is wetter, the center rises (crowning). Both indicate moisture imbalance."
+                  },
+                  {
+                    "type": "info",
+                    "content": "Equilibrium moisture content (EMC): Wood will gain or lose moisture until it reaches equilibrium with surrounding air. Installation should occur when the wood is at its expected in-service EMC."
+                  }
+                ]
+              },
+              {
+                "title": "Substrate-Flooring Interaction",
+                "body": "The substrate and flooring are a system, not independent layers. Understanding common interaction failures helps prevent them.",
+                "tables": [
+                  {
+                    "caption": "Common Interaction Failures",
+                    "headers": [
+                      "Failure Mode",
+                      "Mechanism",
+                      "Prevention"
+                    ],
+                    "rows": [
+                      [
+                        "Telegraphing",
+                        "Substrate imperfections visible through thin flooring",
+                        "Flatten substrate, use thicker flooring or underlayment"
+                      ],
+                      [
+                        "Hollow spots (tile)",
+                        "Voids in thinset from improper coverage or substrate suction",
+                        "Prime substrate, back-butter, work in small sections"
+                      ],
+                      [
+                        "Adhesive failure",
+                        "Bond breaks due to moisture, contamination, or incompatibility",
+                        "Test moisture, clean substrate, verify adhesive compatibility"
+                      ],
+                      [
+                        "Differential movement",
+                        "Substrate and flooring expand/contract at different rates",
+                        "Movement joints, flexible adhesives, floating installation"
+                      ]
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "Climate Zone 6 Considerations",
+            "body": "New Brunswick sits in Climate Zone 6, which means cold winters, significant heating seasons, and dramatic seasonal humidity swings. This creates specific challenges for flooring installation.",
+            "subsections": [
+              {
+                "title": "Seasonal Humidity Swings",
+                "body": "In Climate Zone 6, indoor relative humidity can swing from 25-30% in winter (heated air is dry) to 60-70% in summer. This 30-40% RH swing causes significant dimensional changes in wood-based products.",
+                "tables": [
+                  {
+                    "caption": "Seasonal Dimensional Changes",
+                    "headers": [
+                      "Product",
+                      "Winter (Low RH)",
+                      "Summer (High RH)"
+                    ],
+                    "rows": [
+                      [
+                        "Solid Hardwood (5\" plank)",
+                        "Contracts ~3/16\" in width",
+                        "Expands ~3/16\" in width"
+                      ],
+                      [
+                        "Engineered Hardwood (5\" plank)",
+                        "Contracts ~1/16\" in width",
+                        "Expands ~1/16\" in width"
+                      ],
+                      [
+                        "Laminate (7\" plank)",
+                        "Contracts ~1/8\" in width",
+                        "Expands ~1/8\" in width"
+                      ]
+                    ]
+                  }
+                ],
+                "callouts": [
+                  {
+                    "type": "warning",
+                    "title": "Installation Timing",
+                    "content": "If you install hardwood in humid August at 50% RH, and the home drops to 25% RH in January, you'll see gapping. If you install in dry February and summer humidity hits, you risk buckling. Best practice is to acclimate to the home's average annual condition (typically 35-45% RH with HVAC running)."
+                  }
+                ]
+              },
+              {
+                "title": "Concrete Moisture in Cold Climates",
+                "body": "Concrete slabs in Climate Zone 6 face unique moisture challenges:",
+                "callouts": [
+                  {
+                    "type": "info",
+                    "content": "Below-grade slabs: Constant contact with cold, damp soil. Vapor drive is year-round, not just seasonal."
+                  },
+                  {
+                    "type": "info",
+                    "content": "New construction: Concrete needs 60-90 days to cure and release moisture. Winter pours with enclosed heating can trap moisture."
+                  },
+                  {
+                    "type": "info",
+                    "content": "Freeze-thaw at slab edges: Moisture at slab perimeter can freeze, causing heaving and cracking that affects flooring above."
+                  },
+                  {
+                    "type": "critical",
+                    "title": "Climate Zone 6 Rule",
+                    "content": "Always perform moisture testing on concrete slabs in Climate Zone 6, regardless of slab age. Vapor barriers are mandatory for any wood-based flooring installed below grade. Assume vapor drive is present unless testing proves otherwise."
+                  }
+                ]
+              },
+              {
+                "title": "Product Selection for Climate Zone 6",
+                "body": "Some products are better suited for Climate Zone 6 conditions than others, particularly for below-grade and on-grade applications.",
+                "tables": [
+                  {
+                    "caption": "Product Selection by Application",
+                    "headers": [
+                      "Application",
+                      "Recommended",
+                      "Avoid"
+                    ],
+                    "rows": [
+                      [
+                        "Below-grade basement",
+                        "LVP/SPC, porcelain tile",
+                        "Solid hardwood, laminate"
+                      ],
+                      [
+                        "On-grade slab (no barrier)",
+                        "LVP, tile, engineered with moisture barrier",
+                        "Any hardwood without barrier"
+                      ],
+                      [
+                        "Wood subfloor over crawl",
+                        "Engineered hardwood, LVP",
+                        "Solid hardwood (unless conditioned crawl)"
+                      ],
+                      [
+                        "Above-grade, standard",
+                        "Any product appropriate to use",
+                        "N/A — most products acceptable"
+                      ]
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "labsReferences": []
+    },
+    {
+      "id": "tg-flr-001-m02",
+      "code": "TG-FLR-001-M02",
+      "title": "Substrate Assessment & Preparation",
+      "order": 2,
+      "sopCodes": [
+        "HI-SOP-FL-001"
+      ],
+      "learningObjectives": [
+        "Apply the four-point substrate check (Clean, Dry, Flat, Sound) to any subfloor",
+        "Perform and interpret moisture testing using pin meter and RH probe methods",
+        "Measure flatness using an 80\" long level and identify correction requirements",
+        "Select and apply appropriate correction methods for common substrate defects"
+      ],
+      "criticalStandards": [
+        {
+          "code": "CS-FLR-007",
+          "description": "Never proceed with installation if moisture readings exceed manufacturer specifications",
+          "category": "stop-condition"
+        },
+        {
+          "code": "CS-FLR-008",
+          "description": "Wood subfloor: ≤12% MC, Concrete: ≤75% RH or ≤3 lbs/1000 sq ft MVER",
+          "category": "specification"
+        },
+        {
+          "code": "CS-FLR-009",
+          "description": "Flatness tolerance: 3/16\" in 10' for standard installations, 1/8\" in 10' for large format tile",
+          "category": "specification"
+        }
+      ],
+      "content": {
+        "introduction": "The substrate is the foundation of every flooring installation. A perfectly installed floor will fail if the substrate is not properly prepared. This module covers the systematic assessment and correction of substrates before any flooring goes down.",
+        "procedures": [
+          {
+            "title": "Four-Point Substrate Check",
+            "body": "Every substrate must pass four checks before installation begins. Failing any one requires correction before proceeding.",
+            "steps": [
+              "CLEAN: Verify substrate is free of debris, dust, adhesive residue, paint, oil, and any contaminants that could interfere with adhesion or underlayment performance",
+              "DRY: Test moisture content using appropriate method for substrate type — pin meter for wood, RH probe or calcium chloride for concrete",
+              "FLAT: Check flatness using 80\" long level {{LABS:80-inch-long-level}}, marking high and low spots — tolerance depends on flooring type",
+              "SOUND: Walk the entire surface listening and feeling for squeaks, deflection, loose panels, or hollow areas that indicate structural issues"
+            ]
+          },
+          {
+            "title": "Moisture Testing — Wood Subfloor",
+            "body": "Wood subfloor moisture is measured with a pin-type moisture meter. The pins penetrate the wood surface to measure electrical resistance, which correlates to moisture content.",
+            "steps": [
+              "Calibrate pin meter {{LABS:pin-moisture-meter}} according to manufacturer instructions",
+              "Set meter to correct wood species (or use correction chart for engineered panels)",
+              "Take readings at minimum 3 locations per 500 sq ft — more in suspect areas",
+              "Insert pins to 1/4\" depth, perpendicular to grain",
+              "Record readings — acceptable range is 6-12% MC for most hardwood installations",
+              "Check differential: flooring MC should be within 2-4% of subfloor MC"
+            ],
+            "callouts": [
+              {
+                "type": "warning",
+                "content": "Pin meters read surface moisture only. If you suspect deeper moisture issues (recent water damage, below-grade), use extended probes or wait and retest."
+              }
+            ]
+          },
+          {
+            "title": "Moisture Testing — Concrete Slab",
+            "body": "Concrete moisture testing is more complex because moisture is always present in concrete — the question is how much is moving. Two primary methods are used.",
+            "steps": [
+              "RH Probe Method (ASTM F2170): Drill holes to 40% of slab depth, install sleeves, wait 72 hours for equilibration, insert probe and read — limit is typically 75-80% RH",
+              "Calcium Chloride Method (ASTM F1869): Seal test kit to clean, bare concrete, wait 60-72 hours, weigh — limit is typically 3 lbs/1000 sq ft/24 hours",
+              "Test at minimum 3 locations per 1000 sq ft — more near exterior walls, plumbing, and known wet areas",
+              "For below-grade slabs in Climate Zone 6, always test regardless of slab age"
+            ],
+            "callouts": [
+              {
+                "type": "info",
+                "title": "Which Test to Use",
+                "content": "RH probes are more accurate and measure the moisture that will actually reach the flooring. Calcium chloride measures surface emissions but can be affected by ambient conditions. Most manufacturers now specify RH probe results."
+              },
+              {
+                "type": "critical",
+                "content": "If moisture exceeds limits, do not proceed. Options: wait and retest, apply moisture mitigation system {{LABS:moisture-mitigation}}, or change flooring specification to moisture-tolerant product."
+              }
+            ]
+          },
+          {
+            "title": "Flatness Check",
+            "body": "Flatness is measured with a long straightedge or level, checking the gap between the tool and the floor surface.",
+            "steps": [
+              "Use 80\" long level {{LABS:80-inch-long-level}} — longer than typical 10' straightedge but more practical for transport",
+              "Place level on floor and check gap at center using feeler gauge or spacer",
+              "Work systematically across room in grid pattern, marking high spots (circle) and low spots (X)",
+              "Standard tolerance: 3/16\" in 10' (or proportionally 1/8\" in 80\" level length)",
+              "Large format tile (15\"+): 1/8\" in 10' (proportionally 3/32\" in 80\")",
+              "Document locations and magnitude of out-of-tolerance areas"
+            ]
+          },
+          {
+            "title": "Substrate Correction — Leveling",
+            "body": "Low spots and overall unevenness are corrected with leveling compounds. Product selection depends on the depth of correction needed and the substrate type.",
+            "steps": [
+              "For corrections under 1/4\": Use patch compound applied with trowel {{LABS:floor-patch}}",
+              "For corrections 1/4\" to 1\": Use self-leveling compound {{LABS:self-leveling-compound}}",
+              "For corrections over 1\": Build up in lifts or use lightweight leveler",
+              "Prime substrate before leveling per manufacturer instructions",
+              "Mix leveler to correct consistency — too thin runs off, too thick won't self-level",
+              "Work in sections you can complete before material sets",
+              "Allow full cure time before flooring installation (typically 24-48 hours)"
+            ],
+            "callouts": [
+              {
+                "type": "tip",
+                "content": "Pour self-leveler on a primed floor. The primer controls absorption — without it, the substrate sucks water from the leveler too fast, causing cracking and poor adhesion."
+              }
+            ]
+          }
+        ]
+      },
+      "labsReferences": [
+        "{{LABS:pin-moisture-meter}}",
+        "{{LABS:rh-probe-kit}}",
+        "{{LABS:80-inch-long-level}}",
+        "{{LABS:self-leveling-compound}}",
+        "{{LABS:floor-patch}}",
+        "{{LABS:moisture-mitigation}}"
+      ]
+    },
+    {
+      "id": "tg-flr-001-m03",
+      "code": "TG-FLR-001-M03",
+      "title": "Material Handling & Acclimation",
+      "order": 3,
+      "sopCodes": [
+        "HI-SOP-FL-002"
+      ],
+      "learningObjectives": [
+        "Calculate acclimation requirements based on product type and site conditions",
+        "Properly store and protect flooring materials on job site",
+        "Verify material condition and identify defects before installation",
+        "Document acclimation readings and maintain chain of custody"
+      ],
+      "criticalStandards": [
+        {
+          "code": "CS-FLR-010",
+          "description": "Acclimate hardwood until MC is within 2% of subfloor MC and within expected in-service range",
+          "category": "specification"
+        },
+        {
+          "code": "CS-FLR-011",
+          "description": "Never store flooring directly on concrete — use pallets, sleepers, or vapor barrier",
+          "category": "technique"
+        },
+        {
+          "code": "CS-FLR-012",
+          "description": "HVAC must be operating at normal conditions during acclimation — not just heating, but humidity control",
+          "category": "specification"
+        }
+      ],
+      "content": {
+        "introduction": "Flooring materials must reach equilibrium with their installed environment before installation. Skipping or shortcutting acclimation is the leading cause of flooring failures — and failures that occur months after installation, after you've been paid and moved on.",
+        "procedures": [
+          {
+            "title": "Acclimation Requirements by Product",
+            "body": "Different products have different acclimation needs. Some require extended acclimation, others need almost none.",
+            "tables": [
+              {
+                "caption": "Acclimation Requirements",
+                "headers": [
+                  "Product Type",
+                  "Acclimation Time",
+                  "Target",
+                  "Notes"
+                ],
+                "rows": [
+                  [
+                    "Solid Hardwood",
+                    "5-14 days minimum",
+                    "Within 2% MC of subfloor",
+                    "Longer in Climate Zone 6 winter/summer extremes"
+                  ],
+                  [
+                    "Engineered Hardwood",
+                    "48-72 hours minimum",
+                    "Within 2% MC of subfloor",
+                    "Cross-ply construction reduces movement but still needed"
+                  ],
+                  [
+                    "LVP/SPC",
+                    "24-48 hours",
+                    "Room temperature",
+                    "Dimensional stability high, but cold vinyl is brittle"
+                  ],
+                  [
+                    "Laminate",
+                    "48-72 hours",
+                    "Room temperature and humidity",
+                    "HDF core needs equilibration"
+                  ],
+                  [
+                    "Tile",
+                    "None required",
+                    "N/A",
+                    "Inert material, but store flat to prevent warping"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "title": "Job Site Storage",
+            "body": "Proper storage protects materials during acclimation and prevents damage that won't be visible until after installation.",
+            "steps": [
+              "Never store flooring directly on concrete — moisture will migrate into packaging. Use pallets, sleepers, or 6-mil poly",
+              "Keep materials away from exterior walls where temperature swings are greatest",
+              "Do not store in garages, unheated spaces, or areas without climate control",
+              "Leave cartons sealed until ready to install — open cartons absorb/release moisture faster than expected",
+              "Cross-stack or sticker solid hardwood to allow air circulation on all surfaces",
+              "Protect from direct sunlight which can cause uneven drying and color fading"
+            ],
+            "callouts": [
+              {
+                "type": "critical",
+                "title": "Climate Control Required",
+                "content": "The job site HVAC must be operating at normal occupied conditions during acclimation. A house that's been sitting at 55°F with no humidity control is not ready for flooring delivery. Require HVAC operation for 5+ days before material arrives."
+              }
+            ]
+          },
+          {
+            "title": "Acclimation Monitoring",
+            "body": "Acclimation isn't just about time — it's about reaching the target moisture content. Measure and document.",
+            "steps": [
+              "Record initial MC of flooring when delivered (open one carton from each lot)",
+              "Record subfloor MC at same time",
+              "Check flooring MC every 24-48 hours until readings stabilize",
+              "Target: Flooring MC within 2% of subfloor MC, and within 6-9% for most species",
+              "Document all readings with date, time, location, and ambient conditions",
+              "Do not begin installation until target is reached — time alone is not sufficient"
+            ]
+          },
+          {
+            "title": "Pre-Installation Inspection",
+            "body": "Before installing any material, inspect for defects. Issues found after installation are your problem; issues documented beforehand are the supplier's problem.",
+            "steps": [
+              "Open all cartons 24 hours before installation",
+              "Inspect each piece under good lighting for: color consistency, finish defects, dimensional issues, damage",
+              "Set aside any questionable pieces — do not install defects",
+              "Photograph defects and notify supplier before proceeding",
+              "Mix pieces from multiple cartons during installation to distribute color variation",
+              "Keep 2-3 cartons in reserve for warranty replacement"
+            ],
+            "callouts": [
+              {
+                "type": "warning",
+                "title": "5% Rule",
+                "content": "Most manufacturers allow up to 5% defects in a shipment. If you find more than 5%, stop and contact the supplier before installation. Installing more than 5% of a defective lot may void your warranty claim."
+              }
+            ]
+          }
+        ]
+      },
+      "labsReferences": [
+        "{{LABS:pin-moisture-meter}}",
+        "{{LABS:thermo-hygrometer}}"
+      ]
+    },
+    {
+      "id": "tg-flr-001-m04",
+      "code": "TG-FLR-001-M04",
+      "title": "Layout Planning & Design",
+      "order": 4,
+      "sopCodes": [
+        "HI-SOP-FL-003"
+      ],
+      "learningObjectives": [
+        "Calculate material quantities including waste factors for different patterns",
+        "Plan layout to minimize awkward cuts and maximize visual appeal",
+        "Establish chalk lines and reference points for straight, square installation",
+        "Handle transitions, obstacles, and irregular room shapes"
+      ],
+      "criticalStandards": [
+        {
+          "code": "CS-FLR-013",
+          "description": "First row must be perfectly straight — all subsequent rows follow this reference",
+          "category": "technique"
+        },
+        {
+          "code": "CS-FLR-014",
+          "description": "Minimum plank width at walls: 1/3 of full plank width (no slivers)",
+          "category": "specification"
+        },
+        {
+          "code": "CS-FLR-015",
+          "description": "Stagger end joints minimum 6\" for plank, 50% offset for tile (brick pattern)",
+          "category": "specification"
+        }
+      ],
+      "content": {
+        "introduction": "Layout determines how professional the finished floor looks. Poor layout results in awkward cuts, slivers at walls, misaligned patterns, and visual chaos. Good layout is invisible — the floor looks like it was meant to be there.",
+        "procedures": [
+          {
+            "title": "Material Calculation",
+            "body": "Always order more material than the room's square footage. Waste factors depend on room complexity and pattern.",
+            "tables": [
+              {
+                "caption": "Waste Factors by Installation Type",
+                "headers": [
+                  "Installation Type",
+                  "Waste Factor",
+                  "Example: 500 sq ft room"
+                ],
+                "rows": [
+                  [
+                    "Straight lay, rectangular room",
+                    "5-7%",
+                    "Order 525-535 sq ft"
+                  ],
+                  [
+                    "Straight lay, complex room",
+                    "10%",
+                    "Order 550 sq ft"
+                  ],
+                  [
+                    "Diagonal installation",
+                    "15%",
+                    "Order 575 sq ft"
+                  ],
+                  [
+                    "Herringbone/chevron pattern",
+                    "15-20%",
+                    "Order 575-600 sq ft"
+                  ],
+                  [
+                    "Large format tile",
+                    "10-15%",
+                    "Order 550-575 sq ft"
+                  ]
+                ]
+              }
+            ],
+            "callouts": [
+              {
+                "type": "tip",
+                "content": "Calculate room square footage from longest points, including closets and alcoves. Then add waste factor. Always round up to full carton quantities — partial cartons aren't available."
+              }
+            ]
+          },
+          {
+            "title": "Layout Planning",
+            "body": "Before snapping a single chalk line, walk the room and plan how the flooring will flow.",
+            "steps": [
+              "Identify the primary sight line — usually the main entrance to the room or the longest wall",
+              "Measure room width perpendicular to intended plank direction",
+              "Calculate how many full planks fit, and what the last row width will be",
+              "If last row would be less than 1/3 plank width, adjust starting row — rip first row narrower to balance",
+              "Plan for doorways: flooring should run through door openings, not terminate awkwardly",
+              "Consider furniture placement: seams under beds/couches are acceptable, seams in main traffic paths are not"
+            ],
+            "callouts": [
+              {
+                "type": "info",
+                "title": "The Racking Rule",
+                "content": "When opening cartons, sort planks by length if they vary. Start and end rows with longer pieces. Use shorter pieces in closets and secondary areas. This prevents a section of floor with disproportionately many end joints."
+              }
+            ]
+          },
+          {
+            "title": "Establishing Reference Lines",
+            "body": "Chalk lines establish the reference that all flooring follows. If the lines are wrong, the floor is wrong.",
+            "steps": [
+              "Snap a chalk line parallel to the longest or most visible wall — this is your primary reference",
+              "Check if walls are parallel by measuring at multiple points. Walls are rarely perfectly parallel",
+              "If walls are out of parallel, split the difference so cuts at both ends are similar",
+              "Snap a perpendicular line using 3-4-5 triangle method (or multiples: 6-8-10, 9-12-15)",
+              "Verify 90° angle at intersection before proceeding",
+              "For tile: snap a grid of layout lines at intervals matching your tile size plus grout joint"
+            ],
+            "callouts": [
+              {
+                "type": "critical",
+                "title": "Chalk Lines vs Laser Lines",
+                "content": "Chalk lines create a permanent reference mark on the substrate. Laser lines are for active alignment during work. You need both: chalk lines for the starting reference, laser level for ongoing alignment checks."
+              }
+            ]
+          },
+          {
+            "title": "Handling Obstacles",
+            "body": "Every room has obstacles: door frames, pipes, columns, floor vents. Plan for them.",
+            "steps": [
+              "Door frames: Undercut jambs and casings to slide flooring beneath — do not notch flooring around trim",
+              "Pipes: Drill hole 1/2\" larger than pipe diameter, cut plank to hole, slide in place, cover with escutcheon",
+              "Floor vents: Center vents in plank where possible, or adjust layout so vent falls at joint between planks",
+              "Columns/posts: Box around with even reveal on all sides, or run flooring to edge and cap with trim",
+              "Transitions: Plan transition strip locations at doorways, material changes, and at 30-40' intervals for expansion"
+            ]
+          }
+        ]
+      },
+      "labsReferences": [
+        "{{LABS:chalk-line-reel}}",
+        "{{LABS:laser-level}}",
+        "{{LABS:undercut-saw}}"
+      ]
+    },
+    {
+      "id": "tg-flr-001-m05",
+      "code": "TG-FLR-001-M05",
+      "title": "LVP/LVT Installation",
+      "order": 5,
+      "sopCodes": [
+        "HI-SOP-FL-004"
+      ],
+      "learningObjectives": [
+        "Execute click-lock floating installation with proper expansion gaps",
+        "Make accurate cuts using appropriate tools for straight, angled, and curved cuts",
+        "Install transitions, reducers, and edge trim correctly",
+        "Troubleshoot common click-lock engagement issues"
+      ],
+      "criticalStandards": [
+        {
+          "code": "CS-FLR-016",
+          "description": "Expansion gap: 1/4\" minimum at all walls, fixed cabinets, and vertical obstructions",
+          "category": "specification"
+        },
+        {
+          "code": "CS-FLR-017",
+          "description": "Click joints must fully engage with audible click — gaps indicate incomplete lock",
+          "category": "technique"
+        },
+        {
+          "code": "CS-FLR-018",
+          "description": "Maximum run without transition: 30-40 feet depending on manufacturer specifications",
+          "category": "specification"
+        }
+      ],
+      "content": {
+        "introduction": "Luxury Vinyl Plank (LVP) and Luxury Vinyl Tile (LVT) are the most common flooring we install. The click-lock floating installation is forgiving of minor substrate imperfections and can be installed over most existing floors. But the basics still matter: flat substrate, proper expansion gaps, and fully engaged joints.",
+        "procedures": [
+          {
+            "title": "Pre-Installation Verification",
+            "body": "Before starting installation, verify all prerequisites are met.",
+            "steps": [
+              "Substrate passes four-point check (Clean, Dry, Flat, Sound)",
+              "Material has acclimated 24-48 hours at room temperature",
+              "Cartons opened and inspected for defects",
+              "Layout planned, chalk lines snapped",
+              "All door jambs undercut",
+              "Expansion materials on hand: spacers, transition strips, shoe molding"
+            ]
+          },
+          {
+            "title": "First Row Installation",
+            "body": "The first row establishes the reference for the entire floor. Take your time.",
+            "steps": [
+              "Place 1/4\" spacers along starting wall",
+              "If first row needs to be ripped (to balance last row), rip tongue side off first row pieces",
+              "Lay first plank with tongue facing room, groove against spacers",
+              "Connect end joints by angling plank and dropping into previous plank's end lock",
+              "Use pull bar for last piece in row where tapping block won't fit",
+              "Check first row alignment with chalk line — adjust before proceeding",
+              "First row must be dead straight. If it curves, every subsequent row will follow the curve"
+            ],
+            "callouts": [
+              {
+                "type": "tip",
+                "content": "On long runs, tack the first row in place with a few pieces of blue tape to the substrate. This prevents the row from drifting while you work down the room."
+              }
+            ]
+          },
+          {
+            "title": "Field Installation",
+            "body": "Once the first row is set, field installation proceeds quickly.",
+            "steps": [
+              "Start each row with the cutoff from the previous row's end (if 6\"+ long)",
+              "Stagger end joints minimum 6\" from adjacent rows — random stagger looks more natural than H-pattern",
+              "Angle long edge into previous row at 20-30°, then press down to engage lock",
+              "Listen for click — if no click, disengage and check for debris or misalignment",
+              "Use tapping block on short end to close end joints — never hammer directly on plank edge",
+              "Check every 3-4 rows: straight, tight joints, consistent expansion gap at walls"
+            ],
+            "callouts": [
+              {
+                "type": "warning",
+                "title": "No Adhesive",
+                "content": "Floating LVP is designed to float. Never glue planks to substrate or to each other unless specifically required by manufacturer for glue-down installations. Adhesive prevents natural expansion/contraction."
+              }
+            ]
+          },
+          {
+            "title": "Cutting Techniques",
+            "body": "Accurate cuts are essential for professional results. LVP cuts easily with the right tools.",
+            "tables": [
+              {
+                "caption": "Cutting Methods",
+                "headers": [
+                  "Cut Type",
+                  "Tool",
+                  "Technique"
+                ],
+                "rows": [
+                  [
+                    "Straight crosscut",
+                    "LVP cutter or utility knife",
+                    "Score and snap for clean break"
+                  ],
+                  [
+                    "Rip cut (lengthwise)",
+                    "Utility knife or table saw",
+                    "Score deeply, snap over edge"
+                  ],
+                  [
+                    "Notch cut",
+                    "Jigsaw or oscillating tool",
+                    "Mark carefully, cut just outside line"
+                  ],
+                  [
+                    "Curved cut (pipes, etc.)",
+                    "Jigsaw or hole saw",
+                    "Drill starter hole, cut from inside"
+                  ]
+                ]
+              }
+            ],
+            "callouts": [
+              {
+                "type": "tip",
+                "content": "A dedicated LVP cutter {{LABS:lvp-cutter}} makes hundreds of clean crosscuts per day with no dust, no noise, no blade changes. Worth the investment for any volume work."
+              }
+            ]
+          },
+          {
+            "title": "Transitions & Trim",
+            "body": "Transitions handle changes in elevation, material, or direction. They also provide expansion relief on long runs.",
+            "steps": [
+              "T-molding: Use where two floating floors meet at same height (doorways between rooms)",
+              "Reducer: Use where LVP meets lower surface (tile, concrete, low-pile carpet)",
+              "End cap: Use where floor ends at vertical surface (fireplace, sliding door track)",
+              "Stair nose: Use at stair edges — must be glued, not floating",
+              "Install transition track first, then snap or slide transition piece into track",
+              "Leave 1/4\" expansion gap between flooring and transition track"
+            ]
+          },
+          {
+            "title": "Final Row & Completion",
+            "body": "The last row often requires ripping to fit.",
+            "steps": [
+              "Measure from last full row to wall at multiple points (walls aren't straight)",
+              "Transfer measurements to plank, subtracting 1/4\" for expansion gap",
+              "Rip planks to width using table saw or score-and-snap method",
+              "Install using pull bar since tapping block won't fit against wall",
+              "Install shoe molding or quarter round to cover expansion gap — nail to wall, not to floor",
+              "Remove all spacers",
+              "Clean floor with manufacturer-recommended cleaner"
+            ],
+            "callouts": [
+              {
+                "type": "critical",
+                "title": "Shoe Molding Rule",
+                "content": "Shoe molding must be nailed to the wall/base, never to the floor. If attached to the floor, it pins the edge and prevents expansion. You will get callbacks."
+              }
+            ]
+          }
+        ]
+      },
+      "labsReferences": [
+        "{{LABS:lvp-cutter}}",
+        "{{LABS:tapping-block}}",
+        "{{LABS:pull-bar}}",
+        "{{LABS:spacers-1-4}}"
+      ]
+    },
+    {
+      "id": "tg-flr-001-m06",
+      "code": "TG-FLR-001-M06",
+      "title": "Engineered Hardwood Installation",
+      "order": 6,
+      "sopCodes": [
+        "HI-SOP-FL-005"
+      ],
+      "learningObjectives": [
+        "Select appropriate installation method (float, glue-down, nail-down) based on substrate and conditions",
+        "Execute floating installation with proper underlayment and expansion control",
+        "Perform glue-down installation with correct adhesive coverage and working time",
+        "Install nail-down over wood substrate with proper fastener schedule"
+      ],
+      "criticalStandards": [
+        {
+          "code": "CS-FLR-019",
+          "description": "Nail-down requires minimum 3/4\" plywood or OSB subfloor — never nail into concrete",
+          "category": "specification"
+        },
+        {
+          "code": "CS-FLR-020",
+          "description": "Glue coverage minimum 95% — check by lifting pieces periodically during installation",
+          "category": "specification"
+        },
+        {
+          "code": "CS-FLR-021",
+          "description": "Floating engineered: expansion gap 3/8\" minimum, transition every 30' in any direction",
+          "category": "specification"
+        }
+      ],
+      "content": {
+        "introduction": "Engineered hardwood offers the beauty of real wood with better dimensional stability than solid hardwood. It can be installed using three methods: floating, glue-down, or nail-down. The right method depends on the substrate, the product specifications, and the desired feel underfoot.",
+        "procedures": [
+          {
+            "title": "Installation Method Selection",
+            "body": "Each method has advantages and requirements. Match the method to the conditions.",
+            "tables": [
+              {
+                "caption": "Installation Methods Comparison",
+                "headers": [
+                  "Method",
+                  "Substrate",
+                  "Feel Underfoot",
+                  "Best For"
+                ],
+                "rows": [
+                  [
+                    "Floating",
+                    "Any flat surface (concrete, plywood, existing floor)",
+                    "Slight flex, hollow sound",
+                    "Below-grade, over radiant, DIY repairs"
+                  ],
+                  [
+                    "Glue-down",
+                    "Concrete or plywood",
+                    "Solid, quiet",
+                    "Best sound/feel, high-traffic commercial"
+                  ],
+                  [
+                    "Nail-down",
+                    "3/4\" plywood or OSB only",
+                    "Solid, traditional",
+                    "Traditional aesthetic, over wood substrate"
+                  ]
+                ]
+              }
+            ],
+            "callouts": [
+              {
+                "type": "info",
+                "content": "Most engineered products allow multiple installation methods. Check manufacturer specs to confirm which methods are approved for your specific product."
+              }
+            ]
+          },
+          {
+            "title": "Floating Installation",
+            "body": "Floating installation connects planks to each other but not to the substrate. The floor moves as a unit on top of the underlayment.",
+            "steps": [
+              "Install appropriate underlayment — foam for basic, cork for sound reduction, film-faced for moisture barrier",
+              "Overlap underlayment seams 4-6\", tape seams with vapor-retardant tape",
+              "Place 3/8\" spacers at all walls (engineered needs more gap than LVP)",
+              "Install first row groove-to-wall, connecting end joints as you go",
+              "Engage tongue-and-groove by angling plank and lowering — some require tapping",
+              "Stagger end joints minimum 6\" (longer for wide plank — 8-12\")",
+              "Install transitions at doorways and at 30' maximum runs"
+            ],
+            "callouts": [
+              {
+                "type": "warning",
+                "title": "Underlayment Over Concrete",
+                "content": "When floating over concrete, use underlayment with integrated vapor barrier or install separate 6-mil poly. Moisture will migrate through concrete and into engineered hardwood without protection."
+              }
+            ]
+          },
+          {
+            "title": "Glue-Down Installation",
+            "body": "Glue-down creates a solid, quiet floor with no flex. It requires more preparation and is less forgiving of mistakes.",
+            "steps": [
+              "Substrate must be perfectly flat — 1/8\" in 10' maximum variance",
+              "Spread adhesive with recommended trowel notch size (typically 1/4\" x 1/4\" square notch)",
+              "Work in sections you can cover in adhesive working time (typically 30-60 minutes)",
+              "Lay planks into wet adhesive, sliding tongue into groove",
+              "Press firmly — do not pound. Adhesive needs contact, not impact",
+              "Check coverage periodically by lifting a plank — adhesive should contact 95%+ of back",
+              "Roll floor with 100 lb roller after installation, then again the next day"
+            ],
+            "callouts": [
+              {
+                "type": "critical",
+                "title": "Working Time",
+                "content": "Adhesive has open time (how long before it skins) and working time (how long you can install on it). Do not spread more than you can cover. If adhesive skins over, scrape it up and reapply."
+              },
+              {
+                "type": "tip",
+                "content": "For glue-down, use painter's tape along joints as you install to prevent adhesive squeeze-up. Peel tape before adhesive cures."
+              }
+            ]
+          },
+          {
+            "title": "Nail-Down Installation",
+            "body": "Nail-down is the traditional method for hardwood. It requires a wood substrate and a pneumatic flooring nailer.",
+            "steps": [
+              "Verify substrate is minimum 3/4\" plywood or OSB, properly fastened to joists",
+              "Snap chalk line for first row, maintaining 3/8\" expansion gap at starting wall",
+              "Face-nail first row through tongue at 6\" intervals (predrill to prevent splitting)",
+              "After 2-3 rows, switch to pneumatic flooring nailer {{LABS:flooring-nailer}}",
+              "Position nailer on tongue at 45° angle, 1-2\" from end joints, 6-8\" along plank",
+              "Seat cleats firmly but don't overdrive — overdriven cleats split tongues",
+              "Continue nailing every 6-8\" on center, with nail within 2\" of each end",
+              "Last 2-3 rows: return to face-nailing, fill holes with color-matched putty"
+            ],
+            "callouts": [
+              {
+                "type": "warning",
+                "title": "Air Pressure",
+                "content": "Flooring nailer air pressure is critical. Too low: cleats don't seat. Too high: cleats blow through tongue. Test on scrap until cleats seat flush with top of tongue."
+              }
+            ]
+          }
+        ]
+      },
+      "labsReferences": [
+        "{{LABS:flooring-nailer}}",
+        "{{LABS:flooring-adhesive}}",
+        "{{LABS:underlayment-cork}}",
+        "{{LABS:underlayment-vapor}}"
+      ]
+    },
+    {
+      "id": "tg-flr-001-m07",
+      "code": "TG-FLR-001-M07",
+      "title": "Ceramic & Porcelain Tile Installation",
+      "order": 7,
+      "sopCodes": [
+        "HI-SOP-FL-006"
+      ],
+      "learningObjectives": [
+        "Select appropriate thinset type for substrate and tile combination",
+        "Achieve minimum 95% coverage with proper trowel technique and back-buttering",
+        "Set tiles flat and level using appropriate leveling systems",
+        "Grout joints correctly and seal as required"
+      ],
+      "criticalStandards": [
+        {
+          "code": "CS-FLR-022",
+          "description": "Large format tile (15\"+ on any side) requires minimum 95% coverage with no voids",
+          "category": "specification"
+        },
+        {
+          "code": "CS-FLR-023",
+          "description": "Back-butter all porcelain tile — surface texture and low absorption require it",
+          "category": "technique"
+        },
+        {
+          "code": "CS-FLR-024",
+          "description": "Lippage tolerance: 1/32\" for tile edges under 15\", 1/16\" for 15\"+",
+          "category": "specification"
+        }
+      ],
+      "content": {
+        "introduction": "Tile installation demands precision. Unlike floating floors that forgive minor imperfections, tile locks every mistake in place. But done right, tile is the most durable flooring available — decades of service with minimal maintenance.",
+        "procedures": [
+          {
+            "title": "Thinset Selection",
+            "body": "Not all thinsets are equal. Match the thinset to your substrate, tile type, and conditions.",
+            "tables": [
+              {
+                "caption": "Thinset Types",
+                "headers": [
+                  "Type",
+                  "Description",
+                  "Best Use"
+                ],
+                "rows": [
+                  [
+                    "Unmodified",
+                    "Portland cement + sand, mix with water",
+                    "Ceramic over cement board, walls"
+                  ],
+                  [
+                    "Modified (polymer)",
+                    "Includes latex additives for flexibility",
+                    "Most floor applications, plywood substrate"
+                  ],
+                  [
+                    "Large Format (LFT)",
+                    "High-flow, extended working time",
+                    "Tiles 15\"+ on any side"
+                  ],
+                  [
+                    "Rapid-set",
+                    "Fast cure (2-4 hours to grout)",
+                    "Commercial, time-critical projects"
+                  ]
+                ]
+              }
+            ],
+            "callouts": [
+              {
+                "type": "critical",
+                "title": "Modified Over Cement Board",
+                "content": "Some cement board manufacturers prohibit modified thinset directly on their product — it can create adhesion problems. Always check substrate manufacturer specs."
+              }
+            ]
+          },
+          {
+            "title": "Troweling & Coverage",
+            "body": "Trowel technique determines coverage. Coverage determines whether tiles crack or survive. This is the most important tile skill.",
+            "steps": [
+              "Mix thinset to creamy peanut butter consistency — not too wet, not too dry",
+              "Apply thinset to substrate with flat side of trowel, pressing firmly to key into surface",
+              "Comb with notched side at consistent 45° angle in ONE direction (not swirls)",
+              "Trowel notch size: 1/4\" x 1/4\" for tiles up to 12\", 1/2\" x 1/2\" for larger tiles",
+              "For large format tile: back-butter the tile with thin skim coat in addition to substrate coverage",
+              "Set tile into combed thinset, slide slightly perpendicular to ridges, then press and twist to collapse ridges",
+              "Periodically lift a tile to check coverage — 80% minimum for standard, 95% for large format"
+            ],
+            "callouts": [
+              {
+                "type": "info",
+                "title": "Why One Direction?",
+                "content": "Combing in one direction allows air to escape when you set the tile. Swirl patterns trap air pockets that become voids — and voids crack under load."
+              }
+            ]
+          },
+          {
+            "title": "Setting & Leveling",
+            "body": "Getting tiles flat relative to each other (minimizing lippage) requires a system, not just eyeballing.",
+            "steps": [
+              "Start from layout lines, working outward so you're never kneeling on set tiles",
+              "Use tile leveling system {{LABS:tile-leveling-system}} for any tile over 12\" — clips go under tile edges, wedges between clips",
+              "Set tile with slight twisting motion to collapse thinset ridges",
+              "Insert spacers between tiles for consistent grout joints",
+              "Check level with straightedge spanning multiple tiles — adjust by pressing high corners",
+              "Do not walk on tiles for 24 hours (or per thinset specifications)"
+            ],
+            "callouts": [
+              {
+                "type": "tip",
+                "content": "Tile leveling clips are an investment, but they pay for themselves in eliminated callbacks. Large format tile without a leveling system is gambling."
+              }
+            ]
+          },
+          {
+            "title": "Grouting",
+            "body": "Grout fills joints, prevents water intrusion, and provides the final appearance. Timing is critical.",
+            "steps": [
+              "Wait minimum 24 hours after setting (48+ for large format) before grouting",
+              "Mix grout per manufacturer specs — consistency of thick oatmeal",
+              "Work grout into joints with rubber float held at 45°, moving diagonally to joints",
+              "Pack joints completely with no voids or air pockets",
+              "Wait 10-20 minutes until grout firms, then wipe diagonally with damp sponge",
+              "Rinse sponge frequently, don't over-wet — too much water washes out portland",
+              "Second sponge pass to remove haze, then polish with dry cloth",
+              "Seal grout after full cure (72 hours+) if using cement-based grout"
+            ],
+            "callouts": [
+              {
+                "type": "warning",
+                "title": "Don't Overwork",
+                "content": "Wiping too soon washes grout out of joints. Wiping too late makes haze impossible to remove. Watch the surface — when it starts to firm, start wiping."
+              }
+            ]
+          }
+        ]
+      },
+      "labsReferences": [
+        "{{LABS:thinset-modified}}",
+        "{{LABS:thinset-lft}}",
+        "{{LABS:tile-leveling-system}}",
+        "{{LABS:grout-sanded}}",
+        "{{LABS:grout-sealer}}"
+      ]
+    },
+    {
+      "id": "tg-flr-001-m08",
+      "code": "TG-FLR-001-M08",
+      "title": "Laminate Installation",
+      "order": 8,
+      "sopCodes": [
+        "HI-SOP-FL-007"
+      ],
+      "learningObjectives": [
+        "Execute click-lock floating installation with proper underlayment and vapor protection",
+        "Make clean cuts without chipping decorative surface",
+        "Protect edges from moisture in kitchens and bathrooms when laminate is approved",
+        "Install transitions and trim to complete the installation"
+      ],
+      "criticalStandards": [
+        {
+          "code": "CS-FLR-025",
+          "description": "Laminate requires 6-mil poly vapor barrier over ALL concrete substrates",
+          "category": "specification"
+        },
+        {
+          "code": "CS-FLR-026",
+          "description": "Edge seal all cut edges exposed to potential moisture (sink bases, dishwashers)",
+          "category": "technique"
+        },
+        {
+          "code": "CS-FLR-027",
+          "description": "Expansion gap: 5/16\" minimum at all walls — more than LVP due to HDF movement",
+          "category": "specification"
+        }
+      ],
+      "content": {
+        "introduction": "Laminate flooring offers the look of wood at a lower price point, with good durability for its cost. The critical difference from LVP is the HDF core — it must be protected from moisture at all times. Even brief water exposure can cause permanent swelling.",
+        "procedures": [
+          {
+            "title": "Substrate Preparation",
+            "body": "Laminate has the same basic requirements as LVP but is less forgiving of moisture issues.",
+            "steps": [
+              "Verify substrate passes four-point check (Clean, Dry, Flat, Sound)",
+              "Over concrete: ALWAYS install 6-mil poly vapor barrier, overlap seams 8\", tape seams",
+              "Install underlayment — foam minimum, cork for sound, film-faced for additional moisture protection",
+              "Underlayment seams must not align with laminate seams — offset by half width",
+              "Verify all moisture issues are resolved before laminate arrives — no exceptions"
+            ],
+            "callouts": [
+              {
+                "type": "critical",
+                "title": "Moisture Zero Tolerance",
+                "content": "Unlike LVP which can tolerate some moisture exposure, laminate HDF core swells irreversibly when wet. There is no repair. Prevention is the only strategy."
+              }
+            ]
+          },
+          {
+            "title": "Installation",
+            "body": "Laminate installation follows similar process to LVP with slightly larger expansion gaps.",
+            "steps": [
+              "Open cartons 48 hours before installation for acclimation",
+              "Plan layout to avoid slivers at walls — minimum 2\" final row width",
+              "Place 5/16\" spacers at all walls (larger than LVP due to HDF expansion)",
+              "Install first row with tongue facing room, groove against spacers",
+              "Angle planks into previous row, press down to engage click",
+              "Use tapping block on tongue side only — never hit groove edge directly",
+              "Stagger end joints minimum 8\" from adjacent rows"
+            ]
+          },
+          {
+            "title": "Cutting",
+            "body": "Laminate's decorative layer can chip if cut incorrectly. Tool and technique matter.",
+            "steps": [
+              "For crosscuts: use miter saw with fine-tooth blade (80+), decorative side UP",
+              "For rip cuts: use table saw with fine-tooth blade, decorative side UP",
+              "Alternative: score decorative surface deeply with utility knife, then cut from back — prevents chipping",
+              "For jigsaw cuts: use reverse-tooth blade OR cut from back side",
+              "Clean all edges after cutting — debris in joints prevents click engagement"
+            ],
+            "callouts": [
+              {
+                "type": "tip",
+                "content": "Blue painter's tape applied over cut line reduces chipping on decorative surface. Remove tape after cutting."
+              }
+            ]
+          },
+          {
+            "title": "Moisture Protection in Kitchens",
+            "body": "Laminate is generally not recommended for full kitchens, but if specified, edge protection is mandatory.",
+            "steps": [
+              "Seal all cut edges with laminate edge sealer {{LABS:laminate-edge-sealer}} before installation",
+              "At sink base and dishwasher: create water dam with silicone bead under cabinet toe kick",
+              "Consider removing laminate 1\" into cabinet area and installing vinyl or tile under appliances",
+              "Install threshold or transition at kitchen entrance to isolate potential water damage",
+              "Document moisture protection measures for warranty purposes"
+            ],
+            "callouts": [
+              {
+                "type": "warning",
+                "content": "Many laminate warranties exclude water damage regardless of source. Even with protection, customers should understand the risk of laminate in wet areas."
+              }
+            ]
+          }
+        ]
+      },
+      "labsReferences": [
+        "{{LABS:laminate-edge-sealer}}",
+        "{{LABS:vapor-barrier-6mil}}",
+        "{{LABS:underlayment-foam}}"
+      ]
+    },
+    {
+      "id": "tg-flr-001-m09",
+      "code": "TG-FLR-001-M09",
+      "title": "Transitions & Trim Work",
+      "order": 9,
+      "sopCodes": [
+        "HI-SOP-FL-008"
+      ],
+      "learningObjectives": [
+        "Select appropriate transition type for each condition (elevation change, material change, expansion)",
+        "Install transitions with proper expansion gaps and secure attachment",
+        "Install base molding and shoe molding without pinning floating floors",
+        "Create professional details at stairs, fireplace hearths, and sliding doors"
+      ],
+      "criticalStandards": [
+        {
+          "code": "CS-FLR-028",
+          "description": "Transition tracks must be fastened to substrate, not to flooring — allow 1/4\" gap",
+          "category": "technique"
+        },
+        {
+          "code": "CS-FLR-029",
+          "description": "Shoe molding fastens to base molding only, never to floor — prevents pinning",
+          "category": "technique"
+        },
+        {
+          "code": "CS-FLR-030",
+          "description": "Stair nosings must be glued and mechanically fastened — no floating stair details",
+          "category": "technique"
+        }
+      ],
+      "content": {
+        "introduction": "Transitions and trim are where the flooring meets the rest of the house. Poor trim work undermines even the best floor installation. Good trim work makes the floor look intentional, professional, and finished.",
+        "procedures": [
+          {
+            "title": "Transition Types",
+            "body": "Each transition type serves a specific purpose. Using the wrong transition creates problems.",
+            "tables": [
+              {
+                "caption": "Transition Selection Guide",
+                "headers": [
+                  "Transition",
+                  "Use",
+                  "Installation"
+                ],
+                "rows": [
+                  [
+                    "T-molding",
+                    "Two floors at same height (doorway between rooms)",
+                    "Track fastened to substrate, T snaps in"
+                  ],
+                  [
+                    "Reducer",
+                    "Floor to lower surface (vinyl to tile, floor to carpet)",
+                    "Track fastened, reducer covers edge"
+                  ],
+                  [
+                    "End cap",
+                    "Floor ends at vertical surface (fireplace, slider track)",
+                    "Covers exposed floor edge"
+                  ],
+                  [
+                    "Stair nose",
+                    "Floor edge at stair tread",
+                    "Glued AND screwed — never floating"
+                  ],
+                  [
+                    "Carpet trim",
+                    "Floor to carpet",
+                    "Pins carpet edge, covers floor edge"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "title": "Transition Installation",
+            "body": "Proper transition installation maintains expansion gaps while providing a clean appearance.",
+            "steps": [
+              "Measure and cut transition track to fit opening precisely",
+              "Position track centered on floor change, ensuring 1/4\" expansion gap from flooring",
+              "Fasten track to substrate with screws (wood) or concrete screws (concrete)",
+              "Verify flooring can slide under transition without binding",
+              "Cut transition piece to length — miter for angled transitions",
+              "Snap or slide transition into track — should fit snugly without forcing",
+              "At doorways, install transition directly under closed door"
+            ],
+            "callouts": [
+              {
+                "type": "info",
+                "title": "Transition Location",
+                "content": "Transitions at doorways should fall directly under the door when closed. When the door opens, the transition is visible; when closed, it's hidden. This is the professional standard."
+              }
+            ]
+          },
+          {
+            "title": "Base Molding & Shoe Molding",
+            "body": "Base molding covers the expansion gap. Shoe molding covers any remaining gap at the floor line and allows for floor thickness variations.",
+            "steps": [
+              "Measure and cut base molding to fit walls — miter inside corners, cope inside corners for tight fit (preferred)",
+              "Attach base molding to wall studs with finish nails — do not attach to floor",
+              "Base should sit on floor but not press down — 1/16\" gap is acceptable",
+              "Cut shoe molding to match base runs — miter all corners",
+              "Attach shoe to base molding only, using brads — never nail into floor",
+              "If shoe doesn't reach floor, shim base up slightly or use taller shoe profile"
+            ],
+            "callouts": [
+              {
+                "type": "critical",
+                "title": "Nail Direction Matters",
+                "content": "Shoe molding nails angle upward into the base, not downward into the floor. Any fastener into a floating floor will cause buckling when the floor tries to expand."
+              }
+            ]
+          },
+          {
+            "title": "Special Conditions",
+            "body": "Some areas require specific approaches beyond standard transitions.",
+            "steps": [
+              "Fireplace hearth: Use reducer or end cap. If hearth is raised, flooring can tuck under if gap allows. Otherwise, end cap provides clean termination",
+              "Sliding door tracks: End cap flush with track, ensuring door operation isn't impeded. Leave room for thermal expansion of track",
+              "Floor vents: Adjust layout so vents fall on joints if possible. Use vent extenders if floor raises vent above surrounding carpet",
+              "Stair nosings: Glue with construction adhesive, then screw through nosing into tread. Fill screw holes with color-matched filler. Never rely on adhesive alone",
+              "Floating-to-nail transition: When floating floor meets nailed hardwood, use T-molding with gap on floating side only"
+            ]
+          }
+        ]
+      },
+      "labsReferences": [
+        "{{LABS:transition-t-mold}}",
+        "{{LABS:transition-reducer}}",
+        "{{LABS:stair-nosing}}",
+        "{{LABS:shoe-molding}}"
+      ]
+    },
+    {
+      "id": "tg-flr-001-m10",
+      "code": "TG-FLR-001-M10",
+      "title": "Quality Inspection & Defect Prevention",
+      "order": 10,
+      "sopCodes": [
+        "HI-SOP-FL-009"
+      ],
+      "learningObjectives": [
+        "Perform systematic visual inspection using appropriate lighting conditions",
+        "Execute functional tests for click engagement, flatness, and stability",
+        "Identify common defects and trace them to root causes",
+        "Apply prevention strategies to avoid callbacks and warranty issues"
+      ],
+      "criticalStandards": [
+        {
+          "code": "CS-FLR-031",
+          "description": "Inspect all flooring under natural light from normal standing height — the customer's perspective",
+          "category": "quality"
+        },
+        {
+          "code": "CS-FLR-032",
+          "description": "Document all pre-existing conditions before installation — photos with timestamps",
+          "category": "documentation"
+        },
+        {
+          "code": "CS-FLR-033",
+          "description": "Customer walkthrough required before final payment — sign-off acknowledges acceptance",
+          "category": "documentation"
+        }
+      ],
+      "content": {
+        "introduction": "Quality isn't inspected into a floor — it's built in. But inspection confirms that quality is present and creates documentation that protects everyone. A systematic approach catches issues before the customer does.",
+        "procedures": [
+          {
+            "title": "Visual Inspection Protocol",
+            "body": "Visual inspection should be done in conditions that match how the customer will see the floor.",
+            "checkpoints": [
+              {
+                "checkpoint": "Overall appearance",
+                "acceptable": "Uniform color, pattern flows naturally, no obvious defects",
+                "unacceptable": "Color banding, mismatched planks, visible damage"
+              },
+              {
+                "checkpoint": "Joint gaps",
+                "acceptable": "Joints tight with no visible gaps (hairline acceptable for wood)",
+                "unacceptable": "Gaps visible from standing height, separation between planks"
+              },
+              {
+                "checkpoint": "Flatness",
+                "acceptable": "No visible high edges or humps under normal lighting",
+                "unacceptable": "Lippage visible under normal lighting, tripping hazards"
+              },
+              {
+                "checkpoint": "Transitions",
+                "acceptable": "Centered, flush or smooth height change, no sharp edges",
+                "unacceptable": "Uneven, gaps, sharp edges, loose"
+              },
+              {
+                "checkpoint": "Trim",
+                "acceptable": "Tight to floor and walls, miters closed, consistent reveal",
+                "unacceptable": "Gaps under trim, open miters, visible nails"
+              },
+              {
+                "checkpoint": "Cuts at walls",
+                "acceptable": "Covered by trim, expansion gap maintained",
+                "unacceptable": "Cut edges visible beyond trim, floor touching walls"
+              }
+            ]
+          },
+          {
+            "title": "Functional Tests",
+            "body": "Beyond visual, test that the floor performs as expected.",
+            "tests": [
+              {
+                "test": "Click engagement",
+                "method": "Walk entire floor listening and feeling for loose joints"
+              },
+              {
+                "test": "Flatness",
+                "method": "Roll office chair or appliance dolly across floor"
+              },
+              {
+                "test": "Stability",
+                "method": "Stand at edge and rock weight side to side"
+              },
+              {
+                "test": "Squeaks",
+                "method": "Walk entire floor focusing on areas over subfloor seams"
+              },
+              {
+                "test": "Transition function",
+                "method": "Open and close all doors, check room-to-room flow"
+              }
+            ]
+          },
+          {
+            "title": "Common Defects & Prevention",
+            "body": "Understanding defects helps prevent them. Most issues trace to a handful of root causes.",
+            "tables": [
+              {
+                "caption": "Flooring Defects Reference",
+                "headers": [
+                  "Defect",
+                  "Common Causes",
+                  "Prevention"
+                ],
+                "rows": [
+                  [
+                    "Gaps between planks",
+                    "Insufficient acclimation, dry indoor conditions, poor click engagement",
+                    "Full acclimation, verify clicks during install"
+                  ],
+                  [
+                    "Buckling/tenting",
+                    "No expansion gap, pinned under cabinets, transition too tight",
+                    "Verify gaps, never screw through floor, check all fixed objects"
+                  ],
+                  [
+                    "Squeaks",
+                    "Loose subfloor, debris under floor, inadequate fastening (nail-down)",
+                    "Fix subfloor first, vacuum before install, proper nail schedule"
+                  ],
+                  [
+                    "Hollow sound (tile)",
+                    "Voids in thinset, insufficient coverage",
+                    "Back-butter, check coverage, 95%+ for large format"
+                  ],
+                  [
+                    "Lippage (tile)",
+                    "Unlevel substrate, no leveling system, tiles of varying thickness",
+                    "Flatten substrate, use leveling clips, check tile calibration"
+                  ],
+                  [
+                    "Telegraphing",
+                    "Substrate imperfections, thin flooring, inadequate underlayment",
+                    "Flatten substrate, thicker underlayment"
+                  ],
+                  [
+                    "Edge chipping (laminate)",
+                    "Wrong blade, wrong cut direction, dull blade",
+                    "Fine-tooth blade, decorative side up, score line first"
+                  ],
+                  [
+                    "Moisture damage",
+                    "Wet concrete, no vapor barrier, spills not addressed",
+                    "Test moisture, install barriers, educate customer"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "title": "Documentation & Signoff",
+            "body": "Documentation protects the installer and educates the customer.",
+            "steps": [
+              "Before installation: Photo all substrate conditions, existing damage, moisture readings",
+              "During installation: Photo any discovered issues, corrections made, and critical details",
+              "After installation: Photo completed floor, transitions, trim details",
+              "Create punch list of any items to address",
+              "Walk through with customer pointing out features and limitations of their flooring type",
+              "Provide care instructions — manufacturer's document plus any specific guidance",
+              "Obtain signed acceptance acknowledging walkthrough completed and work accepted"
+            ],
+            "callouts": [
+              {
+                "type": "info",
+                "title": "Callback Protection",
+                "content": "Photos with timestamps establish what existed before you arrived. Without this documentation, you own every pre-existing condition the customer decides to notice after installation."
+              }
+            ]
+          }
+        ]
+      },
+      "labsReferences": []
+    }
+  ],
+  "appendices": [
+    {
+      "id": "appendix-a",
+      "title": "Quick Reference Cards",
+      "content": {
+        "expansionGaps": [
+          {
+            "product": "LVP / LVT",
+            "gap": "1/4\" all perimeters"
+          },
+          {
+            "product": "Laminate",
+            "gap": "3/8\" all perimeters"
+          },
+          {
+            "product": "Engineered Hardwood",
+            "gap": "1/2\" to 3/4\" (check manufacturer)"
+          },
+          {
+            "product": "Tile",
+            "gap": "1/4\" perimeter, movement joints per 25 ft"
+          }
+        ],
+        "moistureLimits": [
+          {
+            "method": "Pin Meter",
+            "substrate": "Wood subfloor",
+            "maximum": "≤ 12% MC"
+          },
+          {
+            "method": "Calcium Chloride",
+            "substrate": "Concrete",
+            "maximum": "≤ 3 lbs / 1000 sq ft"
+          },
+          {
+            "method": "RH Probe (F2170)",
+            "substrate": "Concrete",
+            "maximum": "≤ 75% RH"
+          }
+        ]
+      }
+    },
+    {
+      "id": "appendix-b",
+      "title": "Tool Checklist",
+      "content": {
+        "measurementLayout": [
+          "Tape measure (25 ft minimum)",
+          "80\" long level {{LABS:80-inch-long-level}}",
+          "Chalk line and chalk",
+          "Speed square / framing square",
+          "Laser level {{LABS:laser-level}}"
+        ],
+        "cuttingShaping": [
+          "Miter saw with fine-tooth blade",
+          "Jigsaw with wood/laminate blade",
+          "Utility knife with extra blades",
+          "Oscillating multi-tool (undercuts)",
+          "Tile wet saw (tile jobs)",
+          "Angle grinder with diamond blade (tile)"
+        ],
+        "installationTools": [
+          "Tapping block (LVP/laminate/hardwood)",
+          "Pull bar for last row",
+          "Spacers (1/4\" and 3/8\")",
+          "Rubber mallet",
+          "Pneumatic flooring nailer (hardwood)",
+          "Notched trowels (various sizes for tile)",
+          "Grout float",
+          "Tile leveling system {{LABS:tile-leveling-system}}"
+        ],
+        "testingQuality": [
+          "Pin moisture meter {{LABS:pin-moisture-meter}}",
+          "Concrete moisture test kit {{LABS:rh-probe-kit}}",
+          "Thermometer / hygrometer"
+        ],
+        "safetyCleanup": [
+          "Safety glasses",
+          "Hearing protection",
+          "Knee pads",
+          "Dust mask / respirator",
+          "Shop vacuum",
+          "Sponges and buckets (tile)"
+        ],
+        "futureLabs": [
+          "Chalk line and chalk",
+          "Miter saw with fine-tooth blade",
+          "Jigsaw with wood/laminate blade",
+          "Utility knife with extra blades",
+          "Oscillating multi-tool",
+          "Tile wet saw",
+          "Angle grinder with diamond blade",
+          "Tapping block",
+          "Pneumatic flooring nailer",
+          "Notched trowels",
+          "Grout float",
+          "Safety glasses",
+          "Hearing protection",
+          "Knee pads",
+          "Dust mask / respirator",
+          "Shop vacuum",
+          "Sponges and buckets"
+        ]
+      }
+    },
+    {
+      "id": "appendix-c",
+      "title": "Labs Product Reference Index",
+      "content": {
+        "productSlugs": [
+          {
+            "slug": "self-leveling-compound",
+            "category": "Floor leveling compound (<1/4\" pours)"
+          },
+          {
+            "slug": "floor-patch-compound",
+            "category": "Floor patch compound (>1/4\" repairs)"
+          },
+          {
+            "slug": "pin-moisture-meter",
+            "category": "Wood moisture meter"
+          },
+          {
+            "slug": "rh-probe-kit",
+            "category": "Concrete RH testing kit"
+          },
+          {
+            "slug": "calcium-chloride-test",
+            "category": "Calcium chloride moisture test"
+          },
+          {
+            "slug": "laser-level",
+            "category": "Laser level for row alignment"
+          },
+          {
+            "slug": "80-inch-long-level",
+            "category": "80\" level for flatness checking"
+          },
+          {
+            "slug": "lvp-underlayment",
+            "category": "LVP/SPC underlayment"
+          },
+          {
+            "slug": "lvp-adhesive",
+            "category": "LVP glue-down adhesive"
+          },
+          {
+            "slug": "hardwood-underlayment",
+            "category": "Hardwood underlayment (felt paper)"
+          },
+          {
+            "slug": "vapor-barrier",
+            "category": "6-mil polyethylene vapor barrier"
+          },
+          {
+            "slug": "wood-filler",
+            "category": "Color-matched wood putty/filler"
+          },
+          {
+            "slug": "cement-board",
+            "category": "Cement backer board"
+          },
+          {
+            "slug": "thinset-unmodified",
+            "category": "Unmodified thinset mortar"
+          },
+          {
+            "slug": "thinset-modified",
+            "category": "Polymer-modified thinset"
+          },
+          {
+            "slug": "thinset-rapid",
+            "category": "Rapid-set thinset"
+          },
+          {
+            "slug": "thinset-lft",
+            "category": "Large format tile thinset"
+          },
+          {
+            "slug": "tile-leveling-system",
+            "category": "Tile leveling clips/wedges"
+          },
+          {
+            "slug": "grout-sanded",
+            "category": "Sanded grout (joints >1/8\")"
+          },
+          {
+            "slug": "grout-unsanded",
+            "category": "Unsanded grout (joints <1/8\")"
+          },
+          {
+            "slug": "grout-sealer",
+            "category": "Grout sealer"
+          },
+          {
+            "slug": "laminate-underlayment",
+            "category": "Laminate-specific underlayment"
+          },
+          {
+            "slug": "laminate-edge-sealant",
+            "category": "Laminate edge sealer/wax"
+          },
+          {
+            "slug": "construction-adhesive",
+            "category": "Construction adhesive (transitions)"
+          }
+        ]
+      }
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-02-24T00:00:00Z",
+    "updatedAt": "2026-02-25T00:00:00Z",
+    "createdBy": "nathan",
+    "sourceDocument": "TG-FLR-001-v1.3-Full.json",
+    "totalModules": 10,
+    "totalSOPs": 9,
+    "totalCriticalStandards": 33,
+    "totalLabsReferences": 31
+  }
+}

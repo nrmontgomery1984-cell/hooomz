@@ -9,7 +9,10 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useLabsKnowledgeItems } from '@/lib/hooks/useLabsData';
 import { KnowledgeItemCard } from '@/components/labs';
+import { SECTION_COLORS } from '@/lib/viewmode';
 import type { KnowledgeType } from '@hooomz/shared-contracts';
+
+const LABS_COLOR = SECTION_COLORS.labs;
 
 type TabFilter = 'all' | 'published' | 'under_review' | 'draft';
 
@@ -73,16 +76,16 @@ export default function KnowledgePage() {
   ];
 
   return (
-    <div className="min-h-screen pb-24" style={{ background: '#F3F4F6' }}>
+    <div className="min-h-screen pb-24" style={{ background: 'var(--bg)' }}>
       {/* Header */}
-      <div style={{ background: '#FFFFFF', borderBottom: '1px solid #E5E7EB' }}>
+      <div style={{ background: 'var(--surface-1)', borderBottom: '1px solid var(--border)' }}>
         <div className="max-w-lg mx-auto px-4 py-4">
           <div className="flex items-center gap-2 mb-1">
-            <Link href="/labs" className="text-sm text-teal-700 hover:underline">Labs</Link>
-            <span className="text-xs text-gray-400">/</span>
+            <Link href="/labs" className="text-sm hover:underline" style={{ color: LABS_COLOR }}>Labs</Link>
+            <span className="text-xs" style={{ color: 'var(--text-3)' }}>/</span>
           </div>
-          <h1 className="text-xl font-bold" style={{ color: '#111827' }}>Knowledge Base</h1>
-          <p className="text-xs" style={{ color: '#9CA3AF' }}>Verified knowledge from field data</p>
+          <h1 className="text-xl font-bold" style={{ color: 'var(--text)' }}>Knowledge Base</h1>
+          <p className="text-xs" style={{ color: 'var(--text-3)' }}>Verified knowledge from field data</p>
         </div>
 
         {/* Status filter pills */}
@@ -92,11 +95,12 @@ export default function KnowledgePage() {
               <button
                 key={f.key}
                 onClick={() => setStatusFilter(f.key)}
-                className={`px-3 py-1.5 text-xs font-medium rounded-full whitespace-nowrap transition-colors ${
+                className="px-3 py-1.5 text-xs font-medium rounded-full whitespace-nowrap transition-colors"
+                style={
                   statusFilter === f.key
-                    ? 'bg-teal-700 text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
+                    ? { background: LABS_COLOR, color: '#fff' }
+                    : { background: 'var(--surface-2)', color: 'var(--text-2)' }
+                }
               >
                 {f.label}
               </button>
@@ -111,11 +115,12 @@ export default function KnowledgePage() {
               <button
                 key={f.value}
                 onClick={() => setTypeFilter(f.value)}
-                className={`px-3 py-1.5 text-xs font-medium rounded-full whitespace-nowrap transition-colors ${
+                className="px-3 py-1.5 text-xs font-medium rounded-full whitespace-nowrap transition-colors"
+                style={
                   typeFilter === f.value
-                    ? 'bg-gray-800 text-white'
-                    : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
-                }`}
+                    ? { background: 'var(--text)', color: 'var(--bg)' }
+                    : { background: 'var(--surface-2)', color: 'var(--text-2)' }
+                }
               >
                 {f.label}
               </button>
@@ -132,7 +137,7 @@ export default function KnowledgePage() {
             style={{ background: '#F0FDFA', border: '1px solid #99F6E4' }}
           >
             <div>
-              <p className="text-xs font-semibold" style={{ color: '#0F766E' }}>
+              <p className="text-xs font-semibold" style={{ color: 'var(--blue)' }}>
                 Filtered: {catLabel}
               </p>
               {actionParam === 'new' && sorted.length === 0 && (
@@ -144,7 +149,7 @@ export default function KnowledgePage() {
             <button
               onClick={() => { setCategorySearch(''); setShowCategoryBanner(false); }}
               className="text-[11px] font-medium px-2 py-1 rounded-lg"
-              style={{ background: '#FFFFFF', color: '#6B7280', border: '1px solid #E5E7EB' }}
+              style={{ background: 'var(--surface-1)', color: 'var(--text-2)', border: '1px solid var(--border)' }}
             >
               Clear
             </button>
@@ -153,15 +158,15 @@ export default function KnowledgePage() {
 
         {isLoading ? (
           <div className="text-center py-8">
-            <div className="w-8 h-8 border-3 rounded-full animate-spin mx-auto mb-3" style={{ borderColor: '#E5E7EB', borderTopColor: '#0F766E' }} />
-            <p className="text-sm text-gray-400">Loading knowledge base...</p>
+            <div className="w-8 h-8 border-3 rounded-full animate-spin mx-auto mb-3" style={{ borderColor: 'var(--border)', borderTopColor: 'var(--blue)' }} />
+            <p className="text-sm" style={{ color: 'var(--text-3)' }}>Loading knowledge base...</p>
           </div>
         ) : sorted.length === 0 ? (
           <div className="text-center py-8">
-            <p className="text-sm text-gray-400">
+            <p className="text-sm" style={{ color: 'var(--text-3)' }}>
               {categorySearch ? `No knowledge items for ${catLabel}` : 'No knowledge items yet'}
             </p>
-            <p className="text-xs text-gray-300 mt-1">
+            <p className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>
               {categorySearch
                 ? 'Track field observations during projects to build knowledge here'
                 : 'Knowledge items are created from observations and experiments'}

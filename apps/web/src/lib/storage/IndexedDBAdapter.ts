@@ -7,7 +7,7 @@ import type { StorageAdapter } from './StorageAdapter';
 import { StoreNames } from './StorageAdapter';
 
 const DB_NAME = 'hooomz_db';
-const DB_VERSION = 21; // v21: Labour Estimation Engine (skillRateConfig)
+const DB_VERSION = 29; // v29: Add checklistSubmissions store, update sops indexes
 
 export class IndexedDBAdapter implements StorageAdapter {
   private db: IDBDatabase | null = null;
@@ -113,6 +113,26 @@ export class IndexedDBAdapter implements StorageAdapter {
           }
         }
 
+        // v27 migration: rename clientId → customerId on project records
+        if (oldVersion < 27) {
+          if (db.objectStoreNames.contains('projects')) {
+            const projStore = tx.objectStore('projects');
+            const cursorReq = projStore.openCursor();
+            cursorReq.onsuccess = () => {
+              const cursor = cursorReq.result;
+              if (cursor) {
+                const record = cursor.value as Record<string, unknown>;
+                if ('clientId' in record && !('customerId' in record)) {
+                  record.customerId = record.clientId;
+                  delete record.clientId;
+                  cursor.update(record);
+                }
+                cursor.continue();
+              }
+            };
+          }
+        }
+
         // Build 3b migration: fix timeEntries indexes (crewMemberId → team_member_id)
         if (oldVersion < 9 && db.objectStoreNames.contains(StoreNames.TIME_ENTRIES)) {
           const teStore = tx.objectStore(StoreNames.TIME_ENTRIES);
@@ -182,7 +202,7 @@ export class IndexedDBAdapter implements StorageAdapter {
       [StoreNames.CHANGE_ORDERS]: ['projectId', 'status'],
       [StoreNames.CHANGE_ORDER_LINE_ITEMS]: ['changeOrderId', 'sopCode'],
       // SOPs (Build 1.5)
-      [StoreNames.SOPS]: ['sopCode', 'tradeFamily', 'isCurrent', 'status'],
+      [StoreNames.SOPS]: ['sopCode', 'tradeFamily', 'isCurrent', 'status', 'code', 'trade'],
       [StoreNames.SOP_CHECKLIST_ITEM_TEMPLATES]: ['sopId', 'checklistType', 'generatesObservation', 'observationKnowledgeType', 'stepNumber'],
       // Build 2: Observation Trigger System
       [StoreNames.PENDING_BATCH_OBSERVATIONS]: ['taskId', 'crewMemberId', 'status', 'projectId'],
@@ -220,6 +240,21 @@ export class IndexedDBAdapter implements StorageAdapter {
       // Financial Forecasting
       [StoreNames.FORECAST_CONFIGS]: ['isActive', 'scenario'],
       [StoreNames.FORECAST_SNAPSHOTS]: ['configId', 'periodType', 'snapshotDate'],
+      // Customers V2 (Platform-level)
+      [StoreNames.CUSTOMERS_V2]: ['status', 'leadSource', 'propertyCity'],
+      // Consultations (Sales pipeline)
+      [StoreNames.CONSULTATIONS]: ['customerId', 'projectId', 'status', 'scheduledDate'],
+      // Quotes (Sales pipeline)
+      [StoreNames.QUOTES]: ['customerId', 'projectId', 'status', 'expiresAt'],
+      // Expense Tracker
+      [StoreNames.EXPENSES]: ['projectId', 'taskId', 'category', 'date'],
+      // Invoices + Payments (Build 9)
+      [StoreNames.INVOICES]: ['projectId', 'customerId', 'status', 'dueDate'],
+      [StoreNames.PAYMENTS]: ['invoiceId', 'projectId', 'date'],
+      // Training Guides
+      [StoreNames.TRAINING_GUIDES]: ['code', 'trade', 'status'],
+      // Checklist Submissions
+      [StoreNames.CHECKLIST_SUBMISSIONS]: ['sopId', 'sopCode', 'projectId', 'technicianId', 'status'],
     };
 
     const storeIndexes = indexes[storeName] || [];
@@ -353,6 +388,37 @@ export class IndexedDBAdapter implements StorageAdapter {
 
       transaction.onabort = () => {
         reject(new Error(`Transaction aborted while setting item in ${storeName}: ${transaction.error?.message}`));
+      };
+    });
+  }
+
+  /**
+   * Set multiple items in a single transaction (bulk insert).
+   * Much faster than calling set() in a loop — one transaction instead of N.
+   */
+  async setMany<T>(storeName: string, items: { key: string; value: T }[]): Promise<void> {
+    if (items.length === 0) return;
+    const db = await this.ensureInitialized();
+
+    return new Promise<void>((resolve, reject) => {
+      const transaction = db.transaction([storeName], 'readwrite');
+      const objectStore = transaction.objectStore(storeName);
+
+      for (const { key, value } of items) {
+        const valueWithId = { ...value, id: key } as any;
+        objectStore.put(valueWithId);
+      }
+
+      transaction.oncomplete = () => {
+        resolve();
+      };
+
+      transaction.onerror = () => {
+        reject(new Error(`Failed to bulk set items in ${storeName}: ${transaction.error?.message}`));
+      };
+
+      transaction.onabort = () => {
+        reject(new Error(`Transaction aborted while bulk setting items in ${storeName}: ${transaction.error?.message}`));
       };
     });
   }

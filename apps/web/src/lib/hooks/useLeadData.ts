@@ -366,7 +366,7 @@ export function useLeadPipeline(): LeadPipelineData {
       // Build lead records
       const leads: LeadRecord[] = leadCustomers.map((customer) => {
         const linkedProject = allProjects.find(
-          (p) => p.clientId === customer.id
+          (p) => p.customerId === customer.id
         );
         const tags = customer.tags || [];
 
@@ -922,7 +922,7 @@ export function useCreateProjectFromLead() {
       const data = {
         name: `${lead.customer.lastName || lead.customer.firstName} - ${scopeLabel}`,
         status: ProjectStatus.LEAD,
-        clientId: lead.customer.id,
+        customerId: lead.customer.id,
         address: lead.customer.address,
         projectType,
         dates: {},

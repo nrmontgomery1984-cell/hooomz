@@ -92,6 +92,35 @@ import { FinancialActualsService } from './financialActuals.service';
 import { SkillRateConfigRepository } from '../repositories/skillRateConfig.repository';
 import { LabourEstimationService, createLabourEstimationService } from './labourEstimation.service';
 
+// Customers V2 (Platform-level)
+import { CustomerV2Repository } from '../repositories/customerV2.repository';
+
+// Expense Tracker
+import { ExpenseRepository } from '../repositories/expense.repository';
+import { ExpenseService, createExpenseService } from './expense.service';
+
+// Invoices + Payments (Build 9)
+import { InvoiceRepository } from '../repositories/invoice.repository';
+import { PaymentRepository } from '../repositories/payment.repository';
+import { InvoiceService, createInvoiceService } from './invoice.service';
+import { PaymentService, createPaymentService } from './payment.service';
+
+// Training Guides
+import { TrainingGuideRepository } from '../repositories/trainingGuide.repository';
+import { TrainingGuideService, createTrainingGuideService } from './trainingGuide.service';
+
+// Standard SOPs + Checklists
+import { StandardSopRepository } from '../repositories/standardSop.repository';
+import { StandardSopService, createStandardSopService } from './standardSop.service';
+import { ChecklistRepository } from '../repositories/checklist.repository';
+import { ChecklistService, createChecklistService } from './checklist.service';
+
+// Consultations (Sales pipeline)
+import { ConsultationRepository } from '../repositories/consultation.repository';
+
+// Quotes (Sales pipeline)
+import { QuoteRepository } from '../repositories/quote.repository';
+
 /**
  * Repository container - provides access to all offline-first repositories
  * Use this for read operations and internal access.
@@ -103,7 +132,7 @@ export interface Services {
   // Core - Project management
   projects: ProjectRepository;
 
-  // Customer management
+  // Customer management (legacy — empty after v27, kept for callers)
   customers: CustomerRepository;
 
   // Estimating - Line items and catalog
@@ -174,6 +203,29 @@ export interface Services {
   // Labour Estimation Engine
   labourEstimation: LabourEstimationService;
   skillRateConfig: SkillRateConfigRepository;
+
+  // Customers V2 (Platform-level)
+  customersV2: CustomerV2Repository;
+
+  // Consultations (Sales pipeline)
+  consultations: ConsultationRepository;
+
+  // Quotes (Sales pipeline)
+  quotes: QuoteRepository;
+
+  // Expense Tracker
+  expenses: ExpenseService;
+
+  // Invoices + Payments (Build 9)
+  invoices: InvoiceService;
+  payments: PaymentService;
+
+  // Training Guides
+  trainingGuides: TrainingGuideService;
+
+  // Standard SOPs + Checklists
+  standardSops: StandardSopService;
+  checklists: ChecklistService;
 }
 
 /**
@@ -188,7 +240,7 @@ export interface LoggedServices {
   // Task management with logging
   tasks: TaskService;
 
-  // Customer management with logging
+  // Customer management with logging (legacy — empty after v27)
   customers: CustomerService;
 
   // Estimate/line items with logging
@@ -257,6 +309,7 @@ export async function initializeServices(): Promise<Services> {
     const crewScheduleRepository = new CrewScheduleRepository(storage);
     const skillRateConfigRepository = new SkillRateConfigRepository(storage);
     const scheduleNoteRepository = new ScheduleNoteRepository(storage);
+    const customerV2Repository = new CustomerV2Repository(storage);
 
     // Create ActivityService (THE SPINE)
     const activityService = new ActivityService(activityRepository);
@@ -275,7 +328,7 @@ export async function initializeServices(): Promise<Services> {
       // Core - Project management
       projects: projectRepository,
 
-      // Customer management
+      // Customer management (legacy — empty after v27)
       customers: customerRepository,
 
       // Estimating - Line items and catalog
@@ -384,7 +437,44 @@ export async function initializeServices(): Promise<Services> {
         activityService,
       ),
       skillRateConfig: skillRateConfigRepository,
+
+      // Customers V2 (Platform-level)
+      customersV2: customerV2Repository,
+
+      // Consultations (Sales pipeline)
+      consultations: new ConsultationRepository(storage),
+
+      // Quotes (Sales pipeline)
+      quotes: new QuoteRepository(storage),
+
+      // Expense Tracker
+      expenses: createExpenseService(new ExpenseRepository(storage), activityService),
+
+      // Invoices + Payments (Build 9)
+      invoices: (() => {
+        const invoiceRepo = new InvoiceRepository(storage);
+        const paymentRepo = new PaymentRepository(storage);
+        return createInvoiceService(invoiceRepo, paymentRepo, activityService, lineItemRepository);
+      })(),
+      payments: null as unknown as PaymentService, // wired below (depends on invoices)
+
+      // Training Guides
+      trainingGuides: createTrainingGuideService(new TrainingGuideRepository(storage), activityService),
+
+      // Standard SOPs + Checklists
+      standardSops: createStandardSopService(new StandardSopRepository(storage), activityService),
+      checklists: createChecklistService(new ChecklistRepository(storage), activityService),
     };
+
+    // Late-bind expense repo to budget service for derived actualMaterialCost
+    budgetService.setExpenseRepo(new ExpenseRepository(storage));
+
+    // Late-bind payments (depends on invoices service)
+    services.payments = createPaymentService(
+      new PaymentRepository(storage),
+      services.invoices,
+      activityService,
+    );
 
     servicesInstance = services;
 
@@ -458,10 +548,6 @@ export function getProjectRepository(): ProjectRepository {
   return getServices().projects;
 }
 
-export function getCustomerRepository(): CustomerRepository {
-  return getServices().customers;
-}
-
 export function getLineItemRepository(): LineItemRepository {
   return getServices().estimating.lineItems;
 }
@@ -524,14 +610,6 @@ export function getProjectService(): ProjectService {
  */
 export function getTaskService(): TaskService {
   return getLoggedServices().tasks;
-}
-
-/**
- * Get the CustomerService with activity logging
- * Use for: create, update, delete, addTag, removeTag
- */
-export function getCustomerService(): CustomerService {
-  return getLoggedServices().customers;
 }
 
 /**
@@ -627,4 +705,7 @@ export type {
   BudgetService,
   LoopManagementService,
   CrewScheduleService,
+  InvoiceService,
+  PaymentService,
+  TrainingGuideService,
 };

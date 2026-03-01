@@ -12,7 +12,6 @@
 
 import { useState, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { Sphere } from '@/components/visualization/Sphere';
 import { BreadcrumbSpheres } from '@/components/navigation/BreadcrumbSpheres';
 import { ConfidenceBadge } from '@/components/visualization/ConfidenceBadge';
 import { useProject } from '@/lib/api/hooks';
@@ -200,12 +199,17 @@ export default function LocationDetailPage() {
         <BreadcrumbSpheres items={breadcrumbs} />
       </div>
 
-      {/* Location Sphere - smaller at task level */}
+      {/* Location header */}
       <div className="flex flex-col items-center py-6">
-        <button onClick={handleBackToCategory}>
-          <Sphere score={healthScore} size="md" label={locationName} />
+        <button
+          onClick={handleBackToCategory}
+          className="w-16 h-16 rounded-full flex items-center justify-center text-white text-lg font-light"
+          style={{ backgroundColor: healthScore >= 70 ? '#10b981' : healthScore >= 40 ? '#3B82F6' : healthScore >= 20 ? '#f59e0b' : '#ef4444' }}
+        >
+          {healthScore}
         </button>
-        <p className="text-sm text-slate-500 mt-2">
+        <span className="text-sm text-slate-600 font-medium mt-2">{locationName}</span>
+        <p className="text-sm text-slate-500 mt-1">
           {completedCount} of {tasks.length} tasks complete
         </p>
       </div>

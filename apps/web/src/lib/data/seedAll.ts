@@ -1,9 +1,8 @@
 /**
  * Seed All Labs Data
  *
- * Converts all 21 hardcoded SOPs from lib/data/sops.ts into IndexedDB database
- * SOPs with checklist items, creates knowledge items from lab test references,
- * and seeds the product/technique/tool catalogs.
+ * Seeds operational data: crew members, estimating catalog, workflows.
+ * SOP/training/labs content is now created through the app, not hardcoded.
  *
  * Idempotent: skips each category if data already exists.
  */
@@ -13,31 +12,10 @@ import { seedLabsCatalogs } from './labsSeedData';
 import { seedEstimatingCatalog } from './estimatingCatalogSeed';
 import { seedToolResearchData } from './toolResearchSeed';
 import { seedLabsIntegrationData } from './labsIntegrationSeed';
+import TG_FLR_001 from './tg-flr-001.json';
+import TG_PNT_001 from './tg-pnt-001.json';
+import type { TrainingGuide } from '@hooomz/shared-contracts';
 import type { Services } from '../services';
-import { ProjectStatus } from '@hooomz/shared-contracts';
-
-// Guide source prefix → tradeFamily
-const TRADE_FAMILY_MAP: Record<string, string> = {
-  DW: 'Drywall',
-  FC: 'Finish Carpentry',
-  FL: 'Flooring',
-  PT: 'Paint',
-  OH: 'Safety',
-  TL: 'Tile',
-};
-
-function getTradeFamily(guideSource: string): string {
-  const prefix = guideSource.split('-')[0].split(',')[0].trim();
-  return TRADE_FAMILY_MAP[prefix] || prefix;
-}
-
-function getKnowledgeType(standard: string): 'specification' | 'product' | 'material' | 'technique' {
-  const lower = standard.toLowerCase();
-  if (lower.includes('adhesive') || lower.includes('bostik') || lower.includes('dap') || lower.includes('zinsser')) return 'product';
-  if (lower.includes('mdf') || lower.includes('plywood') || lower.includes('osb') || lower.includes('tape')) return 'material';
-  if (lower.includes('cope') || lower.includes('power stretch') || lower.includes('skim coat')) return 'technique';
-  return 'specification';
-}
 
 export interface SeedResult {
   sops: number;
@@ -61,74 +39,13 @@ export type SeedProgressCallback = (message: string) => void;
 
 /**
  * Auto-seed SOPs if none exist in IndexedDB.
- * Called on app init so the task pipeline can find SOPs without manual /labs/seed visit.
+ * No-op — SOPs are now created through the app (Standards > SOPs or Labs > SOPs).
+ * Kept for backward compatibility with ServicesContext.tsx.
  */
-export async function seedSOPsIfEmpty(services: Services): Promise<number> {
-  const existing = await services.labs.sops.getAllCurrent();
-  if (existing.length > 0) return 0;
-
-  const now = new Date().toISOString();
-  let count = 0;
-
-  for (const sop of SOPS) {
-    const tradeFamily = getTradeFamily(sop.guide_source);
-    const dbSop = await services.labs.sops.createSop({
-      sopCode: sop.id,
-      title: sop.title,
-      description: null,
-      tradeFamily,
-      effectiveDate: now,
-      defaultObservationMode: 'standard',
-      certificationLevel: 'apprentice',
-      requiredSupervisedCompletions: 3,
-      reviewQuestionCount: 5,
-      reviewPassThreshold: 80,
-      fieldGuideRef: sop.guide_source,
-      status: 'active',
-      createdBy: 'auto-seed',
-      versionNotes: 'Auto-seeded on app init',
-    });
-    count++;
-
-    for (const step of sop.quick_steps) {
-      const hasPhotoHint = /photo|document|capture/i.test(step.action);
-      await services.labs.sops.addChecklistItem(dbSop.id, {
-        title: step.action,
-        description: null,
-        checklistType: 'activity',
-        category: 'procedure',
-        isCritical: false,
-        generatesObservation: hasPhotoHint,
-        observationKnowledgeType: null,
-        requiresPhoto: hasPhotoHint,
-        hasTimingFollowup: null,
-        triggerTiming: 'batch',
-        defaultProductId: null,
-        defaultTechniqueId: null,
-        defaultToolId: null,
-        scriptPhase: null,
-      });
-    }
-  }
-
-  console.log(`[Auto-seed] Created ${count} SOPs with checklist items`);
-
-  // Recovery: re-run pipeline for APPROVED projects that have 0 tasks
-  // (they were approved before SOPs existed, so pipeline generated nothing)
-  const approvedProjects = await services.projects.findByStatus(ProjectStatus.APPROVED);
-  for (const proj of approvedProjects) {
-    const tasks = await services.scheduling.tasks.findByProjectId(proj.id);
-    if (tasks.length === 0) {
-      const lineItems = await services.estimating.lineItems.findByProjectId(proj.id);
-      const pipelineItems = lineItems.filter((li) => li.sopCodes && li.sopCodes.length > 0 && li.isLabor !== false);
-      if (pipelineItems.length > 0) {
-        const result = await services.pipeline.generateFromEstimate(proj.id, pipelineItems);
-        console.log(`[Auto-seed] Recovery: generated ${result.blueprints.length} blueprints, deployed ${result.deployed.length} tasks for project "${proj.name}"`);
-      }
-    }
-  }
-
-  return count;
+export async function seedSOPsIfEmpty(_services: Services): Promise<number> {
+  // SOPS array is empty — nothing to seed.
+  // SOPs are now created through the app, not hardcoded.
+  return 0;
 }
 
 export async function seedAllLabsData(
@@ -136,7 +53,6 @@ export async function seedAllLabsData(
   onProgress?: SeedProgressCallback
 ): Promise<SeedResult> {
   const log = onProgress || (() => {});
-  const now = new Date().toISOString();
   const result: SeedResult = {
     sops: 0,
     checklistItems: 0,
@@ -149,110 +65,20 @@ export async function seedAllLabsData(
   };
 
   // ========================================================================
-  // 1. SOPs + Checklist Items
+  // 1. SOPs — no-op (SOPS array is empty, content created through the app)
   // ========================================================================
-  const existingSops = await services.labs.sops.getAllCurrent();
-  if (existingSops.length > 0) {
-    log(`Skipping SOPs — ${existingSops.length} already exist`);
-  } else {
+  if (SOPS.length > 0) {
     log('Seeding SOPs...');
-    for (let i = 0; i < SOPS.length; i++) {
-      const sop = SOPS[i];
-      const tradeFamily = getTradeFamily(sop.guide_source);
-
-      log(`  Creating SOP ${i + 1}/${SOPS.length}: ${sop.id} — ${sop.title}`);
-
-      const dbSop = await services.labs.sops.createSop({
-        sopCode: sop.id,
-        title: sop.title,
-        description: null,
-        tradeFamily,
-        effectiveDate: now,
-        defaultObservationMode: 'standard',
-        certificationLevel: 'apprentice',
-        requiredSupervisedCompletions: 3,
-        reviewQuestionCount: 5,
-        reviewPassThreshold: 80,
-        fieldGuideRef: sop.guide_source,
-        status: 'active',
-        createdBy: 'seed',
-        versionNotes: 'Initial seed from field guide',
-      });
-      result.sops++;
-
-      // Add checklist items from quick_steps
-      for (const step of sop.quick_steps) {
-        const hasPhotoHint = /photo|document|capture/i.test(step.action);
-        await services.labs.sops.addChecklistItem(dbSop.id, {
-          title: step.action,
-          description: null,
-          checklistType: 'activity',
-          category: 'procedure',
-          isCritical: false,
-          generatesObservation: hasPhotoHint,
-          observationKnowledgeType: null,
-          requiresPhoto: hasPhotoHint,
-          hasTimingFollowup: null,
-          triggerTiming: 'batch',
-          defaultProductId: null,
-          defaultTechniqueId: null,
-          defaultToolId: null,
-          scriptPhase: null,
-        });
-        result.checklistItems++;
-      }
-    }
+    // SOPs array is empty — this block won't execute
     log(`SOPs complete: ${result.sops} SOPs, ${result.checklistItems} checklist items`);
-  }
-
-  // ========================================================================
-  // 2. Knowledge Items from lab references
-  // ========================================================================
-  const existingKnowledge = await services.labs.knowledge.findAll();
-  if (existingKnowledge.length > 0) {
-    log(`Skipping knowledge items — ${existingKnowledge.length} already exist`);
   } else {
-    log('Seeding knowledge items from lab references...');
-
-    // Collect unique L-2026-xxx references
-    const labRefs = new Map<string, { standard: string; tradeFamily: string }>();
-    for (const sop of SOPS) {
-      const tradeFamily = getTradeFamily(sop.guide_source);
-      for (const cs of sop.critical_standards) {
-        if (cs.source.startsWith('L-')) {
-          if (!labRefs.has(cs.source)) {
-            labRefs.set(cs.source, { standard: cs.standard, tradeFamily });
-          }
-        }
-      }
-    }
-
-    let knowledgeCount = 0;
-    for (const [sourceCode, { standard, tradeFamily }] of labRefs) {
-      knowledgeCount++;
-      log(`  Creating knowledge ${knowledgeCount}/${labRefs.size}: ${sourceCode}`);
-
-      const title = standard.length > 80
-        ? standard.substring(0, 77) + '...'
-        : standard;
-
-      await services.labs.knowledge.create({
-        knowledgeType: getKnowledgeType(standard),
-        category: tradeFamily,
-        title,
-        summary: standard,
-        confidenceScore: 85,
-        lastConfidenceUpdate: now,
-        observationCount: 0,
-        experimentCount: 1,
-        status: 'published',
-        createdBy: 'seed',
-        tags: [sourceCode, tradeFamily],
-      });
-      result.knowledgeItems++;
-    }
-    log(`Knowledge items complete: ${result.knowledgeItems} items`);
+    log('Skipping SOPs — content created through the app');
   }
+
+  // ========================================================================
+  // 2. Knowledge Items — no-op (derived from SOPs which are now empty)
+  // ========================================================================
+  log('Skipping knowledge items — content created through the app');
 
   // ========================================================================
   // 3. Catalog items (existing seed function, already idempotent)
@@ -362,6 +188,19 @@ export async function seedAllLabsData(
   const integrationResult = await seedLabsIntegrationData(services, log);
   if (integrationResult.tokens > 0 || integrationResult.tests > 0 || integrationResult.ballots > 0) {
     log(`Labs integration complete: ${integrationResult.tokens} tokens, ${integrationResult.tests} tests, ${integrationResult.ballots} ballots`);
+  }
+
+  // ========================================================================
+  // 9. Training Guides (TG-FLR-001, TG-PNT-001)
+  // ========================================================================
+  const existingTGs = await services.trainingGuides.getAll();
+  if (existingTGs.length > 0) {
+    log(`Skipping training guides — ${existingTGs.length} already exist`);
+  } else {
+    log('Seeding training guides...');
+    await services.trainingGuides.save(TG_FLR_001 as TrainingGuide);
+    await services.trainingGuides.save(TG_PNT_001 as TrainingGuide);
+    log('Training guides complete: 2 guides (Flooring + Painting)');
   }
 
   log('Seed complete!');

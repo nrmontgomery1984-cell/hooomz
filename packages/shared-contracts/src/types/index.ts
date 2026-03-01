@@ -394,8 +394,163 @@ export enum CostCategory {
 // are now inferred from Zod schemas in ../schemas/index.ts
 // Import those types from the schemas file or from the root index.ts
 
+// ============================================================================
+// Job Stage — Interiors 11-stage pipeline (Sales + Production)
+// ============================================================================
+
+/**
+ * JobStage represents the full Interiors job lifecycle.
+ * Sales stages: Lead → Estimate → Consultation → Quote → Contract
+ * Production stages (SCRIPT): Shield → Clear → Ready → Install → Punch → Turnover
+ *
+ * This is separate from ProjectStage which serves Exteriors/Construction.
+ */
+export enum JobStage {
+  LEAD = 'lead',
+  ESTIMATE = 'estimate',
+  CONSULTATION = 'consultation',
+  QUOTE = 'quote',
+  CONTRACT = 'contracted',
+  SHIELD = 'shield',
+  CLEAR = 'clear',
+  READY = 'ready',
+  INSTALL = 'install',
+  PUNCH = 'punch',
+  TURNOVER = 'turnover',
+  COMPLETE = 'complete',
+}
+
+export const SALES_STAGES: JobStage[] = [
+  JobStage.LEAD,
+  JobStage.ESTIMATE,
+  JobStage.CONSULTATION,
+  JobStage.QUOTE,
+  JobStage.CONTRACT,
+];
+
+export const PRODUCTION_STAGES: JobStage[] = [
+  JobStage.CONTRACT,
+  JobStage.SHIELD,
+  JobStage.CLEAR,
+  JobStage.READY,
+  JobStage.INSTALL,
+  JobStage.PUNCH,
+  JobStage.TURNOVER,
+];
+
+export const SCRIPT_STAGES: JobStage[] = [
+  JobStage.SHIELD,
+  JobStage.CLEAR,
+  JobStage.READY,
+  JobStage.INSTALL,
+  JobStage.PUNCH,
+  JobStage.TURNOVER,
+];
+
+export const JOB_STAGE_META: Record<JobStage, { label: string; order: number }> = {
+  [JobStage.LEAD]: { label: 'Lead', order: 1 },
+  [JobStage.ESTIMATE]: { label: 'Estimate', order: 2 },
+  [JobStage.CONSULTATION]: { label: 'Consultation', order: 3 },
+  [JobStage.QUOTE]: { label: 'Quote', order: 4 },
+  [JobStage.CONTRACT]: { label: 'Contract', order: 5 },
+  [JobStage.SHIELD]: { label: 'Shield', order: 6 },
+  [JobStage.CLEAR]: { label: 'Clear', order: 7 },
+  [JobStage.READY]: { label: 'Ready', order: 8 },
+  [JobStage.INSTALL]: { label: 'Install', order: 9 },
+  [JobStage.PUNCH]: { label: 'Punch', order: 10 },
+  [JobStage.TURNOVER]: { label: 'Turnover', order: 11 },
+  [JobStage.COMPLETE]: { label: 'Complete', order: 12 },
+};
+
+// ============================================================================
+// Customer V2 — Platform-level customer record
+// ============================================================================
+
+export type CustomerLeadSource = 'ritchies_referral' | 'home_show' | 'website' | 'word_of_mouth' | 'repeat' | 'other';
+export type CustomerStatus = 'lead' | 'active' | 'past';
+
+export type CustomerContactMethod = 'phone' | 'email' | 'text';
+
+export interface CustomerRecord {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  propertyAddress: string;
+  propertyCity: string;
+  propertyProvince?: string;
+  propertyPostalCode?: string;
+  leadSource: CustomerLeadSource;
+  notes: string;
+  status: CustomerStatus;
+  jobIds: string[];
+  tags?: string[];
+  preferredContactMethod?: CustomerContactMethod;
+  customerSince?: string;                 // ISO date — set when first job starts
+  _seeded?: boolean;                      // Marks seed-generated records for bulk wipe
+}
+
+// ============================================================================
+// Consultation — Sales pipeline consultation records
+// ============================================================================
+
+export type ConsultationStatus = 'scheduled' | 'completed' | 'cancelled';
+
+export interface ConsultationRecord {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  customerId: string;                     // FK → customers_v2
+  projectId: string;                      // FK → projects (existing)
+  scheduledDate: string | null;
+  completedDate: string | null;
+  sitePhotoIds: string[];                 // photo ids from existing photos store
+  measurements: Record<string, unknown>;  // existing measurement format from discoveryDrafts
+  scopeNotes: string;
+  status: ConsultationStatus;
+  discoveryDraftId: string | null;        // link to existing discoveryDrafts store if one exists
+  checklistCompletions?: Record<string, { checked: boolean; checkedAt?: string }>;  // Sales checklist state
+  _seeded?: boolean;                      // Marks seed-generated records for bulk wipe
+}
+
+// ============================================================================
+// Quote — Sales pipeline quote/proposal records
+// ============================================================================
+
+export type QuoteStatus = 'draft' | 'sent' | 'viewed' | 'accepted' | 'declined' | 'expired';
+
+export interface QuoteRecord {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  customerId: string;                     // FK → customers_v2
+  projectId: string;                      // FK → projects (estimate = line items per project)
+  totalAmount: number;                    // snapshot from LineItemRepository.calculateProjectTotals()
+  status: QuoteStatus;
+  sentAt: string | null;
+  viewedAt: string | null;
+  respondedAt: string | null;            // accepted or declined timestamp
+  expiresAt: string | null;              // expiry date for quote
+  coverNotes: string;                    // intro/cover message for the quote
+  videoLink: string;                     // video walkthrough link (Loom, etc.)
+  declineReason: string;                 // reason if declined
+  checklistCompletions?: Record<string, { checked: boolean; checkedAt?: string }>;  // Sales checklist state
+  depositPercentage?: number;             // e.g. 25 = 25%. Configurable before sending. Default 25.
+  contractGeneratedAt?: string;           // ISO — set when quote is first marked 'sent'
+  _seeded?: boolean;                      // Marks seed-generated records for bulk wipe
+}
+
 // Labs types
 export * from './labs';
 
 // Integration types (Data Spine)
 export * from './integration';
+
+// Training Guide types
+export * from './trainingGuide';
+
+// Standard SOP + Checklist types
+export * from './sop';

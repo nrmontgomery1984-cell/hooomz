@@ -76,8 +76,18 @@ export function getTradeDisplayName(code: string): string {
   return TRADE_CODES[code as keyof typeof TRADE_CODES]?.name || code;
 }
 
+// SCRIPT stage names — contractor-friendly terms used in the pipeline
+const STAGE_SCRIPT_NAMES: Record<string, string> = {
+  'ST-SH': 'Shield',   // Protect the home
+  'ST-DM': 'Clear',    // Remove existing
+  'ST-PR': 'Ready',    // Prep surfaces
+  'ST-FN': 'Install',  // Main work
+  'ST-PL': 'Punch',    // Deficiency review
+  'ST-CL': 'Turnover', // Closeout & handoff
+};
+
 export function getStageDisplayName(code: string): string {
-  return STAGE_CODES[code as keyof typeof STAGE_CODES]?.name || code;
+  return STAGE_SCRIPT_NAMES[code] || STAGE_CODES[code as keyof typeof STAGE_CODES]?.name || code;
 }
 
 export function getTradeIcon(code: string): string {

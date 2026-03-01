@@ -3,9 +3,8 @@ import { Providers } from './providers';
 import { BottomNav } from '@/components/navigation/BottomNav';
 import { Sidebar } from '@/components/navigation/Sidebar';
 import { QuickAddSheet } from '@/components/activity/QuickAddSheet';
-import { DevTools } from '@/components/dev/DevTools';
 import { CrewGate } from '@/components/crew/CrewGate';
-import { TimeClockWidget } from '@/components/timeclock/TimeClockWidget';
+
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import './globals.css';
 
@@ -37,9 +36,8 @@ export default function RootLayout({
                 </main>
               </div>
               <BottomNav />
-              <TimeClockWidget />
+
               <QuickAddSheet />
-              <DevTools />
             </CrewGate>
           </ErrorBoundary>
         </Providers>

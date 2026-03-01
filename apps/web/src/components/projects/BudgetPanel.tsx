@@ -1,12 +1,15 @@
 'use client';
 
 // ============================================================================
-// Budget Panel — Hours burn + cost summary
+// Budget Panel — Hours burn + cost summary with expandable breakdown
 // ============================================================================
 
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
-import type { TaskBudget } from '@hooomz/shared-contracts';
+import { ArrowRight, ChevronDown, ChevronRight } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import type { TaskBudget, LineItem } from '@hooomz/shared-contracts';
+import { useServicesContext } from '@/lib/services/ServicesContext';
 import { PanelSection } from '@/components/ui/PanelSection';
 
 function getBudgetColor(ratio: number): string {
@@ -24,16 +27,49 @@ function formatCurrency(amount: number): string {
   }).format(amount);
 }
 
+const CATEGORY_LABELS: Record<string, string> = {
+  'flooring': 'Flooring',
+  'interior-trim': 'Trim',
+  'painting': 'Paint',
+  'labor': 'Labour',
+  'materials': 'Materials',
+  'site-work': 'Site Work',
+  'drywall': 'Drywall',
+  'cabinets-countertops': 'Cabinets',
+  'fixtures': 'Fixtures',
+  'permits-fees': 'Permits',
+  'equipment-rental': 'Equipment',
+  'subcontractors': 'Subs',
+  'contingency': 'Contingency',
+  'other': 'Other',
+};
+
+function getCategoryLabel(category: string): string {
+  return CATEGORY_LABELS[category] || category.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 interface TrackBarProps {
   label: string;
   valueStr: string;
   pct: number;
   color: string;
+  onClick?: () => void;
+  expandIcon?: 'down' | 'right';
 }
 
-function TrackBar({ label, valueStr, pct, color }: TrackBarProps) {
+function TrackBar({ label, valueStr, pct, color, onClick, expandIcon }: TrackBarProps) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 12px' }}>
+    <div
+      style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 12px', cursor: onClick ? 'pointer' : undefined }}
+      onClick={onClick}
+    >
+      {/* Expand icon */}
+      {expandIcon && (
+        <span style={{ flexShrink: 0, color: 'var(--text-3)', display: 'flex', alignItems: 'center' }}>
+          {expandIcon === 'down' ? <ChevronDown size={10} /> : <ChevronRight size={10} />}
+        </span>
+      )}
+
       {/* Label */}
       <span
         style={{
@@ -43,7 +79,7 @@ function TrackBar({ label, valueStr, pct, color }: TrackBarProps) {
           letterSpacing: '0.05em',
           textTransform: 'uppercase',
           color: 'var(--text-3)',
-          width: 40,
+          width: expandIcon ? 32 : 40,
           flexShrink: 0,
         }}
       >
@@ -119,6 +155,37 @@ export function BudgetPanel({
   actualCost,
   budgets,
 }: BudgetPanelProps) {
+  const [costExpanded, setCostExpanded] = useState(false);
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  const { services } = useServicesContext();
+
+  // Fetch line items for cost breakdown when expanded
+  const { data: lineItems = [] } = useQuery({
+    queryKey: ['lineItems', projectId],
+    queryFn: () => services!.estimating.lineItems.findByProjectId(projectId),
+    enabled: !!services && costExpanded,
+    staleTime: 30_000,
+  });
+
+  // Group line items by category — carries items for drill-down
+  const categoryBreakdown = useMemo(() => {
+    if (lineItems.length === 0) return [];
+    const groups = new Map<string, { total: number; items: LineItem[] }>();
+    for (const li of lineItems) {
+      const cat = (li.category || 'other') as string;
+      const existing = groups.get(cat);
+      if (existing) {
+        existing.total += li.totalCost || 0;
+        existing.items.push(li);
+      } else {
+        groups.set(cat, { total: li.totalCost || 0, items: [li] });
+      }
+    }
+    return Array.from(groups.entries())
+      .map(([category, { total, items }]) => ({ category, label: getCategoryLabel(category), total, items }))
+      .sort((a, b) => b.total - a.total);
+  }, [lineItems]);
+
   const hasBudgetData = budgetSummary && budgetSummary.totalBudgetedHours > 0;
   const hasCostData = estimatedCost > 0;
 
@@ -167,7 +234,82 @@ export function BudgetPanel({
         <TrackBar label="Hours" valueStr={hoursValue} pct={hoursPct} color={hoursColor} />
       )}
       {hasCostData && (
-        <TrackBar label="Cost" valueStr={costValue} pct={costPct} color={costColor} />
+        <>
+          <TrackBar
+            label="Cost"
+            valueStr={costValue}
+            pct={costPct}
+            color={costColor}
+            onClick={() => setCostExpanded(!costExpanded)}
+            expandIcon={costExpanded ? 'down' : 'right'}
+          />
+          {/* Expandable cost breakdown */}
+          {costExpanded && (
+            <div style={{ borderTop: '1px solid var(--border)', paddingTop: 4, paddingBottom: 4 }}>
+              {categoryBreakdown.length === 0 ? (
+                <div style={{ padding: '4px 12px 4px 34px' }}>
+                  <span style={{ fontSize: 9, color: 'var(--text-3)' }}>No line items yet</span>
+                </div>
+              ) : (
+                categoryBreakdown.map(({ category, label, total, items }) => {
+                  const isOpen = expandedCategory === category;
+                  return (
+                    <div key={category}>
+                      {/* Clickable category row */}
+                      <div
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => setExpandedCategory(isOpen ? null : category)}
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setExpandedCategory(isOpen ? null : category); } }}
+                        style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 12px 4px 24px', cursor: 'pointer' }}
+                      >
+                        <span style={{ flexShrink: 0, color: 'var(--text-3)', display: 'flex', alignItems: 'center' }}>
+                          {isOpen ? <ChevronDown size={8} /> : <ChevronRight size={8} />}
+                        </span>
+                        <span style={{ fontFamily: 'var(--font-cond)', fontSize: 9, color: 'var(--text-3)', width: 56, flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {label}
+                        </span>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-2)', width: 48, flexShrink: 0, textAlign: 'right' }}>
+                          {formatCurrency(total)}
+                        </span>
+                        <div style={{ flex: 1, height: 2, background: 'var(--border)', borderRadius: 1, overflow: 'hidden' }}>
+                          <div style={{ width: `${Math.min(estimatedCost > 0 ? Math.round((total / estimatedCost) * 100) : 0, 100)}%`, height: '100%', background: costColor, borderRadius: 1 }} />
+                        </div>
+                      </div>
+
+                      {/* Expanded line items */}
+                      {isOpen && (
+                        <div style={{ marginLeft: 34, borderLeft: '1px solid var(--border)', paddingLeft: 8, paddingTop: 2, paddingBottom: 4 }}>
+                          {items.map((item) => (
+                            <div key={item.id} style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 6, padding: '2px 12px 2px 0' }}>
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <span style={{ fontFamily: 'var(--font)', fontSize: 10, color: 'var(--text-2)', lineHeight: 1.3 }}>
+                                  {item.description}
+                                </span>
+                                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-3)', marginLeft: 4 }}>
+                                  {item.quantity} {item.unit} @ {formatCurrency(item.unitCost)}
+                                </span>
+                              </div>
+                              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-2)', flexShrink: 0 }}>
+                                {formatCurrency(item.totalCost)}
+                              </span>
+                            </div>
+                          ))}
+                          <Link
+                            href={`/estimates/${projectId}`}
+                            style={{ display: 'inline-block', marginTop: 4, fontFamily: 'var(--font)', fontSize: 9, color: 'var(--teal)', textDecoration: 'none' }}
+                          >
+                            Edit in Estimate →
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          )}
+        </>
       )}
 
       {/* Status dots */}

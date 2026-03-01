@@ -11,7 +11,7 @@
 import { useMemo, useState, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { PageErrorBoundary } from '@/components/ui/PageErrorBoundary';
-import { ChevronLeft, MapPin, ArrowRight, Trash2 } from 'lucide-react';
+import { ChevronLeft, MapPin, ArrowRight, Trash2, Plus, X } from 'lucide-react';
 import {
   useLocalProject,
   useLocalCustomer,
@@ -45,7 +45,12 @@ import { CrewTrainingPanel } from '@/components/projects/CrewTrainingPanel';
 import { ChangeOrderPanel } from '@/components/projects/ChangeOrderPanel';
 import { CreateChangeOrderSheet } from '@/components/projects/CreateChangeOrderSheet';
 import { ChangeOrderDetailSheet } from '@/components/projects/ChangeOrderDetailSheet';
+import { QuickAddTaskSheet } from '@/components/projects/QuickAddTaskSheet';
 import { ScriptPipeline } from '@/components/projects/ScriptPipeline';
+import { ExpenseSummaryPanel } from '@/components/expenses/ExpenseSummaryPanel';
+import { InvoiceListPanel } from '@/components/invoices/InvoiceListPanel';
+import { HomeCareSheetPanel } from '@/components/care-sheet/HomeCareSheetPanel';
+import { useExpenses } from '@/lib/hooks/useExpenses';
 import { LoopRow } from '@/components/loops/LoopRow';
 import type { LoopStatus } from '@/components/loops/LoopRow';
 import type { TaskBudget, TrainingRecord } from '@hooomz/shared-contracts';
@@ -78,7 +83,7 @@ export default function ProjectDetailPage() {
   const confirmAllBatch = useConfirmAllBatch();
 
   // Client
-  const { data: customer } = useLocalCustomer(project?.clientId);
+  const { data: customer } = useLocalCustomer(project?.customerId);
 
   // Activity
   const { data: activityData } = useLocalProjectActivity(projectId, 10);
@@ -88,6 +93,9 @@ export default function ProjectDetailPage() {
   const { data: budgets } = useProjectBudgets(projectId);
   const { data: budgetSummary } = useProjectBudgetSummary(projectId);
   const { data: trainingRecords } = useCrewTrainingRecords(crewMemberId);
+
+  // Expenses — derive actualCost from expense totals (Option B: read-time enrichment)
+  const { data: expenses = [] } = useExpenses(projectId);
 
   // Cost catalog (for materials breakdown on tasks)
   const catalog = useEffectiveCatalog();
@@ -108,12 +116,13 @@ export default function ProjectDetailPage() {
   });
   const [groupMode, setGroupMode] = useState<ProjectGroupMode>('location');
   const [collapsedRooms, setCollapsedRooms] = useState<Set<string>>(new Set());
-  const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null);
+  const [selectedTask, setSelectedTask] = useState<EnrichedTask | null>(null);
   const [sopSheetId, setSopSheetId] = useState<string | null>(null);
   const [knowledgeSheetId, setKnowledgeSheetId] = useState<string | null>(null);
   const [quickCaptureTask, setQuickCaptureTask] = useState<EnrichedTask | null>(null);
   const [showCreateCO, setShowCreateCO] = useState(false);
   const [selectedCOId, setSelectedCOId] = useState<string | null>(null);
+  const [showAddTask, setShowAddTask] = useState(false);
 
   // Labs flag toggle
   const toggleLabsFlag = useToggleLabsFlag();
@@ -145,6 +154,14 @@ export default function ProjectDetailPage() {
   // Group by selected axis
   const taskGroups = useMemo(() => {
     const groups = new Map<string, EnrichedTask[]>();
+
+    // Stage view: always show all 6 stages as stop-gates, even if empty
+    if (groupMode === 'stage') {
+      for (const code of ['ST-SH', 'ST-DM', 'ST-PR', 'ST-FN', 'ST-PL', 'ST-CL']) {
+        groups.set(code, []);
+      }
+    }
+
     for (const task of filteredTasks) {
       const key = groupMode === 'location' ? task.room
         : groupMode === 'category' ? (task.tradeCode || 'OH')
@@ -198,6 +215,14 @@ export default function ProjectDetailPage() {
   const totalTasks = enrichedTasks.length;
   const completedTasks = enrichedTasks.filter((t) => t.status === 'complete').length;
   const healthScore = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+  // Derive actualCost from expenses (Option B: read-time enrichment)
+  // If expenses exist, sum them. Otherwise fall back to project.budget.actualCost.
+  const expenseTotal = useMemo(
+    () => expenses.reduce((sum, e) => sum + e.amount, 0),
+    [expenses],
+  );
+  const derivedActualCost = expenses.length > 0 ? expenseTotal : (project?.budget.actualCost ?? 0);
 
   // ---------------------------------------------------------------------------
   // Dashboard panel derivations
@@ -313,19 +338,19 @@ export default function ProjectDetailPage() {
     return 'grey';
   }
 
-  // SCRIPT stage mapping from existing stage codes
-  const STAGE_CODE_TO_SCRIPT: Record<string, 'shield' | 'clear' | 'ready' | 'install' | 'punch' | 'transition'> = {
-    'ST-DM': 'shield',
-    'ST-PR': 'ready',
-    'ST-FN': 'install',
-    'ST-PL': 'punch',
-    'ST-CL': 'transition',
-    'OH':    'clear',
+  // SCRIPT stage mapping — stage code → pipeline key
+  const STAGE_CODE_TO_SCRIPT: Record<string, 'shield' | 'clear' | 'ready' | 'install' | 'punch' | 'turnover'> = {
+    'ST-SH': 'shield',   // Protect the home
+    'ST-DM': 'clear',    // Remove existing
+    'ST-PR': 'ready',    // Prep surfaces
+    'ST-FN': 'install',  // Main work
+    'ST-PL': 'punch',    // Deficiency review
+    'ST-CL': 'turnover', // Closeout & handoff
   };
 
   const scriptStages = useMemo(() => {
-    const stageKeys: Array<'shield' | 'clear' | 'ready' | 'install' | 'punch' | 'transition'> = ['shield', 'clear', 'ready', 'install', 'punch', 'transition'];
-    const stageLabels: Record<string, string> = { shield: 'Shield', clear: 'Clear', ready: 'Ready', install: 'Install', punch: 'Punch', transition: 'Transition' };
+    const stageKeys: Array<'shield' | 'clear' | 'ready' | 'install' | 'punch' | 'turnover'> = ['shield', 'clear', 'ready', 'install', 'punch', 'turnover'];
+    const stageLabels: Record<string, string> = { shield: 'Shield', clear: 'Clear', ready: 'Ready', install: 'Install', punch: 'Punch', turnover: 'Turnover' };
     const grouped: Record<string, { completed: number; total: number }> = {};
     stageKeys.forEach((k) => { grouped[k] = { completed: 0, total: 0 }; });
 
@@ -372,9 +397,6 @@ export default function ProjectDetailPage() {
     }
   }, [undoTask, projectId]);
 
-  const handleToggleExpand = useCallback((taskId: string) => {
-    setExpandedTaskId((prev) => prev === taskId ? null : taskId);
-  }, []);
 
   const handleToggleRoom = useCallback((room: string) => {
     setCollapsedRooms((prev) => {
@@ -389,11 +411,13 @@ export default function ProjectDetailPage() {
   }, []);
 
   const handleOpenSOP = useCallback((sopId: string) => {
+    setSelectedTask(null); // close task modal so SOP sheet isn't behind overlay
     setSopSheetId(sopId);
     setKnowledgeSheetId(null);
   }, []);
 
   const handleOpenKnowledge = useCallback((sourceId: string) => {
+    setSelectedTask(null); // close task modal so knowledge sheet isn't behind overlay
     setKnowledgeSheetId(sourceId);
   }, []);
 
@@ -492,7 +516,7 @@ export default function ProjectDetailPage() {
       {!isLoading && project && (() => {
         const fmtCurrency = (n: number) => `$${Math.round(n).toLocaleString()}`;
         const budgetPct = project.budget.estimatedCost > 0
-          ? Math.round((project.budget.actualCost / project.budget.estimatedCost) * 100)
+          ? Math.round((derivedActualCost / project.budget.estimatedCost) * 100)
           : 0;
         const labourPct = totalBudgetedHours > 0
           ? Math.round((totalActualHours / totalBudgetedHours) * 100)
@@ -527,10 +551,16 @@ export default function ProjectDetailPage() {
 
               {/* Budget items */}
               <div style={{ display: 'flex', gap: 16, flexShrink: 0, alignItems: 'center' }}>
-                <HeaderBudgetItem label="Material" value={fmtCurrency(project.budget.actualCost)} total={fmtCurrency(project.budget.estimatedCost)} pct={budgetPct} />
+                <HeaderBudgetItem label="Material" value={fmtCurrency(derivedActualCost)} total={fmtCurrency(project.budget.estimatedCost)} pct={budgetPct} />
                 <HeaderBudgetItem label="Labour" value={`${Math.round(totalActualHours)}h`} total={`${Math.round(totalBudgetedHours)}h`} pct={labourPct} />
                 <HeaderBudgetItem label="Progress" value={`${healthScore}%`} total="100%" pct={healthScore} forceGreen />
               </div>
+
+              {/* Add Task */}
+              <button onClick={() => setShowAddTask(true)} style={{ background: 'none', border: '1px solid var(--teal)', borderRadius: 'var(--radius)', cursor: 'pointer', padding: '0 8px', color: 'var(--teal)', display: 'flex', alignItems: 'center', gap: 4, minHeight: 32 }} title="Add task">
+                <Plus size={12} strokeWidth={2} />
+                <span style={{ fontFamily: 'var(--font-cond)', fontSize: 10, fontWeight: 600, letterSpacing: '0.04em' }}>TASK</span>
+              </button>
 
               {/* Delete */}
               <button onClick={() => setShowDeleteConfirm(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: 'var(--text-3)', display: 'flex', alignItems: 'center', minHeight: 44 }} title="Delete project">
@@ -541,6 +571,7 @@ export default function ProjectDetailPage() {
             {/* ── SCRIPT Pipeline ── */}
             <ScriptPipeline
               stages={scriptStages}
+              currentStage={project.jobStage}
               blockerCount={blockedItems.length}
               decisionCount={pendingCOs.length}
               roomCount={roomNames.length}
@@ -594,42 +625,18 @@ export default function ProjectDetailPage() {
                         onToggle={() => handleToggleRoom(groupKey)}
                       />
                       {isExpanded && groupTasks.map((task) => (
-                        <div key={task.id}>
-                          <LoopRow
-                            name={task.taskName}
-                            subLabel={task.room !== groupKey ? task.room : undefined}
-                            depth={1}
-                            status={taskStatusToLoopStatus(task.status)}
-                            pct={task.status === 'complete' ? 100 : task.status === 'in_progress' ? 50 : 0}
-                            tradeBadge={task.tradeCode || undefined}
-                            isComplete={task.status === 'complete'}
-                            isBlocked={task.status === 'blocked'}
-                            onClick={() => handleToggleExpand(task.id)}
-                          />
-                          {expandedTaskId === task.id && (
-                            <div style={{ padding: '0 8px 8px 8px', background: 'var(--surface-2)' }}>
-                              <TaskCard
-                                task={task}
-                                isExpanded
-                                onToggleExpand={() => handleToggleExpand(task.id)}
-                                budget={budgetMap.get(task.id) || null}
-                                trainingRecord={task.resolvedSopId ? trainingMap.get(task.resolvedSopId) || null : null}
-                                catalog={catalog}
-                                crewMemberId={crewMemberId}
-                                crewMemberName={crewMemberName}
-                                onComplete={handleCompleteTask}
-                                onUndo={handleUndoTask}
-                                onSaveNote={handleSaveNote}
-                                isCompleting={isCompleting}
-                                isUndoing={undoTask.isPending}
-                                onOpenSOP={handleOpenSOP}
-                                onOpenKnowledge={handleOpenKnowledge}
-                                onToggleLabsFlag={handleToggleLabsFlag}
-                                onOpenLabsCapture={handleOpenLabsCapture}
-                              />
-                            </div>
-                          )}
-                        </div>
+                        <LoopRow
+                          key={task.id}
+                          name={task.taskName}
+                          subLabel={task.room !== groupKey ? task.room : undefined}
+                          depth={1}
+                          status={taskStatusToLoopStatus(task.status)}
+                          pct={task.status === 'complete' ? 100 : task.status === 'in_progress' ? 50 : 0}
+                          tradeBadge={task.tradeCode || undefined}
+                          isComplete={task.status === 'complete'}
+                          isBlocked={task.status === 'blocked'}
+                          onClick={() => setSelectedTask(task)}
+                        />
                       ))}
                     </div>
                   );
@@ -657,7 +664,7 @@ export default function ProjectDetailPage() {
                   projectId={projectId}
                   budgetSummary={budgetSummary || null}
                   estimatedCost={project.budget.estimatedCost}
-                  actualCost={project.budget.actualCost}
+                  actualCost={derivedActualCost}
                   budgets={budgets || []}
                 />
                 <TimelinePanel
@@ -665,6 +672,9 @@ export default function ProjectDetailPage() {
                   estimatedEndDate={project.dates.estimatedEndDate}
                   taskMilestones={taskMilestones}
                 />
+                <ExpenseSummaryPanel projectId={projectId} tasks={tasks} />
+                <InvoiceListPanel projectId={projectId} customerId={project.customerId || ''} />
+                <HomeCareSheetPanel projectId={projectId} customerId={project.customerId} jobStage={project.jobStage} />
                 {/* Activity */}
                 <div style={{ padding: 14, borderBottom: '1px solid var(--border)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
@@ -772,6 +782,55 @@ export default function ProjectDetailPage() {
               onClose={() => setSelectedCOId(null)}
               changeOrderId={selectedCOId || ''}
             />
+
+            {/* ── Quick Add Task Sheet ── */}
+            <QuickAddTaskSheet
+              projectId={projectId}
+              isOpen={showAddTask}
+              onClose={() => setShowAddTask(false)}
+            />
+
+            {/* ── Task Detail Modal ── */}
+            {selectedTask && (() => {
+              const liveTask = enrichedTasks.find((t) => t.id === selectedTask.id) ?? selectedTask;
+              return (
+                <div
+                  style={{ position: 'fixed', inset: 0, zIndex: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.55)', padding: 16 }}
+                  onClick={() => setSelectedTask(null)}
+                >
+                  <div
+                    style={{ background: 'var(--surface-1)', borderRadius: 12, width: '100%', maxWidth: 480, maxHeight: '85vh', overflowY: 'auto', boxShadow: 'var(--shadow-panel)', position: 'relative' }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <button
+                      onClick={() => setSelectedTask(null)}
+                      style={{ position: 'absolute', top: 8, right: 8, zIndex: 1, background: 'var(--surface-3)', border: 'none', borderRadius: 6, width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                    >
+                      <X size={14} style={{ color: 'var(--text-2)' }} />
+                    </button>
+                    <TaskCard
+                      task={liveTask}
+                      isExpanded
+                      onToggleExpand={() => setSelectedTask(null)}
+                      budget={budgetMap.get(liveTask.id) || null}
+                      trainingRecord={liveTask.resolvedSopId ? trainingMap.get(liveTask.resolvedSopId) || null : null}
+                      catalog={catalog}
+                      crewMemberId={crewMemberId}
+                      crewMemberName={crewMemberName}
+                      onComplete={handleCompleteTask}
+                      onUndo={handleUndoTask}
+                      onSaveNote={handleSaveNote}
+                      isCompleting={isCompleting}
+                      isUndoing={undoTask.isPending}
+                      onOpenSOP={handleOpenSOP}
+                      onOpenKnowledge={handleOpenKnowledge}
+                      onToggleLabsFlag={handleToggleLabsFlag}
+                      onOpenLabsCapture={handleOpenLabsCapture}
+                    />
+                  </div>
+                </div>
+              );
+            })()}
 
           </div>
         );

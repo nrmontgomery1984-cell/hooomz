@@ -9,6 +9,7 @@ import {
   ContactMethod,
   UnitOfMeasure,
   CostCategory,
+  JobStage,
 } from '../types';
 import {
   POSTAL_CODE_REGEX,
@@ -26,6 +27,7 @@ export const InspectionTypeSchema = z.nativeEnum(InspectionType);
 export const ContactMethodSchema = z.nativeEnum(ContactMethod);
 export const UnitOfMeasureSchema = z.nativeEnum(UnitOfMeasure);
 export const CostCategorySchema = z.nativeEnum(CostCategory);
+export const JobStageSchema = z.nativeEnum(JobStage);
 
 // Supporting Schemas
 export const AddressSchema = z.object({
@@ -52,7 +54,7 @@ export const ProjectSchema = z.object({
   address: AddressSchema,
   status: ProjectStatusSchema,
   projectType: ProjectTypeSchema,
-  clientId: z.string().min(1, 'Client ID is required'),
+  customerId: z.string().min(1, 'Customer ID is required'),
   dates: z.object({
     startDate: z.string().date().optional(),
     estimatedEndDate: z.string().date().optional(),
@@ -63,6 +65,8 @@ export const ProjectSchema = z.object({
     actualCost: z.number().nonnegative('Actual cost must be non-negative'),
   }),
   metadata: MetadataSchema,
+  // Job pipeline stage (11-stage: Lead → … → Turnover + Complete)
+  jobStage: JobStageSchema.optional(),
   // Integration fields (Build 1.5 — all optional for backward compatibility)
   integrationProjectType: z.enum(['standard', 'callback']).optional(),
   linkedProjectId: z.string().nullable().optional(),
@@ -365,6 +369,89 @@ export type UpdateInspection = z.infer<typeof UpdateInspectionSchema>;
 export type UpdatePhoto = z.infer<typeof UpdatePhotoSchema>;
 export type UpdateEstimate = z.infer<typeof UpdateEstimateSchema>;
 export type UpdateCatalogItem = z.infer<typeof UpdateCatalogItemSchema>;
+
+// Expense Entry Schema
+export const ExpenseEntrySchema = z.object({
+  id: z.string().min(1),
+  projectId: z.string().min(1),
+  amount: z.number().positive(),
+  description: z.string().min(1),
+  category: CostCategorySchema,
+  vendor: z.string().optional(),
+  taskId: z.string().optional(),
+  date: z.string(),
+  metadata: MetadataSchema,
+});
+
+export type ExpenseEntry = z.infer<typeof ExpenseEntrySchema>;
+export type CreateExpenseEntry = Omit<ExpenseEntry, 'id' | 'metadata'>;
+
+// Invoice + Payment Schemas (Build 9)
+
+export const InvoiceTypeSchema = z.enum(['deposit', 'progress', 'final']);
+export type InvoiceType = z.infer<typeof InvoiceTypeSchema>;
+
+export const InvoiceStatusSchema = z.enum(['draft', 'sent', 'viewed', 'partial', 'paid', 'overdue', 'cancelled']);
+export type InvoiceStatus = z.infer<typeof InvoiceStatusSchema>;
+
+export const PaymentMethodSchema = z.enum(['cash', 'cheque', 'etransfer', 'credit']);
+export type PaymentMethod = z.infer<typeof PaymentMethodSchema>;
+
+export const InvoiceLineItemSchema = z.object({
+  description: z.string(),
+  quantity: z.number(),
+  unit: UnitOfMeasureSchema,
+  unitCost: z.number(),
+  totalCost: z.number(),
+  category: CostCategorySchema,
+});
+export type InvoiceLineItem = z.infer<typeof InvoiceLineItemSchema>;
+
+export const InvoiceRecordSchema = z.object({
+  id: z.string().min(1),
+  projectId: z.string().min(1),
+  customerId: z.string().min(1),
+  quoteId: z.string().optional(),
+  invoiceNumber: z.string(),
+  invoiceType: InvoiceTypeSchema,
+  status: InvoiceStatusSchema,
+  lineItems: z.array(InvoiceLineItemSchema),
+  subtotal: z.number(),
+  taxRate: z.number(),
+  taxAmount: z.number(),
+  totalAmount: z.number(),
+  amountPaid: z.number(),
+  balanceDue: z.number(),
+  dueDate: z.string(),
+  notes: z.string().optional(),
+  sentAt: z.string().optional(),
+  viewedAt: z.string().optional(),
+  paidAt: z.string().optional(),
+  _seeded: z.boolean().optional(),
+  metadata: MetadataSchema,
+});
+export type InvoiceRecord = z.infer<typeof InvoiceRecordSchema>;
+export type CreateInvoiceInput = Pick<InvoiceRecord, 'projectId' | 'customerId' | 'invoiceType' | 'dueDate'> & {
+  quoteId?: string;
+  notes?: string;
+  taxRate?: number;
+  subtotalOverride?: number;  // When set, uses this as subtotal instead of calculating from line items (e.g. deposit invoices)
+};
+
+export const PaymentRecordSchema = z.object({
+  id: z.string().min(1),
+  invoiceId: z.string().min(1),
+  projectId: z.string().min(1),
+  amount: z.number().positive(),
+  method: PaymentMethodSchema,
+  date: z.string(),
+  reference: z.string().optional(),
+  notes: z.string().optional(),
+  _seeded: z.boolean().optional(),
+  metadata: MetadataSchema,
+});
+export type PaymentRecord = z.infer<typeof PaymentRecordSchema>;
+export type CreatePaymentInput = Omit<PaymentRecord, 'id' | 'metadata' | '_seeded'>;
 
 // Validation Helper Functions
 

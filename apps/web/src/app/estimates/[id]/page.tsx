@@ -97,6 +97,14 @@ const CATEGORY_LABELS: Record<string, string> = {
   other: 'Other',
 };
 
+/** Work category code → default SOP codes for auto-assignment from catalog */
+const WORK_CATEGORY_DEFAULT_SOP: Record<string, string[]> = {
+  FL: ['HI-SOP-FL-004'],
+  PT: ['HI-SOP-PT-002'],
+  FC: ['HI-SOP-FC-003'],
+  DR: ['HI-SOP-DR-001'],
+};
+
 const UNIT_LABELS: Record<string, string> = {
   sqft: 'sq ft',
   lf: 'lin ft',
@@ -477,6 +485,8 @@ export default function EstimateDetailPage() {
         const laborUnit = CATALOG_TO_UNIT[matchedLabor.unit] || UnitOfMeasure.EACH;
         const laborCategory = CATALOG_TO_COST_CATEGORY[matchedLabor.category] || CostCategory.LABOR;
         const laborTotal = form.quantity * matchedLabor.unitCost;
+        const laborWcc = inferWorkCategoryCode(laborCategory);
+        const laborSop = WORK_CATEGORY_DEFAULT_SOP[laborWcc] || [];
         const laborData: CreateLineItem = {
           projectId,
           description: matchedLabor.name,
@@ -486,6 +496,8 @@ export default function EstimateDetailPage() {
           unitCost: matchedLabor.unitCost,
           totalCost: laborTotal,
           isLabor: true,
+          workCategoryCode: laborWcc,
+          ...(laborSop.length > 0 ? { sopCodes: laborSop } : {}),
         };
         await createLineItem.mutateAsync({ projectId, data: laborData });
       }
@@ -500,6 +512,9 @@ export default function EstimateDetailPage() {
 
   function handleCatalogSelect(item: CatalogItem, labor?: CatalogItem) {
     const costCat = CATALOG_TO_COST_CATEGORY[item.category] || CostCategory.MATERIALS;
+    const wcc = inferWorkCategoryCode(costCat);
+    // Auto-assign sopCodes for labor items based on work category
+    const inferredSop = item.type === 'labor' ? (WORK_CATEGORY_DEFAULT_SOP[wcc] || []) : [];
     setForm((prev) => ({
       ...prev,
       description: item.name,
@@ -507,7 +522,8 @@ export default function EstimateDetailPage() {
       unit: CATALOG_TO_UNIT[item.unit] || UnitOfMeasure.EACH,
       isLabor: item.type === 'labor',
       category: costCat,
-      workCategoryCode: inferWorkCategoryCode(costCat),
+      workCategoryCode: wcc,
+      sopCodes: inferredSop,
     }));
     setMatchedLabor(labor ?? null);
     setShowCatalog(false);

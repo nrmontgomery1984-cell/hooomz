@@ -6,6 +6,7 @@
  */
 
 import type { Metadata } from '../schemas';
+import type { SopModuleRef } from './trainingGuide';
 import type { KnowledgeType } from './labs';
 
 // ============================================================================
@@ -211,6 +212,10 @@ export interface Sop {
 
   // Content references
   fieldGuideRef: string | null;
+
+  // Training Guide back-reference (set when SOP is generated from a TG module)
+  trainingGuideId?: string;              // "tg-flr-001"
+  moduleRef?: SopModuleRef;              // Which module this SOP was derived from
 
   // Status
   status: SopStatus;

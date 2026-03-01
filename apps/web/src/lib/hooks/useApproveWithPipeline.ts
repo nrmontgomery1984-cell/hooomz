@@ -18,6 +18,45 @@ import { PIPELINE_QUERY_KEYS } from './useTaskPipeline';
 import { ProjectStatus } from '@hooomz/shared-contracts';
 
 /**
+ * Work category code → default SOP codes.
+ * Used as a fallback when labor line items are missing sopCodes
+ * (e.g., items created manually on the estimates page via cost catalog).
+ */
+const WORK_CATEGORY_DEFAULT_SOP: Record<string, string[]> = {
+  FL: ['HI-SOP-FL-004'],   // Flooring install
+  PT: ['HI-SOP-PT-002'],   // Painting
+  FC: ['HI-SOP-FC-003'],   // Trim / finish carpentry
+  DR: ['HI-SOP-DR-001'],   // Doors
+};
+
+/**
+ * CostCategory value → work category code.
+ * Mirrors COST_CATEGORY_TO_TRADE from axisMapping.ts.
+ * Used when line items have a category but no workCategoryCode.
+ */
+const CATEGORY_TO_WCC: Record<string, string> = {
+  flooring: 'FL',
+  painting: 'PT',
+  'interior-trim': 'FC',
+  drywall: 'DW',
+  'windows-doors': 'FC',
+  'cabinets-countertops': 'FC',
+};
+
+/**
+ * Infer work category code from line item description.
+ * Last-resort fallback when both workCategoryCode and category are generic ('labor').
+ */
+function inferWccFromDescription(desc: string): string | undefined {
+  const d = desc.toLowerCase();
+  if (/floor|lvp|lvt|hardwood|laminate|vinyl|carpet|underlay/.test(d)) return 'FL';
+  if (/paint|prime|primer|coat|roll|brush/.test(d)) return 'PT';
+  if (/trim|baseboard|crown|casing|molding|shoe|wainscot/.test(d)) return 'FC';
+  if (/\bdoor\b/.test(d)) return 'DR';
+  return undefined;
+}
+
+/**
  * Approve a QUOTE and trigger task pipeline generation.
  * Only works when project is in QUOTED status (formal quote sent to client).
  * 1. Logs quote.approved activity event
@@ -71,7 +110,26 @@ export function useApproveEstimateWithPipeline() {
 
       // 3. Fetch labor line items with sopCodes (tasks come from labor, not material)
       const lineItems = await services.estimating.lineItems.findByProjectId(projectId);
-      const pipelineItems = lineItems.filter(
+
+      // Enrich labor items that are missing sopCodes — infer from workCategoryCode
+      // or category. This handles items created via the estimates page cost catalog
+      // which don't go through the intake service's deriveScopeItemsFromRooms().
+      const enrichedItems = lineItems.map((li) => {
+        if (li.isLabor !== false && (!li.sopCodes || li.sopCodes.length === 0)) {
+          // Try workCategoryCode → category → description (in order of specificity)
+          const wcc = li.workCategoryCode
+            || CATEGORY_TO_WCC[li.category]
+            || inferWccFromDescription(li.description)
+            || '';
+          const inferred = wcc ? WORK_CATEGORY_DEFAULT_SOP[wcc] : undefined;
+          if (inferred) {
+            return { ...li, sopCodes: inferred };
+          }
+        }
+        return li;
+      });
+
+      const pipelineItems = enrichedItems.filter(
         (li) => li.sopCodes && li.sopCodes.length > 0 && li.isLabor !== false
       );
 

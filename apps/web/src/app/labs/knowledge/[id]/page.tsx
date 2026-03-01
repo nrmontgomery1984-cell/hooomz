@@ -20,7 +20,7 @@ import { ConfidenceScoreBadge } from '@/components/labs/ConfidenceScoreBadge';
 import type { KnowledgeChallenge } from '@hooomz/shared-contracts';
 
 const STATUS_STYLES: Record<string, { bg: string; text: string; label: string }> = {
-  draft: { bg: '#F3F4F6', text: '#6B7280', label: 'Draft' },
+  draft: { bg: 'var(--bg)', text: 'var(--text-2)', label: 'Draft' },
   published: { bg: '#D1FAE5', text: '#065F46', label: 'Published' },
   under_review: { bg: '#FEF3C7', text: '#92400E', label: 'Under Review' },
   deprecated: { bg: '#FEE2E2', text: '#991B1B', label: 'Deprecated' },
@@ -52,10 +52,10 @@ export default function KnowledgeDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen pb-24" style={{ background: '#F3F4F6' }}>
+      <div className="min-h-screen pb-24" style={{ background: 'var(--bg)' }}>
         <div className="max-w-lg mx-auto px-4 py-12 text-center">
-          <div className="w-8 h-8 border-3 rounded-full animate-spin mx-auto mb-3" style={{ borderColor: '#E5E7EB', borderTopColor: '#0F766E' }} />
-          <p className="text-sm text-gray-400">Loading...</p>
+          <div className="w-8 h-8 border-3 rounded-full animate-spin mx-auto mb-3" style={{ borderColor: 'var(--border)', borderTopColor: 'var(--blue)' }} />
+          <p className="text-sm" style={{ color: 'var(--text-3)' }}>Loading...</p>
         </div>
       </div>
     );
@@ -63,10 +63,10 @@ export default function KnowledgeDetailPage() {
 
   if (!item) {
     return (
-      <div className="min-h-screen pb-24" style={{ background: '#F3F4F6' }}>
+      <div className="min-h-screen pb-24" style={{ background: 'var(--bg)' }}>
         <div className="max-w-lg mx-auto px-4 py-12 text-center">
-          <p className="text-sm text-gray-500">Knowledge item not found</p>
-          <Link href="/labs/knowledge" className="text-sm hover:underline mt-2 inline-block" style={{ color: '#0F766E' }}>
+          <p className="text-sm" style={{ color: 'var(--text-2)' }}>Knowledge item not found</p>
+          <Link href="/labs/knowledge" className="text-sm hover:underline mt-2 inline-block" style={{ color: 'var(--blue)' }}>
             Back to Knowledge Base
           </Link>
         </div>
@@ -92,18 +92,18 @@ export default function KnowledgeDetailPage() {
   };
 
   return (
-    <div className="min-h-screen pb-24" style={{ background: '#F3F4F6' }}>
+    <div className="min-h-screen pb-24" style={{ background: 'var(--bg)' }}>
       {/* Header */}
-      <div style={{ background: '#FFFFFF', borderBottom: '1px solid #E5E7EB' }}>
+      <div style={{ background: 'var(--surface-1)', borderBottom: '1px solid var(--border)' }}>
         <div className="max-w-lg mx-auto px-4 py-4">
           <div className="flex items-center gap-2 mb-1">
-            <Link href="/labs" className="text-sm hover:underline" style={{ color: '#0F766E' }}>Labs</Link>
-            <span className="text-xs text-gray-400">/</span>
-            <Link href="/labs/knowledge" className="text-sm hover:underline" style={{ color: '#0F766E' }}>Knowledge</Link>
-            <span className="text-xs text-gray-400">/</span>
+            <Link href="/labs" className="text-sm hover:underline" style={{ color: 'var(--blue)' }}>Labs</Link>
+            <span className="text-xs" style={{ color: 'var(--text-3)' }}>/</span>
+            <Link href="/labs/knowledge" className="text-sm hover:underline" style={{ color: 'var(--blue)' }}>Knowledge</Link>
+            <span className="text-xs" style={{ color: 'var(--text-3)' }}>/</span>
           </div>
           <div className="flex items-start justify-between gap-3">
-            <h1 className="text-lg font-bold flex-1" style={{ color: '#111827' }}>
+            <h1 className="text-lg font-bold flex-1" style={{ color: 'var(--text)' }}>
               {item.title}
             </h1>
             <ConfidenceScoreBadge score={item.confidenceScore} size="md" />
@@ -113,20 +113,20 @@ export default function KnowledgeDetailPage() {
 
       <div className="max-w-lg mx-auto px-4 mt-4 space-y-4">
         {/* Summary */}
-        <div className="bg-white rounded-xl p-4" style={{ border: '1px solid #E5E7EB' }}>
-          <p className="text-sm leading-relaxed" style={{ color: '#374151' }}>
+        <div className="rounded-xl p-4" style={{ background: 'var(--surface-1)', border: '1px solid var(--border)' }}>
+          <p className="text-sm leading-relaxed" style={{ color: 'var(--text-2)' }}>
             {item.summary}
           </p>
           {item.details && (
-            <p className="text-sm leading-relaxed mt-3 pt-3" style={{ color: '#6B7280', borderTop: '1px solid #F3F4F6' }}>
+            <p className="text-sm leading-relaxed mt-3 pt-3" style={{ color: 'var(--text-2)', borderTop: '1px solid var(--bg)' }}>
               {item.details}
             </p>
           )}
         </div>
 
         {/* Metadata */}
-        <div className="bg-white rounded-xl p-4" style={{ border: '1px solid #E5E7EB' }}>
-          <h2 className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: '#9CA3AF' }}>Details</h2>
+        <div className="rounded-xl p-4" style={{ background: 'var(--surface-1)', border: '1px solid var(--border)' }}>
+          <h2 className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: 'var(--text-3)' }}>Details</h2>
           <div className="space-y-2.5">
             <MetaRow icon={<Beaker size={14} />} label="Type" value={typeLabel} />
             <MetaRow icon={<Tag size={14} />} label="Category" value={item.category} />
@@ -162,13 +162,13 @@ export default function KnowledgeDetailPage() {
             )}
             {item.tags && item.tags.length > 0 && (
               <div className="flex items-start gap-3 pt-1">
-                <Tag size={14} className="flex-shrink-0 mt-0.5" style={{ color: '#9CA3AF' }} />
+                <Tag size={14} className="flex-shrink-0 mt-0.5" style={{ color: 'var(--text-3)' }} />
                 <div className="flex flex-wrap gap-1">
                   {item.tags.map((tag) => (
                     <span
                       key={tag}
                       className="text-xs px-2 py-0.5 rounded-full"
-                      style={{ background: '#F3F4F6', color: '#6B7280' }}
+                      style={{ background: 'var(--bg)', color: 'var(--text-2)' }}
                     >
                       {tag}
                     </span>
@@ -181,8 +181,8 @@ export default function KnowledgeDetailPage() {
 
         {/* Cost Data */}
         {item.costData && (
-          <div className="bg-white rounded-xl p-4" style={{ border: '1px solid #E5E7EB' }}>
-            <h2 className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: '#9CA3AF' }}>Cost Data</h2>
+          <div className="rounded-xl p-4" style={{ background: 'var(--surface-1)', border: '1px solid var(--border)' }}>
+            <h2 className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: 'var(--text-3)' }}>Cost Data</h2>
             <div className="space-y-2">
               {item.costData.avgMaterialCostPerUnit !== undefined && (
                 <CostRow label="Avg Material Cost/Unit" value={`$${item.costData.avgMaterialCostPerUnit.toFixed(2)}`} />
@@ -200,7 +200,7 @@ export default function KnowledgeDetailPage() {
                 <CostRow label="Avg Callback Cost" value={`$${item.costData.callbackCostAvg.toFixed(2)}`} />
               )}
               {item.costData.totalCostComparison && (
-                <div className="text-xs pt-2" style={{ color: '#6B7280', borderTop: '1px solid #F3F4F6' }}>
+                <div className="text-xs pt-2" style={{ color: 'var(--text-2)', borderTop: '1px solid var(--bg)' }}>
                   {item.costData.totalCostComparison}
                 </div>
               )}
@@ -209,9 +209,9 @@ export default function KnowledgeDetailPage() {
         )}
 
         {/* Challenges */}
-        <div className="bg-white rounded-xl p-4" style={{ border: '1px solid #E5E7EB' }}>
+        <div className="rounded-xl p-4" style={{ background: 'var(--surface-1)', border: '1px solid var(--border)' }}>
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-xs font-semibold uppercase tracking-wide" style={{ color: '#9CA3AF' }}>
+            <h2 className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>
               Challenges {pendingChallenges.length > 0 && `(${pendingChallenges.length} pending)`}
             </h2>
             <button
@@ -254,8 +254,8 @@ export default function KnowledgeDetailPage() {
                 </button>
                 <button
                   onClick={() => { setShowChallengeForm(false); setChallengeReason(''); }}
-                  className="px-3 py-1.5 text-xs font-medium text-gray-600 rounded-lg border border-gray-200"
-                  style={{ minHeight: '36px' }}
+                  className="px-3 py-1.5 text-xs font-medium rounded-lg"
+                  style={{ minHeight: '36px', color: 'var(--text-2)', border: '1px solid var(--border)' }}
                 >
                   Cancel
                 </button>
@@ -264,7 +264,7 @@ export default function KnowledgeDetailPage() {
           )}
 
           {challenges.length === 0 ? (
-            <p className="text-xs text-center py-3" style={{ color: '#9CA3AF' }}>
+            <p className="text-xs text-center py-3" style={{ color: 'var(--text-3)' }}>
               No challenges filed. Crew members can challenge knowledge they disagree with.
             </p>
           ) : (
@@ -274,12 +274,12 @@ export default function KnowledgeDetailPage() {
                   key={c.id}
                   className="p-3 rounded-lg text-xs"
                   style={{
-                    background: c.status === 'pending' ? '#FFFBEB' : '#F9FAFB',
-                    border: `1px solid ${c.status === 'pending' ? '#FDE68A' : '#E5E7EB'}`,
+                    background: c.status === 'pending' ? '#FFFBEB' : 'var(--surface-2)',
+                    border: `1px solid ${c.status === 'pending' ? '#FDE68A' : 'var(--border)'}`,
                   }}
                 >
                   <div className="flex items-center justify-between mb-1">
-                    <span className="font-medium" style={{ color: '#374151' }}>
+                    <span className="font-medium" style={{ color: 'var(--text-2)' }}>
                       {c.submittedBy}
                     </span>
                     <span
@@ -292,9 +292,9 @@ export default function KnowledgeDetailPage() {
                       {c.status}
                     </span>
                   </div>
-                  <p style={{ color: '#6B7280' }}>{c.reason}</p>
+                  <p style={{ color: 'var(--text-2)' }}>{c.reason}</p>
                   {c.resolution && (
-                    <p className="mt-1 pt-1" style={{ color: '#374151', borderTop: '1px solid #E5E7EB' }}>
+                    <p className="mt-1 pt-1" style={{ color: 'var(--text-2)', borderTop: '1px solid var(--border)' }}>
                       Resolution: {c.resolution}
                     </p>
                   )}
@@ -311,9 +311,9 @@ export default function KnowledgeDetailPage() {
 function MetaRow({ icon, label, value }: { icon?: React.ReactNode; label: string; value: React.ReactNode }) {
   return (
     <div className="flex items-center gap-3 text-sm">
-      {icon && <span className="flex-shrink-0" style={{ color: '#9CA3AF' }}>{icon}</span>}
-      <span className="flex-shrink-0" style={{ color: '#6B7280', minWidth: '100px' }}>{label}</span>
-      <span className="font-medium" style={{ color: '#111827' }}>{value}</span>
+      {icon && <span className="flex-shrink-0" style={{ color: 'var(--text-3)' }}>{icon}</span>}
+      <span className="flex-shrink-0" style={{ color: 'var(--text-2)', minWidth: '100px' }}>{label}</span>
+      <span className="font-medium" style={{ color: 'var(--text)' }}>{value}</span>
     </div>
   );
 }
@@ -321,8 +321,8 @@ function MetaRow({ icon, label, value }: { icon?: React.ReactNode; label: string
 function CostRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between text-sm">
-      <span style={{ color: '#6B7280' }}>{label}</span>
-      <span className="font-medium font-mono" style={{ color: '#111827' }}>{value}</span>
+      <span style={{ color: 'var(--text-2)' }}>{label}</span>
+      <span className="font-medium font-mono" style={{ color: 'var(--text)' }}>{value}</span>
     </div>
   );
 }

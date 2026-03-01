@@ -11,6 +11,9 @@ import { useActiveForecastConfig, useForecastProjection } from '@/lib/hooks/useF
 import { useProjectVarianceSummary } from '@/lib/hooks/useLabourEstimation';
 import { useActiveCrew } from '@/lib/crew/ActiveCrewContext';
 import { SECTION_COLORS } from '@/lib/viewmode';
+import { ExpenseListPanel } from '@/components/expenses/ExpenseListPanel';
+import { useAllInvoices } from '@/lib/hooks/useInvoices';
+import { useInvoiceAging } from '@/lib/hooks/useInvoiceAging';
 
 const FINANCE_COLOR = SECTION_COLORS.finance;
 
@@ -27,6 +30,8 @@ export default function FinanceDashboard() {
   const { data: projection } = useForecastProjection(forecastConfig ?? null);
   const { projectId: crewProjectId } = useActiveCrew();
   const { data: labourVariance } = useProjectVarianceSummary(crewProjectId);
+  const { data: allInvoices } = useAllInvoices();
+  const aging = useInvoiceAging(allInvoices);
 
   const isLoading = configLoading;
 
@@ -73,8 +78,7 @@ export default function FinanceDashboard() {
             <StatCard icon={<DollarSign size={14} />} label="Revenue MTD" value="—" color={FINANCE_COLOR} />
             {/* TODO: wire to useFinancialActuals for current month */}
             <StatCard icon={<TrendingUp size={14} />} label="Y1 Forecast" value={y1Revenue > 0 ? `$${Math.round(y1Revenue).toLocaleString()}` : '—'} color={FINANCE_COLOR} />
-            <StatCard icon={<DollarSign size={14} />} label="Outstanding AR" value="—" color={FINANCE_COLOR} />
-            {/* TODO: wire to invoice data when available */}
+            <StatCard icon={<DollarSign size={14} />} label="Outstanding AR" value={aging.totalOutstanding > 0 ? `$${Math.round(aging.totalOutstanding).toLocaleString()}` : '—'} color={FINANCE_COLOR} />
             <StatCard icon={<BarChart3 size={14} />} label="Gross Margin" value="—" color={FINANCE_COLOR} />
             {/* TODO: compute from actuals vs cost data */}
           </div>
@@ -257,14 +261,53 @@ export default function FinanceDashboard() {
               </div>
             </div>
 
+            {/* Expenses (active project) */}
+            <div>
+              <SectionHeader title="Project Expenses" />
+              {crewProjectId ? (
+                <ExpenseListPanel projectId={crewProjectId} />
+              ) : (
+                <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 24, textAlign: 'center', boxShadow: 'var(--shadow-card)' }}>
+                  <DollarSign size={20} style={{ color: 'var(--text-3)', margin: '0 auto 8px' }} />
+                  <p style={{ fontSize: 12, color: 'var(--text-3)' }}>Select a crew session to see project expenses</p>
+                </div>
+              )}
+            </div>
+
             {/* Overdue Invoices */}
             <div>
               <SectionHeader title="Overdue Invoices" />
-              <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 24, textAlign: 'center', boxShadow: 'var(--shadow-card)' }}>
-                <DollarSign size={20} style={{ color: 'var(--text-3)', margin: '0 auto 8px' }} />
-                <p style={{ fontSize: 12, color: 'var(--text-3)' }}>Invoice tracking coming soon</p>
-                {/* TODO: wire to invoice/payment data when available */}
-              </div>
+              {aging.overdue.length === 0 ? (
+                <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 24, textAlign: 'center', boxShadow: 'var(--shadow-card)' }}>
+                  <DollarSign size={20} style={{ color: 'var(--text-3)', margin: '0 auto 8px' }} />
+                  <p style={{ fontSize: 12, color: 'var(--text-3)' }}>No overdue invoices</p>
+                </div>
+              ) : (
+                <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
+                  {aging.overdue.map((inv) => (
+                    <Link
+                      key={inv.id}
+                      href={`/invoices/${inv.id}`}
+                      className="hover-surface"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 8,
+                        padding: '8px 12px',
+                        borderBottom: '1px solid var(--border)',
+                        textDecoration: 'none',
+                        color: 'inherit',
+                      }}
+                    >
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-2)' }}>{inv.invoiceNumber}</span>
+                      <span style={{ fontFamily: 'var(--font-cond)', fontSize: 8, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#DC2626', background: '#FEE2E2', padding: '1px 5px', borderRadius: 3 }}>OVERDUE</span>
+                      <span style={{ flex: 1 }} />
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 600, color: '#DC2626' }}>${inv.balanceDue.toFixed(0)}</span>
+                      <ChevronRight size={12} color="var(--text-3)" />
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>

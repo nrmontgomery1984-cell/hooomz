@@ -275,12 +275,14 @@ interface SimpleActivityFeedProps {
   events: ActivityEvent[];
   maxItems?: number;
   showProjectName?: boolean;
+  onEntityClick?: (entityType: string, entityId: string, projectId?: string) => void;
 }
 
 export function SimpleActivityFeed({
   events,
   maxItems = 10,
   showProjectName = false,
+  onEntityClick,
 }: SimpleActivityFeedProps) {
   const displayEvents = events.slice(0, maxItems);
   const groupedEvents = groupEventsByDayArray(displayEvents as any);
@@ -300,6 +302,7 @@ export function SimpleActivityFeed({
               key={event.id}
               event={event as ActivityEvent}
               showProjectName={showProjectName}
+              onEntityClick={onEntityClick}
             />
           ))}
         </ActivityDayGroup>

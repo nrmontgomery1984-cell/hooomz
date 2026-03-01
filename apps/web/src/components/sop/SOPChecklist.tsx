@@ -9,8 +9,10 @@
  * - Lab-Tested badges (purple pills) on critical standards
  * - Progress bar showing completion
  *
- * Bridge logic: tries IndexedDB SOP first (database SOPs managed at /labs/sops),
- * falls back to hardcoded static SOPs in lib/data/sops.ts.
+ * Bridge logic:
+ *   1. Labs SOP (useSop — for SOPs created via /labs/sops with UUID IDs)
+ *   2. Standards SOP (useStandardSOPByCode — HI-SOP-* codes from /standards/sops)
+ *   3. Hardcoded static SOPs in lib/data/sops.ts (legacy fallback)
  *
  * Design spec: mobile-first, 48px touch targets, Inter font
  */
@@ -22,6 +24,7 @@ import { getSOPById } from '@/lib/data/sops';
 import { useSOPProgress, isStepCompleted } from '@/lib/hooks/useLocalData';
 import { useSOPTriggerIntegration } from '@/lib/hooks/useSOPTriggerIntegration';
 import { useConfirmObservation, useSop, useSopChecklistItems } from '@/lib/hooks/useLabsData';
+import { useStandardSOPByCode } from '@/lib/hooks/useStandardSOPs';
 import { useActiveCrew } from '@/lib/crew/ActiveCrewContext';
 import { ObservationConfirmCard } from '@/components/labs';
 
@@ -46,8 +49,9 @@ interface NormalizedStep {
 /** Normalized SOP data for rendering */
 interface NormalizedSOP {
   title: string;
-  /** ID usable for linking to /labs/sops/[id] — only available for database SOPs */
   detailId: string | null;
+  /** Route prefix for detail page — defaults to /labs/sops, override for Standards SOPs */
+  detailRoute?: '/standards/sops' | '/labs/sops';
   steps: NormalizedStep[];
   stopConditions: string[];
   criticalStandards: { standard: string; source: string }[];
@@ -57,9 +61,12 @@ interface NormalizedSOP {
 export function SOPChecklist({ taskId, sopId, projectId, onOpenSOP, onOpenKnowledge }: SOPChecklistProps) {
   const { crewMemberId } = useActiveCrew();
 
-  // Try database SOP first (Build 3b bridge)
+  // Try Labs SOP first (database SOPs created via /labs/sops with UUID IDs)
   const { data: dbSop } = useSop(sopId);
   const { data: dbChecklistItems = [] } = useSopChecklistItems(dbSop?.id ?? '');
+
+  // Try Standards SOP (HI-SOP-* codes from /standards/sops)
+  const { data: standardSop } = useStandardSOPByCode(sopId);
 
   // Fall back to hardcoded SOP
   const hardcodedSop = getSOPById(sopId);
@@ -67,7 +74,7 @@ export function SOPChecklist({ taskId, sopId, projectId, onOpenSOP, onOpenKnowle
   // Normalize into common rendering format
   const sop = useMemo((): NormalizedSOP | null => {
     if (dbSop && dbChecklistItems.length > 0) {
-      // Database SOP found — use it
+      // Labs DB SOP found — use it
       return {
         title: dbSop.title,
         detailId: dbSop.id,
@@ -78,8 +85,44 @@ export function SOPChecklist({ taskId, sopId, projectId, onOpenSOP, onOpenKnowle
             action: item.title,
             generatesObservation: item.generatesObservation,
           })),
-        stopConditions: [],  // Database SOPs don't have stop_conditions yet
-        criticalStandards: [], // Future: could derive from knowledge items
+        stopConditions: [],
+        criticalStandards: [],
+        isFromDatabase: true,
+      };
+    }
+
+    if (standardSop) {
+      // Standards SOP (HI-SOP-* codes) — flatten procedures into steps
+      const steps: NormalizedStep[] = [];
+      let order = 1;
+      for (const proc of standardSop.procedures) {
+        if (proc.steps && proc.steps.length > 0) {
+          for (const step of proc.steps) {
+            steps.push({ order: order++, action: step });
+          }
+        }
+      }
+      // If no procedure steps, fall back to checklist checkbox fields
+      if (steps.length === 0) {
+        for (const section of standardSop.checklist.sections) {
+          for (const field of section.fields) {
+            if (field.type === 'checkbox') {
+              steps.push({ order: order++, action: field.label });
+            }
+          }
+        }
+      }
+      return {
+        title: standardSop.title,
+        detailId: standardSop.id,
+        detailRoute: '/standards/sops',
+        steps,
+        stopConditions: standardSop.criticalStandards
+          .filter(cs => cs.category === 'stop-condition')
+          .map(cs => cs.description),
+        criticalStandards: standardSop.criticalStandards
+          .filter(cs => cs.category !== 'stop-condition')
+          .map(cs => ({ standard: cs.description, source: cs.code })),
         isFromDatabase: true,
       };
     }
@@ -88,7 +131,7 @@ export function SOPChecklist({ taskId, sopId, projectId, onOpenSOP, onOpenKnowle
       // Fallback to hardcoded SOP
       return {
         title: hardcodedSop.title,
-        detailId: null, // Hardcoded SOPs don't have a detail page yet
+        detailId: null,
         steps: hardcodedSop.quick_steps.map(step => ({
           order: step.order,
           action: step.action,
@@ -100,7 +143,7 @@ export function SOPChecklist({ taskId, sopId, projectId, onOpenSOP, onOpenKnowle
     }
 
     return null;
-  }, [dbSop, dbChecklistItems, hardcodedSop]);
+  }, [dbSop, dbChecklistItems, standardSop, hardcodedSop]);
 
   const { data: progress } = useSOPProgress(taskId, sopId);
   const { toggleStep, triggerResult, activeDraft, clearTriggerResult } = useSOPTriggerIntegration({
@@ -164,7 +207,7 @@ export function SOPChecklist({ taskId, sopId, projectId, onOpenSOP, onOpenKnowle
             </button>
           ) : sop.detailId ? (
             <Link
-              href={`/labs/sops/${sop.detailId}`}
+              href={`${sop.detailRoute ?? '/labs/sops'}/${sop.detailId}`}
               className="text-xs flex items-center gap-1 hover:underline"
               style={{ color: '#0F766E' }}
               onClick={(e) => e.stopPropagation()}

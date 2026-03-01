@@ -9,6 +9,9 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useLabsExperiments } from '@/lib/hooks/useLabsData';
 import { ExperimentCard } from '@/components/labs';
+import { SECTION_COLORS } from '@/lib/viewmode';
+
+const LABS_COLOR = SECTION_COLORS.labs;
 
 type StatusFilter = 'all' | 'active' | 'completed' | 'draft';
 
@@ -66,8 +69,8 @@ export default function ExperimentsPage() {
       <div style={{ background: '#FFFFFF', borderBottom: '1px solid #E5E7EB' }}>
         <div className="max-w-lg mx-auto px-4 py-4">
           <div className="flex items-center gap-2 mb-1">
-            <Link href="/labs" className="text-sm text-teal-700 hover:underline">Labs</Link>
-            <span className="text-xs text-gray-400">/</span>
+            <Link href="/labs" className="text-sm hover:underline" style={{ color: LABS_COLOR }}>Labs</Link>
+            <span className="text-xs" style={{ color: 'var(--text-3)' }}>/</span>
           </div>
           <h1 className="text-xl font-bold" style={{ color: '#111827' }}>Experiments</h1>
           <p className="text-xs" style={{ color: '#9CA3AF' }}>Structured testing of products, techniques, and methods</p>
@@ -80,11 +83,12 @@ export default function ExperimentsPage() {
               <button
                 key={f.key}
                 onClick={() => setFilter(f.key)}
-                className={`px-3 py-1.5 text-xs font-medium rounded-full whitespace-nowrap transition-colors ${
+                className="px-3 py-1.5 text-xs font-medium rounded-full whitespace-nowrap transition-colors"
+                style={
                   filter === f.key
-                    ? 'bg-teal-700 text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
+                    ? { background: LABS_COLOR, color: '#fff' }
+                    : { background: 'var(--surface-2)', color: 'var(--text-2)' }
+                }
               >
                 {f.label}
               </button>
@@ -128,14 +132,14 @@ export default function ExperimentsPage() {
         {isLoading ? (
           <div className="text-center py-8">
             <div className="w-8 h-8 border-3 rounded-full animate-spin mx-auto mb-3" style={{ borderColor: '#E5E7EB', borderTopColor: '#0F766E' }} />
-            <p className="text-sm text-gray-400">Loading experiments...</p>
+            <p className="text-sm" style={{ color: 'var(--text-3)' }}>Loading experiments...</p>
           </div>
         ) : sorted.length === 0 ? (
           <div className="text-center py-8">
-            <p className="text-sm text-gray-400">
+            <p className="text-sm" style={{ color: 'var(--text-3)' }}>
               {categorySearch ? `No experiments for ${catLabel}` : 'No experiments yet'}
             </p>
-            <p className="text-xs text-gray-300 mt-1">
+            <p className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>
               {categorySearch
                 ? 'Design an experiment to test hypotheses about this work category'
                 : 'Experiments are designed by Labs admins to test specific hypotheses'}

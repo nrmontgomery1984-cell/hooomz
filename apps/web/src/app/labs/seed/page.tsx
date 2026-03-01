@@ -15,6 +15,7 @@ import { useServicesContext } from '@/lib/services/ServicesContext';
 import { useActiveCrew } from '@/lib/crew/ActiveCrewContext';
 import { seedAllLabsData, type SeedResult } from '@/lib/data/seedAll';
 import { seedCustomers, seedProjects, seedLineItems, seedTasks, seedActivityEvents, seedLeads, hasExistingData } from '@/lib/seed/seedData';
+import { seedInteriorsDemo, wipeInteriorsDemo } from '@/lib/seed/interiorsData';
 
 type SeedState = 'idle' | 'seeding' | 'done' | 'error' | 'clearing';
 
@@ -281,6 +282,44 @@ export default function SeedPage() {
     }
   }, [services, addLog, queryClient]);
 
+  const handleSeedInteriors = useCallback(async () => {
+    if (!services) return;
+    setState('seeding');
+    setLogs([]);
+    setResult(null);
+    setError(null);
+
+    try {
+      await seedInteriorsDemo(services, addLog);
+      queryClient.removeQueries();
+      setState('done');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      setError(message);
+      addLog(`ERROR: ${message}`);
+      setState('error');
+    }
+  }, [services, addLog, queryClient]);
+
+  const handleWipeInteriors = useCallback(async () => {
+    if (!services) return;
+    setState('clearing');
+    setLogs([]);
+    setResult(null);
+    setError(null);
+
+    try {
+      await wipeInteriorsDemo(services, addLog);
+      queryClient.removeQueries();
+      setState('done');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      setError(message);
+      addLog(`ERROR: ${message}`);
+      setState('error');
+    }
+  }, [services, addLog, queryClient]);
+
   const isWorking = state === 'seeding' || state === 'clearing';
   const total = result
     ? result.sops + result.checklistItems + result.knowledgeItems + result.products + result.techniques + result.toolMethods + result.crewMembers + result.catalogItems + (result.customers || 0) + (result.projects || 0) + (result.tasks || 0) + (result.leads || 0)
@@ -392,6 +431,62 @@ export default function SeedPage() {
           </button>
         </div>
 
+        {/* Interiors Demo */}
+        <div className="bg-white rounded-xl p-4" style={{ border: '1px solid #E5E7EB' }}>
+          <h2 className="text-sm font-semibold mb-1" style={{ color: '#111827' }}>Interiors Demo</h2>
+          <p className="text-xs mb-3" style={{ color: '#9CA3AF' }}>
+            5 customers, 7 jobs at various pipeline stages, consultations, quotes, change orders, and ~18 activity events.
+          </p>
+          <div className="space-y-2">
+            <button
+              onClick={handleSeedInteriors}
+              disabled={isWorking || !services}
+              className="w-full py-2.5 text-sm font-semibold rounded-xl transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              style={{
+                background: '#FFFFFF',
+                border: '2px solid #0F766E',
+                color: '#0F766E',
+                minHeight: '44px',
+              }}
+            >
+              {state === 'seeding' ? (
+                <>
+                  <Loader2 size={14} className="animate-spin" />
+                  Loading...
+                </>
+              ) : (
+                <>
+                  <Database size={14} />
+                  Load Interiors Demo Data
+                </>
+              )}
+            </button>
+            <button
+              onClick={handleWipeInteriors}
+              disabled={isWorking || !services}
+              className="w-full py-2.5 text-sm font-semibold rounded-xl transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              style={{
+                background: '#FFFFFF',
+                border: '2px solid #F59E0B',
+                color: '#F59E0B',
+                minHeight: '44px',
+              }}
+            >
+              {state === 'clearing' ? (
+                <>
+                  <Loader2 size={14} className="animate-spin" />
+                  Wiping...
+                </>
+              ) : (
+                <>
+                  <Trash2 size={14} />
+                  Wipe Demo Data
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+
         {/* Result summary */}
         {result && (
           <div className="bg-white rounded-xl p-4" style={{ border: '1px solid #10B981' }}>
@@ -470,6 +565,9 @@ export default function SeedPage() {
               { href: '/labs/training', label: 'Training', desc: 'Crew certification status' },
               { href: '/labs/structure', label: 'Building Structure', desc: 'Define floors and rooms' },
               { href: '/labs/tool-research', label: 'Tool Research', desc: 'Platform comparison & inventory' },
+              { href: '/sales', label: 'Sales Dashboard', desc: 'Pipeline, funnel, this week, performance' },
+              { href: '/sales/quotes', label: 'Quotes', desc: 'Quote list with status tracking' },
+              { href: '/sales/consultations', label: 'Consultations', desc: 'Scheduled & completed consultations' },
             ].map((link) => (
               <Link
                 key={link.href}

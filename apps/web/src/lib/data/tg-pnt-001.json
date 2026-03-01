@@ -1,0 +1,1798 @@
+{
+  "id": "tg-pnt-001",
+  "code": "TG-PNT-001",
+  "title": "Interior Painting — Complete Training Guide",
+  "trade": "Painting",
+  "version": "1.1",
+  "status": "draft",
+  "effectiveDate": "2026-02",
+  "modules": [
+    {
+      "id": "tg-pnt-001-m01",
+      "code": "TG-PNT-001-M01",
+      "title": "Painting Fundamentals",
+      "order": 1,
+      "sopCodes": [],
+      "learningObjectives": [
+        "Explain the four components of paint and how they affect performance",
+        "Compare latex and alkyd paints and select appropriate type for application",
+        "Select appropriate finish/sheen based on room use and durability requirements",
+        "Describe adhesion mechanics and surface energy principles",
+        "Apply Climate Zone 6 considerations to painting schedules and product selection"
+      ],
+      "criticalStandards": [
+        {
+          "code": "CS-PNT-001",
+          "description": "Never paint over surfaces with moisture content above 12% for wood or 15% for drywall",
+          "category": "stop-condition"
+        },
+        {
+          "code": "CS-PNT-002",
+          "description": "Never use latex paint that has frozen — freeze-thaw destroys the emulsion",
+          "category": "stop-condition"
+        },
+        {
+          "code": "CS-PNT-003",
+          "description": "Never apply latex paint below 50°F room or surface temperature",
+          "category": "specification"
+        },
+        {
+          "code": "CS-PNT-004",
+          "description": "Higher sheen paints resist moisture better — use satin or higher in bathrooms and kitchens",
+          "category": "specification"
+        }
+      ],
+      "content": {
+        "introduction": "Before applying any paint, you need to understand what you're working with and how materials interact with substrates and environmental conditions. This section covers paint composition, finish selection, and the building science that determines whether your work will last.",
+        "sections": [
+          {
+            "title": "Paint Composition & Performance",
+            "body": "Paint consists of four primary components. Understanding these helps you select the right product and troubleshoot problems.",
+            "subsections": [
+              {
+                "title": "The Four Components",
+                "body": "Every paint contains pigments, binders, solvents, and additives in varying proportions. Premium paints have higher pigment and binder content; economy paints substitute cheaper fillers.",
+                "tables": [
+                  {
+                    "caption": "Paint Components",
+                    "headers": [
+                      "Component",
+                      "Function",
+                      "Performance Impact"
+                    ],
+                    "rows": [
+                      [
+                        "Pigments",
+                        "Provide color and hide",
+                        "Higher pigment = better coverage; titanium dioxide is primary white pigment"
+                      ],
+                      [
+                        "Binders (Resin)",
+                        "Hold pigments together, adhere to surface",
+                        "Determines durability, adhesion, and finish quality; latex (acrylic) vs alkyd (oil)"
+                      ],
+                      [
+                        "Solvents (Carrier)",
+                        "Keep paint liquid for application",
+                        "Water-based (latex) vs solvent-based (alkyd); affects dry time and VOCs"
+                      ],
+                      [
+                        "Additives",
+                        "Modify specific properties",
+                        "Flow agents, mildewcides, freeze-thaw stabilizers, UV blockers"
+                      ]
+                    ]
+                  }
+                ]
+              },
+              {
+                "title": "Latex vs Alkyd",
+                "body": "The fundamental choice in paint selection. Premium latex paints now match or exceed alkyd durability for most residential applications. Alkyd's main advantage is leveling (brush marks disappear) and adhesion to difficult surfaces. However, yellowing over time and slow dry times make latex the default choice for walls and ceilings.",
+                "tables": [
+                  {
+                    "caption": "Latex vs Alkyd Comparison",
+                    "headers": [
+                      "Property",
+                      "Latex",
+                      "Alkyd"
+                    ],
+                    "rows": [
+                      [
+                        "Dry time",
+                        "1-2 hours to touch",
+                        "6-24 hours to touch"
+                      ],
+                      [
+                        "Cure time",
+                        "14-30 days full cure",
+                        "7-14 days full cure"
+                      ],
+                      [
+                        "Cleanup",
+                        "Water",
+                        "Mineral spirits"
+                      ],
+                      [
+                        "Odor/VOCs",
+                        "Low",
+                        "High"
+                      ],
+                      [
+                        "Durability",
+                        "Good (premium latex excellent)",
+                        "Excellent"
+                      ],
+                      [
+                        "Yellowing",
+                        "No",
+                        "Yes, especially whites"
+                      ],
+                      [
+                        "Best use",
+                        "Walls, ceilings, most surfaces",
+                        "Trim, cabinets, high-wear areas"
+                      ],
+                      [
+                        "Cold weather",
+                        "Problematic below 50°F",
+                        "Can apply down to 40°F"
+                      ]
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "Finish Types & Applications",
+            "body": "Sheen affects both appearance and performance. Higher sheen = more durable but shows more imperfections.",
+            "subsections": [
+              {
+                "title": "Sheen Selection",
+                "body": "Match sheen to the room's function and the surface condition.",
+                "tables": [
+                  {
+                    "caption": "Finish Selection Guide",
+                    "headers": [
+                      "Finish",
+                      "Sheen Level",
+                      "Durability",
+                      "Best Applications"
+                    ],
+                    "rows": [
+                      [
+                        "Flat/Matte",
+                        "0-5%",
+                        "Low",
+                        "Ceilings, low-traffic walls, texture hiding"
+                      ],
+                      [
+                        "Eggshell",
+                        "10-25%",
+                        "Medium",
+                        "Living rooms, bedrooms, dining rooms"
+                      ],
+                      [
+                        "Satin",
+                        "25-35%",
+                        "Medium-High",
+                        "Kitchens, bathrooms, hallways, kids' rooms"
+                      ],
+                      [
+                        "Semi-Gloss",
+                        "35-70%",
+                        "High",
+                        "Trim, doors, cabinets, high-moisture areas"
+                      ],
+                      [
+                        "Gloss",
+                        "70%+",
+                        "Very High",
+                        "High-wear trim, furniture, specialty"
+                      ]
+                    ]
+                  }
+                ],
+                "callouts": [
+                  {
+                    "type": "tip",
+                    "content": "For walls with imperfections, flat or eggshell hides flaws. For trim that will be cleaned frequently, semi-gloss resists scrubbing. Never use flat paint on trim — it shows every fingerprint."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "Building Science for Painters",
+            "body": "Paint failure is often building failure. Understanding moisture, adhesion, and surface dynamics prevents callbacks.",
+            "subsections": [
+              {
+                "title": "Moisture & Paint",
+                "body": "Moisture is the primary cause of paint failure. It can come from substrate moisture (fresh drywall, uncured patches, wet wood), interior humidity (bathrooms, kitchens, humidifiers), vapor drive (moisture migrating through walls from exterior or interior), and condensation (cold surfaces in warm, humid air).",
+                "callouts": [
+                  {
+                    "type": "critical",
+                    "content": "Never paint over surfaces with moisture content above 12% for wood or 15% for drywall. Test with pin meter {{LABS:pin-moisture-meter}} before painting suspect areas."
+                  }
+                ]
+              },
+              {
+                "title": "Adhesion Mechanics",
+                "body": "Paint adheres through two mechanisms: mechanical adhesion (paint keys into surface texture) and chemical adhesion (molecular bonding between paint and substrate).",
+                "tables": [
+                  {
+                    "caption": "Surface Conditions & Adhesion",
+                    "headers": [
+                      "Surface Condition",
+                      "Adhesion Impact",
+                      "Solution"
+                    ],
+                    "rows": [
+                      [
+                        "Glossy/sealed surface",
+                        "Mechanical adhesion blocked",
+                        "Scuff sand or use bonding primer {{LABS:primer-bonding}}"
+                      ],
+                      [
+                        "Chalky/oxidized",
+                        "Weak substrate",
+                        "Remove loose material, use penetrating primer"
+                      ],
+                      [
+                        "Contaminated (grease, wax)",
+                        "Chemical bond blocked",
+                        "Clean with TSP or degreaser {{LABS:cleaner-degreaser}}"
+                      ],
+                      [
+                        "Incompatible coating",
+                        "Chemical rejection",
+                        "Remove or use barrier primer"
+                      ]
+                    ]
+                  }
+                ],
+                "callouts": [
+                  {
+                    "type": "info",
+                    "title": "Surface Energy",
+                    "content": "High surface energy surfaces are easy to paint (water sheets). Low surface energy surfaces resist coating (water beads). If water beads on a surface, paint will too. Either clean the surface or use a bonding primer designed for low-surface-energy substrates."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "Climate Zone 6 Considerations",
+            "body": "New Brunswick's climate creates specific challenges for interior painting.",
+            "subsections": [
+              {
+                "title": "Winter Painting Challenges",
+                "body": "Cold weather affects paint application, drying, and film formation in several ways.",
+                "tables": [
+                  {
+                    "caption": "Winter Challenges & Solutions",
+                    "headers": [
+                      "Challenge",
+                      "Cause",
+                      "Solution"
+                    ],
+                    "rows": [
+                      [
+                        "Slow drying",
+                        "Low humidity from heating, but cold surfaces",
+                        "Maintain 60-75°F room and surface temp"
+                      ],
+                      [
+                        "Poor film formation",
+                        "Latex coalescents don't work below 50°F",
+                        "Never apply latex below 50°F; warm space 24h before painting"
+                      ],
+                      [
+                        "Flash rust",
+                        "Metal substrates in cold-then-heated spaces",
+                        "Prime metal immediately, maintain stable temps"
+                      ],
+                      [
+                        "Frosting",
+                        "Condensation on fresh paint from cold exterior walls",
+                        "Keep exterior walls warm, avoid painting during extreme cold"
+                      ]
+                    ]
+                  }
+                ],
+                "callouts": [
+                  {
+                    "type": "critical",
+                    "content": "Never use latex paint that has frozen. Even if it looks okay, freeze-thaw destroys the emulsion. Paint will fail within months."
+                  },
+                  {
+                    "type": "warning",
+                    "title": "Spring Transition",
+                    "content": "During spring transition, interior surfaces may have condensation from thermal lag. Walls stay cold even as air warms. Test surface temperature — paint won't adhere properly to cold, damp surfaces."
+                  }
+                ]
+              },
+              {
+                "title": "Humidity Swings",
+                "body": "Interior humidity in Climate Zone 6 swings from 25-30% (winter) to 60-70% (summer). Winter brings fast drying but risk of poor film formation and cracking. Summer brings slow drying and risk of sags and dust contamination during extended open time."
+              }
+            ]
+          }
+        ]
+      },
+      "labsReferences": [
+        "{{LABS:pin-moisture-meter}}",
+        "{{LABS:primer-bonding}}",
+        "{{LABS:cleaner-degreaser}}"
+      ]
+    },
+    {
+      "id": "tg-pnt-001-m02",
+      "code": "TG-PNT-001-M02",
+      "title": "Surface Assessment & Preparation",
+      "order": 2,
+      "sopCodes": [
+        "HI-SOP-PT-001"
+      ],
+      "learningObjectives": [
+        "Perform comprehensive surface assessment using the five-point protocol",
+        "Execute adhesion testing and interpret results",
+        "Select appropriate cleaning method based on contamination type",
+        "Perform drywall and wood trim repairs to paintable condition",
+        "Apply proper sanding technique and dust control"
+      ],
+      "criticalStandards": [
+        {
+          "code": "CS-PNT-005",
+          "description": "Never paint over mold without killing it first — paint will fail and mold will grow through",
+          "category": "stop-condition"
+        },
+        {
+          "code": "CS-PNT-006",
+          "description": "Pre-1980 homes may have lead paint — test before sanding, follow RRP requirements if positive",
+          "category": "stop-condition"
+        }
+      ],
+      "content": {
+        "introduction": "Surface preparation determines 80% of paint job quality. Proper assessment prevents most failures.",
+        "procedures": [
+          {
+            "title": "Surface Assessment Protocol",
+            "body": "Before any prep work, evaluate the entire scope systematically.",
+            "steps": [
+              "Check existing coating: Type (latex/alkyd), condition, adhesion — test adhesion, determine compatibility",
+              "Identify surface defects: Cracks, holes, dents, texture damage — document extent, plan repair",
+              "Check for contamination: Grease, smoke, water stains, mold — identify type, select cleaning method",
+              "Test for moisture: Active leaks, staining, high readings — find source, fix before painting",
+              "Evaluate substrate condition: Sound, chalky, peeling, soft — determine if stable enough to coat"
+            ]
+          },
+          {
+            "title": "Adhesion Testing",
+            "body": "The tape test determines if existing coatings will hold or need to be removed.",
+            "steps": [
+              "Make an X-cut through the paint to the substrate using utility knife",
+              "Apply strip of masking tape firmly over the X",
+              "Pull tape off quickly at 180° angle",
+              "Evaluate: Pass (little paint removed), Marginal (some flaking at cut edges), Fail (paint pulls in sheets)",
+              "Determine action: Pass = prep and paint over; Marginal = sand/prime, consider bonding primer; Fail = requires full removal or encapsulation"
+            ]
+          },
+          {
+            "title": "Cleaning Methods",
+            "body": "Match the cleaning method to the contamination type.",
+            "tables": [
+              {
+                "caption": "Contamination & Cleaning",
+                "headers": [
+                  "Contamination",
+                  "Method",
+                  "Products"
+                ],
+                "rows": [
+                  [
+                    "General dirt/dust",
+                    "Vacuum, then tack cloth",
+                    "Vacuum + tack cloths"
+                  ],
+                  [
+                    "Grease/oil",
+                    "Degrease, rinse, dry",
+                    "TSP or degreaser {{LABS:cleaner-degreaser}}"
+                  ],
+                  [
+                    "Smoke/nicotine",
+                    "Clean + encapsulating primer",
+                    "TSP + shellac primer {{LABS:primer-shellac}}"
+                  ],
+                  [
+                    "Mold/mildew",
+                    "Kill, remove, prime",
+                    "Mold killer {{LABS:cleaner-mold}}, stain-blocking primer"
+                  ],
+                  [
+                    "Water stains",
+                    "Dry thoroughly, prime",
+                    "Stain-blocking primer {{LABS:primer-stain-blocking}}"
+                  ],
+                  [
+                    "Wax/polish",
+                    "Solvent wipe",
+                    "Mineral spirits"
+                  ]
+                ]
+              }
+            ],
+            "callouts": [
+              {
+                "type": "critical",
+                "content": "Never paint over mold without killing it first. Paint will fail and mold will grow through the new coating."
+              }
+            ]
+          },
+          {
+            "title": "Drywall Repairs",
+            "body": "Repair drywall damage before painting. The compound type affects dry time and shrinkage.",
+            "tables": [
+              {
+                "caption": "Drywall Repair Methods",
+                "headers": [
+                  "Damage Type",
+                  "Repair Method",
+                  "Products"
+                ],
+                "rows": [
+                  [
+                    "Nail pops",
+                    "Reset nail + screw beside it, patch",
+                    "Setting compound {{LABS:compound-setting}}"
+                  ],
+                  [
+                    "Small holes (<1\")",
+                    "Spackle",
+                    "Lightweight spackle {{LABS:spackle-lightweight}}"
+                  ],
+                  [
+                    "Medium holes (1-4\")",
+                    "Mesh patch + compound",
+                    "Self-adhesive mesh, setting compound"
+                  ],
+                  [
+                    "Large holes (>4\")",
+                    "Drywall patch, California patch method",
+                    "Drywall scrap, setting then topping compound"
+                  ],
+                  [
+                    "Cracks",
+                    "V-cut, mesh tape, compound",
+                    "Paper or fiberglass tape, compound"
+                  ]
+                ]
+              }
+            ],
+            "callouts": [
+              {
+                "type": "tip",
+                "content": "Use setting compound for first coat on deep repairs — it doesn't shrink like air-dry compounds. Then topcoat with lightweight for easy sanding."
+              }
+            ]
+          },
+          {
+            "title": "Sanding Protocol",
+            "body": "Sanding creates mechanical adhesion and smooths repairs. Match grit to the task.",
+            "steps": [
+              "Bare wood trim: 120 grit then 150 grit, sand with grain",
+              "Previously painted surfaces: 150-220 grit light scuff to break sheen",
+              "Drywall patches: 120-150 grit, sand flush, feather edges 6-8 inches",
+              "Between coats: 220 grit light scuff only if surface is rough",
+              "Vacuum all surfaces with brush attachment after sanding",
+              "Wipe with damp cloth or tack cloth, allow to dry before priming"
+            ],
+            "callouts": [
+              {
+                "type": "warning",
+                "content": "Pre-1980 homes may have lead paint. Test before sanding {{LABS:test-lead}}. If positive, follow RRP (Renovation, Repair, and Painting) rule requirements."
+              }
+            ]
+          }
+        ]
+      },
+      "labsReferences": [
+        "{{LABS:cleaner-degreaser}}",
+        "{{LABS:cleaner-mold}}",
+        "{{LABS:primer-shellac}}",
+        "{{LABS:primer-stain-blocking}}",
+        "{{LABS:compound-setting}}",
+        "{{LABS:spackle-lightweight}}",
+        "{{LABS:test-lead}}"
+      ]
+    },
+    {
+      "id": "tg-pnt-001-m03",
+      "code": "TG-PNT-001-M03",
+      "title": "Material Handling & Conditioning",
+      "order": 3,
+      "sopCodes": [
+        "HI-SOP-PT-002"
+      ],
+      "learningObjectives": [
+        "Store and condition paint materials correctly for optimal application",
+        "Execute proper paint mixing and boxing procedures",
+        "Select and apply paint additives based on conditions",
+        "Choose appropriate primer type for specific substrates and conditions"
+      ],
+      "criticalStandards": [
+        {
+          "code": "CS-PNT-007",
+          "description": "Always box paint for large jobs — switching cans mid-wall creates visible sheen differences",
+          "category": "technique"
+        },
+        {
+          "code": "CS-PNT-008",
+          "description": "Painting new drywall or patches without primer guarantees flash (sheen difference)",
+          "category": "stop-condition"
+        }
+      ],
+      "content": {
+        "introduction": "Proper paint handling ensures consistent application and finish quality.",
+        "procedures": [
+          {
+            "title": "Paint Storage & Conditioning",
+            "body": "Temperature affects paint viscosity and application. Cold paint applies poorly; frozen paint is ruined.",
+            "tables": [
+              {
+                "caption": "Storage Requirements",
+                "headers": [
+                  "Requirement",
+                  "Specification",
+                  "Why"
+                ],
+                "rows": [
+                  [
+                    "Storage temp",
+                    "60-80°F ideal, above 40°F minimum",
+                    "Prevents freeze damage, maintains viscosity"
+                  ],
+                  [
+                    "Conditioning temp",
+                    "60-75°F for 24h before use",
+                    "Cold paint applies poorly"
+                  ],
+                  [
+                    "Shelf life",
+                    "2-5 years unopened, 1-2 years opened",
+                    "Check for skin, lumps, separation"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "title": "Paint Mixing Protocol",
+            "body": "Proper mixing ensures consistent color and finish across the job.",
+            "steps": [
+              "Box multiple cans: If using 2+ cans of same color, pour all into large container and mix — color varies slightly between cans",
+              "Stir, don't shake: Stirring avoids air bubbles; power-mix only if paint has sat for months",
+              "Strain if needed: If any lumps or skin present, strain through mesh {{LABS:strainers-paint}}",
+              "Re-stir during use: Every 15-30 minutes, especially with heavy-bodied paints"
+            ],
+            "callouts": [
+              {
+                "type": "critical",
+                "content": "Always box paint for large jobs. Switching cans mid-wall creates visible sheen differences."
+              }
+            ]
+          },
+          {
+            "title": "Paint Additives",
+            "body": "Additives modify paint performance for specific conditions.",
+            "tables": [
+              {
+                "caption": "Common Additives",
+                "headers": [
+                  "Additive",
+                  "Purpose",
+                  "When to Use"
+                ],
+                "rows": [
+                  [
+                    "Floetrol (latex) {{LABS:additive-floetrol}}",
+                    "Extends open time, improves flow",
+                    "Hot/dry conditions, reducing brush marks"
+                  ],
+                  [
+                    "Penetrol (alkyd)",
+                    "Extends open time, improves flow",
+                    "Same, for oil-based"
+                  ],
+                  [
+                    "Water (latex)",
+                    "Thins paint",
+                    "Only if spec'd for spraying; max 10%"
+                  ],
+                  [
+                    "Mineral spirits (alkyd)",
+                    "Thins paint",
+                    "Only if spec'd for spraying"
+                  ]
+                ]
+              }
+            ],
+            "callouts": [
+              {
+                "type": "tip",
+                "content": "In dry winter conditions (25-30% RH), adding Floetrol to latex paint dramatically reduces brush and roller marks by extending open time."
+              }
+            ]
+          },
+          {
+            "title": "Primer Selection",
+            "body": "Primer is not optional paint. It serves specific functions based on substrate and conditions.",
+            "tables": [
+              {
+                "caption": "Primer Types",
+                "headers": [
+                  "Primer Type",
+                  "Function",
+                  "Best Use"
+                ],
+                "rows": [
+                  [
+                    "Drywall primer {{LABS:primer-drywall}}",
+                    "Seals paper, equalizes porosity",
+                    "New drywall, patches, skim coats"
+                  ],
+                  [
+                    "Stain-blocking {{LABS:primer-stain-blocking}}",
+                    "Prevents bleed-through",
+                    "Water stains, smoke, marker, tannin"
+                  ],
+                  [
+                    "Bonding {{LABS:primer-bonding}}",
+                    "Adheres to difficult surfaces",
+                    "Glossy surfaces, tile, laminate, plastic"
+                  ],
+                  [
+                    "Shellac-based {{LABS:primer-shellac}}",
+                    "Ultimate stain blocking, fast dry",
+                    "Severe stains, smoke damage, odor sealing"
+                  ],
+                  [
+                    "Rust-inhibiting {{LABS:primer-rust}}",
+                    "Prevents corrosion",
+                    "Ferrous metal"
+                  ]
+                ]
+              }
+            ],
+            "callouts": [
+              {
+                "type": "critical",
+                "content": "Painting new drywall or patches without primer = guaranteed flash (sheen difference where patches show). Always prime first."
+              }
+            ]
+          }
+        ]
+      },
+      "labsReferences": [
+        "{{LABS:strainers-paint}}",
+        "{{LABS:additive-floetrol}}",
+        "{{LABS:primer-drywall}}",
+        "{{LABS:primer-stain-blocking}}",
+        "{{LABS:primer-bonding}}",
+        "{{LABS:primer-shellac}}",
+        "{{LABS:primer-rust}}"
+      ]
+    },
+    {
+      "id": "tg-pnt-001-m04",
+      "code": "TG-PNT-001-M04",
+      "title": "Planning & Protection",
+      "order": 4,
+      "sopCodes": [
+        "HI-SOP-PT-003"
+      ],
+      "learningObjectives": [
+        "Plan and execute proper room painting sequence",
+        "Set up comprehensive surface protection",
+        "Apply masking tape for clean paint lines",
+        "Establish proper ventilation and safety measures"
+      ],
+      "criticalStandards": [
+        {
+          "code": "CS-PNT-009",
+          "description": "Remove tape while paint is still tacky (not wet, not fully dry) for clean edges",
+          "category": "technique"
+        }
+      ],
+      "content": {
+        "introduction": "Proper planning reduces labor and protects completed work.",
+        "procedures": [
+          {
+            "title": "Room Sequencing",
+            "body": "Paint in sequence that minimizes touch-up and protects completed work.",
+            "steps": [
+              "Paint ceilings first — overspray/drips fall on unpainted surfaces",
+              "Paint walls second — work top to bottom",
+              "Paint trim last — cleanest edges, less touch-up needed",
+              "Within each phase: cut in edges first, then roll/fill",
+              "Work from cut edge while wet (maintain wet edge)",
+              "Complete full walls or ceiling without stopping"
+            ]
+          },
+          {
+            "title": "Protection Setup",
+            "body": "Protect everything you don't want painted.",
+            "tables": [
+              {
+                "caption": "Surface Protection",
+                "headers": [
+                  "Surface",
+                  "Protection",
+                  "Method"
+                ],
+                "rows": [
+                  [
+                    "Floors",
+                    "Drop cloths",
+                    "Canvas for durability, plastic underneath on carpet"
+                  ],
+                  [
+                    "Furniture",
+                    "Move out or cover",
+                    "Plastic sheeting"
+                  ],
+                  [
+                    "Fixed cabinets",
+                    "Mask or plastic",
+                    "Tape edges, drape fronts"
+                  ],
+                  [
+                    "Hardware",
+                    "Remove preferred",
+                    "Tape if removal impractical"
+                  ],
+                  [
+                    "Windows",
+                    "Mask glass",
+                    "Tape or liquid masking {{LABS:masking-liquid}}"
+                  ],
+                  [
+                    "Adjacent surfaces",
+                    "Painter's tape",
+                    "Quality tape {{LABS:tape-painters}}"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "title": "Tape Application",
+            "body": "Proper taping prevents bleed and creates crisp lines.",
+            "steps": [
+              "Verify surface is clean and dry",
+              "Apply tape to the surface being protected, not the surface being painted",
+              "Press edge firmly — paint bleeds under loose edges",
+              "For textured walls: seal tape edge with thin coat of base color first, then apply topcoat",
+              "Remove while paint is still tacky, pull at 45° angle away from painted surface"
+            ],
+            "callouts": [
+              {
+                "type": "tip",
+                "content": "For crisp lines on textured walls, apply tape then seal the edge with a thin coat of the base color. This fills texture gaps. Then apply topcoat color."
+              }
+            ]
+          }
+        ]
+      },
+      "labsReferences": [
+        "{{LABS:tape-painters}}",
+        "{{LABS:masking-liquid}}"
+      ]
+    },
+    {
+      "id": "tg-pnt-001-m05",
+      "code": "TG-PNT-001-M05",
+      "title": "Brush Technique",
+      "order": 5,
+      "sopCodes": [
+        "HI-SOP-PT-004"
+      ],
+      "learningObjectives": [
+        "Select appropriate brush type and size for application",
+        "Execute proper brush loading and cutting-in technique",
+        "Maintain wet edge to prevent lap marks",
+        "Properly care for and store brushes"
+      ],
+      "criticalStandards": [
+        {
+          "code": "CS-PNT-010",
+          "description": "Don't let cut-in edges dry before rolling into them — creates visible picture framing",
+          "category": "stop-condition"
+        }
+      ],
+      "content": {
+        "introduction": "Brushes are for cutting in, detail work, and areas rollers can't reach. The right brush and technique make the difference between professional and amateur results.",
+        "procedures": [
+          {
+            "title": "Brush Selection",
+            "body": "Match the brush to the paint type and the work.",
+            "tables": [
+              {
+                "caption": "Brush Selection Guide",
+                "headers": [
+                  "Surface",
+                  "Brush Type",
+                  "Size"
+                ],
+                "rows": [
+                  [
+                    "Cutting in walls",
+                    "Angled sash, synthetic {{LABS:brush-angled-sash}}",
+                    "2.5-3\""
+                  ],
+                  [
+                    "Trim/woodwork (latex)",
+                    "Angled sash, synthetic",
+                    "2-2.5\""
+                  ],
+                  [
+                    "Trim/woodwork (alkyd)",
+                    "Angled sash, natural bristle",
+                    "2-2.5\""
+                  ],
+                  [
+                    "Windows/detail",
+                    "Angled sash",
+                    "1-1.5\""
+                  ],
+                  [
+                    "Flat surfaces",
+                    "Flat, synthetic or natural",
+                    "3-4\""
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "title": "Cutting-In Procedure",
+            "body": "Cutting in creates the border that rollers can't reach. Work in sections to maintain wet edge.",
+            "steps": [
+              "Load brush 1/3 to 1/2 into paint, tap (don't wipe) against container",
+              "Apply paint in a strip along the edge, staying 1/4\" away from edge initially",
+              "Return to edge with less-loaded brush, working paint to the line",
+              "Feather the edge away from the corner to blend with roller area",
+              "Work in 3-4 foot sections to maintain wet edge",
+              "Roll immediately after cutting in (within 10 minutes)"
+            ],
+            "callouts": [
+              {
+                "type": "warning",
+                "content": "Don't let cut-in edges dry before rolling into them. This creates visible \"picture framing\" — a different sheen band around edges."
+              }
+            ]
+          },
+          {
+            "title": "Brush Care",
+            "body": "Good brushes are expensive. Proper care extends their life dramatically.",
+            "steps": [
+              "Latex paint: Wrap brush in plastic between coats (up to 24 hours)",
+              "Latex paint: Wash thoroughly in water after final coat",
+              "Alkyd paint: Wrap in aluminum foil between coats",
+              "Alkyd paint: Clean with mineral spirits after final coat",
+              "Spin or shake excess water/solvent, reshape bristles",
+              "Store hanging or flat, never on bristle tips"
+            ]
+          }
+        ]
+      },
+      "labsReferences": [
+        "{{LABS:brush-angled-sash}}"
+      ]
+    },
+    {
+      "id": "tg-pnt-001-m06",
+      "code": "TG-PNT-001-M06",
+      "title": "Roller Technique",
+      "order": 6,
+      "sopCodes": [
+        "HI-SOP-PT-005"
+      ],
+      "learningObjectives": [
+        "Select appropriate roller cover nap and material for surface type",
+        "Execute proper wall and ceiling rolling technique",
+        "Maintain wet edge and avoid lap marks",
+        "Apply second coats correctly"
+      ],
+      "criticalStandards": [
+        {
+          "code": "CS-PNT-011",
+          "description": "Never stop mid-ceiling or mid-wall — lap marks are permanent",
+          "category": "stop-condition"
+        },
+        {
+          "code": "CS-PNT-012",
+          "description": "Wait minimum 2 hours between latex coats (longer in humid conditions)",
+          "category": "specification"
+        }
+      ],
+      "content": {
+        "introduction": "Rollers are the primary tool for walls and ceilings. Proper technique produces an even coating with no lap marks or roller stipple.",
+        "procedures": [
+          {
+            "title": "Roller Cover Selection",
+            "body": "Nap depth determines how much paint the roller holds and what surface textures it can reach.",
+            "tables": [
+              {
+                "caption": "Roller Cover Selection",
+                "headers": [
+                  "Surface",
+                  "Nap Depth",
+                  "Material"
+                ],
+                "rows": [
+                  [
+                    "Smooth walls (new drywall)",
+                    "3/8\"",
+                    "Microfiber or woven {{LABS:roller-cover-microfiber}}"
+                  ],
+                  [
+                    "Light texture",
+                    "1/2\"",
+                    "Woven {{LABS:roller-cover-woven}}"
+                  ],
+                  [
+                    "Medium texture",
+                    "3/4\"",
+                    "Woven or knit"
+                  ],
+                  [
+                    "Heavy texture",
+                    "1\"",
+                    "Knit"
+                  ],
+                  [
+                    "Smooth finish (cabinets, doors)",
+                    "1/4\" or foam",
+                    "Microfiber"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "title": "Rolling Walls",
+            "body": "Use the W or M pattern to distribute paint, then smooth.",
+            "steps": [
+              "Pour paint into tray or bucket with grid",
+              "Load roller fully, then roll off excess on grid",
+              "Apply in W or M pattern, approximately 3'x3' section",
+              "Fill in the pattern without lifting roller",
+              "Finish with light vertical strokes, top to bottom, in one direction",
+              "Move to adjacent section while maintaining wet edge",
+              "Reload and repeat"
+            ]
+          },
+          {
+            "title": "Rolling Ceilings",
+            "body": "Ceiling rolling requires planning to avoid stopping mid-room.",
+            "steps": [
+              "Work in strips parallel to the shorter wall dimension",
+              "Roll away from windows (light source) for final strokes",
+              "Maintain wet edge across entire strip",
+              "Feather at transition to next strip",
+              "Move ladders/planks efficiently to maintain pace",
+              "Complete entire ceiling without stopping"
+            ],
+            "callouts": [
+              {
+                "type": "critical",
+                "content": "Never stop mid-ceiling or mid-wall. Lap marks are permanent. Plan your setup to allow continuous application."
+              }
+            ]
+          },
+          {
+            "title": "Second Coat",
+            "body": "Second coat fills in any missed spots and provides full coverage.",
+            "steps": [
+              "Wait minimum 2 hours between coats (check manufacturer spec)",
+              "Wait longer in humid conditions (touch test — not tacky)",
+              "Light sand or scuff between coats only if surface is rough",
+              "Second coat typically requires 20-30% less paint (surface is sealed)",
+              "Apply with same technique as first coat"
+            ]
+          }
+        ]
+      },
+      "labsReferences": [
+        "{{LABS:roller-cover-microfiber}}",
+        "{{LABS:roller-cover-woven}}"
+      ]
+    },
+    {
+      "id": "tg-pnt-001-m07",
+      "code": "TG-PNT-001-M07",
+      "title": "Spray Application",
+      "order": 7,
+      "sopCodes": [
+        "HI-SOP-PT-006"
+      ],
+      "learningObjectives": [
+        "Compare sprayer types and select appropriate equipment",
+        "Determine when to spray vs roll based on project conditions",
+        "Execute proper spray technique with consistent coverage",
+        "Set up adequate overspray protection"
+      ],
+      "criticalStandards": [
+        {
+          "code": "CS-PNT-013",
+          "description": "Overspray travels 20+ feet — mask thoroughly, seal HVAC returns",
+          "category": "specification"
+        },
+        {
+          "code": "CS-PNT-014",
+          "description": "Apply two light coats rather than one heavy coat when spraying",
+          "category": "technique"
+        }
+      ],
+      "content": {
+        "introduction": "Spraying is fastest but requires more setup and protection. When done right, spray finish is smoother than brush or roller. When done wrong, overspray covers everything.",
+        "procedures": [
+          {
+            "title": "Sprayer Types",
+            "body": "Different sprayers for different applications.",
+            "tables": [
+              {
+                "caption": "Sprayer Comparison",
+                "headers": [
+                  "Type",
+                  "Best Use",
+                  "Finish Quality"
+                ],
+                "rows": [
+                  [
+                    "HVLP {{LABS:sprayer-hvlp}}",
+                    "Fine finish, trim, cabinets",
+                    "Excellent"
+                  ],
+                  [
+                    "Airless {{LABS:sprayer-airless}}",
+                    "Walls, ceilings, exteriors",
+                    "Good to excellent"
+                  ],
+                  [
+                    "Air-assisted airless",
+                    "Best of both, high production",
+                    "Excellent"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "title": "When to Spray vs Roll",
+            "body": "Spraying isn't always faster when you account for setup and masking.",
+            "tables": [
+              {
+                "caption": "Spray vs Roll Decision",
+                "headers": [
+                  "Spray When",
+                  "Roll When"
+                ],
+                "rows": [
+                  [
+                    "Empty room (new construction, full renovation)",
+                    "Occupied space"
+                  ],
+                  [
+                    "Cabinets or many doors",
+                    "Limited masking practical"
+                  ],
+                  [
+                    "Heavy texture (faster than roller)",
+                    "Small area (setup time exceeds spray time)"
+                  ],
+                  [
+                    "Consistent finish critical",
+                    "Cut-in heavy (lots of corners, obstacles)"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "title": "Spray Technique",
+            "body": "Consistent speed, distance, and overlap produce even coverage.",
+            "steps": [
+              "Test spray pattern on cardboard; adjust pressure/tip until even fan",
+              "Maintain 10-12\" distance from surface",
+              "Keep spray gun perpendicular to surface",
+              "Overlap each pass 50%",
+              "Move at consistent speed (12-18\" per second)",
+              "Start and stop spray off the surface when possible",
+              "Apply two light coats rather than one heavy coat"
+            ],
+            "callouts": [
+              {
+                "type": "warning",
+                "content": "Overspray travels far. Mask thoroughly. Seal off HVAC returns. Fine mist settles on everything within 20+ feet of spray zone."
+              }
+            ]
+          }
+        ]
+      },
+      "labsReferences": [
+        "{{LABS:sprayer-hvlp}}",
+        "{{LABS:sprayer-airless}}"
+      ]
+    },
+    {
+      "id": "tg-pnt-001-m08",
+      "code": "TG-PNT-001-M08",
+      "title": "Trim & Detail Work",
+      "order": 8,
+      "sopCodes": [
+        "HI-SOP-PT-007"
+      ],
+      "learningObjectives": [
+        "Execute proper order of operations for trim painting",
+        "Apply paint to trim with minimal brush marks",
+        "Select and apply appropriate caulk at trim joints",
+        "Time caulk application correctly relative to painting"
+      ],
+      "criticalStandards": [
+        {
+          "code": "CS-PNT-015",
+          "description": "Don't paint latex caulk before it skins (30-60 min) — paint will drag",
+          "category": "technique"
+        },
+        {
+          "code": "CS-PNT-016",
+          "description": "Don't wait too long after caulking — uncured caulk under paint cracks",
+          "category": "technique"
+        }
+      ],
+      "content": {
+        "introduction": "Trim requires the highest precision and typically a different sheen than walls. Clean lines and smooth finish separate professional work from DIY.",
+        "procedures": [
+          {
+            "title": "Trim Painting Order",
+            "body": "Order of operations minimizes touch-up and produces clean lines.",
+            "steps": [
+              "Prep all trim first (fill, caulk, sand, prime)",
+              "Paint ceilings",
+              "Paint walls",
+              "Paint trim last (less wall touch-up needed)",
+              "For trim: doors/windows first, then base, then crown, then casings"
+            ]
+          },
+          {
+            "title": "Brush Application for Trim",
+            "body": "Trim demands smooth finish with minimal brush marks.",
+            "steps": [
+              "Load brush properly (1/3 into paint)",
+              "Apply paint along the length of trim, then spread crossways",
+              "Finish with long, light strokes along the grain/length",
+              "Work in sections small enough to maintain wet edge",
+              "Don't overwork — more strokes = more brush marks",
+              "For brush marks: add Floetrol {{LABS:additive-floetrol}}, lay off with very light final strokes"
+            ],
+            "callouts": [
+              {
+                "type": "tip",
+                "content": "For brush marks on trim, add Floetrol (latex) or Penetrol (alkyd), and lay off with very light final strokes. The paint will self-level as it dries."
+              }
+            ]
+          },
+          {
+            "title": "Caulking",
+            "body": "Caulk fills gaps between trim and wall, and at inside corners. Timing is critical.",
+            "tables": [
+              {
+                "caption": "Caulk Types",
+                "headers": [
+                  "Type",
+                  "Use",
+                  "Notes"
+                ],
+                "rows": [
+                  [
+                    "Acrylic latex {{LABS:caulk-acrylic}}",
+                    "Interior trim to drywall",
+                    "Most common, paintable, easy cleanup"
+                  ],
+                  [
+                    "Siliconized acrylic {{LABS:caulk-siliconized}}",
+                    "Higher movement areas",
+                    "More flexible, still paintable"
+                  ],
+                  [
+                    "100% silicone",
+                    "Wet areas (not paint prep)",
+                    "Not paintable, use for tubs/showers"
+                  ]
+                ]
+              }
+            ],
+            "steps": [
+              "Cut tip at 45° angle, small opening (can always make bigger)",
+              "Apply consistent bead along joint",
+              "Tool immediately with damp finger or caulk tool",
+              "Wipe excess with damp rag",
+              "Allow to skin over before painting (30-60 minutes)",
+              "Apply paint after caulk skins but before full cure (24 hours)"
+            ],
+            "callouts": [
+              {
+                "type": "critical",
+                "content": "Don't paint latex caulk before it skins. Paint will drag and create a mess. Don't wait too long either — uncured caulk under paint cracks."
+              }
+            ]
+          }
+        ]
+      },
+      "labsReferences": [
+        "{{LABS:additive-floetrol}}",
+        "{{LABS:caulk-acrylic}}",
+        "{{LABS:caulk-siliconized}}"
+      ]
+    },
+    {
+      "id": "tg-pnt-001-m09",
+      "code": "TG-PNT-001-M09",
+      "title": "Touch-up & Repair",
+      "order": 9,
+      "sopCodes": [
+        "HI-SOP-PT-008"
+      ],
+      "learningObjectives": [
+        "Determine appropriate touch-up approach based on timing",
+        "Execute touch-up technique that minimizes visibility",
+        "Diagnose common touch-up issues and select solutions",
+        "Maintain and store touch-up materials properly"
+      ],
+      "criticalStandards": [],
+      "content": {
+        "introduction": "Touch-up is inevitable. Proper technique makes repairs invisible. Poor technique makes them obvious.",
+        "procedures": [
+          {
+            "title": "Touch-up Timing",
+            "body": "The age of the original paint affects how well touch-up will blend.",
+            "tables": [
+              {
+                "caption": "Touch-up Approach by Timing",
+                "headers": [
+                  "Situation",
+                  "Approach"
+                ],
+                "rows": [
+                  [
+                    "Same day, paint still on site",
+                    "Direct touch-up, should blend"
+                  ],
+                  [
+                    "Within cure window (14-30 days)",
+                    "Touch-up may show; feather edges carefully"
+                  ],
+                  [
+                    "After full cure",
+                    "Touch-up often visible; may need to repaint entire wall"
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "title": "Touch-up Technique",
+            "body": "Minimize touch-up visibility with proper technique.",
+            "steps": [
+              "Use same paint (original can if available)",
+              "Apply with small brush or mini-roller (match original tool if possible)",
+              "Feather edges to blend",
+              "Don't overload — multiple light touches better than one heavy",
+              "If touch-up flashes (sheen difference), the wall needs a full coat"
+            ]
+          },
+          {
+            "title": "Touch-up Storage",
+            "body": "Keep materials available for future touch-ups.",
+            "steps": [
+              "Keep labeled containers for each job",
+              "Note room, color code, and date on container",
+              "Store cans upside-down (paint seals lid)",
+              "Check periodically, stir before use"
+            ],
+            "callouts": [
+              {
+                "type": "tip",
+                "content": "Keep labeled touch-up containers for each job. Store upside-down (paint seals lid). Note room, color code, and date."
+              }
+            ]
+          },
+          {
+            "title": "Common Touch-up Issues",
+            "body": "Diagnose problems and select the right solution.",
+            "tables": [
+              {
+                "caption": "Touch-up Problems & Solutions",
+                "headers": [
+                  "Issue",
+                  "Cause",
+                  "Solution"
+                ],
+                "rows": [
+                  [
+                    "Flash (sheen mismatch)",
+                    "Different porosity, old vs new paint",
+                    "Prime spot, repaint wall"
+                  ],
+                  [
+                    "Color mismatch",
+                    "Faded original, different batch",
+                    "Full repaint or accept blend"
+                  ],
+                  [
+                    "Stipple/texture mismatch",
+                    "Different tool or technique",
+                    "Use same applicator as original"
+                  ],
+                  [
+                    "Visible edges",
+                    "Too much paint, hard edges",
+                    "Feather with damp brush/roller"
+                  ]
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "labsReferences": []
+    },
+    {
+      "id": "tg-pnt-001-m10",
+      "code": "TG-PNT-001-M10",
+      "title": "Quality Inspection & Defect Prevention",
+      "order": 10,
+      "sopCodes": [
+        "HI-SOP-PT-009"
+      ],
+      "learningObjectives": [
+        "Perform visual quality inspection using raking light technique",
+        "Execute functional tests for adhesion, cure, and washability",
+        "Identify common paint defects and their causes",
+        "Apply prevention strategies to avoid callbacks"
+      ],
+      "criticalStandards": [
+        {
+          "code": "CS-PNT-017",
+          "description": "Always photograph substrate conditions and existing defects before painting — protects against callbacks",
+          "category": "documentation"
+        }
+      ],
+      "content": {
+        "introduction": "Quality isn't inspected into a paint job — it's built in. But inspection confirms quality is present and creates documentation that protects everyone.",
+        "procedures": [
+          {
+            "title": "Visual Inspection",
+            "body": "Use raking light (low angle) to reveal defects.",
+            "checkpoints": [
+              {
+                "checkpoint": "Coverage",
+                "acceptable": "Uniform color, no bleed-through",
+                "unacceptable": "Shadowing, substrate visible, stains"
+              },
+              {
+                "checkpoint": "Finish uniformity",
+                "acceptable": "Consistent sheen",
+                "unacceptable": "Flash, picture framing, lap marks"
+              },
+              {
+                "checkpoint": "Surface quality",
+                "acceptable": "Smooth per surface type",
+                "unacceptable": "Runs, sags, drips, bugs, debris"
+              },
+              {
+                "checkpoint": "Edges/cut-in",
+                "acceptable": "Clean, straight lines",
+                "unacceptable": "Wavy, paint on adjacent surface"
+              },
+              {
+                "checkpoint": "Repair visibility",
+                "acceptable": "Repairs invisible",
+                "unacceptable": "Patches visible under paint"
+              },
+              {
+                "checkpoint": "Holidays",
+                "acceptable": "None",
+                "unacceptable": "Missed spots, thin areas"
+              }
+            ]
+          },
+          {
+            "title": "Functional Tests",
+            "body": "Beyond visual, test that the paint performs as expected.",
+            "tests": [
+              {
+                "test": "Adhesion",
+                "method": "Tape test (X-cut, tape pull)"
+              },
+              {
+                "test": "Cure",
+                "method": "Fingernail test"
+              },
+              {
+                "test": "Washability",
+                "method": "Damp cloth rub (after cure)"
+              }
+            ]
+          },
+          {
+            "title": "Common Defects & Prevention",
+            "body": "Understanding defects helps prevent them.",
+            "tables": [
+              {
+                "caption": "Paint Defects Reference",
+                "headers": [
+                  "Defect",
+                  "Causes",
+                  "Prevention",
+                  "Remediation"
+                ],
+                "rows": [
+                  [
+                    "Peeling",
+                    "Poor adhesion, moisture, incompatible coatings",
+                    "Proper prep, adhesion test, correct primer",
+                    "Scrape, sand, prime, repaint"
+                  ],
+                  [
+                    "Blistering",
+                    "Moisture, heat, painting hot surfaces",
+                    "Test moisture, don't paint in direct sun",
+                    "Sand smooth, prime, repaint"
+                  ],
+                  [
+                    "Cracking/Flaking",
+                    "Over-thinning, thick coats, inadequate dry time",
+                    "Proper application, dry time",
+                    "Sand, prime, repaint"
+                  ],
+                  [
+                    "Sagging/Runs",
+                    "Over-application, cold surfaces, over-thinning",
+                    "Proper loading, technique, temperature",
+                    "Sand smooth, repaint"
+                  ],
+                  [
+                    "Lap Marks",
+                    "Lost wet edge, inconsistent application",
+                    "Maintain wet edge, consistent technique",
+                    "Full repaint (can't fix)"
+                  ],
+                  [
+                    "Picture Framing",
+                    "Cut-in dried before rolling",
+                    "Roll into wet cut-in edges",
+                    "Full repaint"
+                  ],
+                  [
+                    "Flash/Sheen Variation",
+                    "Missed primer, uneven porosity, varying technique",
+                    "Prime all repairs, consistent technique",
+                    "Prime and repaint"
+                  ],
+                  [
+                    "Blocking",
+                    "Insufficient cure before closing doors/windows",
+                    "Allow full cure (14-30 days)",
+                    "May need to refinish"
+                  ],
+                  [
+                    "Brush Marks",
+                    "Poor brush, overworking, wrong paint",
+                    "Quality brush, lay off properly, additives",
+                    "Sand and repaint"
+                  ],
+                  [
+                    "Orange Peel (spray)",
+                    "Pressure too high, distance too close, wrong tip",
+                    "Adjust equipment, proper technique",
+                    "Sand and respray"
+                  ]
+                ]
+              }
+            ],
+            "callouts": [
+              {
+                "type": "info",
+                "content": "Always photograph substrate conditions and existing defects before painting. This documentation protects against callbacks for pre-existing issues."
+              }
+            ]
+          }
+        ]
+      },
+      "labsReferences": []
+    }
+  ],
+  "appendices": [
+    {
+      "id": "appendix-a",
+      "title": "Quick Reference Cards",
+      "content": {
+        "dryTimes": [
+          {
+            "product": "Latex wall paint",
+            "touch": "1 hour",
+            "recoat": "2-4 hours",
+            "fullCure": "14-30 days"
+          },
+          {
+            "product": "Latex trim paint",
+            "touch": "1 hour",
+            "recoat": "2-4 hours",
+            "fullCure": "14-30 days"
+          },
+          {
+            "product": "Alkyd paint",
+            "touch": "6-8 hours",
+            "recoat": "16-24 hours",
+            "fullCure": "7-14 days"
+          },
+          {
+            "product": "Shellac primer",
+            "touch": "15-30 min",
+            "recoat": "45-60 min",
+            "fullCure": "3 days"
+          },
+          {
+            "product": "Setting compound",
+            "touch": "20-90 min",
+            "recoat": "N/A",
+            "fullCure": "N/A"
+          },
+          {
+            "product": "Caulk (acrylic)",
+            "touch": "30-60 min",
+            "recoat": "N/A",
+            "fullCure": "24 hours"
+          }
+        ],
+        "moistureLimits": [
+          {
+            "substrate": "Wood",
+            "maximum": "12% MC",
+            "method": "Pin meter"
+          },
+          {
+            "substrate": "Drywall",
+            "maximum": "15% MC",
+            "method": "Pin meter"
+          },
+          {
+            "substrate": "Concrete (for coatings)",
+            "maximum": "75% RH",
+            "method": "ASTM F2170"
+          }
+        ],
+        "temperatureRequirements": [
+          {
+            "product": "Latex paint",
+            "minApplication": "50°F",
+            "minSurface": "50°F"
+          },
+          {
+            "product": "Alkyd paint",
+            "minApplication": "40°F",
+            "minSurface": "40°F"
+          },
+          {
+            "product": "Latex primer",
+            "minApplication": "50°F",
+            "minSurface": "50°F"
+          },
+          {
+            "product": "Shellac primer",
+            "minApplication": "40°F",
+            "minSurface": "40°F"
+          }
+        ]
+      }
+    },
+    {
+      "id": "appendix-b",
+      "title": "Tool Checklist",
+      "content": {
+        "surfacePreparation": [
+          "Pole sander with swivel head",
+          "Random orbital sander",
+          "Sanding sponges (various grits)",
+          "Scraper set (1\", 3\", 5\")",
+          "5-in-1 tool / painter's tool",
+          "Drywall knives (4\", 6\", 10\")",
+          "Utility knife with extra blades",
+          "Wire brush set",
+          "Vacuum with brush attachment",
+          "Tack cloths"
+        ],
+        "maskingProtection": [
+          "Canvas drop cloths (various sizes)",
+          "Plastic sheeting",
+          "Painter's tape {{LABS:tape-painters}}",
+          "Tape applicator / dispenser",
+          "Paper masking",
+          "Plastic masking film",
+          "Masking machine"
+        ],
+        "applicationTools": [
+          "Brush set: 1\", 1.5\", 2\", 2.5\", 3\" angled sash {{LABS:brush-angled-sash}}",
+          "Brush set: 3\", 4\" flat",
+          "Roller frames (9\", 18\")",
+          "Extension poles (2-4', 4-8')",
+          "Roller covers: 3/8\", 1/2\", 3/4\" nap {{LABS:roller-cover-microfiber}}",
+          "Mini rollers (4\", 6\")",
+          "Paint trays and liners",
+          "5-gallon bucket with grid",
+          "Paint pail with magnet",
+          "Spray equipment {{LABS:sprayer-hvlp}}"
+        ],
+        "finishingDetail": [
+          "Caulk gun",
+          "Caulk {{LABS:caulk-acrylic}}",
+          "Putty knife",
+          "Painter's putty",
+          "Paint can opener",
+          "Mixing sticks",
+          "Strainers {{LABS:strainers-paint}}",
+          "Rags"
+        ],
+        "testingQuality": [
+          "Pin moisture meter {{LABS:pin-moisture-meter}}",
+          "Flashlight (for raking light inspection)",
+          "Mil gauge {{LABS:gauge-mil}}",
+          "Lead test kit {{LABS:test-lead}}"
+        ],
+        "safety": [
+          "N95 respirators",
+          "Organic vapor respirator",
+          "Safety glasses",
+          "Nitrile gloves",
+          "First aid kit"
+        ],
+        "futureLabs": [
+          "Pole sander with swivel head",
+          "Random orbital sander",
+          "5-in-1 tool / painter's tool",
+          "Wire brush set",
+          "Tack cloths",
+          "Tape applicator / dispenser",
+          "Masking machine",
+          "Paint pail with magnet",
+          "N95 respirators",
+          "Organic vapor respirator",
+          "Safety glasses",
+          "Nitrile gloves"
+        ]
+      }
+    },
+    {
+      "id": "appendix-c",
+      "title": "Labs Product Reference Index",
+      "content": {
+        "productSlugs": [
+          {
+            "slug": "pin-moisture-meter",
+            "category": "Wood/drywall moisture meter"
+          },
+          {
+            "slug": "primer-bonding",
+            "category": "Bonding primer for difficult surfaces"
+          },
+          {
+            "slug": "primer-drywall",
+            "category": "PVA drywall primer"
+          },
+          {
+            "slug": "primer-stain-blocking",
+            "category": "Stain-blocking primer"
+          },
+          {
+            "slug": "primer-shellac",
+            "category": "Shellac-based primer"
+          },
+          {
+            "slug": "primer-rust",
+            "category": "Rust-inhibiting metal primer"
+          },
+          {
+            "slug": "cleaner-degreaser",
+            "category": "TSP or degreaser for surface prep"
+          },
+          {
+            "slug": "cleaner-mold",
+            "category": "Mold killer solution"
+          },
+          {
+            "slug": "compound-setting",
+            "category": "Setting-type drywall compound"
+          },
+          {
+            "slug": "spackle-lightweight",
+            "category": "Lightweight spackling compound"
+          },
+          {
+            "slug": "filler-wood",
+            "category": "Wood filler for trim repairs"
+          },
+          {
+            "slug": "caulk-paintable",
+            "category": "General paintable caulk"
+          },
+          {
+            "slug": "caulk-acrylic",
+            "category": "Acrylic latex caulk"
+          },
+          {
+            "slug": "caulk-siliconized",
+            "category": "Siliconized acrylic caulk"
+          },
+          {
+            "slug": "test-lead",
+            "category": "Lead paint test kit"
+          },
+          {
+            "slug": "strainers-paint",
+            "category": "Paint strainers"
+          },
+          {
+            "slug": "additive-floetrol",
+            "category": "Latex paint conditioner"
+          },
+          {
+            "slug": "tape-painters",
+            "category": "Painter's masking tape"
+          },
+          {
+            "slug": "masking-liquid",
+            "category": "Liquid masking for windows"
+          },
+          {
+            "slug": "brush-angled-sash",
+            "category": "Angled sash brush"
+          },
+          {
+            "slug": "roller-cover-microfiber",
+            "category": "Microfiber roller covers"
+          },
+          {
+            "slug": "roller-cover-woven",
+            "category": "Woven roller covers"
+          },
+          {
+            "slug": "sprayer-hvlp",
+            "category": "HVLP spray gun"
+          },
+          {
+            "slug": "sprayer-airless",
+            "category": "Airless sprayer"
+          },
+          {
+            "slug": "gauge-mil",
+            "category": "Wet/dry film mil gauge"
+          }
+        ]
+      }
+    }
+  ],
+  "metadata": {
+    "createdAt": "2026-02-25T00:00:00Z",
+    "updatedAt": "2026-02-25T00:00:00Z",
+    "createdBy": "nathan",
+    "sourceDocument": "TG-PNT-001-v1.1-Full.json",
+    "totalModules": 10,
+    "totalSOPs": 9,
+    "totalCriticalStandards": 17,
+    "totalLabsReferences": 27
+  }
+}

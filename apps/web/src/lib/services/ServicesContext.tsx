@@ -8,8 +8,33 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import type { Services } from './index';
 import { initializeServices } from './index';
-import { seedLabsCatalogs } from '../data/labsSeedData';
-import { seedSOPsIfEmpty } from '../data/seedAll';
+import type { TrainingGuide, StandardSOP } from '@hooomz/shared-contracts';
+
+async function seedTrainingGuidesIfEmpty(services: Services): Promise<void> {
+  const existing = await services.trainingGuides.getAll();
+  if (existing.length > 0) return;
+  // Dynamic import — keeps ~160KB out of the initial bundle
+  const [flr, pnt, trm] = await Promise.all([
+    import('../data/tg-flr-001.json').then((m) => m.default).catch(() => null),
+    import('../data/tg-pnt-001.json').then((m) => m.default).catch(() => null),
+    import('../data/tg-trm-001.json').then((m) => m.default).catch(() => null),
+  ]);
+  const tgs = [flr, pnt, trm].filter(Boolean) as TrainingGuide[];
+  if (tgs.length > 0) await services.trainingGuides.saveMany(tgs);
+}
+
+async function seedStandardSOPsIfEmpty(services: Services): Promise<void> {
+  const existing = await services.standardSops.getAll();
+  if (existing.length > 0) return;
+  // Dynamic import — keeps large JSON out of the initial bundle
+  const [flrData, pntData, trmData] = await Promise.all([
+    import('../data/sop-data-flr.json').then((m) => m.default).catch(() => []),
+    import('../data/sop-data-pnt.json').then((m) => m.default).catch(() => []),
+    import('../data/sop-data-trm.json').then((m) => m.default).catch(() => []),
+  ]);
+  const sops = [...flrData, ...pntData, ...trmData] as StandardSOP[];
+  if (sops.length > 0) await services.standardSops.saveMany(sops);
+}
 
 interface ServicesContextValue {
   services: Services | null;
@@ -44,19 +69,19 @@ export function ServicesProvider({ children }: ServicesProviderProps) {
 
         const initializedServices = await initializeServices();
 
-        // Seed Labs catalogs on first run (no-op if already seeded)
-        seedLabsCatalogs(initializedServices.labs).catch((err) =>
-          console.error('Failed to seed Labs catalogs:', err)
-        );
-
-        // Auto-seed SOPs so task pipeline works without manual /labs/seed visit
-        seedSOPsIfEmpty(initializedServices).catch((err) =>
-          console.error('Failed to auto-seed SOPs:', err)
-        );
-
         // Cleanup stale intake drafts (fire-and-forget)
         initializedServices.intakeDrafts.cleanupStale().catch((err) =>
           console.error('Failed to cleanup stale drafts:', err)
+        );
+
+        // Auto-seed training guides if empty (fire-and-forget)
+        seedTrainingGuidesIfEmpty(initializedServices).catch((err) =>
+          console.error('Failed to seed training guides:', err)
+        );
+
+        // Auto-seed standard SOPs if empty (fire-and-forget)
+        seedStandardSOPsIfEmpty(initializedServices).catch((err) =>
+          console.error('Failed to seed standard SOPs:', err)
         );
 
         if (mounted) {

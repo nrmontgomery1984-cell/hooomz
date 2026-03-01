@@ -10,7 +10,7 @@ import { useServicesContext } from '../services/ServicesContext';
 import { useLocalBusinessHealth, useLocalRecentActivity, useIntakeDrafts } from './useLocalData';
 import { useLeadPipeline } from './useLeadData';
 import { useOverBudgetTasks, useTrainingRecords, useActiveCrewMembers } from './useCrewData';
-import type { TaskBudget, TrainingRecord, ChangeOrder, CrewMember } from '@hooomz/shared-contracts';
+import type { TaskBudget, TrainingRecord, ChangeOrder, CrewMember, JobStage } from '@hooomz/shared-contracts';
 
 // ============================================================================
 // Types
@@ -20,6 +20,7 @@ export interface ActiveProjectSummary {
   id: string;
   name: string;
   status: string;
+  jobStage?: JobStage;
   healthScore: number;
   taskCount: number;
   completedCount: number;
@@ -121,6 +122,7 @@ export function useDashboardData(): DashboardData {
       id: p.id,
       name: p.name,
       status: p.status,
+      jobStage: p.jobStage,
       healthScore: p.health_score ?? 0,
       taskCount: p.taskCount,
       completedCount: p.completedCount,

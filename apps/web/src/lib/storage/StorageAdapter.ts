@@ -33,6 +33,11 @@ export interface StorageAdapter {
   set<T>(storeName: string, key: string, value: T): Promise<void>;
 
   /**
+   * Set multiple items in a single transaction (bulk insert)
+   */
+  setMany<T>(storeName: string, items: { key: string; value: T }[]): Promise<void>;
+
+  /**
    * Delete a single item
    */
   delete(storeName: string, key: string): Promise<void>;
@@ -53,7 +58,7 @@ export interface StorageAdapter {
  */
 export const StoreNames = {
   PROJECTS: 'projects',
-  CUSTOMERS: 'customers',
+  CUSTOMERS: 'customers',  // Legacy — empty after v27 migration, kept for callers
   LINE_ITEMS: 'lineItems',
   CATALOG_ITEMS: 'catalogItems',
   TASKS: 'tasks',
@@ -129,6 +134,21 @@ export const StoreNames = {
   FORECAST_SNAPSHOTS: 'forecastSnapshots',
   // Labour Estimation Engine
   SKILL_RATE_CONFIG: 'skillRateConfig',
+  // Customers V2 (Platform-level)
+  CUSTOMERS_V2: 'customersV2',
+  // Consultations (Sales pipeline)
+  CONSULTATIONS: 'consultations',
+  // Quotes (Sales pipeline)
+  QUOTES: 'quotes',
+  // Expense Tracker
+  EXPENSES: 'expenses',
+  // Invoices + Payments (Build 9)
+  INVOICES: 'invoices',
+  PAYMENTS: 'payments',
+  // Training Guides
+  TRAINING_GUIDES: 'trainingGuides',
+  // Checklist Submissions (SOP checklist completions)
+  CHECKLIST_SUBMISSIONS: 'checklistSubmissions',
 } as const;
 
 export type StoreName = (typeof StoreNames)[keyof typeof StoreNames];

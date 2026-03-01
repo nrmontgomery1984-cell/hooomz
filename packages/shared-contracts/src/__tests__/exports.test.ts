@@ -100,7 +100,7 @@ function testExports() {
     address,
     status: ProjectStatus.LEAD,
     projectType: ProjectType.RENOVATION,
-    clientId: 'cust-123',
+    customerId: 'cust-123',
     dates: {},
     budget: {
       estimatedCost: 50000,

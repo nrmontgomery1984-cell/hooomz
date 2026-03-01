@@ -31,6 +31,16 @@ import {
   FileCheck,
   UsersRound,
   BarChart3,
+  ClipboardList,
+  FileText,
+  UserCheck,
+  HardHat,
+  FileDiff,
+  Receipt,
+  Contact,
+  Package,
+  Eye,
+  Building2,
 } from 'lucide-react';
 import { useDarkMode } from '@/lib/hooks/useDarkMode';
 import type { LucideIcon } from 'lucide-react';
@@ -41,8 +51,9 @@ import {
   SIDEBAR_SECTIONS,
   VIEW_MODE_LABELS,
 } from '@/lib/viewmode';
-import type { ViewMode, SidebarSection } from '@/lib/viewmode';
+import type { ViewMode, SidebarSection, SidebarNavItem } from '@/lib/viewmode';
 import { useActiveCrew } from '@/lib/crew/ActiveCrewContext';
+import { NotificationBell } from '@/components/notifications/NotificationBell';
 
 // ============================================================================
 // Icon Map
@@ -71,6 +82,16 @@ const ICON_MAP: Record<string, LucideIcon> = {
   FileCheck,
   UsersRound,
   BarChart3,
+  ClipboardList,
+  FileText,
+  UserCheck,
+  HardHat,
+  FileDiff,
+  Receipt,
+  Contact,
+  Package,
+  Eye,
+  Building2,
 };
 
 // ============================================================================
@@ -85,11 +106,13 @@ const MODE_CYCLE: ViewMode[] = ['manager', 'operator', 'installer', 'homeowner']
 const hiddenPaths = ['/intake', '/portal'];
 
 const DEFAULT_SECTION_STATE: Record<string, boolean> = {
-  work: true,
+  sales: true,
+  production: true,
+  finance: false,
   standards: false,
   labs: false,
-  finance: false,
   admin: false,
+  customers: false,
 };
 
 // ============================================================================
@@ -116,15 +139,16 @@ function loadSectionState(): Record<string, boolean> {
   return DEFAULT_SECTION_STATE;
 }
 
-function isItemActive(pathname: string | null, href: string, exactMatch?: boolean): boolean {
+function isItemActive(pathname: string | null, item: SidebarNavItem): boolean {
   if (!pathname) return false;
-  if (exactMatch || href === '/') return pathname === href;
-  return pathname.startsWith(href);
+  if (item.exactMatch || item.href === '/') return pathname === item.href;
+  if (pathname.startsWith(item.href)) return true;
+  return item.activePaths?.some((p) => pathname.startsWith(p)) ?? false;
 }
 
 function sectionContainsActive(section: SidebarSection, pathname: string | null): boolean {
   if (!pathname) return false;
-  return section.items.some((item) => isItemActive(pathname, item.href, item.exactMatch));
+  return section.items.some((item) => isItemActive(pathname, item));
 }
 
 // ============================================================================
@@ -260,6 +284,7 @@ export function Sidebar() {
         <Link
           href="/"
           title={collapsed ? 'Command Centre' : undefined}
+          className={pathname === '/' ? undefined : 'hover-surface'}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -351,6 +376,9 @@ export function Sidebar() {
             </span>
           )}
         </button>
+
+        {/* Notifications */}
+        <NotificationBell collapsed={collapsed} />
 
         {/* Crew + View mode */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8, justifyContent: collapsed ? 'center' : 'flex-start' }}>
@@ -485,13 +513,14 @@ function SidebarSectionGroup({
         </button>
         {/* Show icons for each item when collapsed */}
         {visibleItems.map((item) => {
-          const active = isItemActive(pathname, item.href, item.exactMatch);
+          const active = isItemActive(pathname, item);
           const Icon = ICON_MAP[item.iconName] || LayoutDashboard;
           return (
             <Link
               key={item.href}
               href={item.href}
               title={item.label}
+              className={active ? undefined : 'hover-surface'}
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -502,6 +531,7 @@ function SidebarSectionGroup({
                 textDecoration: 'none',
                 transition: 'color 0.15s',
                 minHeight: 36,
+                borderRadius: 6,
               }}
             >
               <Icon size={16} strokeWidth={active ? 2 : 1.5} />
@@ -518,6 +548,7 @@ function SidebarSectionGroup({
       {/* Section header */}
       <button
         onClick={onToggle}
+        className="hover-surface"
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -528,6 +559,7 @@ function SidebarSectionGroup({
           border: 'none',
           cursor: 'pointer',
           minHeight: 32,
+          borderRadius: 6,
         }}
       >
         <div
@@ -575,13 +607,14 @@ function SidebarSectionGroup({
         }}
       >
         {visibleItems.map((item) => {
-          const active = isItemActive(pathname, item.href, item.exactMatch);
+          const active = isItemActive(pathname, item);
           const Icon = ICON_MAP[item.iconName] || LayoutDashboard;
 
           return (
             <Link
               key={item.href}
               href={item.href}
+              className={active ? undefined : 'hover-surface'}
               style={{
                 display: 'flex',
                 alignItems: 'center',

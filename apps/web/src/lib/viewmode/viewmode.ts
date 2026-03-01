@@ -32,6 +32,7 @@ export interface SidebarNavItem {
   allowedModes: ViewMode[];
   exactMatch?: boolean;
   isDashboard?: boolean;
+  activePaths?: string[]; // Additional path prefixes that trigger the active state
 }
 
 export interface SidebarSection {
@@ -43,50 +44,43 @@ export interface SidebarSection {
 }
 
 export const SECTION_COLORS: Record<string, string> = {
-  work: '#3b82f6',
+  sales: '#3b82f6',
+  production: '#3b82f6',
+  finance: '#f59e0b',
   standards: '#10b981',
   labs: '#a855f7',
-  finance: '#f59e0b',
   admin: '#64748b',
+  customers: '#0d9488',
+  // Legacy aliases
+  work: '#3b82f6',
 };
 
 export const SIDEBAR_SECTIONS: SidebarSection[] = [
   {
-    id: 'work',
-    label: 'WORK',
-    color: SECTION_COLORS.work,
-    dashboardHref: '/work',
+    id: 'sales',
+    label: 'SALES',
+    color: SECTION_COLORS.sales,
+    dashboardHref: '/sales',
     items: [
-      { href: '/work', label: 'Work Dashboard', iconName: 'LayoutDashboard', allowedModes: ['manager', 'operator', 'installer'], exactMatch: true, isDashboard: true },
-      { href: '/leads', label: 'Leads', iconName: 'Users', allowedModes: ['manager'] },
-      { href: '/estimates', label: 'Estimates', iconName: 'Calculator', allowedModes: ['manager'] },
-      { href: '/projects', label: 'Projects', iconName: 'FolderOpen', allowedModes: ['manager', 'operator'] },
-      { href: '/schedule', label: 'Schedule', iconName: 'Calendar', allowedModes: ['manager', 'operator'] },
-      { href: '/activity', label: 'Activity', iconName: 'Activity', allowedModes: ['manager', 'operator'] },
+      { href: '/sales', label: 'Sales Dashboard', iconName: 'LayoutDashboard', allowedModes: ['manager', 'operator'], exactMatch: true, isDashboard: true },
+      { href: '/leads', label: 'Leads', iconName: 'Users', allowedModes: ['manager', 'operator'] },
+      { href: '/sales/estimates', label: 'Estimates', iconName: 'Calculator', allowedModes: ['manager'] },
+      { href: '/sales/consultations', label: 'Consultations', iconName: 'ClipboardList', allowedModes: ['manager', 'operator'] },
+      { href: '/sales/quotes', label: 'Quotes', iconName: 'FileText', allowedModes: ['manager'] },
     ],
   },
   {
-    id: 'standards',
-    label: 'STANDARDS',
-    color: SECTION_COLORS.standards,
-    dashboardHref: '/standards',
+    id: 'production',
+    label: 'PRODUCTION',
+    color: SECTION_COLORS.production,
+    dashboardHref: '/production',
     items: [
-      { href: '/standards', label: 'Standards Dashboard', iconName: 'BookOpen', allowedModes: ['manager', 'operator'], exactMatch: true, isDashboard: true },
-      { href: '/labs/sops', label: 'SOPs', iconName: 'FileCheck', allowedModes: ['manager', 'operator'] },
-      { href: '/labs/training', label: 'Training', iconName: 'GraduationCap', allowedModes: ['manager', 'operator'] },
-      { href: '/labs/knowledge', label: 'Knowledge', iconName: 'Lightbulb', allowedModes: ['manager', 'operator'] },
-    ],
-  },
-  {
-    id: 'labs',
-    label: 'LABS',
-    color: SECTION_COLORS.labs,
-    dashboardHref: '/labs',
-    items: [
-      { href: '/labs', label: 'Labs Dashboard', iconName: 'FlaskConical', allowedModes: ['manager', 'operator'], exactMatch: true, isDashboard: true },
-      { href: '/labs/tests', label: 'Tests', iconName: 'TestTube2', allowedModes: ['manager', 'operator'] },
-      { href: '/labs/voting', label: 'Voting', iconName: 'Vote', allowedModes: ['manager', 'operator'] },
-      { href: '/labs/tokens', label: 'Tokens', iconName: 'Tag', allowedModes: ['manager', 'operator'] },
+      { href: '/production', label: 'Production Dashboard', iconName: 'HardHat', allowedModes: ['manager', 'operator', 'installer'], exactMatch: true, isDashboard: true },
+      { href: '/production/jobs', label: 'Jobs', iconName: 'FolderOpen', allowedModes: ['manager', 'operator'], activePaths: ['/projects'] },
+      { href: '/production/schedule', label: 'Schedule', iconName: 'Calendar', allowedModes: ['manager', 'operator'] },
+      { href: '/production/crew', label: 'Crew', iconName: 'HardHat', allowedModes: ['manager', 'operator'] },
+      { href: '/production/change-orders', label: 'Change Orders', iconName: 'FileDiff', allowedModes: ['manager'] },
+      { href: '/activity', label: 'Activity Log', iconName: 'Activity', allowedModes: ['manager', 'operator', 'installer'] },
     ],
   },
   {
@@ -96,19 +90,58 @@ export const SIDEBAR_SECTIONS: SidebarSection[] = [
     dashboardHref: '/finance',
     items: [
       { href: '/finance', label: 'Finance Dashboard', iconName: 'TrendingUp', allowedModes: ['manager'], exactMatch: true, isDashboard: true },
-      { href: '/admin/rates', label: 'Cost Catalogue', iconName: 'DollarSign', allowedModes: ['manager'] },
-      { href: '/forecast', label: 'Forecast', iconName: 'BarChart3', allowedModes: ['manager'] },
+      { href: '/finance/invoices', label: 'Invoices', iconName: 'Receipt', allowedModes: ['manager'] },
+      { href: '/finance/cost-catalogue', label: 'Cost Catalogue', iconName: 'DollarSign', allowedModes: ['manager'] },
+      { href: '/finance/forecast', label: 'Forecast', iconName: 'BarChart3', allowedModes: ['manager'] },
+    ],
+  },
+  {
+    id: 'standards',
+    label: 'STANDARDS',
+    color: SECTION_COLORS.standards,
+    dashboardHref: '/standards',
+    items: [
+      { href: '/standards', label: 'Standards Dashboard', iconName: 'BookOpen', allowedModes: ['manager', 'operator'], exactMatch: true, isDashboard: true },
+      { href: '/standards/sops', label: 'SOPs', iconName: 'FileCheck', allowedModes: ['manager', 'operator'] },
+      { href: '/standards/training', label: 'Training', iconName: 'GraduationCap', allowedModes: ['manager', 'operator'] },
+      { href: '/standards/knowledge', label: 'Knowledge Base', iconName: 'Lightbulb', allowedModes: ['manager', 'operator'] },
+    ],
+  },
+  {
+    id: 'labs',
+    label: 'LABS',
+    color: SECTION_COLORS.labs,
+    dashboardHref: '/labs',
+    items: [
+      { href: '/labs', label: 'Labs Dashboard', iconName: 'FlaskConical', allowedModes: ['manager', 'operator'], exactMatch: true, isDashboard: true },
+      { href: '/labs/observations', label: 'Observations', iconName: 'Eye', allowedModes: ['manager', 'operator'] },
+      { href: '/labs/tests', label: 'Tests', iconName: 'TestTube2', allowedModes: ['manager', 'operator'] },
+      { href: '/labs/voting', label: 'Voting', iconName: 'Vote', allowedModes: ['manager', 'operator'] },
+      { href: '/labs/tokens', label: 'Tokens', iconName: 'Tag', allowedModes: ['manager', 'operator'] },
+      { href: '/labs/catalogs', label: 'Catalogs', iconName: 'Package', allowedModes: ['manager', 'operator'] },
+      { href: '/labs/knowledge', label: 'Knowledge', iconName: 'Lightbulb', allowedModes: ['manager', 'operator'] },
     ],
   },
   {
     id: 'admin',
     label: 'ADMIN',
     color: SECTION_COLORS.admin,
-    dashboardHref: '/profile',
+    dashboardHref: '/admin',
     items: [
+      { href: '/admin', label: 'Admin Dashboard', iconName: 'Settings', allowedModes: ['manager'], exactMatch: true, isDashboard: true },
       { href: '/profile', label: 'Profile', iconName: 'User', allowedModes: ['manager'] },
       { href: '/admin/crew', label: 'Crew', iconName: 'UsersRound', allowedModes: ['manager'] },
+      { href: '/admin/rates', label: 'Rates', iconName: 'DollarSign', allowedModes: ['manager'] },
       { href: '/admin/settings', label: 'Settings', iconName: 'Settings', allowedModes: ['manager'] },
+    ],
+  },
+  {
+    id: 'customers',
+    label: 'CUSTOMERS',
+    color: SECTION_COLORS.customers,
+    dashboardHref: '/customers',
+    items: [
+      { href: '/customers', label: 'Customer List', iconName: 'Contact', allowedModes: ['manager', 'operator'], isDashboard: true },
     ],
   },
 ];
@@ -126,10 +159,10 @@ export interface BottomNavItem {
 
 export const BOTTOM_NAV_ITEMS: BottomNavItem[] = [
   { href: '/', label: 'Home', iconName: 'Home', allowedModes: ['manager', 'operator', 'installer'] },
-  { href: '/activity', label: 'Activity', iconName: 'Activity', allowedModes: ['manager', 'operator'] },
+  { href: '/sales', label: 'Sales', iconName: 'Users', allowedModes: ['manager', 'operator'] },
   // Center "+" handled separately
-  { href: '/forecast', label: 'Forecast', iconName: 'TrendingUp', allowedModes: ['manager'] },
-  { href: '/estimates', label: 'Estimates', iconName: 'Calculator', allowedModes: ['manager'] },
+  { href: '/production', label: 'Production', iconName: 'HardHat', allowedModes: ['manager', 'operator', 'installer'] },
+  { href: '/finance', label: 'Finance', iconName: 'TrendingUp', allowedModes: ['manager'] },
   { href: '/labs', label: 'Labs', iconName: 'FlaskConical', allowedModes: ['manager', 'operator'] },
 ];
 

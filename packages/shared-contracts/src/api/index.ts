@@ -112,7 +112,7 @@ export interface QueryParams<
 export interface ProjectFilters {
   status?: string | string[];
   projectType?: string | string[];
-  clientId?: string;
+  customerId?: string;
   startDateFrom?: string;
   startDateTo?: string;
   estimatedCostMin?: number;

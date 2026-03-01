@@ -21,7 +21,7 @@ type ProjectSortField = 'name' | 'status' | 'createdAt' | 'updatedAt' | 'startDa
 interface ProjectFilters {
   status?: string | string[];
   projectType?: string | string[];
-  clientId?: string;
+  customerId?: string;
   estimatedCostMin?: number;
   estimatedCostMax?: number;
   search?: string;
@@ -66,8 +66,8 @@ export class ProjectRepository {
         projects = projects.filter((p) => types.includes(p.projectType));
       }
 
-      if (filters.clientId) {
-        projects = projects.filter((p) => p.clientId === filters.clientId);
+      if (filters.customerId) {
+        projects = projects.filter((p) => p.customerId === filters.customerId);
       }
 
       if (filters.estimatedCostMin !== undefined) {
@@ -150,9 +150,9 @@ export class ProjectRepository {
     return await this.storage.get<Project>(this.storeName, id);
   }
 
-  async findByClientId(clientId: string): Promise<Project[]> {
+  async findByCustomerId(customerId: string): Promise<Project[]> {
     const projects = await this.storage.getAll<Project>(this.storeName);
-    return projects.filter((p) => p.clientId === clientId);
+    return projects.filter((p) => p.customerId === customerId);
   }
 
   async findByStatus(status: string | string[]): Promise<Project[]> {

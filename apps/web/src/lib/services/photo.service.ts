@@ -111,13 +111,7 @@ export class PhotoService {
    * Delete a photo
    */
   async delete(_projectId: string, photoId: string): Promise<void> {
-    const existing = await this.services.fieldDocs.photos.findById(photoId);
-
     await this.services.fieldDocs.photos.delete(photoId);
-
-    // Log deletion (non-blocking) - there's no photo.deleted event, so we skip logging
-    // or we could use a generic approach
-    console.log(`Photo deleted: ${existing?.caption || photoId}`);
   }
 
   /**

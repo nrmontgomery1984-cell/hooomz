@@ -184,37 +184,13 @@ export class ActivitySyncService {
   }
 
   /**
-   * Send item to server (placeholder for actual API call)
+   * Send item to server
+   * TODO: Replace with actual API call when backend is ready
    */
   private async sendToServer(
     _item: SyncQueueItem
   ): Promise<{ success: boolean; error?: string }> {
-    // TODO: Implement actual API call
-    // This would look something like:
-    //
-    // const response = await fetch('/api/activity', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({
-    //     ...item.data,
-    //     local_id: item.entityId, // For duplicate detection
-    //   }),
-    // });
-    //
-    // if (!response.ok) {
-    //   throw new Error(`HTTP ${response.status}`);
-    // }
-    //
-    // return { success: true };
-
-    // For now, simulate successful sync after a short delay
-    await new Promise((resolve) => setTimeout(resolve, 100));
-
-    // Simulate 95% success rate for testing
-    if (Math.random() > 0.95) {
-      return { success: false, error: 'Simulated server error' };
-    }
-
+    // No backend API yet — always succeed locally
     return { success: true };
   }
 

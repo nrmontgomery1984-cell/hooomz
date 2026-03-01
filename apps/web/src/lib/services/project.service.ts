@@ -20,7 +20,7 @@ export interface Project {
     postalCode: string;
     country: string;
   };
-  clientId?: string;
+  customerId?: string;
   dates?: {
     startDate?: string;
     estimatedEndDate?: string;
@@ -115,11 +115,7 @@ export class ProjectService {
 
     const deleted = await this.services.projects.delete(projectId);
 
-    if (deleted) {
-      // Note: We don't have a 'project.deleted' event type in the current schema
-      // but we could log it as a status change or add the event type
-      console.log(`Project deleted: ${existing.name}`);
-    }
+    // Note: No 'project.deleted' event type in the current schema
 
     return deleted;
   }
@@ -129,12 +125,12 @@ export class ProjectService {
     return this.services.projects.findById(id);
   }
 
-  async findAll(filters?: { status?: string; clientId?: string }) {
+  async findAll(filters?: { status?: string; customerId?: string }) {
     return this.services.projects.findAll(filters ? { filters } : undefined);
   }
 
-  async findByClientId(clientId: string) {
-    return this.services.projects.findByClientId(clientId);
+  async findByCustomerId(customerId: string) {
+    return this.services.projects.findByCustomerId(customerId);
   }
 }
 

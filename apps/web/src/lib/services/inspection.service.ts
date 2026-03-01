@@ -157,12 +157,7 @@ export class InspectionService {
    * Delete an inspection
    */
   async delete(_projectId: string, inspectionId: string): Promise<void> {
-    const existing = await this.services.fieldDocs.inspections.findById(inspectionId);
-
     await this.services.fieldDocs.inspections.delete(inspectionId);
-
-    // Log deletion (non-blocking) - no specific event, just log to console
-    console.log(`Inspection deleted: ${existing?.inspectionType || inspectionId}`);
   }
 
   // Passthrough methods for read operations (no logging needed)

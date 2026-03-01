@@ -174,7 +174,7 @@ const createDemoProjects = (customerIds: string[]): CreateProject[] => [
     name: 'Mitchell Main Floor — Room Refresh',
     projectType: ProjectType.RENOVATION,
     status: ProjectStatus.IN_PROGRESS,
-    clientId: customerIds[0],
+    customerId: customerIds[0],
     address: {
       street: '45 Highfield St',
       city: 'Moncton',
@@ -195,7 +195,7 @@ const createDemoProjects = (customerIds: string[]): CreateProject[] => [
     name: 'Cole Whole-Home Flooring',
     projectType: ProjectType.RENOVATION,
     status: ProjectStatus.QUOTED,
-    clientId: customerIds[1],
+    customerId: customerIds[1],
     address: {
       street: '82 Elmwood Dr',
       city: 'Riverview',
@@ -216,7 +216,7 @@ const createDemoProjects = (customerIds: string[]): CreateProject[] => [
     name: 'Bradley Rental Refresh',
     projectType: ProjectType.RENOVATION,
     status: ProjectStatus.APPROVED,
-    clientId: customerIds[2],
+    customerId: customerIds[2],
     address: {
       street: '12 Queen St',
       city: 'Moncton',
@@ -254,12 +254,10 @@ export async function seedCustomers(_services: Services): Promise<string[]> {
     const match = existing.find((c) => c.email === customerData.email);
     if (match) {
       customerIds.push(match.id);
-      console.log(`Customer exists (skipped): ${match.firstName} ${match.lastName}`);
       continue;
     }
     const customer = await loggedServices.customers.create(customerData);
     customerIds.push(customer.id);
-    console.log(`Created customer: ${customer.firstName} ${customer.lastName}`);
   }
 
   return customerIds;
@@ -279,12 +277,10 @@ export async function seedLeads(_services: Services): Promise<number> {
   for (const leadData of DEMO_LEADS) {
     const match = existing.find((c) => c.email === leadData.email);
     if (match) {
-      console.log(`Lead exists (skipped): ${match.firstName} ${match.lastName}`);
       continue;
     }
     await loggedServices.customers.create(leadData);
     count++;
-    console.log(`Created lead: ${leadData.firstName} ${leadData.lastName}`);
   }
 
   return count;
@@ -309,12 +305,10 @@ export async function seedProjects(
     const match = existing.find((p) => p.name === projectData.name);
     if (match) {
       projectIds.push(match.id);
-      console.log(`Project exists (skipped): ${match.name}`);
       continue;
     }
     const project = await loggedServices.projects.create(projectData);
     projectIds.push(project.id);
-    console.log(`Created project: ${project.name}`);
   }
 
   return projectIds;
@@ -405,7 +399,6 @@ export async function seedLineItems(
     await createItem({ projectId: pid, category: CostCategory.LABOR, description: 'Cleanup', quantity: 4, unit: UnitOfMeasure.HOUR, unitCost: 42.50, totalCost: 170, isLabor: true });
   }
 
-  console.log(`Created ${count} line items`);
   return count;
 }
 
@@ -474,7 +467,6 @@ export async function seedTasks(
     }
   }
 
-  console.log(`Created ${count} tasks`);
   return count;
 }
 
@@ -630,7 +622,6 @@ export async function seedActivityEvents(
       trade: 'Nishant',
     });
 
-    console.log('Seeded activity for Mitchell Main Floor — Room Refresh');
   }
 
   // ========================================================================
@@ -666,7 +657,6 @@ export async function seedActivityEvents(
       }
     );
 
-    console.log('Seeded activity for Cole Whole-Home Flooring');
   }
 
   // ========================================================================
@@ -709,7 +699,6 @@ export async function seedActivityEvents(
       details: 'Scheduled to start Feb 10, 2025',
     });
 
-    console.log('Seeded activity for Bradley Rental Refresh');
   }
 }
 
@@ -719,7 +708,8 @@ export async function seedActivityEvents(
  */
 export async function seedDiscoveryDrafts(
   _services: Services,
-  projectIds: string[]
+  projectIds: string[],
+  customerIds: string[] = []
 ): Promise<number> {
   const services = getServices();
   let count = 0;
@@ -729,38 +719,57 @@ export async function seedDiscoveryDrafts(
     const existing = await services.discoveryDrafts.findByProjectId(projectIds[0]);
     if (!existing) {
       const now = new Date().toISOString();
-      await services.discoveryDrafts.create({
+      const mitchellProperty = {
+        address: { street: '45 Highfield St', city: 'Moncton', province: 'NB', postalCode: 'E1C 5N2' },
+        homeType: 'detached' as const,
+        homeAge: '25-50' as const,
+        storeys: 2 as const,
+        totalSqft: 1400,
+        parking: 'driveway' as const,
+        occupancy: 'occupied' as const,
+        pets: true,
+        petDetails: '1 cat',
+        accessNotes: 'Side door preferred. Ring doorbell.',
+      };
+      const mitchellPreferences = {
+        style: 'transitional' as const,
+        colorDirection: 'warm' as const,
+        floorLook: 'warm_wood' as const,
+        trimStyle: 'match_existing' as const,
+        priorities: ['durability' as const, 'appearance' as const, 'pet_friendly' as const],
+        inspirationNotes: 'Likes the warm oak look from Ritchies showroom. Wants something the cat can\'t scratch up.',
+      };
+
+      const draft = await services.discoveryDrafts.create({
         projectId: projectIds[0],
         currentStep: 2,
-        property: {
-          address: { street: '45 Highfield St', city: 'Moncton', province: 'NB', postalCode: 'E1C 5N2' },
-          homeType: 'detached',
-          homeAge: '25-50',
-          storeys: 2,
-          totalSqft: 1400,
-          parking: 'driveway',
-          occupancy: 'occupied',
-          pets: true,
-          petDetails: '1 cat',
-          accessNotes: 'Side door preferred. Ring doorbell.',
-        },
-        preferences: {
-          style: 'transitional',
-          colorDirection: 'warm',
-          floorLook: 'warm_wood',
-          trimStyle: 'match_existing',
-          priorities: ['durability', 'appearance', 'pet_friendly'],
-          inspirationNotes: 'Likes the warm oak look from Ritchies showroom. Wants something the cat can\'t scratch up.',
-        },
+        property: mitchellProperty,
+        preferences: mitchellPreferences,
         status: 'complete',
         customerName: 'Sarah Mitchell',
         createdAt: now,
         updatedAt: now,
       });
       count++;
-      console.log('Created discovery draft: Mitchell Main Floor');
-    } else {
-      console.log('Discovery draft exists (skipped): Mitchell Main Floor');
+
+      // Create linked consultation for Mitchell (wires discoveryDraftId)
+      if (customerIds[0]) {
+        const existingConsultation = await services.consultations.findByProject(projectIds[0]);
+        if (!existingConsultation) {
+          await services.consultations.create({
+            customerId: customerIds[0],
+            projectId: projectIds[0],
+            scheduledDate: null,
+            completedDate: now,
+            sitePhotoIds: [],
+            measurements: mitchellProperty as unknown as Record<string, unknown>,
+            scopeNotes: mitchellPreferences.inspirationNotes,
+            status: 'completed',
+            discoveryDraftId: draft.id,
+            _seeded: true,
+          });
+        }
+      }
     }
   }
 
@@ -776,37 +785,13 @@ export async function seedAllData(): Promise<{
 }> {
   const services = getServices();
 
-  console.log('🌱 Starting demo data seed...');
-
-  // Seed customers first
   const customerIds = await seedCustomers(services);
-  console.log(`✅ Created ${customerIds.length} customers`);
-
-  // Seed leads (new structured tag format)
-  const leadCount = await seedLeads(services);
-  console.log(`✅ Created ${leadCount} leads`);
-
-  // Seed projects with customer references
+  await seedLeads(services);
   const projectIds = await seedProjects(services, customerIds);
-  console.log(`✅ Created ${projectIds.length} projects`);
-
-  // Seed line items (estimates)
   await seedLineItems(services, projectIds);
-  console.log('✅ Created line items');
-
-  // Seed tasks for demo projects
   await seedTasks(services, projectIds);
-  console.log('✅ Created tasks');
-
-  // Seed activity events
   await seedActivityEvents(services, projectIds);
-  console.log('✅ Created activity events');
-
-  // Seed discovery drafts
-  const discoveryCount = await seedDiscoveryDrafts(services, projectIds);
-  console.log(`✅ Created ${discoveryCount} discovery drafts`);
-
-  console.log('🎉 Demo data seed complete!');
+  await seedDiscoveryDrafts(services, projectIds, customerIds);
 
   return { customerIds, projectIds };
 }
@@ -824,9 +809,5 @@ export async function hasExistingData(): Promise<boolean> {
  * Clear all data from IndexedDB (use with caution!)
  */
 export async function clearAllData(): Promise<void> {
-  // This would require implementing delete methods on repositories
-  // For now, recommend clearing IndexedDB from browser dev tools
-  console.warn(
-    'To clear all data, use browser dev tools: Application > IndexedDB > hooomz_db > Delete database'
-  );
+  // Clear IndexedDB from browser dev tools: Application > IndexedDB > hooomz_db > Delete database
 }

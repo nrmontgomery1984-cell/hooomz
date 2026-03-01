@@ -7,6 +7,7 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   transpilePackages: [
+    '@hooomz/shared',
     '@hooomz/shared-contracts',
     '@hooomz/core',
     '@hooomz/estimating',

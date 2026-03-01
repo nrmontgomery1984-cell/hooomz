@@ -11,7 +11,8 @@
 import { useMemo, useState, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { PageErrorBoundary } from '@/components/ui/PageErrorBoundary';
-import { ChevronLeft, MapPin, ArrowRight, Trash2, Plus, X } from 'lucide-react';
+import { ChevronLeft, ChevronDown, ChevronUp, MapPin, ArrowRight, Trash2, Plus, X } from 'lucide-react';
+import { useIsMobile } from '@/lib/hooks/useIsMobile';
 import {
   useLocalProject,
   useLocalCustomer,
@@ -66,6 +67,7 @@ export default function ProjectDetailPage() {
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as string;
+  const isMobile = useIsMobile();
 
   // ---------------------------------------------------------------------------
   // Data loading
@@ -123,6 +125,7 @@ export default function ProjectDetailPage() {
   const [showCreateCO, setShowCreateCO] = useState(false);
   const [selectedCOId, setSelectedCOId] = useState<string | null>(null);
   const [showAddTask, setShowAddTask] = useState(false);
+  const [mobileSection, setMobileSection] = useState<'tasks' | 'details'>('tasks');
 
   // Labs flag toggle
   const toggleLabsFlag = useToggleLabsFlag();
@@ -523,49 +526,67 @@ export default function ProjectDetailPage() {
           : 0;
 
         return (
-          <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: 'var(--bg)' }}>
+          <div style={{ height: isMobile ? 'auto' : '100vh', minHeight: isMobile ? '100vh' : undefined, display: 'flex', flexDirection: 'column', overflow: isMobile ? 'auto' : 'hidden', background: 'var(--bg)' }}>
 
-            {/* ── Slim header ── */}
-            <div style={{ height: 64, background: 'var(--surface-1)', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 12, padding: '0 18px', flexShrink: 0, zIndex: 20 }}>
-              {/* Back */}
-              <button onClick={() => router.push('/')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: 'var(--text-3)', display: 'flex', alignItems: 'center', minHeight: 44 }}>
-                <ChevronLeft size={16} strokeWidth={2} />
-              </button>
+            {/* ── Header ── */}
+            <div style={{ background: 'var(--surface-1)', borderBottom: '1px solid var(--border)', flexShrink: 0, zIndex: 20 }}>
+              {/* Top row: back, name, status, actions */}
+              <div style={{ height: isMobile ? 52 : 64, display: 'flex', alignItems: 'center', gap: isMobile ? 8 : 12, padding: isMobile ? '0 12px' : '0 18px' }}>
+                {/* Back */}
+                <button onClick={() => router.push('/')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: 'var(--text-3)', display: 'flex', alignItems: 'center', minHeight: 44 }}>
+                  <ChevronLeft size={16} strokeWidth={2} />
+                </button>
 
-              {/* Name + address */}
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontFamily: 'var(--font-cond)', fontSize: 20, fontWeight: 700, color: 'var(--text)', lineHeight: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {project.name}
+                {/* Name + address (address hidden on mobile) */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontFamily: 'var(--font-cond)', fontSize: isMobile ? 16 : 20, fontWeight: 700, color: 'var(--text)', lineHeight: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {project.name}
+                  </div>
+                  {!isMobile && (
+                    <div style={{ display: 'flex', gap: 12, marginTop: 3 }}>
+                      {addressDisplay && <span style={{ fontSize: 11, color: 'var(--text-2)' }}><MapPin size={10} strokeWidth={1.5} style={{ display: 'inline', marginRight: 2 }} />{addressDisplay}</span>}
+                      {customer && <span style={{ fontSize: 11, color: 'var(--text-2)' }}>{customer.firstName} {customer.lastName}</span>}
+                      {project.dates.startDate && <span style={{ fontSize: 11, color: 'var(--text-2)' }}>{project.dates.startDate}{project.dates.estimatedEndDate ? ` → ${project.dates.estimatedEndDate}` : ''}</span>}
+                    </div>
+                  )}
                 </div>
-                <div style={{ display: 'flex', gap: 12, marginTop: 3 }}>
-                  {addressDisplay && <span style={{ fontSize: 11, color: 'var(--text-2)' }}><MapPin size={10} strokeWidth={1.5} style={{ display: 'inline', marginRight: 2 }} />{addressDisplay}</span>}
-                  {customer && <span style={{ fontSize: 11, color: 'var(--text-2)' }}>{customer.firstName} {customer.lastName}</span>}
-                  {project.dates.startDate && <span style={{ fontSize: 11, color: 'var(--text-2)' }}>{project.dates.startDate}{project.dates.estimatedEndDate ? ` → ${project.dates.estimatedEndDate}` : ''}</span>}
+
+                {/* Status pill */}
+                <div style={{ background: 'var(--blue-dim)', color: 'var(--blue)', border: '1px solid rgba(37,99,235,0.2)', borderRadius: 'var(--radius)', fontFamily: 'var(--font-cond)', fontSize: 10, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '3px 8px', flexShrink: 0 }}>
+                  {project.status}
                 </div>
+
+                {/* Budget items — hidden on mobile (shown below instead) */}
+                {!isMobile && (
+                  <div style={{ display: 'flex', gap: 16, flexShrink: 0, alignItems: 'center' }}>
+                    <HeaderBudgetItem label="Material" value={fmtCurrency(derivedActualCost)} total={fmtCurrency(project.budget.estimatedCost)} pct={budgetPct} />
+                    <HeaderBudgetItem label="Labour" value={`${Math.round(totalActualHours)}h`} total={`${Math.round(totalBudgetedHours)}h`} pct={labourPct} />
+                    <HeaderBudgetItem label="Progress" value={`${healthScore}%`} total="100%" pct={healthScore} forceGreen />
+                  </div>
+                )}
+
+                {/* Add Task */}
+                <button onClick={() => setShowAddTask(true)} style={{ background: 'none', border: '1px solid var(--teal)', borderRadius: 'var(--radius)', cursor: 'pointer', padding: '0 8px', color: 'var(--teal)', display: 'flex', alignItems: 'center', gap: 4, minHeight: 32 }} title="Add task">
+                  <Plus size={12} strokeWidth={2} />
+                  {!isMobile && <span style={{ fontFamily: 'var(--font-cond)', fontSize: 10, fontWeight: 600, letterSpacing: '0.04em' }}>TASK</span>}
+                </button>
+
+                {/* Delete */}
+                <button onClick={() => setShowDeleteConfirm(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: 'var(--text-3)', display: 'flex', alignItems: 'center', minHeight: 44 }} title="Delete project">
+                  <Trash2 size={14} strokeWidth={1.5} />
+                </button>
               </div>
 
-              {/* Status pill */}
-              <div style={{ background: 'var(--blue-dim)', color: 'var(--blue)', border: '1px solid rgba(37,99,235,0.2)', borderRadius: 'var(--radius)', fontFamily: 'var(--font-cond)', fontSize: 10, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '3px 8px', flexShrink: 0 }}>
-                {project.status}
-              </div>
-
-              {/* Budget items */}
-              <div style={{ display: 'flex', gap: 16, flexShrink: 0, alignItems: 'center' }}>
-                <HeaderBudgetItem label="Material" value={fmtCurrency(derivedActualCost)} total={fmtCurrency(project.budget.estimatedCost)} pct={budgetPct} />
-                <HeaderBudgetItem label="Labour" value={`${Math.round(totalActualHours)}h`} total={`${Math.round(totalBudgetedHours)}h`} pct={labourPct} />
-                <HeaderBudgetItem label="Progress" value={`${healthScore}%`} total="100%" pct={healthScore} forceGreen />
-              </div>
-
-              {/* Add Task */}
-              <button onClick={() => setShowAddTask(true)} style={{ background: 'none', border: '1px solid var(--teal)', borderRadius: 'var(--radius)', cursor: 'pointer', padding: '0 8px', color: 'var(--teal)', display: 'flex', alignItems: 'center', gap: 4, minHeight: 32 }} title="Add task">
-                <Plus size={12} strokeWidth={2} />
-                <span style={{ fontFamily: 'var(--font-cond)', fontSize: 10, fontWeight: 600, letterSpacing: '0.04em' }}>TASK</span>
-              </button>
-
-              {/* Delete */}
-              <button onClick={() => setShowDeleteConfirm(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: 'var(--text-3)', display: 'flex', alignItems: 'center', minHeight: 44 }} title="Delete project">
-                <Trash2 size={14} strokeWidth={1.5} />
-              </button>
+              {/* Mobile: compact budget stat row */}
+              {isMobile && (
+                <div style={{ display: 'flex', gap: 0, borderTop: '1px solid var(--border)', padding: '6px 12px' }}>
+                  <HeaderBudgetItem label="Material" value={fmtCurrency(derivedActualCost)} total={fmtCurrency(project.budget.estimatedCost)} pct={budgetPct} />
+                  <div style={{ width: 1, background: 'var(--border)', margin: '0 10px', flexShrink: 0 }} />
+                  <HeaderBudgetItem label="Labour" value={`${Math.round(totalActualHours)}h`} total={`${Math.round(totalBudgetedHours)}h`} pct={labourPct} />
+                  <div style={{ width: 1, background: 'var(--border)', margin: '0 10px', flexShrink: 0 }} />
+                  <HeaderBudgetItem label="Progress" value={`${healthScore}%`} total="100%" pct={healthScore} forceGreen />
+                </div>
+              )}
             </div>
 
             {/* ── SCRIPT Pipeline ── */}
@@ -578,142 +599,266 @@ export default function ProjectDetailPage() {
               onSiteCount={crewMemberName ? 1 : 0}
             />
 
-            {/* ── Three-column layout ── */}
-            <div style={{ display: 'grid', gridTemplateColumns: '42fr 33fr 25fr', flex: 1, overflow: 'hidden' }}>
+            {/* ── Content layout ── */}
+            {isMobile ? (
+              /* ── Mobile: tabbed single-column ── */
+              <div style={{ flex: 1 }}>
+                {/* Tasks / Details toggle */}
+                <div style={{ display: 'flex', background: 'var(--surface-2)', borderBottom: '1px solid var(--border)' }}>
+                  {(['tasks', 'details'] as const).map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => setMobileSection(tab)}
+                      style={{
+                        flex: 1,
+                        fontFamily: 'var(--font-cond)', fontSize: 12, fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase',
+                        color: mobileSection === tab ? 'var(--blue)' : 'var(--text-3)',
+                        background: 'none', border: 'none',
+                        borderBottom: mobileSection === tab ? '2px solid var(--blue)' : '2px solid transparent',
+                        padding: '10px 0', cursor: 'pointer',
+                      }}
+                    >
+                      {tab === 'tasks' ? `Tasks (${totalTasks})` : 'Details'}
+                    </button>
+                  ))}
+                </div>
 
-              {/* ── Col 1 — Loops (42%) ── */}
-              <div style={{ overflowY: 'auto', borderRight: '1px solid var(--border)' }}>
-                {/* Sticky filter tabs */}
-                <div style={{ position: 'sticky', top: 0, zIndex: 10, background: 'var(--surface-2)', borderBottom: '1px solid var(--border)', display: 'flex', gap: 0, padding: '0 12px' }}>
-                  {(['location', 'category', 'stage'] as const).map((mode) => {
-                    const label = mode === 'location' ? 'Location' : mode === 'category' ? 'Trade' : 'Stage';
-                    const isActive = groupMode === mode;
+                {mobileSection === 'tasks' ? (
+                  <div>
+                    {/* Filter tabs */}
+                    <div style={{ background: 'var(--surface-2)', borderBottom: '1px solid var(--border)', display: 'flex', gap: 0, padding: '0 12px' }}>
+                      {(['location', 'category', 'stage'] as const).map((mode) => {
+                        const label = mode === 'location' ? 'Location' : mode === 'category' ? 'Trade' : 'Stage';
+                        const isActive = groupMode === mode;
+                        return (
+                          <button
+                            key={mode}
+                            onClick={() => setGroupMode(mode)}
+                            style={{ fontFamily: 'var(--font-cond)', fontSize: 11, fontWeight: 600, letterSpacing: '0.04em', color: isActive ? 'var(--blue)' : 'var(--text-3)', background: 'none', border: 'none', borderBottom: isActive ? '2px solid var(--blue)' : '2px solid transparent', padding: '8px 10px', cursor: 'pointer', transition: 'color 0.15s' }}
+                          >
+                            {label}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Task tree */}
+                    {taskGroups.map(([groupKey, groupTasks]) => {
+                      const completedCount = groupTasks.filter((t) => t.status === 'complete').length;
+                      const groupStatuses = groupTasks.map((t) => taskStatusToLoopStatus(t.status));
+                      const groupStatus = worstLoopStatus(groupStatuses);
+                      const groupPct = groupTasks.length > 0 ? Math.round((completedCount / groupTasks.length) * 100) : 0;
+                      const groupLabel = groupMode === 'location' ? groupKey
+                        : groupMode === 'category' ? getTradeDisplayName(groupKey)
+                        : getStageDisplayName(groupKey);
+                      const isExpanded = !collapsedRooms.has(groupKey);
+                      return (
+                        <div key={groupKey}>
+                          <LoopRow name={groupLabel} depth={0} status={groupStatus} pct={groupPct} hasChildren isExpanded={isExpanded} onToggle={() => handleToggleRoom(groupKey)} />
+                          {isExpanded && groupTasks.map((task) => (
+                            <LoopRow
+                              key={task.id} name={task.taskName} subLabel={task.room !== groupKey ? task.room : undefined}
+                              depth={1} status={taskStatusToLoopStatus(task.status)} pct={task.status === 'complete' ? 100 : task.status === 'in_progress' ? 50 : 0}
+                              tradeBadge={task.tradeCode || undefined} isComplete={task.status === 'complete'} isBlocked={task.status === 'blocked'} onClick={() => setSelectedTask(task)}
+                            />
+                          ))}
+                        </div>
+                      );
+                    })}
+                    {totalTasks === 0 && (
+                      <div style={{ textAlign: 'center', padding: '32px 16px' }}>
+                        <p style={{ fontSize: 12, color: 'var(--text-3)', marginBottom: 4 }}>No tasks yet</p>
+                        <p style={{ fontSize: 11, color: 'var(--text-3)' }}>Use Quick Add (+) to add tasks</p>
+                      </div>
+                    )}
+                    {totalTasks > 0 && filteredTasks.length === 0 && (
+                      <div style={{ textAlign: 'center', padding: '32px 16px' }}>
+                        <p style={{ fontSize: 12, color: 'var(--text-3)', marginBottom: 8 }}>No tasks match filters</p>
+                        <button onClick={() => setFilters({ tradeCode: null, stageCode: null, room: null })} style={{ fontSize: 11, color: 'var(--blue)', background: 'none', border: 'none', cursor: 'pointer' }}>Clear filters</button>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  /* Mobile details — stacked panels */
+                  <div style={{ paddingBottom: 80 }}>
+                    <MobileCollapsible title="Budget" defaultOpen>
+                      <BudgetPanel projectId={projectId} budgetSummary={budgetSummary || null} estimatedCost={project.budget.estimatedCost} actualCost={derivedActualCost} budgets={budgets || []} />
+                    </MobileCollapsible>
+                    <MobileCollapsible title="Timeline">
+                      <TimelinePanel startDate={project.dates.startDate} estimatedEndDate={project.dates.estimatedEndDate} taskMilestones={taskMilestones} />
+                    </MobileCollapsible>
+                    <MobileCollapsible title="Needs Attention" defaultOpen={blockedItems.length > 0 || overBudgetItems.length > 0}>
+                      <RiskAttentionPanel overBudgetTasks={overBudgetItems} blockedTasks={blockedItems} overdueTasks={overdueItems} pendingChangeOrders={pendingCOs} trainingGaps={trainingGaps} />
+                    </MobileCollapsible>
+                    <MobileCollapsible title="Expenses">
+                      <ExpenseSummaryPanel projectId={projectId} tasks={tasks} />
+                    </MobileCollapsible>
+                    <MobileCollapsible title="Invoices">
+                      <InvoiceListPanel projectId={projectId} customerId={project.customerId || ''} />
+                    </MobileCollapsible>
+                    <MobileCollapsible title="Change Orders">
+                      <ChangeOrderPanel changeOrders={changeOrders} budgetImpact={coBudgetImpact || null} onCreateCO={() => setShowCreateCO(true)} onSelectCO={(id) => setSelectedCOId(id)} />
+                    </MobileCollapsible>
+                    <MobileCollapsible title="Crew & Training">
+                      <CrewTrainingPanel crewMembers={allCrewMembers} trainingRecords={allTrainingRecords} projectSopCodes={projectSopCodes} />
+                    </MobileCollapsible>
+                    <HomeCareSheetPanel projectId={projectId} customerId={project.customerId} jobStage={project.jobStage} />
+                    {/* Activity */}
+                    <div style={{ padding: 14, borderBottom: '1px solid var(--border)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                        <span style={{ fontFamily: 'var(--font-cond)', fontSize: 9, fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--text-3)' }}>Activity Log</span>
+                        <Link href={`/activity?project=${projectId}`} style={{ fontFamily: 'var(--font-cond)', fontSize: 8, fontWeight: 600, color: 'var(--blue)', display: 'flex', alignItems: 'center', gap: 2, textDecoration: 'none' }}>
+                          View All <ArrowRight size={8} />
+                        </Link>
+                      </div>
+                      {(!activityData || activityData.events.length === 0) ? (
+                        <p style={{ fontSize: 11, color: 'var(--text-3)', textAlign: 'center', padding: '16px 0' }}>No activity yet</p>
+                      ) : (
+                        <SimpleActivityFeed events={activityData.events as any} maxItems={10} />
+                      )}
+                    </div>
+                    <ProjectLabsData projectId={projectId} />
+                  </div>
+                )}
+              </div>
+            ) : (
+              /* ── Desktop: three-column grid ── */
+              <div style={{ display: 'grid', gridTemplateColumns: '42fr 33fr 25fr', flex: 1, overflow: 'hidden' }}>
+
+                {/* ── Col 1 — Loops (42%) ── */}
+                <div style={{ overflowY: 'auto', borderRight: '1px solid var(--border)' }}>
+                  {/* Sticky filter tabs */}
+                  <div style={{ position: 'sticky', top: 0, zIndex: 10, background: 'var(--surface-2)', borderBottom: '1px solid var(--border)', display: 'flex', gap: 0, padding: '0 12px' }}>
+                    {(['location', 'category', 'stage'] as const).map((mode) => {
+                      const label = mode === 'location' ? 'Location' : mode === 'category' ? 'Trade' : 'Stage';
+                      const isActive = groupMode === mode;
+                      return (
+                        <button
+                          key={mode}
+                          onClick={() => setGroupMode(mode)}
+                          style={{ fontFamily: 'var(--font-cond)', fontSize: 11, fontWeight: 600, letterSpacing: '0.04em', color: isActive ? 'var(--blue)' : 'var(--text-3)', background: 'none', border: 'none', borderBottom: isActive ? '2px solid var(--blue)' : '2px solid transparent', padding: '8px 10px', cursor: 'pointer', transition: 'color 0.15s' }}
+                        >
+                          {label}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Loop tree */}
+                  {taskGroups.map(([groupKey, groupTasks]) => {
+                    const completedCount = groupTasks.filter((t) => t.status === 'complete').length;
+                    const groupStatuses = groupTasks.map((t) => taskStatusToLoopStatus(t.status));
+                    const groupStatus = worstLoopStatus(groupStatuses);
+                    const groupPct = groupTasks.length > 0 ? Math.round((completedCount / groupTasks.length) * 100) : 0;
+
+                    const groupLabel = groupMode === 'location' ? groupKey
+                      : groupMode === 'category' ? getTradeDisplayName(groupKey)
+                      : getStageDisplayName(groupKey);
+
+                    const isExpanded = !collapsedRooms.has(groupKey);
+
                     return (
-                      <button
-                        key={mode}
-                        onClick={() => setGroupMode(mode)}
-                        style={{ fontFamily: 'var(--font-cond)', fontSize: 11, fontWeight: 600, letterSpacing: '0.04em', color: isActive ? 'var(--blue)' : 'var(--text-3)', background: 'none', border: 'none', borderBottom: isActive ? '2px solid var(--blue)' : '2px solid transparent', padding: '8px 10px', cursor: 'pointer', transition: 'color 0.15s' }}
-                      >
-                        {label}
-                      </button>
+                      <div key={groupKey}>
+                        <LoopRow
+                          name={groupLabel}
+                          depth={0}
+                          status={groupStatus}
+                          pct={groupPct}
+                          hasChildren
+                          isExpanded={isExpanded}
+                          onToggle={() => handleToggleRoom(groupKey)}
+                        />
+                        {isExpanded && groupTasks.map((task) => (
+                          <LoopRow
+                            key={task.id}
+                            name={task.taskName}
+                            subLabel={task.room !== groupKey ? task.room : undefined}
+                            depth={1}
+                            status={taskStatusToLoopStatus(task.status)}
+                            pct={task.status === 'complete' ? 100 : task.status === 'in_progress' ? 50 : 0}
+                            tradeBadge={task.tradeCode || undefined}
+                            isComplete={task.status === 'complete'}
+                            isBlocked={task.status === 'blocked'}
+                            onClick={() => setSelectedTask(task)}
+                          />
+                        ))}
+                      </div>
                     );
                   })}
-                </div>
 
-                {/* Loop tree */}
-                {taskGroups.map(([groupKey, groupTasks]) => {
-                  const completedCount = groupTasks.filter((t) => t.status === 'complete').length;
-                  const groupStatuses = groupTasks.map((t) => taskStatusToLoopStatus(t.status));
-                  const groupStatus = worstLoopStatus(groupStatuses);
-                  const groupPct = groupTasks.length > 0 ? Math.round((completedCount / groupTasks.length) * 100) : 0;
-
-                  const groupLabel = groupMode === 'location' ? groupKey
-                    : groupMode === 'category' ? getTradeDisplayName(groupKey)
-                    : getStageDisplayName(groupKey);
-
-                  const isExpanded = !collapsedRooms.has(groupKey);
-
-                  return (
-                    <div key={groupKey}>
-                      <LoopRow
-                        name={groupLabel}
-                        depth={0}
-                        status={groupStatus}
-                        pct={groupPct}
-                        hasChildren
-                        isExpanded={isExpanded}
-                        onToggle={() => handleToggleRoom(groupKey)}
-                      />
-                      {isExpanded && groupTasks.map((task) => (
-                        <LoopRow
-                          key={task.id}
-                          name={task.taskName}
-                          subLabel={task.room !== groupKey ? task.room : undefined}
-                          depth={1}
-                          status={taskStatusToLoopStatus(task.status)}
-                          pct={task.status === 'complete' ? 100 : task.status === 'in_progress' ? 50 : 0}
-                          tradeBadge={task.tradeCode || undefined}
-                          isComplete={task.status === 'complete'}
-                          isBlocked={task.status === 'blocked'}
-                          onClick={() => setSelectedTask(task)}
-                        />
-                      ))}
+                  {totalTasks === 0 && (
+                    <div style={{ textAlign: 'center', padding: '32px 16px' }}>
+                      <p style={{ fontSize: 12, color: 'var(--text-3)', marginBottom: 4 }}>No tasks yet</p>
+                      <p style={{ fontSize: 11, color: 'var(--text-3)' }}>Use Quick Add (+) to add tasks</p>
                     </div>
-                  );
-                })}
-
-                {totalTasks === 0 && (
-                  <div style={{ textAlign: 'center', padding: '32px 16px' }}>
-                    <p style={{ fontSize: 12, color: 'var(--text-3)', marginBottom: 4 }}>No tasks yet</p>
-                    <p style={{ fontSize: 11, color: 'var(--text-3)' }}>Use Quick Add (+) to add tasks</p>
-                  </div>
-                )}
-                {totalTasks > 0 && filteredTasks.length === 0 && (
-                  <div style={{ textAlign: 'center', padding: '32px 16px' }}>
-                    <p style={{ fontSize: 12, color: 'var(--text-3)', marginBottom: 8 }}>No tasks match filters</p>
-                    <button onClick={() => setFilters({ tradeCode: null, stageCode: null, room: null })} style={{ fontSize: 11, color: 'var(--blue)', background: 'none', border: 'none', cursor: 'pointer' }}>
-                      Clear filters
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {/* ── Col 2 — Budget + Activity (33%) ── */}
-              <div style={{ overflowY: 'auto', borderRight: '1px solid var(--border)' }}>
-                <BudgetPanel
-                  projectId={projectId}
-                  budgetSummary={budgetSummary || null}
-                  estimatedCost={project.budget.estimatedCost}
-                  actualCost={derivedActualCost}
-                  budgets={budgets || []}
-                />
-                <TimelinePanel
-                  startDate={project.dates.startDate}
-                  estimatedEndDate={project.dates.estimatedEndDate}
-                  taskMilestones={taskMilestones}
-                />
-                <ExpenseSummaryPanel projectId={projectId} tasks={tasks} />
-                <InvoiceListPanel projectId={projectId} customerId={project.customerId || ''} />
-                <HomeCareSheetPanel projectId={projectId} customerId={project.customerId} jobStage={project.jobStage} />
-                {/* Activity */}
-                <div style={{ padding: 14, borderBottom: '1px solid var(--border)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-                    <span style={{ fontFamily: 'var(--font-cond)', fontSize: 9, fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--text-3)' }}>Activity Log</span>
-                    <Link href={`/activity?project=${projectId}`} style={{ fontFamily: 'var(--font-cond)', fontSize: 8, fontWeight: 600, color: 'var(--blue)', display: 'flex', alignItems: 'center', gap: 2, textDecoration: 'none' }}>
-                      View All <ArrowRight size={8} />
-                    </Link>
-                  </div>
-                  {(!activityData || activityData.events.length === 0) ? (
-                    <p style={{ fontSize: 11, color: 'var(--text-3)', textAlign: 'center', padding: '16px 0' }}>No activity yet</p>
-                  ) : (
-                    <SimpleActivityFeed events={activityData.events as any} maxItems={10} />
+                  )}
+                  {totalTasks > 0 && filteredTasks.length === 0 && (
+                    <div style={{ textAlign: 'center', padding: '32px 16px' }}>
+                      <p style={{ fontSize: 12, color: 'var(--text-3)', marginBottom: 8 }}>No tasks match filters</p>
+                      <button onClick={() => setFilters({ tradeCode: null, stageCode: null, room: null })} style={{ fontSize: 11, color: 'var(--blue)', background: 'none', border: 'none', cursor: 'pointer' }}>
+                        Clear filters
+                      </button>
+                    </div>
                   )}
                 </div>
-              </div>
 
-              {/* ── Col 3 — Flags + Crew (25%) ── */}
-              <div style={{ overflowY: 'auto' }}>
-                <RiskAttentionPanel
-                  overBudgetTasks={overBudgetItems}
-                  blockedTasks={blockedItems}
-                  overdueTasks={overdueItems}
-                  pendingChangeOrders={pendingCOs}
-                  trainingGaps={trainingGaps}
-                />
-                <ChangeOrderPanel
-                  changeOrders={changeOrders}
-                  budgetImpact={coBudgetImpact || null}
-                  onCreateCO={() => setShowCreateCO(true)}
-                  onSelectCO={(id) => setSelectedCOId(id)}
-                />
-                <CrewTrainingPanel
-                  crewMembers={allCrewMembers}
-                  trainingRecords={allTrainingRecords}
-                  projectSopCodes={projectSopCodes}
-                />
-                <ProjectLabsData projectId={projectId} />
+                {/* ── Col 2 — Budget + Activity (33%) ── */}
+                <div style={{ overflowY: 'auto', borderRight: '1px solid var(--border)' }}>
+                  <BudgetPanel
+                    projectId={projectId}
+                    budgetSummary={budgetSummary || null}
+                    estimatedCost={project.budget.estimatedCost}
+                    actualCost={derivedActualCost}
+                    budgets={budgets || []}
+                  />
+                  <TimelinePanel
+                    startDate={project.dates.startDate}
+                    estimatedEndDate={project.dates.estimatedEndDate}
+                    taskMilestones={taskMilestones}
+                  />
+                  <ExpenseSummaryPanel projectId={projectId} tasks={tasks} />
+                  <InvoiceListPanel projectId={projectId} customerId={project.customerId || ''} />
+                  <HomeCareSheetPanel projectId={projectId} customerId={project.customerId} jobStage={project.jobStage} />
+                  {/* Activity */}
+                  <div style={{ padding: 14, borderBottom: '1px solid var(--border)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                      <span style={{ fontFamily: 'var(--font-cond)', fontSize: 9, fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--text-3)' }}>Activity Log</span>
+                      <Link href={`/activity?project=${projectId}`} style={{ fontFamily: 'var(--font-cond)', fontSize: 8, fontWeight: 600, color: 'var(--blue)', display: 'flex', alignItems: 'center', gap: 2, textDecoration: 'none' }}>
+                        View All <ArrowRight size={8} />
+                      </Link>
+                    </div>
+                    {(!activityData || activityData.events.length === 0) ? (
+                      <p style={{ fontSize: 11, color: 'var(--text-3)', textAlign: 'center', padding: '16px 0' }}>No activity yet</p>
+                    ) : (
+                      <SimpleActivityFeed events={activityData.events as any} maxItems={10} />
+                    )}
+                  </div>
+                </div>
+
+                {/* ── Col 3 — Flags + Crew (25%) ── */}
+                <div style={{ overflowY: 'auto' }}>
+                  <RiskAttentionPanel
+                    overBudgetTasks={overBudgetItems}
+                    blockedTasks={blockedItems}
+                    overdueTasks={overdueItems}
+                    pendingChangeOrders={pendingCOs}
+                    trainingGaps={trainingGaps}
+                  />
+                  <ChangeOrderPanel
+                    changeOrders={changeOrders}
+                    budgetImpact={coBudgetImpact || null}
+                    onCreateCO={() => setShowCreateCO(true)}
+                    onSelectCO={(id) => setSelectedCOId(id)}
+                  />
+                  <CrewTrainingPanel
+                    crewMembers={allCrewMembers}
+                    trainingRecords={allTrainingRecords}
+                    projectSopCodes={projectSopCodes}
+                  />
+                  <ProjectLabsData projectId={projectId} />
+                </div>
               </div>
-            </div>
+            )}
 
             {/* ── Delete confirmation ── */}
             {showDeleteConfirm && (
@@ -836,6 +981,26 @@ export default function ProjectDetailPage() {
         );
       })()}
     </PageErrorBoundary>
+  );
+}
+
+// ── Mobile collapsible section ──
+function MobileCollapsible({ title, defaultOpen = false, children }: { title: string; defaultOpen?: boolean; children: React.ReactNode }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div style={{ borderBottom: '1px solid var(--border)' }}>
+      <button
+        onClick={() => setOpen(!open)}
+        style={{
+          width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '10px 14px', background: 'var(--surface-1)', border: 'none', cursor: 'pointer',
+        }}
+      >
+        <span style={{ fontFamily: 'var(--font-cond)', fontSize: 11, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-2)' }}>{title}</span>
+        {open ? <ChevronUp size={14} color="var(--text-3)" /> : <ChevronDown size={14} color="var(--text-3)" />}
+      </button>
+      {open && children}
+    </div>
   );
 }
 

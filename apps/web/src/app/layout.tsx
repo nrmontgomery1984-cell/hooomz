@@ -7,6 +7,7 @@ import { CrewGate } from '@/components/crew/CrewGate';
 
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { ServiceWorkerRegistration } from '@/components/ServiceWorkerRegistration';
+import { MobileModuleNav } from '@/components/navigation/MobileModuleNav';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -47,6 +48,7 @@ export default function RootLayout({
               <div className="flex min-h-screen">
                 <Sidebar />
                 <main className="flex-1 min-h-screen min-w-0">
+                  <MobileModuleNav />
                   {children}
                 </main>
               </div>

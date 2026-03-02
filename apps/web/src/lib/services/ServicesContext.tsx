@@ -12,6 +12,7 @@ import type { TrainingGuide, StandardSOP } from '@hooomz/shared-contracts';
 import { SyncEngine } from '../sync/SyncEngine';
 import { isSupabaseConfigured } from '../supabase/client';
 import { initializeStorage } from '../storage';
+import { ActivitySyncService } from '../offline/ActivitySyncService';
 
 async function seedTrainingGuidesIfEmpty(services: Services): Promise<void> {
   const existing = await services.trainingGuides.getAll();
@@ -46,6 +47,10 @@ async function seedStandardSOPsIfEmpty(services: Services): Promise<void> {
 async function runCrossDeviceSync(): Promise<void> {
   const storage = await initializeStorage();
   const syncEngine = SyncEngine.getInstance(storage);
+
+  // Ensure ActivitySyncService is running — this sets up the queue listener
+  // that pushes mutations to Supabase within seconds of creation
+  ActivitySyncService.getInstance(storage);
 
   // Health check — is the sync_data table accessible?
   const health = await syncEngine.healthCheck();

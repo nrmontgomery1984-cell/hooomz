@@ -24,6 +24,7 @@ export class SyncQueue {
   private static instance: SyncQueue | null = null;
   private storage: StorageAdapter;
   private storeName = StoreNames.SYNC_QUEUE;
+  private changeListeners: Set<() => void> = new Set();
 
   private constructor(storage: StorageAdapter) {
     this.storage = storage;
@@ -66,6 +67,7 @@ export class SyncQueue {
     };
 
     await this.storage.set(this.storeName, item.id, item);
+    this.notifyChange();
   }
 
   /**
@@ -88,6 +90,7 @@ export class SyncQueue {
     };
 
     await this.storage.set(this.storeName, item.id, item);
+    this.notifyChange();
   }
 
   /**
@@ -105,6 +108,7 @@ export class SyncQueue {
     };
 
     await this.storage.set(this.storeName, item.id, item);
+    this.notifyChange();
   }
 
   /**
@@ -173,5 +177,15 @@ export class SyncQueue {
    */
   async clearAll(): Promise<void> {
     await this.storage.clear(this.storeName);
+  }
+
+  /** Subscribe to queue changes (new items added) */
+  onQueueChange(listener: () => void): () => void {
+    this.changeListeners.add(listener);
+    return () => this.changeListeners.delete(listener);
+  }
+
+  private notifyChange(): void {
+    this.changeListeners.forEach((l) => l());
   }
 }

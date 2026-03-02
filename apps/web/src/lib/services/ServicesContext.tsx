@@ -73,6 +73,19 @@ async function runCrossDeviceSync(): Promise<void> {
   }
 }
 
+/** Re-pull from Supabase when the user returns to the app/tab */
+function setupVisibilitySync(): void {
+  if (typeof document === 'undefined') return;
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && isSupabaseConfigured()) {
+      runCrossDeviceSync().catch((err) =>
+        console.error('Visibility sync error:', err)
+      );
+    }
+  });
+}
+
 interface ServicesContextValue {
   services: Services | null;
   isLoading: boolean;
@@ -131,6 +144,7 @@ export function ServicesProvider({ children }: ServicesProviderProps) {
           runCrossDeviceSync().catch((err) =>
             console.error('Cross-device sync error:', err)
           );
+          setupVisibilitySync();
         }
       } catch (err) {
         if (mounted) {

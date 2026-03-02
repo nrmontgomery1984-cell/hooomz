@@ -51,6 +51,7 @@ export class ActivitySyncService {
   private syncQueue: SyncQueue;
   private syncEngine: SyncEngine;
   private isSyncing = false;
+  private flushTimer: ReturnType<typeof setTimeout> | null = null;
   private syncListeners: Set<(result: SyncResult) => void> = new Set();
   private pendingCountListeners: Set<(count: number) => void> = new Set();
 
@@ -58,6 +59,7 @@ export class ActivitySyncService {
     this.syncQueue = SyncQueue.getInstance(storage);
     this.syncEngine = SyncEngine.getInstance(storage);
     this.setupNetworkListener();
+    this.setupQueueListener();
   }
 
   /**
@@ -88,6 +90,19 @@ export class ActivitySyncService {
       setTimeout(() => {
         this.onNetworkRestore();
       }, 1000);
+    });
+  }
+
+  /**
+   * Listen for new SyncQueue items and flush after a short debounce.
+   * This ensures mutations are pushed to Supabase within seconds.
+   */
+  private setupQueueListener(): void {
+    this.syncQueue.onQueueChange(() => {
+      if (this.flushTimer) clearTimeout(this.flushTimer);
+      this.flushTimer = setTimeout(() => {
+        this.syncPending();
+      }, 1500); // 1.5s debounce — batches rapid mutations
     });
   }
 

@@ -13,6 +13,7 @@ import { SyncEngine } from '../sync/SyncEngine';
 import { isSupabaseConfigured } from '../supabase/client';
 import { initializeStorage } from '../storage';
 import { ActivitySyncService } from '../offline/ActivitySyncService';
+import { SyncQueue } from '../repositories/SyncQueue';
 
 async function seedTrainingGuidesIfEmpty(services: Services): Promise<void> {
   const existing = await services.trainingGuides.getAll();
@@ -74,7 +75,18 @@ async function runCrossDeviceSync(): Promise<void> {
     if (pushResult.pushed > 0) {
       console.info(`Sync: initial push — ${pushResult.pushed} entities uploaded`);
     }
+    // Clear stale SyncQueue items — pushAll() uploaded everything directly,
+    // so any queued items from before sync existed are now redundant.
+    // Without this, syncPending() gets clogged processing hundreds of old items
+    // and the isSyncing mutex blocks new mutations from ever being pushed.
+    const syncQueue = SyncQueue.getInstance(storage);
+    await syncQueue.clearAll();
+    console.info('Sync: cleared stale SyncQueue after initial push');
     localStorage.setItem(pushKey, new Date().toISOString());
+  } else {
+    // Even on subsequent loads, clear any synced items to keep the queue lean
+    const syncQueue = SyncQueue.getInstance(storage);
+    await syncQueue.clearSynced();
   }
 }
 

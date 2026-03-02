@@ -19,6 +19,7 @@
     "@hooomz/shared": "workspace:^",
     "@hooomz/shared-contracts": "workspace:*",
     "@react-pdf/renderer": "^4.3.2",
+    "@supabase/supabase-js": "^2.39.0",
     "@tanstack/react-query": "^5.90.18",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",

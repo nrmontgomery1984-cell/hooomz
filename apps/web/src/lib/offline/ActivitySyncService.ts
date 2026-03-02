@@ -11,9 +11,9 @@
  */
 
 import type { StorageAdapter } from '../storage/StorageAdapter';
-import { StoreNames } from '../storage/StorageAdapter';
 import { SyncQueue, type SyncQueueItem } from '../repositories/SyncQueue';
 import { isOnline } from './useNetworkStatus';
+import { SyncEngine } from '../sync/SyncEngine';
 
 /**
  * Sync result for a single item
@@ -49,12 +49,14 @@ const RETRY_CONFIG = {
 export class ActivitySyncService {
   private static instance: ActivitySyncService | null = null;
   private syncQueue: SyncQueue;
+  private syncEngine: SyncEngine;
   private isSyncing = false;
   private syncListeners: Set<(result: SyncResult) => void> = new Set();
   private pendingCountListeners: Set<(count: number) => void> = new Set();
 
   private constructor(storage: StorageAdapter) {
     this.syncQueue = SyncQueue.getInstance(storage);
+    this.syncEngine = SyncEngine.getInstance(storage);
     this.setupNetworkListener();
   }
 
@@ -121,10 +123,8 @@ export class ActivitySyncService {
     };
 
     try {
-      // Get pending items for activity events, sorted by timestamp (FIFO)
-      const pendingItems = await this.syncQueue.getPendingItemsForStore(
-        StoreNames.ACTIVITY_EVENTS
-      );
+      // Get ALL pending items across all stores, sorted by timestamp (FIFO)
+      const pendingItems = await this.syncQueue.getPendingItems();
 
       // Sort by timestamp to ensure FIFO
       pendingItems.sort(
@@ -184,14 +184,12 @@ export class ActivitySyncService {
   }
 
   /**
-   * Send item to server
-   * TODO: Replace with actual API call when backend is ready
+   * Send item to server via SyncEngine → Supabase
    */
   private async sendToServer(
-    _item: SyncQueueItem
+    item: SyncQueueItem
   ): Promise<{ success: boolean; error?: string }> {
-    // No backend API yet — always succeed locally
-    return { success: true };
+    return this.syncEngine.pushItem(item);
   }
 
   /**
@@ -202,9 +200,7 @@ export class ActivitySyncService {
       return { processed: 0, succeeded: 0, failed: 0, results: [] };
     }
 
-    const pendingItems = await this.syncQueue.getPendingItemsForStore(
-      StoreNames.ACTIVITY_EVENTS
-    );
+    const pendingItems = await this.syncQueue.getPendingItems();
 
     // Filter to items that have failed at least once but not exceeded max retries
     const failedItems = pendingItems.filter(
@@ -250,9 +246,7 @@ export class ActivitySyncService {
    * Get count of pending (unsynced) activity events
    */
   async getPendingCount(): Promise<number> {
-    const pendingItems = await this.syncQueue.getPendingItemsForStore(
-      StoreNames.ACTIVITY_EVENTS
-    );
+    const pendingItems = await this.syncQueue.getPendingItems();
     return pendingItems.filter(
       (item) => item.retryCount < RETRY_CONFIG.maxRetries
     ).length;
@@ -262,19 +256,17 @@ export class ActivitySyncService {
    * Get count of permanently failed items (exceeded max retries)
    */
   async getFailedCount(): Promise<number> {
-    const pendingItems = await this.syncQueue.getPendingItemsForStore(
-      StoreNames.ACTIVITY_EVENTS
-    );
+    const pendingItems = await this.syncQueue.getPendingItems();
     return pendingItems.filter(
       (item) => item.retryCount >= RETRY_CONFIG.maxRetries
     ).length;
   }
 
   /**
-   * Get all pending activity events (for display in UI)
+   * Get all pending sync items (for display in UI)
    */
   async getPendingEvents(): Promise<SyncQueueItem[]> {
-    return this.syncQueue.getPendingItemsForStore(StoreNames.ACTIVITY_EVENTS);
+    return this.syncQueue.getPendingItems();
   }
 
   /**

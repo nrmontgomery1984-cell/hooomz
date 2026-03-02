@@ -12,6 +12,7 @@ import { ThemeProvider } from '@/lib/theme';
 import { QuickAddProvider } from '@/components/activity/QuickAddContext';
 import { ActiveCrewProvider } from '@/lib/crew/ActiveCrewContext';
 import { ViewModeProvider } from '@/lib/viewmode';
+import { SyncRefreshListener } from '@/lib/sync/SyncRefreshListener';
 
 interface ProvidersProps {
   children: React.ReactNode;
@@ -22,6 +23,7 @@ export function Providers({ children }: ProvidersProps) {
     <ThemeProvider>
       <ViewModeProvider>
         <QueryProvider>
+          <SyncRefreshListener />
           <ServicesProvider>
             <ActiveCrewProvider>
               <ToastProvider>

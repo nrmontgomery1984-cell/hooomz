@@ -9,6 +9,9 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import type { Services } from './index';
 import { initializeServices } from './index';
 import type { TrainingGuide, StandardSOP } from '@hooomz/shared-contracts';
+import { SyncEngine } from '../sync/SyncEngine';
+import { isSupabaseConfigured } from '../supabase/client';
+import { initializeStorage } from '../storage';
 
 async function seedTrainingGuidesIfEmpty(services: Services): Promise<void> {
   const existing = await services.trainingGuides.getAll();
@@ -34,6 +37,40 @@ async function seedStandardSOPsIfEmpty(services: Services): Promise<void> {
   ]);
   const sops = [...flrData, ...pntData, ...trmData] as StandardSOP[];
   if (sops.length > 0) await services.standardSops.saveMany(sops);
+}
+
+/**
+ * Cross-device sync: pull remote data, push local data if first time.
+ * Runs in the background — does not block app rendering.
+ */
+async function runCrossDeviceSync(): Promise<void> {
+  const storage = await initializeStorage();
+  const syncEngine = SyncEngine.getInstance(storage);
+
+  // Health check — is the sync_data table accessible?
+  const health = await syncEngine.healthCheck();
+  if (!health.ok) {
+    console.warn('Sync table not ready:', health.error);
+    return;
+  }
+
+  // Pull remote data → merge into local IndexedDB
+  const pullResult = await syncEngine.pullAll();
+  if (pullResult.merged > 0) {
+    console.info(`Sync: pulled ${pullResult.pulled} rows, merged ${pullResult.merged}`);
+    // Trigger React Query refetch by dispatching a custom event
+    window.dispatchEvent(new CustomEvent('hooomz-sync-complete', { detail: pullResult }));
+  }
+
+  // If this device has never pushed, do an initial full upload
+  const pushKey = 'hooomz_initial_push_done';
+  if (!localStorage.getItem(pushKey)) {
+    const pushResult = await syncEngine.pushAll();
+    if (pushResult.pushed > 0) {
+      console.info(`Sync: initial push — ${pushResult.pushed} entities uploaded`);
+    }
+    localStorage.setItem(pushKey, new Date().toISOString());
+  }
 }
 
 interface ServicesContextValue {
@@ -87,6 +124,13 @@ export function ServicesProvider({ children }: ServicesProviderProps) {
         if (mounted) {
           setServices(initializedServices);
           setIsLoading(false);
+        }
+
+        // Cross-device sync via Supabase (fire-and-forget, non-blocking)
+        if (isSupabaseConfigured()) {
+          runCrossDeviceSync().catch((err) =>
+            console.error('Cross-device sync error:', err)
+          );
         }
       } catch (err) {
         if (mounted) {

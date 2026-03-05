@@ -258,26 +258,58 @@ function QuoteDocument({ quote, project, customer, lineItems }: QuotePDFProps) {
     ? [project.address.street, project.address.city, project.address.province].filter(Boolean).join(', ')
     : customerAddr;
 
-  // Group line items by trade/category
-  const groupMap = new Map<string, LineItem[]>();
+  // Group line items by source, then by trade/category within each source
+  type SourceKey = 'material_selection' | 'labour_estimation' | 'manual';
+  const SOURCE_SECTION_LABELS: Record<SourceKey, string> = {
+    material_selection: 'Materials',
+    labour_estimation: 'Labour',
+    manual: 'Other',
+  };
+  const SOURCE_ORDER: SourceKey[] = ['material_selection', 'labour_estimation', 'manual'];
+
+  const bySource = new Map<SourceKey, LineItem[]>();
   for (const item of lineItems) {
-    const key = item.workCategoryCode || item.category || 'other';
-    const existing = groupMap.get(key) || [];
+    const raw = item as LineItem & { source?: string };
+    const src = (raw.source as SourceKey) || 'manual';
+    const existing = bySource.get(src) || [];
     existing.push(item);
-    groupMap.set(key, existing);
+    bySource.set(src, existing);
   }
 
-  const tradeGroups: TradeGroup[] = [];
-  for (const [key, items] of groupMap) {
-    const total = items.reduce((s, i) => s + i.totalCost, 0);
-    tradeGroups.push({
-      key,
-      label: CATEGORY_LABELS[key] || key.charAt(0).toUpperCase() + key.slice(1),
-      items,
-      total,
+  const sourceGroups: { key: SourceKey; label: string; tradeGroups: TradeGroup[]; total: number }[] = [];
+  for (const srcKey of SOURCE_ORDER) {
+    const items = bySource.get(srcKey);
+    if (!items || items.length === 0) continue;
+
+    const tradeMap = new Map<string, LineItem[]>();
+    for (const item of items) {
+      const tKey = item.workCategoryCode || item.category || 'other';
+      const existing = tradeMap.get(tKey) || [];
+      existing.push(item);
+      tradeMap.set(tKey, existing);
+    }
+
+    const tradeGroups: TradeGroup[] = [];
+    for (const [tKey, tItems] of tradeMap) {
+      const total = tItems.reduce((s, i) => s + i.totalCost, 0);
+      tradeGroups.push({
+        key: tKey,
+        label: CATEGORY_LABELS[tKey] || tKey.charAt(0).toUpperCase() + tKey.slice(1),
+        items: tItems,
+        total,
+      });
+    }
+    tradeGroups.sort((a, b) => b.total - a.total);
+
+    sourceGroups.push({
+      key: srcKey,
+      label: SOURCE_SECTION_LABELS[srcKey],
+      tradeGroups,
+      total: items.reduce((s, i) => s + i.totalCost, 0),
     });
   }
-  tradeGroups.sort((a, b) => b.total - a.total);
+
+  const hasMultipleSources = sourceGroups.length > 1;
 
   return (
     <Document>
@@ -318,26 +350,47 @@ function QuoteDocument({ quote, project, customer, lineItems }: QuotePDFProps) {
           </View>
         </View>
 
-        {/* Scope of Work — Grouped by Trade */}
+        {/* Scope of Work — Grouped by Source then Trade */}
         <Text style={[styles.label, { marginTop: 4, marginBottom: 6, fontSize: 9 }]}>Scope of Work</Text>
 
-        {tradeGroups.map((group) => (
-          <View key={group.key} wrap={false}>
-            <Text style={styles.tradeHeader}>{group.label}</Text>
-            {group.items.map((item, i) => (
-              <View key={i} style={styles.itemRow}>
-                <Text style={styles.itemDesc}>
-                  {item.description}
-                  {item.quantity > 1 ? ` (${item.quantity} ${item.unit || 'ea'})` : ''}
+        {sourceGroups.map((sg) => (
+          <View key={sg.key}>
+            {/* Source section header — only show if multiple sources */}
+            {hasMultipleSources && (
+              <View style={{ marginTop: 8, marginBottom: 2 }}>
+                <Text style={{ fontSize: 10, fontWeight: 'bold', color: '#374151', textTransform: 'uppercase', letterSpacing: 1 }}>
+                  {sg.label}
                 </Text>
-                <Text style={styles.itemTotal}>{formatCurrency(item.totalCost)}</Text>
+              </View>
+            )}
+
+            {sg.tradeGroups.map((group: TradeGroup) => (
+              <View key={group.key} wrap={false}>
+                <Text style={styles.tradeHeader}>{group.label}</Text>
+                {group.items.map((item: LineItem, i: number) => (
+                  <View key={i} style={styles.itemRow}>
+                    <Text style={styles.itemDesc}>
+                      {item.description}
+                      {item.quantity > 1 ? ` (${item.quantity} ${item.unit || 'ea'})` : ''}
+                    </Text>
+                    <Text style={styles.itemTotal}>{formatCurrency(item.totalCost)}</Text>
+                  </View>
+                ))}
+                {/* Trade subtotal */}
+                <View style={[styles.itemRow, { borderTopWidth: 0.5, borderTopColor: '#e5e7eb', marginTop: 2, paddingTop: 3 }]}>
+                  <Text style={[styles.itemDesc, { fontWeight: 'bold', fontSize: 9 }]}>{group.label} Subtotal</Text>
+                  <Text style={[styles.itemTotal, { fontWeight: 'bold' }]}>{formatCurrency(group.total)}</Text>
+                </View>
               </View>
             ))}
-            {/* Trade subtotal */}
-            <View style={[styles.itemRow, { borderTopWidth: 0.5, borderTopColor: '#e5e7eb', marginTop: 2, paddingTop: 3 }]}>
-              <Text style={[styles.itemDesc, { fontWeight: 'bold', fontSize: 9 }]}>{group.label} Subtotal</Text>
-              <Text style={[styles.itemTotal, { fontWeight: 'bold' }]}>{formatCurrency(group.total)}</Text>
-            </View>
+
+            {/* Source subtotal — only show if multiple sources */}
+            {hasMultipleSources && (
+              <View style={[styles.itemRow, { marginTop: 4, paddingTop: 4, borderTopWidth: 1, borderTopColor: '#d1d5db' }]}>
+                <Text style={[styles.itemDesc, { fontWeight: 'bold', fontSize: 10 }]}>{sg.label} Total</Text>
+                <Text style={[styles.itemTotal, { fontWeight: 'bold', fontSize: 10 }]}>{formatCurrency(sg.total)}</Text>
+              </View>
+            )}
           </View>
         ))}
 

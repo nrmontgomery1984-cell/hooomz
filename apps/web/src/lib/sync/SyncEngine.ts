@@ -75,6 +75,17 @@ const SYNCED_STORES: Set<string> = new Set([
   StoreNames.TOOL_INVENTORY,
   // Workflows
   StoreNames.WORKFLOWS,
+  // Material Selection (Block 2)
+  StoreNames.CATALOG_PRODUCTS,
+  StoreNames.PROJECT_MATERIAL_SELECTIONS,
+  // RoomScan (Block 3)
+  StoreNames.ROOM_SCANS,
+  StoreNames.ROOMS,
+  // Layout Selector (Block 4)
+  StoreNames.FLOORING_LAYOUTS,
+  // Trim Cut Calculator (Block 5)
+  StoreNames.MILLWORK_ASSEMBLY_CONFIGS,
+  StoreNames.TRIM_CALCULATIONS,
 ]);
 
 function getDeviceId(): string {

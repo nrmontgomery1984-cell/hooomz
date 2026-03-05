@@ -134,6 +134,10 @@ export const TaskSchema = z.object({
   workflowId: z.string().optional(),
 });
 
+// Line item source tracking (Phase 6 — Selection → Quote integration)
+export const LineItemSourceSchema = z.enum(['manual', 'material_selection', 'labour_estimation']).default('manual');
+export type LineItemSource = z.infer<typeof LineItemSourceSchema>;
+
 // LineItem Base Schema (without refinement for .omit() compatibility)
 export const LineItemBaseSchema = z.object({
   id: z.string().min(1, 'Line item ID is required'),
@@ -155,6 +159,9 @@ export const LineItemBaseSchema = z.object({
   workCategoryCode: z.string().optional(),
   stageCode: z.string().optional(),
   locationLabel: z.string().optional(),
+  // Phase 6: Selection → Quote integration — source tracking
+  source: LineItemSourceSchema.optional(),
+  source_id: z.string().nullable().optional(),
 });
 
 // LineItem Schema with validation refinement

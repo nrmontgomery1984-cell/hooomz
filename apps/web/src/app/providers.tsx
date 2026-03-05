@@ -13,6 +13,7 @@ import { QuickAddProvider } from '@/components/activity/QuickAddContext';
 import { ActiveCrewProvider } from '@/lib/crew/ActiveCrewContext';
 import { ViewModeProvider } from '@/lib/viewmode';
 import { SyncRefreshListener } from '@/lib/sync/SyncRefreshListener';
+import { RevealGaugeProvider } from '@/lib/contexts/RevealGaugeContext';
 
 interface ProvidersProps {
   children: React.ReactNode;
@@ -27,7 +28,9 @@ export function Providers({ children }: ProvidersProps) {
           <ServicesProvider>
             <ActiveCrewProvider>
               <ToastProvider>
-                <QuickAddProvider>{children}</QuickAddProvider>
+                <RevealGaugeProvider>
+                  <QuickAddProvider>{children}</QuickAddProvider>
+                </RevealGaugeProvider>
               </ToastProvider>
             </ActiveCrewProvider>
           </ServicesProvider>

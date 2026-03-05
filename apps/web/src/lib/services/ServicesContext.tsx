@@ -9,6 +9,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import type { Services } from './index';
 import { initializeServices } from './index';
 import type { TrainingGuide, StandardSOP } from '@hooomz/shared-contracts';
+import { seedQuoteStageDataIfEmpty } from '../data/seed';
 import { SyncEngine } from '../sync/SyncEngine';
 import { isSupabaseConfigured } from '../supabase/client';
 import { initializeStorage } from '../storage';
@@ -149,6 +150,11 @@ export function ServicesProvider({ children }: ServicesProviderProps) {
         // Auto-seed standard SOPs if empty (fire-and-forget)
         seedStandardSOPsIfEmpty(initializedServices).catch((err) =>
           console.error('Failed to seed standard SOPs:', err)
+        );
+
+        // Auto-seed quote-stage catalog + assembly config if empty (fire-and-forget)
+        seedQuoteStageDataIfEmpty(initializedServices).catch((err) =>
+          console.error('Failed to seed quote stage data:', err)
         );
 
         if (mounted) {
@@ -319,4 +325,28 @@ export function useActivityService() {
 export function useLabsService() {
   const services = useServices();
   return services.labs;
+}
+
+// Material Selection catalog (Good/Better/Best tier products)
+export function useMaterialCatalogService() {
+  const services = useServices();
+  return services.materialCatalog;
+}
+
+// Millwork assembly config (trim calculator)
+export function useMillworkConfigService() {
+  const services = useServices();
+  return services.millworkConfig;
+}
+
+// RoomScan Integration (Phase 2 — v30)
+export function useRoomScanService() {
+  const services = useServices();
+  return services.roomScan;
+}
+
+// Material Selection (Phase 3 — v30)
+export function useMaterialSelectionService() {
+  const services = useServices();
+  return services.materialSelection;
 }

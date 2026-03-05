@@ -3,52 +3,144 @@
 /**
  * Production Jobs — /production/jobs
  *
- * Full job list view. Shows all projects grouped by SCRIPT stage.
- * Uses dashboard data hook for project summaries.
+ * Full job list with search, stage, trade, health, and progress filters.
+ * Stage is preserved in the URL (search params) for shareable links.
+ * Search / trade / health / progress are local state (transient).
  */
 
+import { useState, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { PageErrorBoundary } from '@/components/ui/PageErrorBoundary';
-import {
-  ArrowLeft,
-  ChevronRight,
-  FolderOpen,
-  X,
-} from 'lucide-react';
+import { ArrowLeft, ChevronRight, FolderOpen, Search, X } from 'lucide-react';
 import { SECTION_COLORS } from '@/lib/viewmode';
 import { useDashboardData } from '@/lib/hooks/useDashboardData';
-import {
-  JOB_STAGE_META,
-  ProjectStatus,
-} from '@hooomz/shared-contracts';
-import type { JobStage } from '@hooomz/shared-contracts';
+import { useServicesContext } from '@/lib/services/ServicesContext';
+import { JOB_STAGE_META, JobStage, ProjectStatus, SCRIPT_STAGES } from '@hooomz/shared-contracts';
+import type { ActiveProjectSummary } from '@/lib/hooks/useDashboardData';
 
 const COLOR = SECTION_COLORS.production;
 
-const STAGE_COLORS: Record<string, string> = {
-  lead: '#9CA3AF', estimate: '#9CA3AF', consultation: '#3B82F6', quote: '#3B82F6',
-  contract: '#3B82F6', shield: '#F59E0B', clear: '#F59E0B', ready: '#F59E0B',
-  install: '#0F766E', punch: '#F59E0B', turnover: '#3B82F6', complete: '#10B981',
+const STAGE_COLORS: Partial<Record<JobStage, string>> = {
+  [JobStage.LEAD]: '#9CA3AF', [JobStage.ESTIMATE]: '#9CA3AF',
+  [JobStage.CONSULTATION]: '#3B82F6', [JobStage.QUOTE]: '#3B82F6',
+  [JobStage.CONTRACT]: '#3B82F6', [JobStage.SHIELD]: '#F59E0B',
+  [JobStage.CLEAR]: '#F59E0B', [JobStage.READY]: '#F59E0B',
+  [JobStage.INSTALL]: '#0F766E', [JobStage.PUNCH]: '#F59E0B',
+  [JobStage.TURNOVER]: '#3B82F6',
+};
+
+type HealthFilter   = 'all' | 'green' | 'amber' | 'red';
+type ProgressFilter = 'all' | 'not-started' | 'in-progress' | 'near-done';
+type TradeFilter    = 'all' | 'flooring' | 'paint' | 'trim' | 'tile' | 'drywall';
+
+const TRADE_LABELS: Record<TradeFilter, string> = {
+  all:      'All',
+  flooring: 'Flooring',
+  paint:    'Paint',
+  trim:     'Trim',
+  tile:     'Tile',
+  drywall:  'Drywall',
 };
 
 function inferScriptStage(status: string): JobStage | null {
   switch (status) {
-    case ProjectStatus.APPROVED:    return 'shield' as JobStage;
-    case ProjectStatus.IN_PROGRESS: return 'install' as JobStage;
-    case ProjectStatus.COMPLETE:    return 'turnover' as JobStage;
+    case ProjectStatus.APPROVED:    return JobStage.SHIELD;
+    case ProjectStatus.IN_PROGRESS: return JobStage.INSTALL;
+    case ProjectStatus.COMPLETE:    return JobStage.TURNOVER;
     default:                        return null;
   }
 }
 
-function resolveScriptStage(project: { jobStage?: JobStage; status: string }): JobStage | null {
+function resolveScriptStage(project: ActiveProjectSummary): JobStage | null {
   return (project.jobStage as JobStage) ?? inferScriptStage(project.status);
+}
+
+function healthBucket(score: number): HealthFilter {
+  if (score >= 70) return 'green';
+  if (score >= 40) return 'amber';
+  return 'red';
+}
+
+function progressBucket(p: ActiveProjectSummary): ProgressFilter {
+  if (p.taskCount === 0) return 'not-started';
+  const pct = p.completedCount / p.taskCount;
+  if (pct >= 0.75) return 'near-done';
+  if (pct > 0)     return 'in-progress';
+  return 'not-started';
+}
+
+function Pill({ label, active, color, onClick }: {
+  label: string; active: boolean; color?: string; onClick: () => void;
+}) {
+  const c = color ?? COLOR;
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        padding: '5px 12px', borderRadius: 99, flexShrink: 0,
+        border: `1.5px solid ${active ? c : 'var(--border)'}`,
+        background: active ? `${c}18` : 'var(--surface-1)',
+        color: active ? c : 'var(--text-3)',
+        fontSize: 11, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap',
+      }}
+    >
+      {label}
+    </button>
+  );
 }
 
 export default function ProductionJobsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const dashboard = useDashboardData();
+  const { services } = useServicesContext();
+
   const stageFilter = searchParams.get('stage') as JobStage | null;
+  const [query, setQuery]                   = useState('');
+  const [healthFilter, setHealthFilter]     = useState<HealthFilter>('all');
+  const [progressFilter, setProgressFilter] = useState<ProgressFilter>('all');
+  const [tradeFilter, setTradeFilter]       = useState<TradeFilter>('all');
+
+  // Load trades for each active project from material selections
+  const projectIds = dashboard.activeProjects.map((p) => p.id);
+  const { data: projectTradesMap = new Map<string, string[]>() } = useQuery({
+    queryKey: ['production', 'jobs', 'trades', ...projectIds],
+    queryFn: async () => {
+      const map = new Map<string, string[]>();
+      await Promise.all(
+        projectIds.map(async (pid) => {
+          const sels = await services!.materialSelection.findByProject(pid);
+          const trades = [...new Set(sels.map((s) => s.trade))] as string[];
+          if (trades.length > 0) map.set(pid, trades);
+        }),
+      );
+      return map;
+    },
+    enabled: !!services && projectIds.length > 0,
+    staleTime: 30_000,
+  });
+
+  const filtered = useMemo(() => {
+    let list = dashboard.activeProjects;
+    if (stageFilter)              list = list.filter((p) => resolveScriptStage(p) === stageFilter);
+    if (query.trim())             list = list.filter((p) => p.name.toLowerCase().includes(query.toLowerCase()));
+    if (healthFilter !== 'all')   list = list.filter((p) => healthBucket(p.healthScore) === healthFilter);
+    if (progressFilter !== 'all') list = list.filter((p) => progressBucket(p) === progressFilter);
+    if (tradeFilter !== 'all')    list = list.filter((p) => projectTradesMap.get(p.id)?.includes(tradeFilter) ?? false);
+    return list;
+  }, [dashboard.activeProjects, stageFilter, query, healthFilter, progressFilter, tradeFilter, projectTradesMap]);
+
+  const hasFilters = !!(stageFilter || query.trim() || healthFilter !== 'all' || progressFilter !== 'all' || tradeFilter !== 'all');
+
+  function clearAll() {
+    setQuery(''); setHealthFilter('all'); setProgressFilter('all'); setTradeFilter('all');
+    router.replace('/production/jobs');
+  }
+
+  function setStage(s: JobStage | null) {
+    router.push(s ? `/production/jobs?stage=${s}` : '/production/jobs');
+  }
 
   if (dashboard.isLoading) {
     return (
@@ -60,11 +152,6 @@ export default function ProductionJobsPage() {
       </div>
     );
   }
-
-  const allProjects = stageFilter
-    ? dashboard.activeProjects.filter((p) => resolveScriptStage(p) === stageFilter)
-    : dashboard.activeProjects;
-  const stageLabel = stageFilter && JOB_STAGE_META[stageFilter] ? JOB_STAGE_META[stageFilter].label : null;
 
   return (
     <PageErrorBoundary>
@@ -82,82 +169,164 @@ export default function ProductionJobsPage() {
               </button>
               <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <h1 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', fontFamily: 'var(--font-cond)' }}>
-                    {stageLabel ? stageLabel : 'Jobs'}
-                  </h1>
-                  {stageFilter && (
+                  <h1 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', fontFamily: 'var(--font-cond)' }}>Jobs</h1>
+                  {hasFilters && (
                     <button
-                      onClick={() => router.replace('/production/jobs')}
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: 3,
-                        padding: '2px 8px', borderRadius: 99,
-                        fontSize: 10, fontWeight: 600,
-                        background: `${COLOR}18`, color: COLOR,
-                        border: 'none', cursor: 'pointer',
-                      }}
+                      onClick={clearAll}
+                      style={{ display: 'flex', alignItems: 'center', gap: 3, padding: '2px 8px', borderRadius: 99, fontSize: 10, fontWeight: 600, background: `${COLOR}18`, color: COLOR, border: 'none', cursor: 'pointer' }}
                     >
-                      {stageLabel} <X size={10} />
+                      Clear filters <X size={10} />
                     </button>
                   )}
                 </div>
                 <p style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 1 }}>
-                  {allProjects.length} {stageLabel ? `in ${stageLabel}` : 'active'} project{allProjects.length !== 1 ? 's' : ''}
+                  {filtered.length} of {dashboard.activeProjects.length} active job{dashboard.activeProjects.length !== 1 ? 's' : ''}
                 </p>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="max-w-lg md:max-w-full mx-auto px-4 md:px-6" style={{ marginTop: 16 }}>
-          {allProjects.length === 0 ? (
+        <div className="max-w-lg md:max-w-full mx-auto px-4 md:px-6" style={{ marginTop: 14 }}>
+
+          {/* Search */}
+          <div style={{ position: 'relative', marginBottom: 12 }}>
+            <Search size={14} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-3)', pointerEvents: 'none' }} />
+            <input
+              type="text"
+              placeholder="Search jobs…"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              style={{ width: '100%', padding: '9px 32px 9px 30px', background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 10, color: 'var(--text)', fontSize: 13, outline: 'none', boxSizing: 'border-box' }}
+            />
+            {query && (
+              <button onClick={() => setQuery('')} style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-3)', padding: 2, display: 'flex' }}>
+                <X size={13} />
+              </button>
+            )}
+          </div>
+
+          {/* Stage filter */}
+          <div style={{ marginBottom: 10 }}>
+            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: 6 }}>Stage</div>
+            <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 2 }}>
+              <Pill label="All" active={!stageFilter} onClick={() => setStage(null)} />
+              {SCRIPT_STAGES.map((s) => (
+                <Pill
+                  key={s}
+                  label={JOB_STAGE_META[s]?.label ?? s}
+                  active={stageFilter === s}
+                  color={STAGE_COLORS[s]}
+                  onClick={() => setStage(stageFilter === s ? null : s)}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Trade filter */}
+          <div style={{ marginBottom: 10 }}>
+            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: 6 }}>Trade</div>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              {(['all', 'flooring', 'paint', 'trim', 'tile', 'drywall'] as TradeFilter[]).map((key) => (
+                <Pill
+                  key={key}
+                  label={TRADE_LABELS[key]}
+                  active={tradeFilter === key}
+                  onClick={() => setTradeFilter(tradeFilter === key && key !== 'all' ? 'all' : key)}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Health filter */}
+          <div style={{ marginBottom: 10 }}>
+            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: 6 }}>Health</div>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              {([
+                { key: 'all'   as HealthFilter, label: 'All',      color: COLOR },
+                { key: 'green' as HealthFilter, label: 'On Track',  color: '#10B981' },
+                { key: 'amber' as HealthFilter, label: 'At Risk',   color: '#F59E0B' },
+                { key: 'red'   as HealthFilter, label: 'Blocked',   color: '#EF4444' },
+              ]).map(({ key, label, color }) => (
+                <Pill key={key} label={label} active={healthFilter === key} color={color}
+                  onClick={() => setHealthFilter(healthFilter === key && key !== 'all' ? 'all' : key)} />
+              ))}
+            </div>
+          </div>
+
+          {/* Progress filter */}
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: 6 }}>Progress</div>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              {([
+                { key: 'all'          as ProgressFilter, label: 'All' },
+                { key: 'not-started'  as ProgressFilter, label: 'Not Started' },
+                { key: 'in-progress'  as ProgressFilter, label: 'In Progress' },
+                { key: 'near-done'    as ProgressFilter, label: 'Near Done 75%+' },
+              ]).map(({ key, label }) => (
+                <Pill key={key} label={label} active={progressFilter === key}
+                  onClick={() => setProgressFilter(progressFilter === key && key !== 'all' ? 'all' : key)} />
+              ))}
+            </div>
+          </div>
+
+          {/* Results */}
+          {filtered.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '48px 16px' }}>
               <FolderOpen size={24} style={{ color: 'var(--text-3)', margin: '0 auto 8px' }} />
-              <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-2)' }}>No active jobs</p>
-              <p style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 4 }}>
-                Jobs will appear here when projects are in progress
+              <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-2)' }}>
+                {hasFilters ? 'No jobs match these filters' : 'No active jobs'}
               </p>
+              {hasFilters && (
+                <button onClick={clearAll} style={{ marginTop: 8, background: 'none', border: 'none', color: COLOR, cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>
+                  Clear all filters
+                </button>
+              )}
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {allProjects.map((project) => {
+              {filtered.map((project) => {
                 const stage = resolveScriptStage(project);
                 const stageMeta = stage ? JOB_STAGE_META[stage] : null;
-                const stageColor = stage ? STAGE_COLORS[stage] || '#9CA3AF' : '#9CA3AF';
+                const stageColor = (stage && STAGE_COLORS[stage]) || '#9CA3AF';
+                const health = healthBucket(project.healthScore);
+                const healthColor = health === 'green' ? '#10B981' : health === 'amber' ? '#F59E0B' : '#EF4444';
+                const pct = project.taskCount > 0 ? Math.round((project.completedCount / project.taskCount) * 100) : 0;
+                const trades = projectTradesMap.get(project.id) ?? [];
 
                 return (
                   <button
                     key={project.id}
                     onClick={() => router.push(`/projects/${project.id}`)}
-                    style={{
-                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                      padding: '12px 14px', borderRadius: 'var(--radius)',
-                      background: 'var(--surface-1)', border: '1px solid var(--border)',
-                      boxShadow: 'var(--shadow-card)', cursor: 'pointer',
-                      width: '100%', textAlign: 'left',
-                    }}
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', borderRadius: 'var(--radius)', background: 'var(--surface-1)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-card)', cursor: 'pointer', width: '100%', textAlign: 'left' }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
-                      {/* Health dot */}
-                      <div style={{
-                        width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
-                        background: project.healthScore >= 70 ? '#10B981' : project.healthScore >= 40 ? '#F59E0B' : '#EF4444',
-                      }} />
-                      <div style={{ minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flex: 1 }}>
+                      <div style={{ width: 8, height: 8, borderRadius: '50%', flexShrink: 0, background: healthColor }} />
+                      <div style={{ minWidth: 0, flex: 1 }}>
                         <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {project.name}
                         </span>
-                        <span style={{ fontSize: 10, color: 'var(--text-3)' }}>
-                          {project.completedCount}/{project.taskCount} tasks
-                        </span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 3 }}>
+                          <div style={{ flex: 1, height: 3, background: 'var(--border)', borderRadius: 2, overflow: 'hidden', maxWidth: 80 }}>
+                            <div style={{ height: '100%', width: `${pct}%`, background: healthColor, borderRadius: 2 }} />
+                          </div>
+                          <span style={{ fontSize: 9, color: 'var(--text-3)', flexShrink: 0 }}>
+                            {project.completedCount}/{project.taskCount}
+                          </span>
+                          {trades.map((t) => (
+                            <span
+                              key={t}
+                              style={{ fontSize: 9, fontWeight: 600, color: 'var(--text-3)', background: 'var(--border)', borderRadius: 3, padding: '1px 4px', textTransform: 'capitalize' }}
+                            >
+                              {t}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, marginLeft: 8 }}>
                       {stageMeta && (
-                        <span style={{
-                          fontSize: 9, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase',
-                          padding: '2px 6px', borderRadius: 4,
-                          background: `${stageColor}18`, color: stageColor,
-                        }}>
+                        <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '2px 6px', borderRadius: 4, background: `${stageColor}18`, color: stageColor }}>
                           {stageMeta.label}
                         </span>
                       )}

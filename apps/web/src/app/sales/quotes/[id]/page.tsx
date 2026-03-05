@@ -105,7 +105,27 @@ interface LineItemLike {
   totalCost: number;
   isLabor: boolean;
   workCategoryCode?: string;
+  source?: string;
+  source_id?: string | null;
 }
+
+type SourceGroupKey = 'material_selection' | 'labour_estimation' | 'manual';
+
+interface SourceGroup {
+  key: SourceGroupKey;
+  label: string;
+  items: LineItemLike[];
+  tradeGroups: TradeGroup[];
+  total: number;
+}
+
+const SOURCE_LABELS: Record<SourceGroupKey, string> = {
+  material_selection: 'Materials',
+  labour_estimation: 'Labour',
+  manual: 'Other',
+};
+
+const SOURCE_ORDER: SourceGroupKey[] = ['material_selection', 'labour_estimation', 'manual'];
 
 export default function QuoteDetailPage() {
   const params = useParams();
@@ -184,35 +204,63 @@ export default function QuoteDetailPage() {
     return () => { cancelled = true; };
   }, [quote?.projectId, services]);
 
-  // Group by trade (workCategoryCode or category)
-  const tradeGroups = useMemo((): TradeGroup[] => {
-    const groupMap = new Map<string, LineItemLike[]>();
+  // Group by source first, then by trade within each source
+  const sourceGroups = useMemo((): SourceGroup[] => {
+    const bySource = new Map<SourceGroupKey, LineItemLike[]>();
     for (const item of lineItems) {
-      const key = item.workCategoryCode || item.category || 'other';
-      const existing = groupMap.get(key) || [];
+      const src = (item.source as SourceGroupKey) || 'manual';
+      const existing = bySource.get(src) || [];
       existing.push(item);
-      groupMap.set(key, existing);
+      bySource.set(src, existing);
     }
 
-    const groups: TradeGroup[] = [];
-    for (const [key, items] of groupMap) {
-      const laborTotal = items.filter((i) => i.isLabor).reduce((s, i) => s + i.totalCost, 0);
-      const materialTotal = items.filter((i) => !i.isLabor).reduce((s, i) => s + i.totalCost, 0);
+    const groups: SourceGroup[] = [];
+    for (const srcKey of SOURCE_ORDER) {
+      const items = bySource.get(srcKey);
+      if (!items || items.length === 0) continue;
+
+      // Sub-group by trade within this source
+      const tradeMap = new Map<string, LineItemLike[]>();
+      for (const item of items) {
+        const tKey = item.workCategoryCode || item.category || 'other';
+        const existing = tradeMap.get(tKey) || [];
+        existing.push(item);
+        tradeMap.set(tKey, existing);
+      }
+
+      const tradeGroups: TradeGroup[] = [];
+      for (const [tKey, tItems] of tradeMap) {
+        const laborTotal = tItems.filter((i) => i.isLabor).reduce((s, i) => s + i.totalCost, 0);
+        const materialTotal = tItems.filter((i) => !i.isLabor).reduce((s, i) => s + i.totalCost, 0);
+        tradeGroups.push({
+          key: tKey,
+          label: CATEGORY_LABELS[tKey] || tKey.charAt(0).toUpperCase() + tKey.slice(1),
+          items: tItems,
+          laborTotal,
+          materialTotal,
+          total: laborTotal + materialTotal,
+        });
+      }
+      tradeGroups.sort((a, b) => b.total - a.total);
+
       groups.push({
-        key,
-        label: CATEGORY_LABELS[key] || key.charAt(0).toUpperCase() + key.slice(1),
+        key: srcKey,
+        label: SOURCE_LABELS[srcKey],
         items,
-        laborTotal,
-        materialTotal,
-        total: laborTotal + materialTotal,
+        tradeGroups,
+        total: items.reduce((s, i) => s + i.totalCost, 0),
       });
     }
 
-    groups.sort((a, b) => b.total - a.total);
     return groups;
   }, [lineItems]);
 
-  const grandTotal = tradeGroups.reduce((s, g) => s + g.total, 0);
+  // Flat trade groups for backward compat (PDF, totals)
+  const tradeGroups = useMemo((): TradeGroup[] => {
+    return sourceGroups.flatMap((sg) => sg.tradeGroups);
+  }, [sourceGroups]);
+
+  const grandTotal = sourceGroups.reduce((s, g) => s + g.total, 0);
   const grandLabor = tradeGroups.reduce((s, g) => s + g.laborTotal, 0);
   const grandMaterial = tradeGroups.reduce((s, g) => s + g.materialTotal, 0);
 
@@ -671,7 +719,7 @@ export default function QuoteDetailPage() {
               </div>
             )}
 
-            {!loadingItems && tradeGroups.length > 0 && (
+            {!loadingItems && sourceGroups.length > 0 && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {/* Grand totals card */}
                 <div style={{
@@ -691,9 +739,34 @@ export default function QuoteDetailPage() {
                   </div>
                 </div>
 
-                {/* Trade group cards */}
-                {tradeGroups.map((group) => (
-                  <TradeGroupCard key={group.key} group={group} />
+                {/* Source groups with trade cards */}
+                {sourceGroups.map((sg) => (
+                  <div key={sg.key}>
+                    {/* Source group header — only show if multiple source groups */}
+                    {sourceGroups.length > 1 && (
+                      <div style={{
+                        display: 'flex', justifyContent: 'space-between', alignItems: 'baseline',
+                        padding: '10px 0 4px',
+                      }}>
+                        <span style={{
+                          fontSize: 9, fontWeight: 700, letterSpacing: '0.14em',
+                          textTransform: 'uppercase', color: 'var(--text-3)',
+                          fontFamily: 'var(--font-cond)',
+                        }}>
+                          {sg.label}
+                        </span>
+                        <span style={{
+                          fontSize: 12, fontWeight: 700, color: 'var(--text-2)',
+                          fontFamily: 'var(--font-mono, monospace)',
+                        }}>
+                          ${sg.total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </span>
+                      </div>
+                    )}
+                    {sg.tradeGroups.map((group) => (
+                      <TradeGroupCard key={`${sg.key}-${group.key}`} group={group} />
+                    ))}
+                  </div>
                 ))}
               </div>
             )}

@@ -1,0 +1,325 @@
+'use client';
+
+/**
+ * FloorPlanCanvas — SVG floor plan viewer with pan/zoom and click-to-select.
+ *
+ * Renders Room polygons from RoomScan data. Pan via mouse drag, zoom via
+ * scroll wheel. Clicking a room fires onRoomSelect.
+ *
+ * All input coordinates are in mm. The canvas auto-fits the scan on mount.
+ */
+
+import React, { useRef, useState, useCallback, useEffect } from 'react';
+import type { Room } from '@/lib/types/roomScan.types';
+
+// ─── Color helpers ────────────────────────────────────────────────────────────
+
+const STATUS_FILL: Record<string, string> = {
+  pending: 'rgba(59,130,246,0.12)',    // blue tint
+  measured: 'rgba(245,158,11,0.15)',   // amber tint
+  complete: 'rgba(16,185,129,0.15)',   // green tint
+};
+
+const STATUS_STROKE: Record<string, string> = {
+  pending: '#3B82F6',
+  measured: '#F59E0B',
+  complete: '#10B981',
+};
+
+// ─── Geometry helpers ────────────────────────────────────────────────────────
+
+interface BBox {
+  minX: number;
+  minY: number;
+  maxX: number;
+  maxY: number;
+  width: number;
+  height: number;
+}
+
+function getBoundingBox(rooms: Room[]): BBox | null {
+  if (rooms.length === 0) return null;
+
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+
+  for (const room of rooms) {
+    for (const v of room.polygon.vertices) {
+      if (v.x < minX) minX = v.x;
+      if (v.y < minY) minY = v.y;
+      if (v.x > maxX) maxX = v.x;
+      if (v.y > maxY) maxY = v.y;
+    }
+  }
+
+  return { minX, minY, maxX, maxY, width: maxX - minX, height: maxY - minY };
+}
+
+function polygonPoints(
+  vertices: Array<{ x: number; y: number }>,
+  scale: number,
+  offsetX: number,
+  offsetY: number,
+): string {
+  return vertices
+    .map((v) => `${v.x * scale + offsetX},${v.y * scale + offsetY}`)
+    .join(' ');
+}
+
+function centroid(vertices: Array<{ x: number; y: number }>): { x: number; y: number } {
+  const n = vertices.length;
+  if (n === 0) return { x: 0, y: 0 };
+  const sum = vertices.reduce((acc, v) => ({ x: acc.x + v.x, y: acc.y + v.y }), { x: 0, y: 0 });
+  return { x: sum.x / n, y: sum.y / n };
+}
+
+function sqmmToSqft(sqmm: number): number {
+  return sqmm / 92903;
+}
+
+// ─── Scale bar ───────────────────────────────────────────────────────────────
+
+function ScaleBar({ scale, padding }: { scale: number; padding: number }) {
+  // Show a 1000mm (1m) scale bar, or 3ft (≈914mm) if that fits better
+  const targetMm = 1000;
+  const barPixels = targetMm * scale;
+
+  return (
+    <g transform={`translate(${padding}, ${padding})`}>
+      <line
+        x1={0}
+        y1={0}
+        x2={barPixels}
+        y2={0}
+        stroke="var(--text, #111)"
+        strokeWidth={2}
+        strokeLinecap="round"
+      />
+      <line x1={0} y1={-4} x2={0} y2={4} stroke="var(--text, #111)" strokeWidth={2} />
+      <line x1={barPixels} y1={-4} x2={barPixels} y2={4} stroke="var(--text, #111)" strokeWidth={2} />
+      <text
+        x={barPixels / 2}
+        y={-8}
+        textAnchor="middle"
+        fontSize={10}
+        fill="var(--text-3, #6B7280)"
+        fontFamily="inherit"
+      >
+        1 m
+      </text>
+    </g>
+  );
+}
+
+// ─── Component ───────────────────────────────────────────────────────────────
+
+interface FloorPlanCanvasProps {
+  rooms: Room[];
+  selectedRoomId?: string | null;
+  onRoomSelect?: (room: Room) => void;
+  /** Height in px. Defaults to 480. */
+  height?: number;
+}
+
+export function FloorPlanCanvas({
+  rooms,
+  selectedRoomId,
+  onRoomSelect,
+  height = 480,
+}: FloorPlanCanvasProps) {
+  const svgRef = useRef<SVGSVGElement>(null);
+  const [svgSize, setSvgSize] = useState({ width: 600, height });
+
+  // Pan/zoom state
+  const [scale, setScale] = useState(1);
+  const [offset, setOffset] = useState({ x: 40, y: 40 });
+  const isDragging = useRef(false);
+  const lastPos = useRef({ x: 0, y: 0 });
+
+  // Measure SVG container on mount / resize
+  useEffect(() => {
+    if (!svgRef.current) return;
+    const ro = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (entry) {
+        setSvgSize({
+          width: entry.contentRect.width,
+          height,
+        });
+      }
+    });
+    ro.observe(svgRef.current);
+    return () => ro.disconnect();
+  }, [height]);
+
+  // Auto-fit on first load or room change
+  useEffect(() => {
+    const bbox = getBoundingBox(rooms);
+    if (!bbox || bbox.width === 0 || bbox.height === 0) return;
+
+    const padding = 40;
+    const availW = svgSize.width - padding * 2;
+    const availH = svgSize.height - padding * 2;
+    const fitScale = Math.min(availW / bbox.width, availH / bbox.height);
+
+    // Center the plan
+    const planW = bbox.width * fitScale;
+    const planH = bbox.height * fitScale;
+    const offX = padding + (availW - planW) / 2 - bbox.minX * fitScale;
+    const offY = padding + (availH - planH) / 2 - bbox.minY * fitScale;
+
+    setScale(fitScale);
+    setOffset({ x: offX, y: offY });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rooms.length, svgSize.width, svgSize.height]);
+
+  // ─── Pan handlers ──────────────────────────────────────────────────────────
+
+  const handleMouseDown = useCallback((e: React.MouseEvent<SVGSVGElement>) => {
+    isDragging.current = true;
+    lastPos.current = { x: e.clientX, y: e.clientY };
+  }, []);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent<SVGSVGElement>) => {
+    if (!isDragging.current) return;
+    const dx = e.clientX - lastPos.current.x;
+    const dy = e.clientY - lastPos.current.y;
+    lastPos.current = { x: e.clientX, y: e.clientY };
+    setOffset((prev) => ({ x: prev.x + dx, y: prev.y + dy }));
+  }, []);
+
+  const handleMouseUp = useCallback(() => {
+    isDragging.current = false;
+  }, []);
+
+  // ─── Zoom handler ──────────────────────────────────────────────────────────
+
+  const handleWheel = useCallback((e: React.WheelEvent<SVGSVGElement>) => {
+    e.preventDefault();
+    const factor = e.deltaY < 0 ? 1.1 : 0.9;
+    const rect = svgRef.current?.getBoundingClientRect();
+    if (!rect) return;
+
+    // Zoom towards cursor position
+    const cursorX = e.clientX - rect.left;
+    const cursorY = e.clientY - rect.top;
+
+    setScale((prev) => {
+      const next = Math.min(Math.max(prev * factor, 0.05), 20);
+      const ratio = next / prev;
+      setOffset((o) => ({
+        x: cursorX - ratio * (cursorX - o.x),
+        y: cursorY - ratio * (cursorY - o.y),
+      }));
+      return next;
+    });
+  }, []);
+
+  // ─── Empty state ───────────────────────────────────────────────────────────
+
+  if (rooms.length === 0) {
+    return (
+      <div
+        style={{
+          height,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: 'var(--surface-1, #F9FAFB)',
+          borderRadius: 12,
+          border: '1px solid var(--border, #E5E7EB)',
+          color: 'var(--text-3, #9CA3AF)',
+          fontSize: 14,
+        }}
+      >
+        No floor plan data. Import a RoomScan file to view.
+      </div>
+    );
+  }
+
+  return (
+    <svg
+      ref={svgRef}
+      width="100%"
+      height={height}
+      style={{
+        display: 'block',
+        background: 'var(--surface-1, #F9FAFB)',
+        borderRadius: 12,
+        border: '1px solid var(--border, #E5E7EB)',
+        cursor: isDragging.current ? 'grabbing' : 'grab',
+        touchAction: 'none',
+        userSelect: 'none',
+      }}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+      onWheel={handleWheel}
+    >
+      {/* Floor plan rooms */}
+      <g>
+        {rooms.map((room) => {
+          const pts = polygonPoints(room.polygon.vertices, scale, offset.x, offset.y);
+          const c = centroid(room.polygon.vertices);
+          const cx = c.x * scale + offset.x;
+          const cy = c.y * scale + offset.y;
+          const isSelected = room.id === selectedRoomId;
+          const fill = STATUS_FILL[room.status] ?? STATUS_FILL.pending;
+          const stroke = STATUS_STROKE[room.status] ?? STATUS_STROKE.pending;
+          const area = sqmmToSqft(room.polygon.area_sqmm);
+
+          return (
+            <g
+              key={room.id}
+              onClick={() => onRoomSelect?.(room)}
+              style={{ cursor: 'pointer' }}
+            >
+              <polygon
+                points={pts}
+                fill={fill}
+                stroke={isSelected ? '#1E40AF' : stroke}
+                strokeWidth={isSelected ? 2.5 : 1.5}
+                strokeLinejoin="round"
+              />
+              {/* Room label — only if polygon is large enough */}
+              {area > 20 && (
+                <text
+                  x={cx}
+                  y={cy}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  fontSize={Math.max(9, Math.min(13, scale * 80))}
+                  fill="var(--text, #111827)"
+                  fontFamily="inherit"
+                  fontWeight={isSelected ? 700 : 400}
+                  pointerEvents="none"
+                >
+                  {room.name}
+                </text>
+              )}
+              {area > 20 && (
+                <text
+                  x={cx}
+                  y={cy + Math.max(10, Math.min(16, scale * 95))}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  fontSize={Math.max(8, Math.min(11, scale * 65))}
+                  fill="var(--text-3, #6B7280)"
+                  fontFamily="inherit"
+                  pointerEvents="none"
+                >
+                  {area.toFixed(0)} ft²
+                </text>
+              )}
+            </g>
+          );
+        })}
+      </g>
+
+      {/* Scale bar (bottom-left) */}
+      <g transform={`translate(16, ${height - 28})`}>
+        <ScaleBar scale={scale} padding={0} />
+      </g>
+    </svg>
+  );
+}

@@ -13,6 +13,9 @@ import type { Services } from '../services';
 import { getLoggedServices, getServices } from '../services';
 import { getStorage } from '../storage/initialize';
 import { StoreNames } from '../storage/StorageAdapter';
+import { seedRevealGauges } from '../data/seed/reveal-gauges.seed';
+import { seedSampleRooms } from '../data/seed/sample-rooms.seed';
+import { seedSampleSelections } from '../data/seed/sample-selections.seed';
 
 type LogFn = (msg: string) => void;
 
@@ -388,6 +391,18 @@ export async function seedInteriorsDemo(_services: Services, addLog: LogFn): Pro
 
   // ---- 10. Activity Events (15-20 across 30 days) ----
   await seedActivityEvents(services, customerIds, projectIds, addLog);
+
+  // ---- 11. Reveal Gauges (localStorage) ----
+  const gaugesSeeded = seedRevealGauges();
+  addLog(gaugesSeeded ? 'Seeded 4 reveal gauges' : 'Reveal gauges already exist (skipped)');
+
+  // ---- 12. Sample Rooms for Arsenault Main Floor (projectIds[0]) ----
+  const roomsSeeded = await seedSampleRooms(projectIds[0]);
+  addLog(roomsSeeded ? 'Seeded 2 sample rooms (Living Room + Primary Bedroom)' : 'Sample rooms already exist (skipped)');
+
+  // ---- 13. Material Selections for demo rooms ----
+  const selectionsSeeded = await seedSampleSelections(projectIds[0]);
+  addLog(selectionsSeeded ? 'Seeded 6 confirmed material selections (3 per room)' : 'Material selections already exist (skipped)');
 
   addLog('Interiors demo seed complete!');
 }
@@ -1035,6 +1050,50 @@ export async function wipeInteriorsDemo(_services: Services, addLog: LogFn): Pro
     }
   }
   addLog(`Deleted ${payCount} seeded payments`);
+
+  // 8. Wipe seed rooms + room scan
+  const allRooms = await storage.getAll<{ id: string }>(StoreNames.ROOMS);
+  let roomCount = 0;
+  for (const r of allRooms) {
+    if (r.id.startsWith('SEED-ROOM-')) {
+      await storage.delete(StoreNames.ROOMS, r.id);
+      roomCount++;
+    }
+  }
+  const allScans = await storage.getAll<{ id: string }>(StoreNames.ROOM_SCANS);
+  for (const s of allScans) {
+    if (s.id.startsWith('SEED-SCAN-')) {
+      await storage.delete(StoreNames.ROOM_SCANS, s.id);
+    }
+  }
+  addLog(`Deleted ${roomCount} seeded rooms`);
+
+  // 9. Wipe seed material selections
+  const allSels = await storage.getAll<{ id: string }>(StoreNames.PROJECT_MATERIAL_SELECTIONS);
+  let selCount = 0;
+  for (const s of allSels) {
+    if (s.id.startsWith('SEED-SEL-')) {
+      await storage.delete(StoreNames.PROJECT_MATERIAL_SELECTIONS, s.id);
+      selCount++;
+    }
+  }
+  addLog(`Deleted ${selCount} seeded material selections`);
+
+  // 10. Wipe seed reveal gauges from localStorage
+  if (typeof window !== 'undefined') {
+    const raw = localStorage.getItem('hooomz_reveal_gauges');
+    if (raw) {
+      try {
+        const gauges = JSON.parse(raw);
+        if (Array.isArray(gauges) && gauges.some((g: { id: string }) => g.id === 'SEED-REVEAL-001')) {
+          localStorage.removeItem('hooomz_reveal_gauges');
+          addLog('Removed seeded reveal gauges');
+        }
+      } catch {
+        // ignore
+      }
+    }
+  }
 
   // Activity events are append-only — we do NOT delete them
   addLog('Activity events preserved (append-only per architecture rules)');

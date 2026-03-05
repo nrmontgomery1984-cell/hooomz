@@ -7,7 +7,7 @@ import type { StorageAdapter } from './StorageAdapter';
 import { StoreNames } from './StorageAdapter';
 
 const DB_NAME = 'hooomz_db';
-const DB_VERSION = 29; // v29: Add checklistSubmissions store, update sops indexes
+const DB_VERSION = 30; // v30: Add catalogProducts, projectMaterialSelections, roomScans, rooms, flooringLayouts, millworkAssemblyConfigs, trimCalculations; add source field to lineItems
 
 export class IndexedDBAdapter implements StorageAdapter {
   private db: IDBDatabase | null = null;
@@ -133,6 +133,24 @@ export class IndexedDBAdapter implements StorageAdapter {
           }
         }
 
+        // v30 migration: add source + source_id to existing lineItems records
+        if (oldVersion < 30 && db.objectStoreNames.contains(StoreNames.LINE_ITEMS)) {
+          const lineItemsStore = tx.objectStore(StoreNames.LINE_ITEMS);
+          const lineItemsCursor = lineItemsStore.openCursor();
+          lineItemsCursor.onsuccess = () => {
+            const cursor = lineItemsCursor.result;
+            if (cursor) {
+              const record = cursor.value as Record<string, unknown>;
+              if (!('source' in record)) {
+                record.source = 'manual';
+                record.source_id = null;
+                cursor.update(record);
+              }
+              cursor.continue();
+            }
+          };
+        }
+
         // Build 3b migration: fix timeEntries indexes (crewMemberId → team_member_id)
         if (oldVersion < 9 && db.objectStoreNames.contains(StoreNames.TIME_ENTRIES)) {
           const teStore = tx.objectStore(StoreNames.TIME_ENTRIES);
@@ -255,6 +273,17 @@ export class IndexedDBAdapter implements StorageAdapter {
       [StoreNames.TRAINING_GUIDES]: ['code', 'trade', 'status'],
       // Checklist Submissions
       [StoreNames.CHECKLIST_SUBMISSIONS]: ['sopId', 'sopCode', 'projectId', 'technicianId', 'status'],
+      // Material Selection (Block 2)
+      [StoreNames.CATALOG_PRODUCTS]: ['category', 'trade', 'tier', 'sku'],
+      [StoreNames.PROJECT_MATERIAL_SELECTIONS]: ['projectId', 'roomId', 'trade', 'status'],
+      // RoomScan (Block 3)
+      [StoreNames.ROOM_SCANS]: ['projectId', 'uploadedAt'],
+      [StoreNames.ROOMS]: ['scanId', 'projectId', 'name'],
+      // Layout Selector (Block 4)
+      [StoreNames.FLOORING_LAYOUTS]: ['roomId', 'projectId'],
+      // Trim Cut Calculator (Block 5)
+      [StoreNames.MILLWORK_ASSEMBLY_CONFIGS]: [],
+      [StoreNames.TRIM_CALCULATIONS]: ['roomId', 'projectId', 'openingId'],
     };
 
     const storeIndexes = indexes[storeName] || [];

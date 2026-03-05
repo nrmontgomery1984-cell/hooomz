@@ -121,6 +121,31 @@ import { ConsultationRepository } from '../repositories/consultation.repository'
 // Quotes (Sales pipeline)
 import { QuoteRepository } from '../repositories/quote.repository';
 
+// Material Selection / Trim (Phase 1 — v30)
+import { CatalogProductRepository } from '../repositories/catalogProduct.repository';
+import { CatalogProductService, createCatalogProductService } from './catalogProduct.service';
+import { MillworkConfigRepository } from '../repositories/millworkConfig.repository';
+
+// Trim Cut Calculator (Phase 5 — v30)
+import { TrimCalculationRepository } from '../repositories/trimCalculation.repository';
+import { TrimCalculationService, createTrimCalculationService } from './trimCalculation.service';
+
+// RoomScan Integration (Phase 2 — v30)
+import { RoomScanRepository } from '../repositories/roomScan.repository';
+import { RoomRepository } from '../repositories/room.repository';
+import { RoomScanService, createRoomScanService } from './roomScan.service';
+
+// Material Selection (Phase 3 — v30)
+import { MaterialSelectionRepository } from '../repositories/materialSelection.repository';
+import { MaterialSelectionService, createMaterialSelectionService } from './materialSelection.service';
+
+// Flooring Layout (Phase 4 — v30)
+import { FlooringLayoutRepository } from '../repositories/flooringLayout.repository';
+import { FlooringLayoutService, createFlooringLayoutService } from './flooringLayout.service';
+
+// Phase 6: Selection → Quote integration
+import { MaterialSelectionToLineItemsService, createMaterialSelectionToLineItemsService } from './materialSelectionToLineItems.service';
+
 /**
  * Repository container - provides access to all offline-first repositories
  * Use this for read operations and internal access.
@@ -226,6 +251,27 @@ export interface Services {
   // Standard SOPs + Checklists
   standardSops: StandardSopService;
   checklists: ChecklistService;
+
+  // Material Selection (Phase 1 — v30)
+  materialCatalog: CatalogProductService;
+
+  // Trim Cut Calculator config (Phase 1 — v30)
+  millworkConfig: MillworkConfigRepository;
+
+  // Trim Cut Calculator (Phase 5 — v30)
+  trimCalculation: TrimCalculationService;
+
+  // RoomScan Integration (Phase 2 — v30)
+  roomScan: RoomScanService;
+
+  // Material Selection (Phase 3 — v30)
+  materialSelection: MaterialSelectionService;
+
+  // Flooring Layout (Phase 4 — v30)
+  flooringLayout: FlooringLayoutService;
+
+  // Phase 6: Selection → Quote integration
+  materialToLineItems: MaterialSelectionToLineItemsService;
 }
 
 /**
@@ -464,6 +510,47 @@ export async function initializeServices(): Promise<Services> {
       // Standard SOPs + Checklists
       standardSops: createStandardSopService(new StandardSopRepository(storage), activityService),
       checklists: createChecklistService(new ChecklistRepository(storage), activityService),
+
+      // Material Selection (Phase 1 — v30)
+      materialCatalog: createCatalogProductService(new CatalogProductRepository(storage), activityService),
+
+      // Trim Cut Calculator config (Phase 1 — v30)
+      millworkConfig: new MillworkConfigRepository(storage),
+
+      // RoomScan Integration (Phase 2 — v30)
+      roomScan: createRoomScanService(
+        new RoomScanRepository(storage),
+        new RoomRepository(storage),
+        activityService,
+      ),
+
+      // Material Selection (Phase 3 — v30)
+      materialSelection: createMaterialSelectionService(
+        new MaterialSelectionRepository(storage),
+        new CatalogProductRepository(storage),
+        new RoomRepository(storage),
+        activityService,
+      ),
+
+      // Flooring Layout (Phase 4 — v30)
+      flooringLayout: createFlooringLayoutService(
+        new FlooringLayoutRepository(storage),
+        new RoomRepository(storage),
+        activityService,
+      ),
+
+      // Trim Cut Calculator (Phase 5 — v30)
+      trimCalculation: createTrimCalculationService(
+        new TrimCalculationRepository(storage),
+        new MillworkConfigRepository(storage),
+      ),
+
+      // Phase 6: Selection → Quote integration
+      materialToLineItems: createMaterialSelectionToLineItemsService(
+        lineItemRepository,
+        new MaterialSelectionRepository(storage),
+        activityService,
+      ),
     };
 
     // Late-bind expense repo to budget service for derived actualMaterialCost
@@ -708,4 +795,9 @@ export type {
   InvoiceService,
   PaymentService,
   TrainingGuideService,
+  CatalogProductService,
+  RoomScanService,
+  MaterialSelectionService,
+  FlooringLayoutService,
+  MaterialSelectionToLineItemsService,
 };

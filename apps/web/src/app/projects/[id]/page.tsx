@@ -11,7 +11,7 @@
 import { useMemo, useState, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { PageErrorBoundary } from '@/components/ui/PageErrorBoundary';
-import { ChevronLeft, ChevronDown, ChevronUp, MapPin, ArrowRight, Trash2, Plus, X } from 'lucide-react';
+import { ChevronLeft, ChevronDown, ChevronUp, MapPin, ArrowRight, Trash2, Plus, X, Layers } from 'lucide-react';
 import { useIsMobile } from '@/lib/hooks/useIsMobile';
 import {
   useLocalProject,
@@ -564,6 +564,12 @@ export default function ProjectDetailPage() {
                     <HeaderBudgetItem label="Progress" value={`${healthScore}%`} total="100%" pct={healthScore} forceGreen />
                   </div>
                 )}
+
+                {/* Rooms */}
+                <Link href={`/production/jobs/${projectId}/rooms`} style={{ background: 'none', border: '1px solid var(--border)', borderRadius: 'var(--radius)', cursor: 'pointer', padding: '0 8px', color: 'var(--text-2)', display: 'flex', alignItems: 'center', gap: 4, minHeight: 32, textDecoration: 'none' }} title="Rooms & Materials">
+                  <Layers size={12} strokeWidth={2} />
+                  {!isMobile && <span style={{ fontFamily: 'var(--font-cond)', fontSize: 10, fontWeight: 600, letterSpacing: '0.04em' }}>ROOMS</span>}
+                </Link>
 
                 {/* Add Task */}
                 <button onClick={() => setShowAddTask(true)} style={{ background: 'none', border: '1px solid var(--teal)', borderRadius: 'var(--radius)', cursor: 'pointer', padding: '0 8px', color: 'var(--teal)', display: 'flex', alignItems: 'center', gap: 4, minHeight: 32 }} title="Add task">

@@ -69,6 +69,29 @@ export const LOCAL_QUERY_KEYS = {
     byInvoice: (invoiceId: string) => ['local', 'payments', 'invoice', invoiceId] as const,
     byProject: (projectId: string) => ['local', 'payments', 'project', projectId] as const,
   },
+  roomScans: {
+    all: ['local', 'roomScans'] as const,
+    byJob: (jobId: string) => ['local', 'roomScans', 'job', jobId] as const,
+    detail: (id: string) => ['local', 'roomScans', 'detail', id] as const,
+  },
+  rooms: {
+    all: ['local', 'rooms'] as const,
+    byJob: (jobId: string) => ['local', 'rooms', 'job', jobId] as const,
+    byScan: (scanId: string) => ['local', 'rooms', 'scan', scanId] as const,
+    detail: (id: string) => ['local', 'rooms', 'detail', id] as const,
+  },
+  materialSelections: {
+    all: ['local', 'materialSelections'] as const,
+    byProject: (projectId: string) => ['local', 'materialSelections', 'project', projectId] as const,
+    byRoom: (roomId: string) => ['local', 'materialSelections', 'room', roomId] as const,
+    roomSummary: (roomId: string) => ['local', 'materialSelections', 'summary', roomId] as const,
+    tierComparison: (roomId: string, trade: string) => ['local', 'materialSelections', 'tier', roomId, trade] as const,
+  },
+  flooringLayouts: {
+    all: ['local', 'flooringLayouts'] as const,
+    byRoom: (roomId: string) => ['local', 'flooringLayouts', 'room', roomId] as const,
+    byProject: (projectId: string) => ['local', 'flooringLayouts', 'project', projectId] as const,
+  },
 };
 
 // ============================================================================

@@ -149,6 +149,17 @@ export const StoreNames = {
   TRAINING_GUIDES: 'trainingGuides',
   // Checklist Submissions (SOP checklist completions)
   CHECKLIST_SUBMISSIONS: 'checklistSubmissions',
+  // Material Selection (Block 2)
+  CATALOG_PRODUCTS: 'catalogProducts',
+  PROJECT_MATERIAL_SELECTIONS: 'projectMaterialSelections',
+  // RoomScan (Block 3)
+  ROOM_SCANS: 'roomScans',
+  ROOMS: 'rooms',
+  // Layout Selector (Block 4)
+  FLOORING_LAYOUTS: 'flooringLayouts',
+  // Trim Cut Calculator (Block 5)
+  MILLWORK_ASSEMBLY_CONFIGS: 'millworkAssemblyConfigs',
+  TRIM_CALCULATIONS: 'trimCalculations',
 } as const;
 
 export type StoreName = (typeof StoreNames)[keyof typeof StoreNames];

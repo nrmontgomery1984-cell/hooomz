@@ -16,6 +16,14 @@ const nextConfig = {
     '@hooomz/field-docs',
     '@hooomz/reporting',
   ],
+  async rewrites() {
+    return [
+      {
+        source: '/interiors',
+        destination: '/interiors.html',
+      },
+    ];
+  },
 }
 
 module.exports = nextConfig

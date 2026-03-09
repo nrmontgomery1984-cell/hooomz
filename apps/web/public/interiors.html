@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hooomz Interiors — Greater Moncton</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F0EDE8;
+  --surface:#FAF8F5;
+  --surface-2:#E8E4DE;
+  --charcoal:#1A1714;
+  --dark-nav:#111010;
+  --mid:#5C5349;
+  --muted:#9A8E84;
+  --faint:#D4CEC7;
+  --border:rgba(0,0,0,.10);
+  --border-s:rgba(0,0,0,.18);
+  /* Grey accent — replaces clay */
+  --accent:#6B6560;
+  --accent-light:#8C8580;
+  --accent-bg:rgba(107,101,96,.09);
+  --accent-border:rgba(107,101,96,.22);
+  /* Status */
+  --red:#DC2626;
+  --red-bg:rgba(220,38,38,.08);
+  --yellow:#D97706;
+  --yellow-bg:rgba(217,119,6,.08);
+  --green:#16A34A;
+  --green-bg:rgba(22,163,74,.08);
+  --font-display:'Figtree',sans-serif;
+  --font-body:'Figtree',sans-serif;
+  --font-mono:'DM Mono',monospace;
+  --radius:10px;
+  --radius-sm:6px;
+}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--charcoal);
+  font-family:var(--font-body);font-size:15px;line-height:1.7;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+
+/* ─── NAV ─── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:var(--dark-nav);
+  display:flex;align-items:stretch;height:52px;
+}
+.nav-left{
+  display:flex;align-items:center;padding:0 28px;
+  border-right:1px solid rgba(255,255,255,.08);flex-shrink:0;
+}
+.nav-logo{
+  font-family:var(--font-body);font-weight:700;font-size:16px;letter-spacing:-0.01em;
+  color:#fff;text-decoration:none;display:flex;align-items:center;
+}
+.logo-ring{
+  display:inline-block;width:10px;height:10px;border-radius:50%;border:2px solid;
+  margin:0 1.5px;position:relative;top:0.5px;flex-shrink:0;
+}
+.logo-ring.r{border-color:#DC2626}
+.logo-ring.y{border-color:#D97706}
+.logo-ring.g{border-color:#16A34A}
+.nav-sub{
+  font-family:var(--font-mono);font-size:8px;letter-spacing:0.12em;
+  color:rgba(255,255,255,.28);margin-left:14px;padding-left:14px;
+  border-left:1px solid rgba(255,255,255,.1);white-space:nowrap;
+}
+.nav-links{display:flex;align-items:stretch;flex:1;padding:0 16px}
+.nav-link{
+  font-family:var(--font-mono);font-size:9.5px;letter-spacing:0.10em;
+  color:rgba(255,255,255,.45);text-decoration:none;
+  display:flex;align-items:center;padding:0 14px;
+  border-bottom:2px solid transparent;transition:all 0.15s;
+}
+.nav-link:hover{color:rgba(255,255,255,.85)}
+.nav-link.active{color:#fff;border-bottom-color:var(--green);font-weight:500}
+.nav-right{margin-left:auto;display:flex;align-items:center;padding:0 20px;border-left:1px solid rgba(255,255,255,.08)}
+.nav-cta{
+  font-family:var(--font-mono);font-size:9.5px;letter-spacing:0.10em;
+  padding:8px 18px;border-radius:var(--radius-sm);
+  background:#fff;color:var(--charcoal);text-decoration:none;
+  font-weight:500;transition:background 0.15s;white-space:nowrap;
+}
+.nav-cta:hover{background:var(--bg)}
+
+/* ─── HERO ─── */
+.hero{
+  min-height:0;padding-top:52px;
+  display:grid;grid-template-columns:1fr 480px;
+  background:var(--bg);
+}
+.hero-left{
+  padding:56px 52px 56px 64px;
+  display:flex;flex-direction:column;justify-content:center;
+  border-right:1px solid var(--border);
+}
+.hero-eyebrow{
+  font-family:var(--font-mono);font-size:9px;letter-spacing:0.18em;
+  color:var(--muted);margin-bottom:32px;
+  display:flex;align-items:center;gap:12px;
+}
+.hero-eyebrow::before{content:'———';color:var(--faint);letter-spacing:-2px}
+.hero-headline{
+  font-family:var(--font-display);
+  font-size:clamp(44px,5.5vw,72px);font-weight:600;letter-spacing:-0.02em;line-height:1.08;
+  
+  color:var(--charcoal);
+  margin-bottom:32px;
+}
+.hero-headline .line-accent{color:var(--accent)}
+.hero-bottom{display:flex;align-items:flex-end;gap:36px}
+.hero-body{
+  font-family:var(--font-body);font-size:14px;font-weight:400;
+  color:var(--mid);line-height:1.85;max-width:380px;
+}
+.hero-actions{display:flex;flex-direction:column;gap:10px;flex-shrink:0}
+.btn-primary{
+  font-family:var(--font-mono);font-size:9.5px;letter-spacing:0.10em;
+  padding:13px 24px;border-radius:var(--radius-sm);font-weight:500;
+  background:var(--charcoal);color:#fff;text-decoration:none;
+  border:none;cursor:pointer;transition:background 0.15s;display:block;text-align:center;white-space:nowrap;
+}
+.btn-primary:hover{background:#333}
+.btn-outline{
+  font-family:var(--font-mono);font-size:9.5px;letter-spacing:0.10em;
+  padding:12px 24px;border-radius:var(--radius-sm);font-weight:500;
+  background:transparent;color:var(--mid);text-decoration:none;
+  border:1px solid var(--border-s);cursor:pointer;transition:all 0.15s;display:block;text-align:center;white-space:nowrap;
+}
+.btn-outline:hover{border-color:var(--charcoal);color:var(--charcoal)}
+
+/* Hero right panel */
+.hero-right{
+  background:var(--surface);
+  border-left:1px solid var(--border);
+  display:flex;flex-direction:column;
+  padding:28px 24px;gap:14px;
+  justify-content:center;
+}
+.job-card{
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:var(--radius);padding:20px;
+}
+.jc-eyebrow{font-family:var(--font-mono);font-size:8px;letter-spacing:0.12em;color:var(--muted);margin-bottom:6px}
+.jc-title{font-family:var(--font-display);font-size:17px;font-weight:600;letter-spacing:-0.01em;color:var(--charcoal);margin-bottom:14px;line-height:1}
+.jc-script{display:flex;gap:4px;margin-bottom:12px;flex-wrap:wrap}
+.jc-stage{
+  font-family:var(--font-mono);font-size:8px;letter-spacing:0.06em;
+  padding:3px 9px;border-radius:3px;font-weight:500;
+}
+.s-done{background:var(--green-bg);color:var(--green)}
+.s-active{background:var(--yellow-bg);color:var(--yellow);font-weight:600}
+.s-idle{background:var(--surface-2);color:var(--muted)}
+.jc-progress{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.jc-pb{flex:1;height:3px;background:var(--surface-2);border-radius:10px;overflow:hidden}
+.jc-pb-fill{height:100%;background:var(--yellow);border-radius:10px;width:62%}
+.jc-pct{font-family:var(--font-mono);font-size:8.5px;color:var(--yellow);white-space:nowrap}
+.jc-rooms{display:flex;flex-wrap:wrap;gap:5px}
+.jc-room{
+  font-family:var(--font-mono);font-size:8px;letter-spacing:0.06em;
+  padding:3px 9px;border:1px solid var(--border);border-radius:3px;color:var(--mid);
+}
+.jc-room.done{background:var(--green-bg);border-color:rgba(22,163,74,.2);color:var(--green)}
+.jc-room.active{background:var(--yellow-bg);border-color:rgba(217,119,6,.2);color:var(--yellow)}
+
+.stat-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.stat-box{
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:14px 16px;
+}
+.stat-lbl{font-family:var(--font-mono);font-size:7.5px;letter-spacing:0.12em;color:var(--muted);margin-bottom:6px;text-transform:uppercase}
+.stat-val{font-family:var(--font-display);font-size:22px;font-weight:600;letter-spacing:-0.02em;color:var(--charcoal);line-height:1}
+.stat-val.green{color:var(--green)}
+.stat-sub{font-family:var(--font-mono);font-size:8px;color:var(--muted);margin-top:4px}
+
+/* ─── TRUST STRIP ─── */
+.trust-strip{
+  background:var(--dark-nav);
+  padding:16px 64px;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;
+}
+.ts-item{display:flex;align-items:center;gap:12px}
+.ts-val{
+  font-family:var(--font-display);font-size:24px;font-weight:600;letter-spacing:-0.02em;
+  color:#fff;line-height:1;
+}
+.ts-lbl{font-family:var(--font-mono);font-size:8px;letter-spacing:0.12em;color:rgba(255,255,255,.35);line-height:1.5}
+.ts-div{width:1px;height:32px;background:rgba(255,255,255,.1)}
+
+/* ─── SECTIONS ─── */
+.section{padding:64px 80px}
+.section-alt{background:var(--surface)}
+.section-dark{background:var(--dark-nav)}
+
+/* Section header layouts */
+.section-header{
+  display:grid;grid-template-columns:1fr 1fr;gap:40px;
+  align-items:end;margin-bottom:40px;
+}
+.section-header-full{margin-bottom:40px}
+.eyebrow{
+  font-family:var(--font-mono);font-size:9px;letter-spacing:0.18em;
+  color:var(--muted);margin-bottom:16px;
+  display:flex;align-items:center;gap:10px;
+}
+.eyebrow::before{content:'';display:block;width:20px;height:1px;background:var(--faint)}
+.section-dark .eyebrow{color:rgba(255,255,255,.3)}
+.section-dark .eyebrow::before{background:rgba(255,255,255,.15)}
+.section-headline{
+  font-family:var(--font-display);
+  font-size:clamp(28px,3.2vw,46px);font-weight:600;letter-spacing:-0.02em;
+  line-height:1.05;letter-spacing:-0.01em;
+  color:var(--charcoal);
+}
+.section-dark .section-headline{color:#fff}
+.section-body{
+  font-family:var(--font-body);font-size:14px;color:var(--mid);
+  line-height:1.85;max-width:440px;align-self:end;
+}
+.section-dark .section-body{color:rgba(255,255,255,.45)}
+
+/* ─── SERVICES ─── */
+.services-grid{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--border);border-radius:var(--radius)}
+.svc-card{
+  padding:24px 22px;
+  border-right:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  transition:background 0.15s;
+}
+.svc-card:hover{background:var(--surface)}
+.svc-card:nth-child(3n){border-right:none}
+.svc-card:nth-child(4),.svc-card:nth-child(5),.svc-card:nth-child(6){border-bottom:none}
+.svc-num{
+  font-family:var(--font-mono);font-size:9px;letter-spacing:0.12em;
+  color:var(--faint);margin-bottom:16px;
+}
+.svc-title{
+  font-family:var(--font-display);font-size:17px;font-weight:600;letter-spacing:-0.01em;
+  color:var(--charcoal);margin-bottom:12px;line-height:1;
+}
+.svc-desc{font-family:var(--font-body);font-size:13px;color:var(--mid);line-height:1.75}
+.svc-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:18px}
+.svc-tag{
+  font-family:var(--font-mono);font-size:8px;letter-spacing:0.08em;
+  padding:3px 9px;border:1px solid var(--border);border-radius:3px;color:var(--muted);
+  
+}
+
+/* ─── HOW IT WORKS ─── */
+.script-grid{display:grid;grid-template-columns:repeat(6,1fr);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);overflow:hidden}
+.script-step{
+  padding:24px 18px;
+  border-right:1px solid rgba(255,255,255,.08);
+  transition:background 0.15s;
+}
+.script-step:last-child{border-right:none}
+.script-step:hover{background:rgba(255,255,255,.03)}
+.step-num{font-family:var(--font-mono);font-size:8px;letter-spacing:0.12em;color:rgba(255,255,255,.2);margin-bottom:10px}
+.step-letter{
+  font-family:var(--font-display);font-size:44px;font-weight:600;
+  color:rgba(255,255,255,.08);line-height:1;margin-bottom:12px;
+  
+}
+.script-step.active .step-letter{color:var(--green)}
+.step-label{
+  font-family:var(--font-mono);font-size:8.5px;letter-spacing:0.14em;
+  color:rgba(255,255,255,.35);margin-bottom:10px;
+}
+.script-step.active .step-label{color:var(--green)}
+.step-desc{font-family:var(--font-body);font-size:12px;color:rgba(255,255,255,.35);line-height:1.65}
+.script-step.active .step-desc{color:rgba(255,255,255,.6)}
+
+/* ─── TIERS ─── */
+.tiers-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.tier-card{padding:0;border-right:1px solid var(--border)}
+.tier-card:last-child{border-right:none}
+.tier-card.featured{background:var(--charcoal)}
+.tier-top{padding:20px 24px 18px;border-bottom:1px solid var(--border)}
+.tier-card.featured .tier-top{border-bottom-color:rgba(255,255,255,.1)}
+.tier-badge{
+  font-family:var(--font-mono);font-size:8px;letter-spacing:0.12em;
+  color:var(--green);margin-bottom:12px;
+  display:flex;align-items:center;gap:6px;
+}
+.tier-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0}
+.tier-name{
+  font-family:var(--font-display);font-size:32px;font-weight:600;letter-spacing:-0.02em;
+  line-height:1;margin-bottom:6px;
+}
+.tier-card:not(.featured) .tier-name{color:var(--charcoal)}
+.tier-card.featured .tier-name{color:#fff}
+.tier-sub{font-family:var(--font-body);font-size:12.5px}
+.tier-card:not(.featured) .tier-sub{color:var(--muted)}
+.tier-card.featured .tier-sub{color:rgba(255,255,255,.4)}
+.tier-body{padding:18px 24px}
+.tier-list{list-style:none;display:flex;flex-direction:column;gap:10px}
+.tier-item{
+  display:flex;align-items:flex-start;gap:10px;
+  font-family:var(--font-body);font-size:13px;line-height:1.5;
+}
+.tier-card:not(.featured) .tier-item{color:var(--mid)}
+.tier-card.featured .tier-item{color:rgba(255,255,255,.6)}
+.tier-check{
+  width:15px;height:15px;border-radius:3px;background:var(--green);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;
+}
+.tier-check svg{width:8px;height:8px}
+.tier-foot{padding:14px 24px;border-top:1px solid var(--border)}
+.tier-card.featured .tier-foot{border-top-color:rgba(255,255,255,.1)}
+.tier-price-lbl{font-family:var(--font-mono);font-size:8px;letter-spacing:0.1em;margin-bottom:4px}
+.tier-card:not(.featured) .tier-price-lbl{color:var(--muted)}
+.tier-card.featured .tier-price-lbl{color:rgba(255,255,255,.3)}
+.tier-price{font-family:var(--font-display);font-size:13px;font-weight:500;}
+.tier-card:not(.featured) .tier-price{color:var(--charcoal)}
+.tier-card.featured .tier-price{color:#fff}
+
+/* ─── LABS ─── */
+.labs-layout{display:grid;grid-template-columns:1fr 1fr;gap:0;min-height:auto}
+.labs-left{
+  padding:52px 48px 52px 64px;
+  background:var(--dark-nav);
+  display:flex;flex-direction:column;justify-content:center;
+}
+.labs-right{
+  padding:52px 64px 52px 48px;
+  background:var(--surface-2);
+  display:flex;flex-direction:column;justify-content:center;gap:14px;
+}
+.labs-badge{
+  font-family:var(--font-mono);font-size:9px;letter-spacing:0.16em;
+  color:var(--green);margin-bottom:14px;
+  display:flex;align-items:center;gap:8px;
+}
+.labs-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green)}
+.labs-headline{
+  font-family:var(--font-display);font-size:clamp(30px,3.5vw,48px);font-weight:600;letter-spacing:-0.02em;
+  color:#fff;line-height:1.05;margin-bottom:16px;
+}
+.labs-body{font-family:var(--font-body);font-size:13.5px;color:rgba(255,255,255,.4);line-height:1.85}
+.finding{
+  background:var(--surface);border:1px solid var(--border);
+  border-left:2px solid var(--accent);
+  border-radius:var(--radius-sm);padding:16px 18px;
+}
+.finding-lbl{
+  font-family:var(--font-mono);font-size:7.5px;letter-spacing:0.14em;
+  color:var(--accent);margin-bottom:5px;
+}
+.finding-text{font-family:var(--font-body);font-size:12.5px;color:var(--mid);line-height:1.65}
+
+/* ─── REVIEWS ─── */
+.reviews-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border)}
+.review-card{
+  background:var(--bg);
+  padding:28px 24px;
+}
+.stars{display:flex;gap:3px;margin-bottom:12px}
+.star{color:var(--accent);font-size:11px}
+.review-text{
+  font-family:var(--font-display);font-size:17px;font-weight:600;letter-spacing:-0.01em;
+  color:var(--charcoal);line-height:1.2;margin-bottom:14px;letter-spacing:-0.01em;
+}
+.review-sub{font-family:var(--font-body);font-size:12.5px;color:var(--mid);line-height:1.7;margin-bottom:20px}
+.review-author{display:flex;align-items:center;gap:10px;padding-top:16px;border-top:1px solid var(--border)}
+.author-init{
+  width:32px;height:32px;border-radius:3px;
+  background:var(--accent-bg);border:1px solid var(--accent-border);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-mono);font-size:10px;font-weight:500;color:var(--accent);
+}
+.author-name{font-family:var(--font-body);font-size:12.5px;font-weight:600;color:var(--charcoal)}
+.author-meta{font-family:var(--font-mono);font-size:8px;letter-spacing:0.08em;color:var(--muted);margin-top:2px;text-transform:uppercase}
+
+/* ─── CTA ─── */
+.cta-section{
+  background:var(--charcoal);
+  padding:64px 80px;
+  display:grid;grid-template-columns:1fr auto;gap:48px;align-items:center;
+}
+.cta-headline{
+  font-family:var(--font-display);font-size:clamp(40px,5.5vw,72px);font-weight:600;letter-spacing:-0.02em;
+  color:#fff;line-height:1.05;letter-spacing:-0.01em;
+}
+.cta-sub{font-family:var(--font-body);font-size:14px;color:rgba(255,255,255,.4);line-height:1.85;margin-top:20px;max-width:480px}
+.cta-actions{display:flex;flex-direction:column;gap:10px;align-items:stretch;flex-shrink:0;min-width:220px}
+.btn-cta-white{
+  font-family:var(--font-mono);font-size:9.5px;letter-spacing:0.10em;
+  padding:15px 28px;border-radius:var(--radius-sm);font-weight:500;
+  background:#fff;color:var(--charcoal);
+  text-decoration:none;border:none;cursor:pointer;text-align:center;
+  transition:background 0.15s;display:block;
+}
+.btn-cta-white:hover{background:var(--bg)}
+.btn-cta-ghost{
+  font-family:var(--font-mono);font-size:9.5px;letter-spacing:0.10em;
+  padding:14px 28px;border-radius:var(--radius-sm);font-weight:500;
+  background:transparent;color:rgba(255,255,255,.5);
+  border:1px solid rgba(255,255,255,.15);text-decoration:none;cursor:pointer;
+  text-align:center;transition:all 0.15s;display:block;
+}
+.btn-cta-ghost:hover{border-color:rgba(255,255,255,.5);color:#fff}
+.cta-note{font-family:var(--font-mono);font-size:8px;letter-spacing:0.1em;color:rgba(255,255,255,.2);text-align:center;text-transform:uppercase}
+
+/* ─── FOOTER ─── */
+footer{
+  background:var(--dark-nav);padding:36px 80px;
+  display:grid;grid-template-columns:200px 1fr auto;gap:40px;align-items:start;
+  border-top:1px solid rgba(255,255,255,.06);
+}
+.foot-logo{
+  font-family:var(--font-body);font-size:16px;font-weight:700;letter-spacing:-0.01em;
+  color:#fff;display:flex;align-items:center;
+}
+.foot-tagline{
+  font-family:var(--font-mono);font-size:8.5px;letter-spacing:0.1em;
+  color:rgba(255,255,255,.2);margin-top:10px;line-height:1.8;
+}
+.foot-mid{display:flex;gap:48px}
+.foot-col-lbl{font-family:var(--font-mono);font-size:8px;letter-spacing:0.16em;color:rgba(255,255,255,.2);margin-bottom:14px}
+.foot-link{
+  display:block;font-family:var(--font-body);font-size:13px;
+  color:rgba(255,255,255,.4);text-decoration:none;margin-bottom:8px;transition:color 0.12s;
+}
+.foot-link:hover{color:rgba(255,255,255,.85)}
+.foot-right{text-align:right}
+.foot-loc{font-family:var(--font-mono);font-size:8px;letter-spacing:0.14em;color:rgba(255,255,255,.2);margin-bottom:10px;text-transform:uppercase}
+.foot-copy{font-family:var(--font-mono);font-size:8px;color:rgba(255,255,255,.15);margin-top:20px}
+.foot-labs{font-family:var(--font-mono);font-size:8px;color:var(--green);margin-top:4px;letter-spacing:0.1em}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:1100px){
+  .hero{grid-template-columns:1fr}
+  .hero-right{display:none}
+  .services-grid{grid-template-columns:1fr 1fr;border-radius:var(--radius)}
+  .svc-card:nth-child(2n){border-right:none}
+  .svc-card:nth-child(3n){border-right:1px solid var(--border)}
+  .svc-card:nth-child(5),.svc-card:nth-child(6){border-bottom:none}
+  .tiers-grid{grid-template-columns:1fr}
+  .tier-card{border-right:none;border-bottom:1px solid var(--border)}
+  .tier-card:last-child{border-bottom:none}
+  .labs-layout{grid-template-columns:1fr}
+  .cta-section{grid-template-columns:1fr}
+  .script-grid{grid-template-columns:repeat(3,1fr)}
+  .script-step:nth-child(3){border-right:none}
+  .script-step:nth-child(n+4){border-top:1px solid rgba(255,255,255,.08)}
+}
+@media(max-width:768px){
+  nav{height:auto}
+  .nav-sub,.nav-right{display:none}
+  .nav-links{display:none}
+  .section,.cta-section{padding:56px 24px}
+  .trust-strip{padding:20px 24px}
+  .hero-left{padding:56px 24px}
+  .labs-layout{grid-template-columns:1fr}
+  .labs-left,.labs-right{padding:48px 24px}
+  .services-grid{grid-template-columns:1fr}
+  .svc-card:nth-child(n){border-right:none;border-bottom:1px solid var(--border)}
+  .reviews-grid{grid-template-columns:1fr}
+  .section-header{grid-template-columns:1fr}
+  .script-grid{grid-template-columns:1fr 1fr}
+  footer{grid-template-columns:1fr;padding:40px 24px;gap:28px}
+  .foot-right{text-align:left}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left">
+    <a href="#" class="nav-logo"><span>H</span><span class="logo-ring r"></span><span class="logo-ring y"></span><span class="logo-ring g"></span><span>MZ</span></a>
+    <span class="nav-sub">INTERIORS · MONCTON, NB</span>
+  </div>
+  <div class="nav-links">
+    <a href="#services" class="nav-link" data-section="services">Services</a>
+    <a href="#process" class="nav-link" data-section="process">How It Works</a>
+    <a href="#tiers" class="nav-link" data-section="tiers">Pricing</a>
+    <a href="#labs" class="nav-link" data-section="labs">Labs</a>
+  </div>
+  <div class="nav-right">
+    <a href="#book" class="nav-cta">Book Discovery</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow">Greater Moncton Interior Specialists</div>
+    <h1 class="hero-headline">
+      Your home,<br>
+      <span class="line-accent">done right.</span>
+    </h1>
+    <div class="hero-bottom">
+      <p class="hero-body">Flooring, paint, trim, and specialty finishes — backed by a documented process, good-better-best pricing, and a permanent record of every material in your home.</p>
+      <div class="hero-actions">
+        <a href="#book" class="btn-primary">Book a Discovery Call</a>
+        <a href="#process" class="btn-outline">See How It Works</a>
+      </div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="job-card">
+      <div class="jc-eyebrow">J-2024-019 · ARSENAULT RESIDENCE</div>
+      <div class="jc-title">Main Floor Refresh</div>
+      <div class="jc-script">
+        <span class="jc-stage s-done">Shield ✓</span>
+        <span class="jc-stage s-done">Clear ✓</span>
+        <span class="jc-stage s-done">Ready ✓</span>
+        <span class="jc-stage s-active">Install</span>
+        <span class="jc-stage s-idle">Punch</span>
+        <span class="jc-stage s-idle">Turnover</span>
+      </div>
+      <div class="jc-progress">
+        <div class="jc-pb"><div class="jc-pb-fill"></div></div>
+        <span class="jc-pct">Day 5 of 8</span>
+      </div>
+      <div class="jc-rooms">
+        <span class="jc-room done">Living Room ✓</span>
+        <span class="jc-room done">Dining Room ✓</span>
+        <span class="jc-room active">Kitchen</span>
+        <span class="jc-room">Hallway</span>
+        <span class="jc-room">Powder Room</span>
+      </div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-box">
+        <div class="stat-lbl">Est. Job Value</div>
+        <div class="stat-val">$18.4k</div>
+        <div class="stat-sub">Cortec Pro Plus · Better</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-lbl">Home Health</div>
+        <div class="stat-val green">90</div>
+        <div class="stat-sub">Excellent · Passport</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST STRIP -->
+<div class="trust-strip">
+  <div class="ts-item"><div class="ts-val">22+</div><div class="ts-lbl">Years<br>Experience</div></div>
+  <div class="ts-div"></div>
+  <div class="ts-item"><div class="ts-val">Red Seal</div><div class="ts-lbl">Journeyman<br>Carpenter</div></div>
+  <div class="ts-div"></div>
+  <div class="ts-item"><div class="ts-val">3-Tier</div><div class="ts-lbl">Good / Better<br>/ Best Quote</div></div>
+  <div class="ts-div"></div>
+  <div class="ts-item"><div class="ts-val">LiDAR</div><div class="ts-lbl">Precision<br>Measurement</div></div>
+  <div class="ts-div"></div>
+  <div class="ts-item"><div class="ts-val">Moncton</div><div class="ts-lbl">Dieppe · Riverview<br>Greater Area</div></div>
+</div>
+
+<!-- SERVICES -->
+<section id="services" class="section section-alt">
+  <div class="section-header">
+    <div>
+      <div class="eyebrow">What We Do</div>
+      <h2 class="section-headline">Interior<br>renovations,<br>as a system.</h2>
+    </div>
+    <p class="section-body">Every trade under one process. Flooring to finishes, each room documented, priced transparently, and delivered with a permanent record of every material in your home.</p>
+  </div>
+  <div class="services-grid">
+    <div class="svc-card">
+      <div class="svc-num">01</div>
+      <div class="svc-title">LVP, Hardwood & Tile</div>
+      <div class="svc-desc">LiDAR-measured rooms, cut-list precision, substrate inspection before the first plank goes down.</div>
+      <div class="svc-tags"><span class="svc-tag">LVP / Hardwood</span><span class="svc-tag">Tile</span><span class="svc-tag">Layout</span></div>
+    </div>
+    <div class="svc-card">
+      <div class="svc-num">02</div>
+      <div class="svc-title">Interior Paint & Prep</div>
+      <div class="svc-desc">Benjamin Moore specified by room. Full prep, two coats, clean lines — colour recorded in your Hooomz Passport.</div>
+      <div class="svc-tags"><span class="svc-tag">Walls + Ceilings</span><span class="svc-tag">Trim + Doors</span><span class="svc-tag">Colour Records</span></div>
+    </div>
+    <div class="svc-card">
+      <div class="svc-num">03</div>
+      <div class="svc-title">Baseboard, Casing & Crown</div>
+      <div class="svc-desc">Cut lists generated to the inch. Contemporary or traditional — joints that hold and paint that sticks.</div>
+      <div class="svc-tags"><span class="svc-tag">Baseboard</span><span class="svc-tag">Casing</span><span class="svc-tag">Crown</span></div>
+    </div>
+    <div class="svc-card">
+      <div class="svc-num">04</div>
+      <div class="svc-title">Microcement & Microstone</div>
+      <div class="svc-desc">Seamless specialty finishes for powder rooms, laundry rooms, and kitchen backsplashes. Durable, water-resistant.</div>
+      <div class="svc-tags"><span class="svc-tag">Microcement</span><span class="svc-tag">Microstone</span><span class="svc-tag">Powder Rooms</span></div>
+    </div>
+    <div class="svc-card">
+      <div class="svc-num">05</div>
+      <div class="svc-title">Main Floor Packages</div>
+      <div class="svc-desc">Coordinated flooring + paint + trim across your main floor — priced as a package, executed as one continuous job.</div>
+      <div class="svc-tags"><span class="svc-tag">Bundled Scope</span><span class="svc-tag">Single Crew</span><span class="svc-tag">Package Pricing</span></div>
+    </div>
+    <div class="svc-card">
+      <div class="svc-num">06</div>
+      <div class="svc-title">Hooomz Passport</div>
+      <div class="svc-desc">Every job generates a permanent home record — materials, colours, warranties, maintenance schedule, before/after photos.</div>
+      <div class="svc-tags"><span class="svc-tag">Materials Log</span><span class="svc-tag">Warranties</span><span class="svc-tag">Photo Archive</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="process" class="section section-dark">
+  <div class="section-header">
+    <div>
+      <div class="eyebrow">The Process</div>
+      <h2 class="section-headline">Six stages.<br>Every job.<br>No exceptions.</h2>
+    </div>
+    <p class="section-body">We run every renovation through SCRIPT — a six-stage production method ensuring nothing gets skipped and turnover is clean.</p>
+  </div>
+  <div class="script-grid">
+    <div class="script-step"><div class="step-num">01</div><div class="step-letter">S</div><div class="step-label">Shield</div><div class="step-desc">Surface protection placed, finishes documented, crew briefed. Nothing moves without substrate sign-off.</div></div>
+    <div class="script-step"><div class="step-num">02</div><div class="step-letter">C</div><div class="step-label">Clear</div><div class="step-desc">Demo and removal. Substrate issues flagged immediately — no surprises buried under new floors.</div></div>
+    <div class="script-step active"><div class="step-num">03</div><div class="step-letter">R</div><div class="step-label">Ready</div><div class="step-desc">Layout confirmed, cut list generated, all materials staged and verified before installation begins.</div></div>
+    <div class="script-step"><div class="step-num">04</div><div class="step-letter">I</div><div class="step-label">Install</div><div class="step-desc">Daily progress logged, photos documented by room. Labs data captured during installation.</div></div>
+    <div class="script-step"><div class="step-num">05</div><div class="step-letter">P</div><div class="step-label">Punch</div><div class="step-desc">Full walkthrough, every open item tracked. Room-by-room sign-off. You're invited to join.</div></div>
+    <div class="script-step"><div class="step-num">06</div><div class="step-letter">T</div><div class="step-label">Turnover</div><div class="step-desc">Warranty docs delivered, care guide issued, Passport generated. Closed when all items resolved.</div></div>
+  </div>
+</section>
+
+<!-- TIERS -->
+<section id="tiers" class="section section-alt">
+  <div class="section-header">
+    <div>
+      <div class="eyebrow">Pricing</div>
+      <h2 class="section-headline">Three tiers.<br>One visit.<br>You choose.</h2>
+    </div>
+    <p class="section-body">One site visit with LiDAR measurement delivers a formal three-tier quote — Good, Better, and Best. You pick what fits your budget and vision.</p>
+  </div>
+  <div class="tiers-grid">
+    <div class="tier-card">
+      <div class="tier-top"><div class="tier-name">Good</div><div class="tier-sub">Quality builder grade. Clean, durable, no-fuss.</div></div>
+      <div class="tier-body">
+        <ul class="tier-list">
+          <li class="tier-item"><div class="tier-check"><svg viewBox="0 0 8 8"><path d="M1 4l2 2 4-4" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>Entry-grade LVP with quality wear layer</li>
+          <li class="tier-item"><div class="tier-check"><svg viewBox="0 0 8 8"><path d="M1 4l2 2 4-4" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>Interior latex, 2-coat walls and ceilings</li>
+          <li class="tier-item"><div class="tier-check"><svg viewBox="0 0 8 8"><path d="M1 4l2 2 4-4" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>Standard baseboard and door casing</li>
+          <li class="tier-item"><div class="tier-check"><svg viewBox="0 0 8 8"><path d="M1 4l2 2 4-4" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>Full SCRIPT process — no shortcuts</li>
+          <li class="tier-item"><div class="tier-check"><svg viewBox="0 0 8 8"><path d="M1 4l2 2 4-4" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>Hooomz Passport included</li>
+        </ul>
+      </div>
+      <div class="tier-foot"><div class="tier-price-lbl">Starting From</div><div class="tier-price">Quoted after site visit</div></div>
+    </div>
+    <div class="tier-card featured">
+      <div class="tier-top">
+        <div class="tier-badge">Most Popular</div>
+        <div class="tier-name">Better</div><div class="tier-sub">Mid-range upgrades. Best value for most clients.</div>
+      </div>
+      <div class="tier-body">
+        <ul class="tier-list">
+          <li class="tier-item"><div class="tier-check"><svg viewBox="0 0 8 8"><path d="M1 4l2 2 4-4" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>Wide-plank LVP, 20-mil wear layer, waterproof core</li>
+          <li class="tier-item"><div class="tier-check"><svg viewBox="0 0 8 8"><path d="M1 4l2 2 4-4" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>Benjamin Moore Regal Select, walls + trim</li>
+          <li class="tier-item"><div class="tier-check"><svg viewBox="0 0 8 8"><path d="M1 4l2 2 4-4" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>4½" contemporary base, 2¾" casing</li>
+          <li class="tier-item"><div class="tier-check"><svg viewBox="0 0 8 8"><path d="M1 4l2 2 4-4" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>Twinmotion VR walkthrough at consultation</li>
+          <li class="tier-item"><div class="tier-check"><svg viewBox="0 0 8 8"><path d="M1 4l2 2 4-4" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>Full SCRIPT process + Hooomz Passport</li>
+        </ul>
+      </div>
+      <div class="tier-foot"><div class="tier-price-lbl">Starting From</div><div class="tier-price">Quoted after site visit</div></div>
+    </div>
+    <div class="tier-card">
+      <div class="tier-top"><div class="tier-name">Best</div><div class="tier-sub">Premium finishes. Designed to impress.</div></div>
+      <div class="tier-body">
+        <ul class="tier-list">
+          <li class="tier-item"><div class="tier-check"><svg viewBox="0 0 8 8"><path d="M1 4l2 2 4-4" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>Premium hardwood or luxury wide-plank LVP</li>
+          <li class="tier-item"><div class="tier-check"><svg viewBox="0 0 8 8"><path d="M1 4l2 2 4-4" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>Benjamin Moore Advance, full gloss trim package</li>
+          <li class="tier-item"><div class="tier-check"><svg viewBox="0 0 8 8"><path d="M1 4l2 2 4-4" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>Crown moulding, wainscoting, custom millwork</li>
+          <li class="tier-item"><div class="tier-check"><svg viewBox="0 0 8 8"><path d="M1 4l2 2 4-4" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>Microcement or microstone specialty finish</li>
+          <li class="tier-item"><div class="tier-check"><svg viewBox="0 0 8 8"><path d="M1 4l2 2 4-4" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>Full SCRIPT + Passport + Labs report</li>
+        </ul>
+      </div>
+      <div class="tier-foot"><div class="tier-price-lbl">Starting From</div><div class="tier-price">Quoted after site visit</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- LABS -->
+<div id="labs" class="labs-layout">
+  <div class="labs-left">
+    <div class="labs-badge">Hooomz Labs</div>
+    <h2 class="labs-headline">We test<br>what we<br>recommend.</h2>
+    <p class="labs-body">Most contractors go on manufacturer specs. We go further — Labs runs independent install and performance tests on every material we recommend, documenting moisture resistance, adhesion, acoustic performance, and long-term wear. Every spec we give you is backed by our own data.</p>
+  </div>
+  <div class="labs-right">
+    <div class="finding">
+      <div class="finding-lbl">Flooring Adhesion — LVP</div>
+      <div class="finding-text">Cortec Pro Plus outperformed three competing SKUs on direct-glue adhesion to concrete substrate. Recommended for all main floor applications.</div>
+    </div>
+    <div class="finding">
+      <div class="finding-lbl">Microcement Durability — Powder Room</div>
+      <div class="finding-text">Water-resistant performance confirmed on unsealed microcement at 7-day cure under wet-wipe abrasion. Sealer extends rating to Grade A.</div>
+    </div>
+    <div class="finding">
+      <div class="finding-lbl">Paint Adhesion — Trim Advance Series</div>
+      <div class="finding-text">Benjamin Moore Advance on primed MDF showed 3× better chip resistance than competitive alkyd alternatives at 30-day cure.</div>
+    </div>
+  </div>
+</div>
+
+<!-- REVIEWS -->
+<section class="section">
+  <div class="section-header-full">
+    <div class="eyebrow">Client Results</div>
+    <h2 class="section-headline" style="max-width:600px">Greater Moncton homes,<br>finished right.</h2>
+  </div>
+  <div class="reviews-grid">
+    <div class="review-card">
+      <div class="stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div>
+      <p class="review-text">"Transparency made the decision easy."</p>
+      <p class="review-sub">We'd had two contractors quote the job and both gave us one number with no explanation. Hooomz gave us three options with exactly what was different between them.</p>
+      <div class="review-author"><div class="author-init">AT</div><div><div class="author-name">A. Thériault</div><div class="author-meta">Main Floor · Moncton</div></div></div>
+    </div>
+    <div class="review-card">
+      <div class="stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div>
+      <p class="review-text">"The Passport is worth more than it sounds."</p>
+      <p class="review-sub">When we repainted a bedroom 18 months later, I had the exact colour code. That kind of record is something I didn't know I needed until I had it.</p>
+      <div class="review-author"><div class="author-init">ML</div><div><div class="author-name">M. LeBlanc</div><div class="author-meta">Kitchen Renovation · Dieppe</div></div></div>
+    </div>
+    <div class="review-card">
+      <div class="stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div>
+      <p class="review-text">"We felt like it wasn't done until we said it was."</p>
+      <p class="review-sub">The punch list walkthrough was something we'd never seen before. They walked every room with us before calling it done. That detail matters.</p>
+      <div class="review-author"><div class="author-init">PC</div><div><div class="author-name">P. Cormier</div><div class="author-meta">Master Bath + Trim · Moncton</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="book" class="cta-section">
+  <div>
+    <h2 class="cta-headline">Ready<br>to start?</h2>
+    <p class="cta-sub">Book a free discovery call. We'll talk through your scope, schedule a LiDAR site visit, and deliver a formal three-tier quote — no pressure, no obligation.</p>
+  </div>
+  <div class="cta-actions">
+    <a href="tel:+15061234567" class="btn-cta-white">Book a Discovery Call</a>
+    <a href="#services" class="btn-cta-ghost">View All Services</a>
+    <div class="cta-note">Moncton · Dieppe · Riverview</div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="foot-logo"><span>H</span><span class="logo-ring r"></span><span class="logo-ring y"></span><span class="logo-ring g"></span><span>MZ</span></div>
+    <p class="foot-tagline">Interior renovations backed<br>by a documented process.</p>
+  </div>
+  <div class="foot-mid">
+    <div>
+      <div class="foot-col-lbl">Services</div>
+      <a href="#" class="foot-link">Flooring</a>
+      <a href="#" class="foot-link">Paint</a>
+      <a href="#" class="foot-link">Trim</a>
+      <a href="#" class="foot-link">Microcement</a>
+      <a href="#" class="foot-link">Main Floor Packages</a>
+    </div>
+    <div>
+      <div class="foot-col-lbl">Company</div>
+      <a href="#" class="foot-link">How It Works</a>
+      <a href="#" class="foot-link">Hooomz Labs</a>
+      <a href="#" class="foot-link">Portfolio</a>
+      <a href="#" class="foot-link">Book Discovery</a>
+    </div>
+  </div>
+  <div class="foot-right">
+    <div class="foot-loc">Moncton · Dieppe · Riverview · NB</div>
+    <a href="tel:+15061234567" class="foot-link" style="text-align:right">(506) 000-0000</a>
+    <a href="mailto:hello@hooomz.ca" class="foot-link" style="text-align:right">hello@hooomz.ca</a>
+    <div class="foot-copy">© 2025 Hooomz Interiors. All rights reserved.</div>
+    <div class="foot-labs">Powered by Hooomz Labs</div>
+  </div>
+</footer>
+
+<script>
+const navLinks = document.querySelectorAll('.nav-link[data-section]');
+const sections = ['services','process','tiers','labs','book'];
+function setActive(){
+  let current = '';
+  sections.forEach(id => {
+    const el = document.getElementById(id);
+    if(el && window.scrollY >= el.offsetTop - 80) current = id;
+  });
+  navLinks.forEach(a => a.classList.toggle('active', a.dataset.section === current));
+}
+window.addEventListener('scroll', setActive, {passive:true});
+setActive();
+</script>
+</body>
+</html>

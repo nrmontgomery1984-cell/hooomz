@@ -7,7 +7,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useServicesContext } from '../services/ServicesContext';
-import type { QuoteRecord, QuoteStatus } from '@hooomz/shared-contracts';
+import type { QuoteRecord, QuoteStatus, LineItem } from '@hooomz/shared-contracts';
 
 // ============================================================================
 // Query Keys
@@ -205,12 +205,140 @@ export function useAcceptQuote() {
           entity_id: record.id,
           summary: `Quote accepted ($${record.totalAmount.toLocaleString()})`,
         });
+
+        // Auto-generate labour hours budgets from quoted labour line items
+        await generateLabourHoursBudgets(services, record.projectId);
       }
       return record;
     },
     onSuccess: (_, id) => {
       queryClient.invalidateQueries({ queryKey: QUOTE_KEYS.all });
       queryClient.invalidateQueries({ queryKey: QUOTE_KEYS.detail(id) });
+      queryClient.invalidateQueries({ queryKey: ['crew', 'budget'] });
+      queryClient.invalidateQueries({ queryKey: ['taskBudgets'] });
+    },
+  });
+}
+
+/**
+ * After quote acceptance, read labour line items, match to tasks by sopCode,
+ * and create TaskBudget records with planned hours from the reverse formula.
+ */
+async function generateLabourHoursBudgets(
+  services: NonNullable<ReturnType<typeof useServicesContext>['services']>,
+  projectId: string,
+): Promise<void> {
+  try {
+    // 1. Read labour line items for this project
+    const lineItems = await services.estimating.lineItems.findByProjectId(projectId);
+
+    // Primary: items explicitly flagged as labour
+    let labourItems = lineItems.filter((li: LineItem) => li.isLabor && li.totalCost > 0);
+
+    // Fallback: if no isLabor items, use items with sopCodes (task-producing lines)
+    // or items with source='labour_estimation', or category='labor'
+    if (labourItems.length === 0) {
+      labourItems = lineItems.filter((li: LineItem) =>
+        li.totalCost > 0 && (
+          (li.sopCodes && li.sopCodes.length > 0) ||
+          li.source === 'labour_estimation' ||
+          li.category === 'labor'
+        )
+      );
+    }
+
+    // Last resort: if estimate has line items but none match labour criteria,
+    // treat ALL items with sopCodes as labour (they were generated from trade SOPs)
+    if (labourItems.length === 0) {
+      labourItems = lineItems.filter((li: LineItem) => li.totalCost > 0);
+    }
+
+    if (labourItems.length === 0) return;
+
+    // 2. Read tasks for this project
+    const tasks = await services.scheduling.tasks.findByProjectId(projectId);
+    if (tasks.length === 0) return;
+
+    // 3. Try SOP-based matching first
+    let anyMatched = false;
+    for (const li of labourItems) {
+      const sopCodes = li.sopCodes ?? [];
+
+      const matchingTasks = sopCodes.length > 0
+        ? tasks.filter((t) => sopCodes.includes(t.sopCode ?? ''))
+        : [];
+
+      if (matchingTasks.length > 0) {
+        anyMatched = true;
+        const amountPerTask = li.totalCost / matchingTasks.length;
+
+        for (const task of matchingTasks) {
+          const minSkillLevel = (task as Record<string, unknown>).minSkillLevel as number ?? 0;
+          const hoursBudget = await services.labourEstimation.computeHoursBudgetFromQuote(
+            amountPerTask,
+            minSkillLevel,
+            undefined,
+            li.workCategoryCode ?? undefined,
+          );
+
+          await services.budget.createFromQuotedLabour(
+            task.id,
+            projectId,
+            task.sopCode ?? '',
+            hoursBudget,
+          );
+        }
+      }
+    }
+
+    // 4. Fallback: if no SOP-based matching worked, distribute total labour evenly across all tasks
+    if (!anyMatched) {
+      const totalLabour = labourItems.reduce((sum, li) => sum + li.totalCost, 0);
+      const amountPerTask = totalLabour / tasks.length;
+
+      for (const task of tasks) {
+        const minSkillLevel = (task as Record<string, unknown>).minSkillLevel as number ?? 0;
+        const hoursBudget = await services.labourEstimation.computeHoursBudgetFromQuote(
+          amountPerTask,
+          minSkillLevel,
+        );
+
+        await services.budget.createFromQuotedLabour(
+          task.id,
+          projectId,
+          task.sopCode ?? '',
+          hoursBudget,
+        );
+      }
+    }
+  } catch (err) {
+    console.error('Failed to generate labour hours budgets:', err);
+  }
+}
+
+/**
+ * Backfill labour hours budgets for an existing project.
+ * Use when a project was approved before the auto-generation code was deployed.
+ */
+export function useBackfillLabourBudgets() {
+  const { services } = useServicesContext();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (projectId: string) => {
+      if (!services) throw new Error('Services not initialized');
+      console.log('[BackfillBudget] Starting for project:', projectId);
+      await generateLabourHoursBudgets(services, projectId);
+      console.log('[BackfillBudget] Complete');
+    },
+    onSuccess: () => {
+      console.log('[BackfillBudget] Invalidating queries');
+      queryClient.invalidateQueries({ queryKey: ['crew', 'budget'] });
+      queryClient.invalidateQueries({ queryKey: ['taskBudgets'] });
+      queryClient.invalidateQueries({ queryKey: QUOTE_KEYS.all });
+    },
+    onError: (err) => {
+      console.error('[BackfillBudget] Error:', err);
     },
   });
 }

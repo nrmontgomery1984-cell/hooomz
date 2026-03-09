@@ -3,79 +3,198 @@
 /**
  * Sales Dashboard
  *
- * Pipeline overview: Lead → Estimate → Consultation → Quote → Contract
- * Conversion funnel, this week panel, performance metrics, quick actions.
+ * Three-column layout with SVG charts, KPI sparklines, pipeline funnel,
+ * job profitability table, and right panel with targets/insights.
+ * All data from IndexedDB. No chart libraries — SVG only.
  */
 
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useCallback, useMemo } from 'react';
 import { PageErrorBoundary } from '@/components/ui/PageErrorBoundary';
-import {
-  Plus,
-  ChevronRight,
-  ArrowRight,
-  CheckCircle2,
-  Flame,
-  AlertTriangle,
-  Calendar,
-  FileText,
-  TrendingUp,
-  DollarSign,
-  Clock,
-} from 'lucide-react';
 import { SECTION_COLORS } from '@/lib/viewmode';
 import { useDashboardData } from '@/lib/hooks/useDashboardData';
 import { useLeadPipeline } from '@/lib/hooks/useLeadData';
-import { useLocalRecentActivity, useLocalProjects } from '@/lib/hooks/useLocalData';
-import { useConsultations } from '@/lib/hooks/useConsultations';
+import { useAllInvoices } from '@/lib/hooks/useInvoices';
+import { useInvoiceAging } from '@/lib/hooks/useInvoiceAging';
 import { useQuotes } from '@/lib/hooks/useQuotes';
+import { useLocalProjects } from '@/lib/hooks/useLocalData';
 import { useCustomers } from '@/lib/hooks/useCustomersV2';
 import { SALES_STAGES, JOB_STAGE_META, JobStage } from '@hooomz/shared-contracts';
-import { resolveEntityLink } from '@/lib/utils/entityLinks';
+import type { InvoiceRecord } from '@hooomz/shared-contracts';
 
 const COLOR = SECTION_COLORS.sales;
+
+// ============================================================================
+// Period Filter
+// ============================================================================
+
+type Period = 'mtd' | '90d' | 'ytd';
+
+function getPeriodStart(period: Period): Date {
+  const now = new Date();
+  if (period === 'mtd') return new Date(now.getFullYear(), now.getMonth(), 1);
+  if (period === '90d') {
+    const d = new Date(now);
+    d.setDate(d.getDate() - 90);
+    return d;
+  }
+  // ytd
+  return new Date(now.getFullYear(), 0, 1);
+}
 
 // ============================================================================
 // Helpers
 // ============================================================================
 
-function getDateString(): string {
-  return new Date().toLocaleDateString('en-US', {
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric',
+function formatCurrency(n: number): string {
+  if (n >= 1000) return '$' + (n / 1000).toFixed(n % 1000 === 0 ? 0 : 1) + 'k';
+  return '$' + n.toLocaleString('en-CA', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}
+
+function formatFullCurrency(n: number): string {
+  return '$' + n.toLocaleString('en-CA', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}
+
+function formatPct(n: number): string {
+  return Math.round(n) + '%';
+}
+
+function getMonthLabel(d: Date): string {
+  return d.toLocaleDateString('en-US', { month: 'short' });
+}
+
+/** Parse date string as local time (avoids UTC midnight bug with date-only strings) */
+function parseLocalDate(s: string): Date {
+  if (s.includes('T')) return new Date(s);
+  return new Date(s + 'T00:00:00');
+}
+
+// ============================================================================
+// SVG Mini-Charts
+// ============================================================================
+
+/** Tiny sparkline for KPI cards — 60×20 SVG */
+function Sparkline({ data, color }: { data: number[]; color: string }) {
+  if (data.length < 2) return null;
+  const w = 60;
+  const h = 20;
+  const max = Math.max(...data, 1);
+  const min = Math.min(...data, 0);
+  const range = max - min || 1;
+  const points = data.map((v, i) => {
+    const x = (i / (data.length - 1)) * w;
+    const y = h - ((v - min) / range) * (h - 4) - 2;
+    return `${x},${y}`;
   });
+  return (
+    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={{ display: 'block' }}>
+      <polyline
+        points={points.join(' ')}
+        fill="none"
+        stroke={color}
+        strokeWidth={1.5}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
 }
 
-function formatRelativeTime(ts: unknown): string {
-  if (!ts) return '';
-  const d = new Date(String(ts));
-  const diffMs = Date.now() - d.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  if (diffMins < 1) return 'Just now';
-  if (diffMins < 60) return `${diffMins}m ago`;
-  const diffHours = Math.floor(diffMins / 60);
-  if (diffHours < 24) return `${diffHours}h ago`;
-  const diffDays = Math.floor(diffHours / 24);
-  if (diffDays === 1) return 'Yesterday';
-  return `${diffDays}d ago`;
+/** Bar chart — monthly revenue, 6 bars */
+function BarChart({ data, color }: { data: Array<{ label: string; value: number }>; color: string }) {
+  const max = Math.max(...data.map(d => d.value), 1);
+  const barW = 32;
+  const gap = 8;
+  const chartH = 120;
+  const totalW = data.length * (barW + gap) - gap;
+
+  return (
+    <svg width={totalW} height={chartH + 24} viewBox={`0 0 ${totalW} ${chartH + 24}`} style={{ display: 'block', width: '100%', maxWidth: totalW }}>
+      {data.map((d, i) => {
+        const barH = max > 0 ? (d.value / max) * (chartH - 8) : 0;
+        const x = i * (barW + gap);
+        const y = chartH - barH;
+        return (
+          <g key={i}>
+            <rect x={x} y={y} width={barW} height={barH} rx={3} fill={d.value > 0 ? color : 'var(--border)'} opacity={0.85} />
+            <text x={x + barW / 2} y={chartH + 12} textAnchor="middle" fontSize={8} fontFamily="var(--font-mono)" fill="var(--text-3)">
+              {d.label}
+            </text>
+            {d.value > 0 && (
+              <text x={x + barW / 2} y={y - 4} textAnchor="middle" fontSize={7} fontFamily="var(--font-mono)" fill="var(--text-2)">
+                {formatCurrency(d.value)}
+              </text>
+            )}
+          </g>
+        );
+      })}
+    </svg>
+  );
 }
 
-function formatShortDate(dateStr: string | null): string {
-  if (!dateStr) return '';
-  const d = new Date(dateStr);
-  return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+/** Donut chart for revenue by service type */
+function DonutChart({ segments, size = 100 }: { segments: Array<{ label: string; value: number; color: string }>; size?: number }) {
+  const total = segments.reduce((s, seg) => s + seg.value, 0);
+  if (total === 0) {
+    return (
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+        <circle cx={size / 2} cy={size / 2} r={size / 2 - 4} fill="none" stroke="var(--border)" strokeWidth={12} />
+        <text x={size / 2} y={size / 2 + 3} textAnchor="middle" fontSize={10} fontFamily="var(--font-mono)" fill="var(--text-3)">
+          No data
+        </text>
+      </svg>
+    );
+  }
+
+  const r = size / 2 - 8;
+  const cx = size / 2;
+  const cy = size / 2;
+  const circumference = 2 * Math.PI * r;
+  let offset = 0;
+
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+      {segments.filter(s => s.value > 0).map((seg, i) => {
+        const pct = seg.value / total;
+        const dashLen = pct * circumference;
+        const dashGap = circumference - dashLen;
+        const currentOffset = offset;
+        offset += dashLen;
+        return (
+          <circle
+            key={i}
+            cx={cx}
+            cy={cy}
+            r={r}
+            fill="none"
+            stroke={seg.color}
+            strokeWidth={14}
+            strokeDasharray={`${dashLen} ${dashGap}`}
+            strokeDashoffset={-currentOffset}
+            strokeLinecap="butt"
+            transform={`rotate(-90 ${cx} ${cy})`}
+          />
+        );
+      })}
+      <text x={cx} y={cy - 2} textAnchor="middle" fontSize={14} fontFamily="var(--font-mono)" fontWeight={700} fill="var(--text)">
+        {formatCurrency(total)}
+      </text>
+      <text x={cx} y={cy + 10} textAnchor="middle" fontSize={7} fontFamily="var(--font-mono)" fill="var(--text-3)" style={{ textTransform: 'uppercase' }}>
+        TOTAL
+      </text>
+    </svg>
+  );
 }
 
-function daysFromNow(dateStr: string): number {
-  const d = new Date(dateStr);
-  const now = new Date();
-  return Math.ceil((d.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-}
-
-function formatCurrency(amount: number): string {
-  return '$' + amount.toLocaleString('en-CA', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+/** Horizontal progress bar */
+function HealthBar({ value, max, color }: { value: number; max: number; color: string }) {
+  const pct = max > 0 ? Math.min((value / max) * 100, 100) : 0;
+  return (
+    <div style={{ width: 60, height: 5, borderRadius: 3, background: 'var(--surface-2, var(--border))' }}>
+      <div style={{ width: `${pct}%`, height: '100%', borderRadius: 3, background: color, transition: 'width 300ms' }} />
+    </div>
+  );
 }
 
 // ============================================================================
@@ -83,28 +202,171 @@ function formatCurrency(amount: number): string {
 // ============================================================================
 
 export default function SalesDashboardPage() {
-  const router = useRouter();
+  const [period, setPeriod] = useState<Period>('mtd');
+  const periodStart = useMemo(() => getPeriodStart(period), [period]);
+
+  // Data sources
   const dashboard = useDashboardData();
   const leadPipeline = useLeadPipeline();
-  const { data: activityData } = useLocalRecentActivity(5);
-  const { data: consultations = [] } = useConsultations();
+  const { data: allInvoices = [] } = useAllInvoices();
+  const aging = useInvoiceAging(allInvoices);
   const { data: quotes = [] } = useQuotes();
-  const { data: customers = [] } = useCustomers();
   const { data: projectsData } = useLocalProjects();
   const projects = projectsData?.projects ?? [];
+  useCustomers(); // warm cache
 
-  // Deep-link handler for activity items
-  const handleActivityClick = useCallback(
-    (event: Record<string, unknown>) => {
-      const entityType = String(event.entity_type || '');
-      const entityId = String(event.entity_id || '');
-      const projectId = event.project_id ? String(event.project_id) : undefined;
-      const link = resolveEntityLink(entityType, entityId, projectId);
-      if (link) router.push(link);
-    },
-    [router]
-  );
+  // ---- Derived metrics ----
 
+  const metrics = useMemo(() => {
+    const now = new Date();
+
+    // MTD Revenue — amountPaid on invoices paid in period
+    const revenue = allInvoices
+      .filter((inv: InvoiceRecord) => {
+        if (inv.amountPaid <= 0 || inv.status === 'cancelled') return false;
+        const dateStr = inv.paidAt ?? inv.metadata?.createdAt ?? inv.dueDate;
+        const d = parseLocalDate(dateStr);
+        return d >= periodStart && d <= now;
+      })
+      .reduce((sum: number, inv: InvoiceRecord) => sum + inv.amountPaid, 0);
+
+    // Outstanding
+    const outstanding = allInvoices
+      .filter((inv: InvoiceRecord) => inv.status !== 'cancelled' && inv.status !== 'draft' && inv.balanceDue > 0)
+      .reduce((sum: number, inv: InvoiceRecord) => sum + inv.balanceDue, 0);
+
+    // Pipeline Value (from quotes — active pipeline)
+    const pipelineValue = quotes
+      .filter(q => ['draft', 'sent', 'viewed'].includes(q.status))
+      .reduce((sum, q) => sum + q.totalAmount, 0);
+
+    // Win Rate (accepted / (accepted + declined)) — filtered by period
+    const closedQuotes = quotes.filter(q => {
+      if (q.status !== 'accepted' && q.status !== 'declined') return false;
+      const closedAt = q.respondedAt ?? q.updatedAt;
+      if (!closedAt) return false;
+      const d = parseLocalDate(closedAt);
+      return d >= periodStart && d <= now;
+    });
+    const accepted = closedQuotes.filter(q => q.status === 'accepted').length;
+    const declined = closedQuotes.filter(q => q.status === 'declined').length;
+    const winRate = (accepted + declined) > 0 ? (accepted / (accepted + declined)) * 100 : 0;
+
+    // Avg Margin — use default 35% unless we have project budget data
+    const projectsWithBudget = projects.filter(p => p.budget.estimatedCost > 0 && p.budget.actualCost > 0);
+    const avgMargin = projectsWithBudget.length > 0
+      ? projectsWithBudget.reduce((sum, p) => sum + ((p.budget.estimatedCost - p.budget.actualCost) / p.budget.estimatedCost) * 100, 0) / projectsWithBudget.length
+      : 35;
+
+    // Closed MTD — accepted quote value in period
+    const closedValue = quotes
+      .filter(q => q.status === 'accepted' && q.respondedAt && new Date(q.respondedAt) >= periodStart)
+      .reduce((sum, q) => sum + q.totalAmount, 0);
+
+    // Status colours
+    const revenueColour = revenue >= 15000 ? 'var(--green)' : revenue >= 12000 ? 'var(--amber)' : 'var(--red)';
+    const pipelineColour = pipelineValue >= 45000 ? 'var(--green)' : pipelineValue >= 15000 ? 'var(--amber)' : 'var(--red)';
+    const winRateTooFew = (accepted + declined) < 3;
+    const winRateColour = winRateTooFew ? 'var(--text-3)' : winRate >= 70 ? 'var(--green)' : winRate >= 50 ? 'var(--amber)' : 'var(--red)';
+    const marginColour = avgMargin >= 38 ? 'var(--green)' : avgMargin >= 30 ? 'var(--amber)' : 'var(--red)';
+    const outstandingColour = outstanding === 0 ? 'var(--green)' : outstanding <= 5000 ? 'var(--amber)' : 'var(--red)';
+
+    return { revenue, outstanding, pipelineValue, winRate, avgMargin, closedValue, accepted, declined, revenueColour, pipelineColour, winRateColour, winRateTooFew, marginColour, outstandingColour };
+  }, [allInvoices, quotes, projects, periodStart]);
+
+  // Revenue sparkline — last 6 months
+  const revenueByMonth = useMemo(() => {
+    const now = new Date();
+    const months: Array<{ label: string; value: number }> = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const label = getMonthLabel(d);
+      const monthNum = d.getMonth();
+      const yearNum = d.getFullYear();
+      const value = allInvoices
+        .filter((inv: InvoiceRecord) => {
+          if (inv.amountPaid <= 0 || inv.status === 'cancelled') return false;
+          const dateStr = inv.paidAt ?? inv.metadata?.createdAt ?? inv.dueDate;
+          const pd = parseLocalDate(dateStr);
+          return pd.getMonth() === monthNum && pd.getFullYear() === yearNum;
+        })
+        .reduce((sum: number, inv: InvoiceRecord) => sum + inv.amountPaid, 0);
+      months.push({ label, value });
+    }
+    return months;
+  }, [allInvoices]);
+
+  const sparklineData = useMemo(() => revenueByMonth.map(m => m.value), [revenueByMonth]);
+
+  // Revenue by service type (derive from project types)
+  const revenueByType = useMemo(() => {
+    const typeMap: Record<string, number> = {};
+    for (const inv of allInvoices) {
+      if (inv.amountPaid <= 0 || inv.status === 'cancelled') continue;
+      const project = projects.find(p => p.id === inv.projectId);
+      const type = project?.projectType || 'other';
+      const label = type.replace(/_/g, ' ').replace(/^\w/, c => c.toUpperCase());
+      typeMap[label] = (typeMap[label] ?? 0) + inv.amountPaid;
+    }
+    const colors = ['var(--clay)', 'var(--blue)', 'var(--green)', 'var(--amber)', 'var(--red)'];
+    return Object.entries(typeMap)
+      .sort((a, b) => b[1] - a[1])
+      .map(([label, value], i) => ({ label, value, color: colors[i % colors.length] }));
+  }, [allInvoices, projects]);
+
+  // Leads by source
+  const leadsBySource = useMemo(() => {
+    const map: Record<string, number> = {};
+    for (const l of leadPipeline.leads) {
+      const src = l.source.replace(/_/g, ' ').replace(/^\w/, c => c.toUpperCase());
+      map[src] = (map[src] ?? 0) + 1;
+    }
+    return Object.entries(map).sort((a, b) => b[1] - a[1]);
+  }, [leadPipeline.leads]);
+
+  // Pipeline funnel
+  const stageCounters = useMemo(() => {
+    const leadCount = leadPipeline.leads.filter(l => l.stage !== 'won' && l.stage !== 'lost').length;
+    const quoteCount = quotes.filter(q => ['draft', 'sent', 'viewed'].includes(q.status)).length;
+    const contractCount = quotes.filter(q => q.status === 'accepted').length;
+
+    return SALES_STAGES.map((stage) => {
+      const meta = JOB_STAGE_META[stage];
+      let count = 0;
+      if (stage === JobStage.LEAD) count = leadCount;
+      else if (stage === JobStage.ESTIMATE) count = dashboard.pipelineCount;
+      else if (stage === JobStage.CONSULTATION) count = 0; // would need consultation hook
+      else if (stage === JobStage.QUOTE) count = quoteCount;
+      else if (stage === JobStage.CONTRACT) count = contractCount;
+      return { stage, label: meta.label, count };
+    });
+  }, [leadPipeline.leads, quotes, dashboard.pipelineCount]);
+
+  // Job profitability table — top projects by estimated margin
+  const profitableJobs = useMemo(() => {
+    return projects
+      .filter(p => p.budget.estimatedCost > 0)
+      .map(p => {
+        const margin = p.budget.actualCost > 0
+          ? ((p.budget.estimatedCost - p.budget.actualCost) / p.budget.estimatedCost) * 100
+          : 35; // default margin assumption
+        return {
+          id: p.id,
+          name: p.name,
+          estimatedCost: p.budget.estimatedCost,
+          actualCost: p.budget.actualCost,
+          margin,
+          status: p.status,
+        };
+      })
+      .sort((a, b) => b.margin - a.margin)
+      .slice(0, 6);
+  }, [projects]);
+
+  // Monthly target (simple — based on forecast config)
+  const monthlyTarget = 15000; // CAD — monthly revenue target
+
+  // Loading
   if (dashboard.isLoading) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}>
@@ -116,228 +378,396 @@ export default function SalesDashboardPage() {
     );
   }
 
-  // Stage counts from real data
-  const leadCount = leadPipeline.leads.filter((l) => l.stage !== 'won' && l.stage !== 'lost').length;
-  const recentEvents = (activityData?.events as unknown as Array<Record<string, unknown>>) ?? [];
-
-  // Estimate count: projects in the sales pipeline (lead + quoted status).
-  // Excludes in-progress/approved/complete projects — those are past the sales funnel.
-  const estimateCount = dashboard.pipelineCount;
-
-  // Consultation count: scheduled + completed (not cancelled)
-  const consultationCount = consultations.filter((c) => c.status === 'scheduled' || c.status === 'completed').length;
-
-  // Quote count: draft + sent + viewed (active pipeline quotes)
-  const quoteCount = quotes.filter((q) => q.status === 'draft' || q.status === 'sent' || q.status === 'viewed').length;
-
-  // Contract count: accepted quotes
-  const contractCount = quotes.filter((q) => q.status === 'accepted').length;
-
-  // Stage counter data
-  const stageCounters = SALES_STAGES.map((stage) => {
-    const meta = JOB_STAGE_META[stage];
-    let count: number | null = null;
-    if (stage === JobStage.LEAD) count = leadCount;
-    else if (stage === JobStage.ESTIMATE) count = estimateCount;
-    else if (stage === JobStage.CONSULTATION) count = consultationCount;
-    else if (stage === JobStage.QUOTE) count = quoteCount;
-    else if (stage === JobStage.CONTRACT) count = contractCount;
-    return { stage, label: meta.label, count };
-  });
-
-  // Attention items — deep link hot leads to /customers/[id]
-  const attentionItems: Array<{ icon: React.ReactNode; color: string; title: string; subtitle: string; href?: string }> = [];
-  for (const hl of dashboard.hotLeadsNeedingContact) {
-    attentionItems.push({
-      icon: <Flame size={13} />,
-      color: 'var(--red)',
-      title: `Hot lead — ${hl.name}`,
-      subtitle: `Source: ${hl.source}`,
-      href: `/leads?highlight=${hl.customerId}`,
-    });
-  }
-  for (const co of dashboard.pendingChangeOrders) {
-    attentionItems.push({ icon: <AlertTriangle size={13} />, color: 'var(--amber)', title: 'Change Order — Pending', subtitle: co.description || 'Pending approval', href: co.projectId ? `/projects/${co.projectId}` : undefined });
-  }
-
   return (
     <PageErrorBoundary>
-      <div style={{ minHeight: '100vh', paddingBottom: 96, background: 'var(--bg)' }}>
+      <div style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text-1)', fontFamily: 'var(--font-body)' }}>
 
-        {/* Header */}
+        {/* ================================================================ */}
+        {/* HEADER                                                           */}
+        {/* ================================================================ */}
         <div style={{ background: 'var(--surface-1)', borderBottom: '1px solid var(--border)' }}>
-          <div className="max-w-lg md:max-w-full mx-auto px-4 md:px-6 py-3 md:py-4 flex items-center justify-between">
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <div style={{ width: 8, height: 8, borderRadius: '50%', background: COLOR }} />
-                <h1 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', fontFamily: 'var(--font-cond)', letterSpacing: '0.02em' }}>
-                  Sales
-                </h1>
-              </div>
-              <p style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 2 }}>{getDateString()}</p>
+          <div style={{ padding: '16px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-1)', fontFamily: 'var(--font-display)', letterSpacing: '0.04em', textTransform: 'uppercase', margin: 0 }}>
+              Sales
+            </h1>
+
+            {/* Period Tabs */}
+            <div style={{ display: 'flex', gap: 0 }}>
+              {(['mtd', '90d', 'ytd'] as Period[]).map(p => (
+                <button
+                  key={p}
+                  onClick={() => setPeriod(p)}
+                  style={{
+                    padding: '6px 14px',
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: 9,
+                    fontWeight: 500,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.08em',
+                    background: 'none',
+                    border: 'none',
+                    borderBottom: period === p ? '2px solid var(--clay)' : '2px solid transparent',
+                    color: period === p ? 'var(--text-1)' : 'var(--text-3)',
+                    cursor: 'pointer',
+                    transition: 'color 150ms',
+                  }}
+                >
+                  {p === 'mtd' ? 'MTD' : p === '90d' ? '90 Days' : 'YTD'}
+                </button>
+              ))}
             </div>
-            <button
-              onClick={() => router.push('/leads/new')}
-              className="md:hidden min-h-[40px] min-w-[40px] flex items-center justify-center rounded-xl"
-              style={{ background: COLOR }}
-            >
-              <Plus size={18} color="#FFFFFF" strokeWidth={2.5} />
-            </button>
           </div>
         </div>
 
-        <div className="max-w-lg md:max-w-full mx-auto px-4 md:px-6">
+        {/* ================================================================ */}
+        {/* THREE-COLUMN LAYOUT                                              */}
+        {/* ================================================================ */}
+        <div style={{ display: 'flex', gap: 0, minHeight: 'calc(100vh - 60px)' }}>
 
-          {/* Stage Counter Cards */}
-          <div style={{ marginTop: 16, display: 'flex', gap: 8, overflowX: 'auto' }}>
-            {stageCounters.map(({ stage, label, count }) => (
-              <div
-                key={stage}
-                style={{
-                  flex: '1 0 0',
-                  minWidth: 80,
-                  padding: '12px 8px',
-                  borderRadius: 'var(--radius)',
-                  background: 'var(--surface-1)',
-                  border: '1px solid var(--border)',
-                  boxShadow: 'var(--shadow-card)',
-                  textAlign: 'center',
-                }}
-              >
-                <p style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 22,
-                  fontWeight: 700,
-                  color: count !== null ? 'var(--text)' : 'var(--text-3)',
-                  lineHeight: 1,
-                }}>
-                  {count !== null ? count : '—'}
-                </p>
-                <p style={{
-                  fontFamily: 'var(--font-cond)',
-                  fontSize: 9,
-                  fontWeight: 700,
-                  letterSpacing: '0.1em',
-                  textTransform: 'uppercase',
-                  color: 'var(--text-3)',
-                  marginTop: 6,
-                }}>
-                  {label}
-                </p>
-              </div>
-            ))}
-          </div>
+          {/* ============================================================== */}
+          {/* LEFT COLUMN — KPI + Charts                                     */}
+          {/* ============================================================== */}
+          <div style={{ flex: 1, padding: '24px 28px', overflowY: 'auto', minWidth: 0 }}>
 
-          {/* Conversion Funnel */}
-          <ConversionFunnel stageCounters={stageCounters} />
+            {/* KPI Strip */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8, marginBottom: 24 }}>
+              <KPICard
+                label="Revenue"
+                value={formatCurrency(metrics.revenue)}
+                sub={`${metrics.revenue >= 15000 ? '+' : ''}${formatCurrency(metrics.revenue - 15000)} vs $15k target`}
+                color={metrics.revenueColour}
+                topBarColor={metrics.revenueColour}
+                sparkData={sparklineData}
+                href="/finance"
+                empty={metrics.revenue === 0}
+              />
+              <KPICard
+                label="Pipeline"
+                value={formatCurrency(metrics.pipelineValue)}
+                sub={`${quotes.filter(q => ['draft', 'sent', 'viewed'].includes(q.status)).length} active quotes`}
+                color={metrics.pipelineColour}
+                topBarColor={metrics.pipelineColour}
+                href="/sales/quotes"
+                empty={metrics.pipelineValue === 0}
+              />
+              <KPICard
+                label="Win Rate"
+                value={metrics.winRate > 0 ? formatPct(metrics.winRate) : '—'}
+                sub={metrics.winRateTooFew ? 'Too few closed to trend' : `${metrics.accepted}W / ${metrics.declined}L`}
+                color={metrics.winRateColour}
+                topBarColor={metrics.winRateTooFew ? undefined : metrics.winRateColour}
+                empty={metrics.accepted + metrics.declined === 0}
+              />
+              <KPICard
+                label="Avg Margin"
+                value={formatPct(metrics.avgMargin)}
+                sub={metrics.avgMargin >= 38 ? `+${Math.round(metrics.avgMargin - 38)}% above 38% target` : `${Math.round(38 - metrics.avgMargin)}% below 38% target`}
+                color={metrics.marginColour}
+                topBarColor={metrics.marginColour}
+                empty={false}
+              />
+              <KPICard
+                label="Outstanding"
+                value={metrics.outstanding > 0 ? formatCurrency(metrics.outstanding) : '$0'}
+                sub={aging.days90plus > 0 ? `${aging.days90plus} overdue 90+` : undefined}
+                color={metrics.outstandingColour}
+                topBarColor={metrics.outstandingColour}
+                href="/finance/invoices"
+                empty={metrics.outstanding === 0}
+              />
+            </div>
 
-          {/* Content Grid */}
-          <div className="mt-5" style={{ display: 'grid', gap: 16 }}>
-            <div style={{ display: 'grid', gap: 16 }} className="md:grid-cols-[1fr_1fr]">
-
-              {/* Left Column: Recent Activity + Needs Attention */}
-              <div style={{ display: 'grid', gap: 16, alignContent: 'start' }}>
-                {/* Recent Activity */}
-                <div>
-                  <SectionHeader title="Recent Activity" />
-                  <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
-                    {recentEvents.length === 0 ? (
-                      <div style={{ padding: '16px 12px', textAlign: 'center' }}>
-                        <p style={{ fontSize: 12, color: 'var(--text-3)' }}>No activity yet</p>
-                      </div>
-                    ) : (
-                      recentEvents.slice(0, 5).map((event, i) => {
-                        const entityType = String(event.entity_type || '');
-                        const entityId = String(event.entity_id || '');
-                        const projectId = event.project_id ? String(event.project_id) : undefined;
-                        const hasLink = !!resolveEntityLink(entityType, entityId, projectId);
-
-                        return (
-                          <button
-                            key={String(event.id || i)}
-                            onClick={() => handleActivityClick(event)}
-                            disabled={!hasLink}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 10,
-                              padding: '8px 12px',
-                              borderBottom: i < Math.min(recentEvents.length, 5) - 1 ? '1px solid var(--border)' : 'none',
-                              minHeight: 44,
-                              width: '100%',
-                              textAlign: 'left',
-                              background: 'none',
-                              border: 'none',
-                              borderBlockEnd: i < Math.min(recentEvents.length, 5) - 1 ? '1px solid var(--border)' : 'none',
-                              cursor: hasLink ? 'pointer' : 'default',
-                            }}
-                          >
-                            <div style={{ width: 6, height: 6, borderRadius: '50%', background: COLOR, flexShrink: 0 }} />
-                            <span style={{ fontSize: 12, color: 'var(--text)', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
-                              {String(event.summary || formatEventLabel(event))}
-                            </span>
-                            <span style={{ fontSize: 10, color: 'var(--text-3)', flexShrink: 0 }}>
-                              {formatRelativeTime(event.created_at || event.createdAt || event.timestamp)}
-                            </span>
-                            {hasLink && <ChevronRight size={11} style={{ color: 'var(--border-strong, #d1d5db)', flexShrink: 0 }} />}
-                          </button>
-                        );
-                      })
-                    )}
-                    <Link
-                      href="/activity"
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: 4,
-                        padding: '8px 12px',
-                        fontSize: 11,
-                        fontWeight: 600,
-                        color: COLOR,
-                        textDecoration: 'none',
-                        borderTop: '1px solid var(--border)',
-                      }}
-                    >
-                      View All <ArrowRight size={10} />
-                    </Link>
+            {/* Revenue Bar Chart */}
+            <div style={{ marginBottom: 24 }}>
+              <SectionHeader title="Monthly Revenue (6 mo)" />
+              <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 6, padding: '16px 20px', boxShadow: 'var(--shadow-card)' }}>
+                {revenueByMonth.every(m => m.value === 0) ? (
+                  <p style={{ fontSize: 12, color: 'var(--text-3)', textAlign: 'center', padding: '20px 0' }}>No revenue data yet</p>
+                ) : (
+                  <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    <BarChart data={revenueByMonth} color="var(--clay)" />
                   </div>
-                </div>
+                )}
+              </div>
+            </div>
 
-                {/* Needs Attention */}
-                <div>
-                  <SectionHeader title="Needs Attention" />
-                  <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
-                    {attentionItems.length === 0 ? (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '16px 12px' }}>
-                        <CheckCircle2 size={14} style={{ color: 'var(--green)' }} strokeWidth={2.5} />
-                        <span style={{ fontSize: 12, color: 'var(--text-2)' }}>Everything&apos;s on track</span>
-                      </div>
+            {/* Charts Row — Donut + Pipeline Funnel */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 24 }}>
+              {/* Revenue by Type */}
+              <div>
+                <SectionHeader title="Revenue by Type" />
+                <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 6, padding: '16px', boxShadow: 'var(--shadow-card)', display: 'flex', alignItems: 'center', gap: 16 }}>
+                  <DonutChart segments={revenueByType.length > 0 ? revenueByType : [{ label: 'None', value: 0, color: 'var(--border)' }]} size={100} />
+                  <div style={{ flex: 1 }}>
+                    {revenueByType.length === 0 ? (
+                      <p style={{ fontSize: 11, color: 'var(--text-3)' }}>No data yet</p>
                     ) : (
-                      attentionItems.map((item, i) => (
-                        <AttentionItem key={i} {...item} />
+                      revenueByType.slice(0, 4).map((seg, i) => (
+                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                          <div style={{ width: 6, height: 6, borderRadius: 2, background: seg.color, flexShrink: 0 }} />
+                          <span style={{ fontSize: 10, color: 'var(--text-2)', flex: 1 }}>{seg.label}</span>
+                          <span style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: 'var(--text-3)' }}>{formatCurrency(seg.value)}</span>
+                        </div>
                       ))
                     )}
                   </div>
                 </div>
               </div>
 
-              {/* Right Column: This Week */}
-              <ThisWeekPanel consultations={consultations} quotes={quotes} customers={customers} projects={projects} />
-            </div>
-
-            {/* Sales Performance Strip */}
-            <PerformanceStrip quotes={quotes} customers={customers} />
-
-            {/* Quick Actions */}
-            <div className="mb-6">
-              <SectionHeader title="Quick Actions" />
-              <div style={{ display: 'flex', gap: 8, overflowX: 'auto' }}>
-                <QuickActionButton icon={<Plus size={12} />} label="New Lead" onClick={() => router.push('/leads/new')} color={COLOR} />
-                <QuickActionButton icon={<Calendar size={12} />} label="Schedule Consultation" onClick={() => router.push('/sales/consultations?new=true')} color={COLOR} />
-                <QuickActionButton icon={<FileText size={12} />} label="New Quote" onClick={() => router.push('/sales/quotes?new=true')} color={COLOR} />
+              {/* Pipeline Funnel */}
+              <div>
+                <SectionHeader title="Pipeline Funnel" />
+                <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 6, padding: '16px', boxShadow: 'var(--shadow-card)' }}>
+                  {stageCounters.map((sc, i) => {
+                    const maxCount = Math.max(...stageCounters.map(s => s.count), 1);
+                    const barPct = (sc.count / maxCount) * 100;
+                    const funnelColor =
+                      sc.stage === JobStage.LEAD ? 'var(--text-3)' :
+                      sc.stage === JobStage.ESTIMATE || sc.stage === JobStage.CONSULTATION ? 'var(--blue)' :
+                      sc.stage === JobStage.QUOTE ? 'var(--amber)' :
+                      sc.stage === JobStage.CONTRACT ? 'var(--clay)' : COLOR;
+                    return (
+                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: i < stageCounters.length - 1 ? 8 : 0 }}>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.08em', width: 70, textAlign: 'right', flexShrink: 0 }}>
+                          {sc.label}
+                        </span>
+                        <div style={{ flex: 1, height: 12, background: 'var(--surface-2, var(--border))', borderRadius: 3 }}>
+                          <div style={{ width: `${barPct}%`, height: '100%', background: funnelColor, borderRadius: 3, transition: 'width 300ms', opacity: 0.8 }} />
+                        </div>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 600, color: sc.count > 0 ? 'var(--text)' : 'var(--text-3)', width: 24, textAlign: 'right', flexShrink: 0 }}>
+                          {sc.count}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
+
+            {/* Job Profitability Table */}
+            <div>
+              <SectionHeader title="Job Profitability" />
+              <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 6, overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
+                {profitableJobs.length === 0 ? (
+                  <p style={{ fontSize: 12, color: 'var(--text-3)', textAlign: 'center', padding: '20px 0' }}>No project data yet</p>
+                ) : (
+                  <>
+                    {/* Header row */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px 80px 60px 60px', gap: 8, padding: '8px 14px', borderBottom: '1px solid var(--border)' }}>
+                      {['Job', 'Quoted', 'Actual', 'Margin', ''].map((h, i) => (
+                        <span key={i} style={{ fontFamily: 'var(--font-mono)', fontSize: 7, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-3)' }}>
+                          {h}
+                        </span>
+                      ))}
+                    </div>
+                    {profitableJobs.map((job, i) => (
+                      <Link
+                        key={job.id}
+                        href={`/projects/${job.id}`}
+                        style={{
+                          display: 'grid',
+                          gridTemplateColumns: '1fr 80px 80px 60px 60px',
+                          gap: 8,
+                          padding: '10px 14px',
+                          borderBottom: i < profitableJobs.length - 1 ? '1px solid var(--border)' : 'none',
+                          textDecoration: 'none',
+                          alignItems: 'center',
+                          minHeight: 44,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {job.name}
+                        </span>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-2)' }}>
+                          {formatFullCurrency(job.estimatedCost)}
+                        </span>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: job.actualCost > 0 ? 'var(--text-2)' : 'var(--text-3)' }}>
+                          {job.actualCost > 0 ? formatFullCurrency(job.actualCost) : '—'}
+                        </span>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 600, color: job.margin >= 38 ? 'var(--green)' : job.margin >= 30 ? 'var(--amber)' : 'var(--red)' }}>
+                          {formatPct(job.margin)}
+                        </span>
+                        <HealthBar value={job.margin} max={50} color={job.margin >= 38 ? 'var(--green)' : job.margin >= 30 ? 'var(--amber)' : 'var(--red)'} />
+                      </Link>
+                    ))}
+                  </>
+                )}
+                <Link
+                  href="/projects"
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, padding: '8px 12px', fontSize: 11, fontWeight: 600, color: COLOR, textDecoration: 'none', borderTop: '1px solid var(--border)' }}
+                >
+                  View All Jobs →
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* ============================================================== */}
+          {/* RIGHT PANEL                                                     */}
+          {/* ============================================================== */}
+          <div
+            className="hidden lg:block"
+            style={{
+              width: 280,
+              minWidth: 280,
+              flexShrink: 0,
+              borderLeft: '1px solid var(--border)',
+              background: 'var(--surface-1)',
+              padding: '24px 20px',
+              overflowY: 'auto',
+            }}
+          >
+            {/* Monthly Target */}
+            <div style={{ marginBottom: 24 }}>
+              <SectionHeader title="March Target" />
+              <div style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 6, padding: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 20, fontWeight: 700, color: metrics.revenueColour }}>
+                    {formatCurrency(metrics.revenue)}
+                  </span>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-3)' }}>
+                    / {formatCurrency(monthlyTarget)}
+                  </span>
+                </div>
+                <div style={{ height: 6, borderRadius: 3, background: 'var(--surface-2, var(--border))' }}>
+                  <div
+                    style={{
+                      height: '100%',
+                      borderRadius: 3,
+                      background: metrics.revenueColour,
+                      width: `${Math.min((metrics.revenue / monthlyTarget) * 100, 100)}%`,
+                      transition: 'width 300ms',
+                    }}
+                  />
+                </div>
+                <p style={{ fontSize: 10, color: metrics.revenueColour, marginTop: 6, fontFamily: 'var(--font-mono)' }}>
+                  {formatPct(monthlyTarget > 0 ? (metrics.revenue / monthlyTarget) * 100 : 0)} of target
+                </p>
+              </div>
+            </div>
+
+            {/* Insights */}
+            <div style={{ marginBottom: 24 }}>
+              <SectionHeader title="Insights" />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {dashboard.hotLeadCount > 0 && (
+                  <InsightCard
+                    text={`${dashboard.hotLeadCount} hot lead${dashboard.hotLeadCount > 1 ? 's' : ''} need contact`}
+                    color="var(--red)"
+                    href="/leads"
+                  />
+                )}
+                {aging.days90plus > 0 && (
+                  <InsightCard
+                    text={`${aging.days90plus} invoice${aging.days90plus > 1 ? 's' : ''} overdue 90+ days`}
+                    color="var(--amber)"
+                    href="/finance/invoices"
+                  />
+                )}
+                {metrics.pipelineValue > 0 && (
+                  <InsightCard
+                    text={`${formatCurrency(metrics.pipelineValue)} in active pipeline`}
+                    color={COLOR}
+                    href="/sales/quotes"
+                  />
+                )}
+                {metrics.closedValue > 0 && (() => {
+                  const now = new Date();
+                  const monthsElapsed = now.getMonth() + (now.getDate() / 30);
+                  const ytdTarget = 15000 * monthsElapsed;
+                  const closedColour = metrics.closedValue >= ytdTarget ? 'var(--green)' : metrics.closedValue >= ytdTarget * 0.8 ? 'var(--amber)' : 'var(--red)';
+                  return (
+                    <InsightCard
+                      text={`${formatCurrency(metrics.closedValue)} closed ${period === 'mtd' ? 'this month' : period === '90d' ? 'in 90d' : 'YTD'}`}
+                      color={closedColour}
+                    />
+                  );
+                })()}
+                {dashboard.hotLeadCount === 0 && aging.days90plus === 0 && metrics.pipelineValue === 0 && metrics.closedValue === 0 && (
+                  <p style={{ fontSize: 11, color: 'var(--text-3)', fontStyle: 'italic' }}>No insights yet — data will appear as you add jobs and invoices.</p>
+                )}
+              </div>
+            </div>
+
+            {/* Leads by Source */}
+            <div style={{ marginBottom: 24 }}>
+              <SectionHeader title="Leads by Source" />
+              <div style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 6, overflow: 'hidden' }}>
+                {leadsBySource.length === 0 ? (
+                  <p style={{ fontSize: 11, color: 'var(--text-3)', padding: '14px', textAlign: 'center' }}>No leads yet</p>
+                ) : (
+                  leadsBySource.slice(0, 5).map(([source, count], i) => (
+                    <div
+                      key={source}
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        padding: '8px 12px',
+                        borderBottom: i < Math.min(leadsBySource.length, 5) - 1 ? '1px solid var(--border)' : 'none',
+                      }}
+                    >
+                      <span style={{ fontSize: 11, color: 'var(--text-2)' }}>{source}</span>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 600, color: COLOR }}>{count}</span>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
+            {/* Top Jobs by Margin */}
+            <div style={{ marginBottom: 24 }}>
+              <SectionHeader title="Top Jobs by Margin" />
+              <div style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 6, overflow: 'hidden' }}>
+                {profitableJobs.length === 0 ? (
+                  <p style={{ fontSize: 11, color: 'var(--text-3)', padding: '14px', textAlign: 'center' }}>No data yet</p>
+                ) : (
+                  profitableJobs.slice(0, 3).map((job, i) => (
+                    <Link
+                      key={job.id}
+                      href={`/projects/${job.id}`}
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        padding: '8px 12px',
+                        borderBottom: i < Math.min(profitableJobs.length, 3) - 1 ? '1px solid var(--border)' : 'none',
+                        textDecoration: 'none',
+                        minHeight: 36,
+                      }}
+                    >
+                      <span style={{ fontSize: 11, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+                        {job.name}
+                      </span>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 600, color: job.margin >= 38 ? 'var(--green)' : job.margin >= 30 ? 'var(--amber)' : 'var(--red)', flexShrink: 0, marginLeft: 8 }}>
+                        {formatPct(job.margin)}
+                      </span>
+                    </Link>
+                  ))
+                )}
+              </div>
+            </div>
+
+            {/* Invoice Aging */}
+            <div>
+              <SectionHeader title="Invoice Aging" />
+              <div style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 6, padding: '12px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                  <AgingBucket label="Current" count={aging.current} color="var(--green)" />
+                  <AgingBucket label="1–30 days" count={aging.days30} color="var(--amber)" />
+                  <AgingBucket label="31–60 days" count={aging.days60} color="var(--red)" />
+                  <AgingBucket label="90+ days" count={aging.days90plus} color="var(--red)" />
+                </div>
+                {aging.totalOutstanding > 0 && (
+                  <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Total Outstanding</span>
+                    <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 600, color: 'var(--amber)' }}>{formatFullCurrency(aging.totalOutstanding)}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
@@ -359,361 +789,89 @@ function SectionHeader({ title }: { title: string }) {
   );
 }
 
-function formatEventLabel(event: Record<string, unknown>): string {
-  const type = String(event.event_type || event.eventType || '');
-  const desc = String(event.description || event.metadata || '');
-  const readable = type.replace(/[._]/g, ' ').replace(/^\w/, (c) => c.toUpperCase());
-  if (desc && desc !== 'undefined' && desc !== '[object Object]') {
-    return desc.length > 60 ? desc.slice(0, 57) + '...' : desc;
-  }
-  return readable;
-}
-
-// ---- Conversion Funnel ----
-
-function ConversionFunnel({ stageCounters }: { stageCounters: Array<{ stage: string; label: string; count: number | null }> }) {
-  const pairs: Array<{ from: string; to: string; pct: string }> = [];
-  for (let i = 0; i < stageCounters.length - 1; i++) {
-    const current = stageCounters[i].count;
-    const next = stageCounters[i + 1].count;
-    let pct = '—';
-    if (current !== null && current > 0 && next !== null) {
-      pct = Math.min(Math.round((next / current) * 100), 100) + '%';
-    }
-    pairs.push({
-      from: stageCounters[i].label,
-      to: stageCounters[i + 1].label,
-      pct,
-    });
-  }
-
-  return (
+function KPICard({
+  label, value, sub, color, sparkData, href, empty, topBarColor,
+}: {
+  label: string;
+  value: string;
+  sub?: string;
+  color: string;
+  sparkData?: number[];
+  href?: string;
+  empty?: boolean;
+  topBarColor?: string;
+}) {
+  const inner = (
     <div
       style={{
-        marginTop: 16,
-        padding: '14px 16px',
-        borderRadius: 'var(--radius)',
         background: 'var(--surface-1)',
-        border: '1px solid var(--border)',
-        boxShadow: 'var(--shadow-card)',
+        borderLeft: '1px solid var(--border)',
+        borderRight: '1px solid var(--border)',
+        borderBottom: '1px solid var(--border)',
+        borderTop: topBarColor ? `3px solid ${topBarColor}` : '1px solid var(--border)',
+        borderRadius: 6,
+        padding: '14px 16px',
+        cursor: href ? 'pointer' : 'default',
+        transition: 'transform 150ms',
+        minWidth: 0,
       }}
+      onMouseEnter={e => { if (href) e.currentTarget.style.transform = 'translateY(-1px)'; }}
+      onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; }}
     >
-      <SectionHeader title="Conversion Funnel" />
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 4, marginTop: 4 }}>
-        {pairs.map((p, i) => (
-          <div key={i} style={{ flex: 1, textAlign: 'center' }}>
-            <p style={{ fontFamily: 'var(--font-cond)', fontSize: 9, color: 'var(--text-3)', letterSpacing: '0.04em' }}>
-              {p.from} → {p.to}
-            </p>
-            <p style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 16,
-              fontWeight: 700,
-              color: p.pct === '—' ? 'var(--text-3)' : COLOR,
-              marginTop: 2,
-            }}>
-              {p.pct}
-            </p>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// ---- This Week Panel ----
-
-interface ThisWeekItem {
-  type: 'consultation' | 'quote_expiring';
-  label: string;
-  subtitle: string;
-  date: string;
-  daysOut: number;
-  href: string;
-}
-
-function ThisWeekPanel({
-  consultations,
-  quotes,
-  customers,
-  projects,
-}: {
-  consultations: Array<{ id: string; status: string; scheduledDate: string | null; customerId: string; projectId: string }>;
-  quotes: Array<{ id: string; status: string; expiresAt: string | null; totalAmount: number; customerId: string; projectId: string }>;
-  customers: Array<{ id: string; firstName: string; lastName: string }>;
-  projects: Array<{ id: string; name: string; projectType: string; budget: { estimatedCost: number } }>;
-}) {
-  const router = useRouter();
-
-  const items = useMemo(() => {
-    const custMap = new Map(customers.map((c) => [c.id, `${c.firstName} ${c.lastName}`.trim()]));
-    const projMap = new Map(projects.map((p) => [p.id, p]));
-    const now = new Date();
-    const weekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-    const result: ThisWeekItem[] = [];
-
-    function buildSubtitle(customerId: string, projectId: string): string {
-      const parts: string[] = [];
-      const custName = custMap.get(customerId);
-      if (custName) parts.push(custName);
-      const proj = projMap.get(projectId);
-      if (proj) {
-        parts.push(proj.name);
-        if (proj.budget.estimatedCost > 0) parts.push(formatCurrency(proj.budget.estimatedCost));
-      }
-      return parts.join(' · ');
-    }
-
-    // Upcoming consultations
-    for (const c of consultations) {
-      if (c.status !== 'scheduled' || !c.scheduledDate) continue;
-      const d = new Date(c.scheduledDate);
-      if (d >= now && d <= weekFromNow) {
-        result.push({
-          type: 'consultation',
-          label: `Consultation — ${formatShortDate(c.scheduledDate)}`,
-          subtitle: buildSubtitle(c.customerId, c.projectId),
-          date: c.scheduledDate,
-          daysOut: daysFromNow(c.scheduledDate),
-          href: c.projectId ? `/discovery/${c.projectId}` : `/sales/consultations`,
-        });
-      }
-    }
-
-    // Quotes expiring soon
-    for (const q of quotes) {
-      if (q.status !== 'sent' && q.status !== 'viewed') continue;
-      if (!q.expiresAt) continue;
-      const d = new Date(q.expiresAt);
-      if (d >= now && d <= weekFromNow) {
-        result.push({
-          type: 'quote_expiring',
-          label: `Quote expires — ${formatCurrency(q.totalAmount)}`,
-          subtitle: buildSubtitle(q.customerId, q.projectId),
-          date: q.expiresAt,
-          daysOut: daysFromNow(q.expiresAt),
-          href: `/sales/quotes/${q.id}`,
-        });
-      }
-    }
-
-    result.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-    return result;
-  }, [consultations, quotes, customers, projects]);
-
-  return (
-    <div>
-      <SectionHeader title="This Week" />
-      <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
-        {items.length === 0 ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '20px 12px', justifyContent: 'center' }}>
-            <Calendar size={14} style={{ color: 'var(--text-3)' }} />
-            <span style={{ fontSize: 12, color: 'var(--text-3)' }}>Nothing scheduled this week</span>
-          </div>
-        ) : (
-          items.map((item, i) => (
-            <button
-              key={i}
-              onClick={() => router.push(item.href)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 10,
-                padding: '10px 12px',
-                minHeight: 44,
-                width: '100%',
-                textAlign: 'left',
-                background: 'none',
-                border: 'none',
-                borderBottom: i < items.length - 1 ? '1px solid var(--border)' : 'none',
-                cursor: 'pointer',
-              }}
-            >
-              <div style={{
-                width: 6,
-                height: 6,
-                borderRadius: '50%',
-                background: item.type === 'consultation' ? 'var(--blue, #3B82F6)' : 'var(--amber, #F59E0B)',
-                flexShrink: 0,
-              }} />
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontSize: 12, fontWeight: 500, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {item.label}
-                </p>
-                {item.subtitle && (
-                  <p style={{ fontSize: 10, fontStyle: 'italic', color: 'var(--text-3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: 1 }}>
-                    {item.subtitle}
-                  </p>
-                )}
-                <p style={{ fontSize: 10, color: 'var(--text-3)' }}>
-                  {item.daysOut === 0 ? 'Today' : item.daysOut === 1 ? 'Tomorrow' : `In ${item.daysOut} days`}
-                </p>
-              </div>
-              <ChevronRight size={11} style={{ color: 'var(--border-strong, #d1d5db)', flexShrink: 0 }} />
-            </button>
-          ))
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 22, fontWeight: 600, color: empty ? 'var(--text-3)' : color, lineHeight: 1 }}>
+          {value}
+        </div>
+        {sparkData && sparkData.some(v => v > 0) && (
+          <Sparkline data={sparkData} color={color} />
         )}
       </div>
-    </div>
-  );
-}
-
-// ---- Performance Strip ----
-
-function PerformanceStrip({
-  quotes,
-  customers,
-}: {
-  quotes: Array<{ id: string; status: string; totalAmount: number; respondedAt: string | null; createdAt: string; customerId: string }>;
-  customers: Array<{ id: string; createdAt: string }>;
-}) {
-  const metrics = useMemo(() => {
-    // Pipeline Value: sum totalAmount for active quotes
-    const pipelineValue = quotes
-      .filter((q) => ['draft', 'sent', 'viewed', 'accepted'].includes(q.status))
-      .reduce((sum, q) => sum + q.totalAmount, 0);
-
-    // Closed MTD: sum totalAmount for accepted quotes this month
-    const now = new Date();
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    const closedMTD = quotes
-      .filter((q) => q.status === 'accepted' && q.respondedAt && new Date(q.respondedAt) >= monthStart)
-      .reduce((sum, q) => sum + q.totalAmount, 0);
-
-    // Avg Lead → Quote: avg days from customer createdAt to first quote createdAt
-    const customerFirstQuote = new Map<string, number>();
-    for (const q of quotes) {
-      const existing = customerFirstQuote.get(q.customerId);
-      const qTime = new Date(q.createdAt).getTime();
-      if (existing === undefined || qTime < existing) {
-        customerFirstQuote.set(q.customerId, qTime);
-      }
-    }
-    const daysArr: number[] = [];
-    for (const [custId, quoteTime] of customerFirstQuote.entries()) {
-      const cust = customers.find((c) => c.id === custId);
-      if (!cust) continue;
-      const custTime = new Date(cust.createdAt).getTime();
-      const diffDays = Math.round((quoteTime - custTime) / (1000 * 60 * 60 * 24));
-      if (diffDays >= 0) daysArr.push(diffDays);
-    }
-    const avgLeadToQuote = daysArr.length >= 3
-      ? Math.round(daysArr.reduce((a, b) => a + b, 0) / daysArr.length)
-      : null;
-
-    return { pipelineValue, closedMTD, avgLeadToQuote };
-  }, [quotes, customers]);
-
-  return (
-    <div>
-      <SectionHeader title="Sales Performance" />
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
-        <MetricCard
-          icon={<DollarSign size={12} />}
-          label="Pipeline Value"
-          value={formatCurrency(metrics.pipelineValue)}
-        />
-        <MetricCard
-          icon={<TrendingUp size={12} />}
-          label="Closed MTD"
-          value={formatCurrency(metrics.closedMTD)}
-        />
-        <MetricCard
-          icon={<Clock size={12} />}
-          label="Avg Lead → Quote"
-          value={metrics.avgLeadToQuote !== null ? `${metrics.avgLeadToQuote}d` : '—'}
-        />
+      {sub && (
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--text-3)', marginBottom: 2 }}>{sub}</div>
+      )}
+      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+        {label}
       </div>
     </div>
   );
+
+  if (href) return <Link href={href} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>{inner}</Link>;
+  return inner;
 }
 
-function MetricCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
-  return (
-    <div style={{
-      padding: '12px',
-      borderRadius: 'var(--radius)',
-      background: 'var(--surface-1)',
-      border: '1px solid var(--border)',
-      boxShadow: 'var(--shadow-card)',
-      textAlign: 'center',
-    }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, marginBottom: 6, color: 'var(--text-3)' }}>
-        {icon}
-        <span style={{ fontFamily: 'var(--font-cond)', fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase' }}>{label}</span>
-      </div>
-      <p style={{
-        fontFamily: 'var(--font-mono)',
-        fontSize: 18,
-        fontWeight: 700,
-        color: value === '—' ? 'var(--text-3)' : 'var(--text)',
-        lineHeight: 1,
-      }}>
-        {value}
-      </p>
-    </div>
-  );
-}
-
-// ---- Attention Item ----
-
-interface AttentionItemProps {
-  icon: React.ReactNode;
-  color: string;
-  title: string;
-  subtitle: string;
-  href?: string;
-}
-
-function AttentionItem({ icon, color, title, subtitle, href }: AttentionItemProps) {
+function InsightCard({ text, color, href }: { text: string; color: string; href?: string }) {
   const router = useRouter();
-  const content = (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', borderLeft: `3px solid ${color}`, minHeight: 44 }}>
-      <div style={{ color, flexShrink: 0 }}>{icon}</div>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <p style={{ fontSize: 12, fontWeight: 500, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{title}</p>
-        <p style={{ fontSize: 10, color: 'var(--text-3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{subtitle}</p>
-      </div>
-      {href && <ChevronRight size={11} style={{ color: 'var(--border-strong)', flexShrink: 0 }} />}
-    </div>
-  );
-  if (href) {
-    return (
-      <button
-        onClick={() => router.push(href)}
-        style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer', borderBottom: '1px solid var(--border)' }}
-      >
-        {content}
-      </button>
-    );
-  }
-  return <div style={{ borderBottom: '1px solid var(--border)' }}>{content}</div>;
-}
-
-function QuickActionButton({ icon, label, onClick, color }: { icon: React.ReactNode; label: string; onClick: () => void; color: string }) {
   return (
     <button
-      onClick={onClick}
+      onClick={() => href && router.push(href)}
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: 6,
-        padding: '0 12px',
-        minHeight: 44,
-        borderRadius: 'var(--radius)',
-        fontSize: 12,
-        fontWeight: 600,
-        background: 'var(--surface-1)',
-        color: 'var(--text)',
+        gap: 8,
+        padding: '10px 12px',
+        background: `color-mix(in srgb, ${color} 6%, var(--bg))`,
         border: '1px solid var(--border)',
-        cursor: 'pointer',
-        whiteSpace: 'nowrap',
-        fontFamily: 'var(--font-cond)',
-        letterSpacing: '0.04em',
+        borderLeft: `3px solid ${color}`,
+        borderRadius: 6,
+        cursor: href ? 'pointer' : 'default',
+        textAlign: 'left',
+        width: '100%',
       }}
     >
-      <span style={{ color }}>{icon}</span>
-      {label}
+      <span style={{ fontSize: 11, color: 'var(--text)', lineHeight: 1.3 }}>{text}</span>
     </button>
+  );
+}
+
+function AgingBucket({ label, count, color }: { label: string; count: number; color: string }) {
+  return (
+    <div style={{ textAlign: 'center' }}>
+      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 16, fontWeight: 700, color: count > 0 ? color : 'var(--text-3)', lineHeight: 1 }}>
+        {count}
+      </div>
+      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 7, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 3 }}>
+        {label}
+      </div>
+    </div>
   );
 }

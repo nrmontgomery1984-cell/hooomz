@@ -201,11 +201,35 @@ export function useApproveChangeOrderWithPipeline() {
         pipelineItems
       );
 
-      // 4. Invalidate relevant queries
+      // 4. Auto-create labour hours budgets for deployed tasks from CO labour costs
+      for (const deployed of result.deployed) {
+        // Find the CO line item that generated this task (match by sopCode)
+        const matchingLi = lineItems.find((li) => li.sopCode === deployed.sopCode);
+        if (matchingLi && matchingLi.estimatedLaborCost > 0) {
+          try {
+            const minSkillLevel = 0; // default — CO line items don't specify skill level
+            const hoursBudget = await services.labourEstimation.computeHoursBudgetFromQuote(
+              matchingLi.estimatedLaborCost,
+              minSkillLevel,
+            );
+            await services.budget.createFromQuotedLabour(
+              deployed.taskId,
+              changeOrder.projectId,
+              deployed.sopCode ?? '',
+              hoursBudget,
+            );
+          } catch (err) {
+            console.error('Failed to create budget from CO line item:', err);
+          }
+        }
+      }
+
+      // 5. Invalidate relevant queries
       queryClient.invalidateQueries({ queryKey: PIPELINE_QUERY_KEYS.blueprints.byProject(changeOrder.projectId) });
       queryClient.invalidateQueries({ queryKey: ['local', 'tasks'] });
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['integration', 'changeOrders'] });
+      queryClient.invalidateQueries({ queryKey: ['taskBudgets'] });
 
       return {
         blueprintsCreated: result.blueprints.length,

@@ -40,6 +40,8 @@ export interface SkillRateConfig {
   updatedAt: string;
   marginTargets: MarginTargets;
   skillLevels: SkillLevel[];
+  /** % of cost budget allocated to management oversight (default 0.15 = 15%) */
+  managementAllocationPct: number;
 }
 
 export const DEFAULT_SKILL_RATE_CONFIG: SkillRateConfig = {
@@ -60,6 +62,7 @@ export const DEFAULT_SKILL_RATE_CONFIG: SkillRateConfig = {
     { level: 3, label: 'Journeyman',         costRate: 38, description: 'Full certification, independent work' },
     { level: 4, label: 'Lead',               costRate: 44, description: 'Journeyman + field leadership, trains others' },
   ],
+  managementAllocationPct: 0.15,
 };
 
 // ============================================================================
@@ -139,6 +142,28 @@ export interface CrewVarianceRecord {
   hoursVariance: number;
   schedulingVariance: number;
   completedAt: string;
+}
+
+// ============================================================================
+// Labour Hours Budget (reverse formula: quote $ → planned hours)
+// ============================================================================
+
+export interface LabourHoursBudgetParams {
+  quotedLabourAmount: number;  // sell price from quote line item
+  margin: number;              // e.g. 0.35
+  managementPct: number;       // e.g. 0.15
+  crewCostRate: number;        // $/hr for the assigned skill level
+}
+
+export interface LabourHoursBudgetResult {
+  quotedAmount: number;           // original sell price
+  costBudget: number;             // after stripping margin
+  managementCost: number;         // management allocation
+  productiveLabourBudget: number; // available for crew hours
+  plannedHours: number;           // the hours budget
+  margin: number;                 // margin applied
+  managementPct: number;          // management % applied
+  crewCostRate: number;           // crew rate used
 }
 
 // ============================================================================

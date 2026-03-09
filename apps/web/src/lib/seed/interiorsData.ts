@@ -242,7 +242,13 @@ export async function seedInteriorsDemo(_services: Services, addLog: LogFn): Pro
     const match = existingProjects.find((p) => p.name === pData.name);
     if (match) {
       projectIds.push(match.id);
-      addLog(`Project exists (skipped): ${match.name}`);
+      // Patch jobStage if missing or changed
+      if (pData.jobStage && match.jobStage !== pData.jobStage) {
+        await loggedServices.projects.update(match.id, { id: match.id, jobStage: pData.jobStage } as import('@hooomz/shared-contracts').UpdateProject);
+        addLog(`Patched jobStage on ${match.name}: ${pData.jobStage}`);
+      } else {
+        addLog(`Project exists (skipped): ${match.name}`);
+      }
       continue;
     }
     const project = await loggedServices.projects.create(pData);

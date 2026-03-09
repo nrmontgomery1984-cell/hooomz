@@ -16,6 +16,8 @@ import { ArrowLeft, ChevronRight, FolderOpen, Search, X } from 'lucide-react';
 import { SECTION_COLORS } from '@/lib/viewmode';
 import { useDashboardData } from '@/lib/hooks/useDashboardData';
 import { useServicesContext } from '@/lib/services/ServicesContext';
+import { threeDotHex, THREE_DOT_HEX } from '@/lib/constants/threeDot';
+import { useAllJobHealth } from '@/lib/hooks/useJobHealth';
 import { JOB_STAGE_META, JobStage, ProjectStatus, SCRIPT_STAGES } from '@hooomz/shared-contracts';
 import type { ActiveProjectSummary } from '@/lib/hooks/useDashboardData';
 
@@ -102,8 +104,14 @@ export default function ProductionJobsPage() {
   const [progressFilter, setProgressFilter] = useState<ProgressFilter>('all');
   const [tradeFilter, setTradeFilter]       = useState<TradeFilter>('all');
 
-  // Load trades for each active project from material selections
+  // Three-Dot weighted health scores
   const projectIds = dashboard.activeProjects.map((p) => p.id);
+  const { data: healthMap } = useAllJobHealth(projectIds);
+  function getHealthScore(id: string, fallback: number): number {
+    return healthMap?.get(id)?.score ?? fallback;
+  }
+
+  // Load trades for each active project from material selections
   const { data: projectTradesMap = new Map<string, string[]>() } = useQuery({
     queryKey: ['production', 'jobs', 'trades', ...projectIds],
     queryFn: async () => {
@@ -125,11 +133,11 @@ export default function ProductionJobsPage() {
     let list = dashboard.activeProjects;
     if (stageFilter)              list = list.filter((p) => resolveScriptStage(p) === stageFilter);
     if (query.trim())             list = list.filter((p) => p.name.toLowerCase().includes(query.toLowerCase()));
-    if (healthFilter !== 'all')   list = list.filter((p) => healthBucket(p.healthScore) === healthFilter);
+    if (healthFilter !== 'all')   list = list.filter((p) => healthBucket(getHealthScore(p.id, p.healthScore)) === healthFilter);
     if (progressFilter !== 'all') list = list.filter((p) => progressBucket(p) === progressFilter);
     if (tradeFilter !== 'all')    list = list.filter((p) => projectTradesMap.get(p.id)?.includes(tradeFilter) ?? false);
     return list;
-  }, [dashboard.activeProjects, stageFilter, query, healthFilter, progressFilter, tradeFilter, projectTradesMap]);
+  }, [dashboard.activeProjects, stageFilter, query, healthFilter, progressFilter, tradeFilter, projectTradesMap, healthMap]);
 
   const hasFilters = !!(stageFilter || query.trim() || healthFilter !== 'all' || progressFilter !== 'all' || tradeFilter !== 'all');
 
@@ -244,9 +252,9 @@ export default function ProductionJobsPage() {
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
               {([
                 { key: 'all'   as HealthFilter, label: 'All',      color: COLOR },
-                { key: 'green' as HealthFilter, label: 'On Track',  color: '#10B981' },
-                { key: 'amber' as HealthFilter, label: 'At Risk',   color: '#F59E0B' },
-                { key: 'red'   as HealthFilter, label: 'Blocked',   color: '#EF4444' },
+                { key: 'green' as HealthFilter, label: 'On Track',  color: THREE_DOT_HEX.green },
+                { key: 'amber' as HealthFilter, label: 'At Risk',   color: THREE_DOT_HEX.yellow },
+                { key: 'red'   as HealthFilter, label: 'Blocked',   color: THREE_DOT_HEX.red },
               ]).map(({ key, label, color }) => (
                 <Pill key={key} label={label} active={healthFilter === key} color={color}
                   onClick={() => setHealthFilter(healthFilter === key && key !== 'all' ? 'all' : key)} />
@@ -289,8 +297,7 @@ export default function ProductionJobsPage() {
                 const stage = resolveScriptStage(project);
                 const stageMeta = stage ? JOB_STAGE_META[stage] : null;
                 const stageColor = (stage && STAGE_COLORS[stage]) || '#9CA3AF';
-                const health = healthBucket(project.healthScore);
-                const healthColor = health === 'green' ? '#10B981' : health === 'amber' ? '#F59E0B' : '#EF4444';
+                const healthColor = threeDotHex(getHealthScore(project.id, project.healthScore));
                 const pct = project.taskCount > 0 ? Math.round((project.completedCount / project.taskCount) * 100) : 0;
                 const trades = projectTradesMap.get(project.id) ?? [];
 

@@ -160,6 +160,10 @@ export const StoreNames = {
   // Trim Cut Calculator (Block 5)
   MILLWORK_ASSEMBLY_CONFIGS: 'millworkAssemblyConfigs',
   TRIM_CALCULATIONS: 'trimCalculations',
+  // Punch List (v31)
+  PUNCH_LIST_ITEMS: 'punchListItems',
+  // IAQ Reports (v32)
+  IAQ_REPORTS: 'iaqReports',
 } as const;
 
 export type StoreName = (typeof StoreNames)[keyof typeof StoreNames];

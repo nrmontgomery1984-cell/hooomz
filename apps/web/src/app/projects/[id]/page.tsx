@@ -28,7 +28,7 @@ import { usePendingBatchItems, useConfirmBatchItem, useSkipBatchItem, useConfirm
 import { useProjectBudgets, useProjectBudgetSummary, useCrewTrainingRecords, useActiveCrewMembers, useTrainingRecords } from '@/lib/hooks/useCrewData';
 import { useChangeOrders, useProjectBudget } from '@/lib/hooks/useIntegrationData';
 import { useActiveCrew } from '@/lib/crew/ActiveCrewContext';
-import { isOverdue } from '@hooomz/shared-contracts';
+import { isOverdue, JobStage } from '@hooomz/shared-contracts';
 import Link from 'next/link';
 import { SimpleActivityFeed } from '@/components/activity';
 import { BatchConfirmModal, QuickCapturePrompt } from '@/components/labs';
@@ -51,6 +51,8 @@ import { ScriptPipeline } from '@/components/projects/ScriptPipeline';
 import { ExpenseSummaryPanel } from '@/components/expenses/ExpenseSummaryPanel';
 import { InvoiceListPanel } from '@/components/invoices/InvoiceListPanel';
 import { HomeCareSheetPanel } from '@/components/care-sheet/HomeCareSheetPanel';
+import { PunchListPanel } from '@/components/projects/PunchListPanel';
+import { StageAdvancePanel } from '@/components/projects/StageAdvancePanel';
 import { useExpenses } from '@/lib/hooks/useExpenses';
 import { LoopRow } from '@/components/loops/LoopRow';
 import type { LoopStatus } from '@/components/loops/LoopRow';
@@ -227,6 +229,12 @@ export default function ProjectDetailPage() {
   );
   const derivedActualCost = expenses.length > 0 ? expenseTotal : (project?.budget.actualCost ?? 0);
 
+  // Labour quote total — sum of chargedRate × budgetedHours from task budgets
+  const labourQuoteTotal = useMemo(
+    () => (budgets || []).reduce((sum, b) => sum + b.chargedRate * b.budgetedHours, 0),
+    [budgets],
+  );
+
   // ---------------------------------------------------------------------------
   // Dashboard panel derivations
   // ---------------------------------------------------------------------------
@@ -375,6 +383,17 @@ export default function ProjectDetailPage() {
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enrichedTasks]);
+
+  // Derive effective stage: use project.jobStage if set, otherwise infer from
+  // task-based scriptStages (highest stage with at least 1 task, or first stage).
+  const effectiveStage = useMemo(() => {
+    if (project?.jobStage) return project.jobStage;
+    // Walk stages backwards — first one with tasks is the "current" stage
+    for (let i = scriptStages.length - 1; i >= 0; i--) {
+      if (scriptStages[i].total > 0) return scriptStages[i].key as JobStage;
+    }
+    return undefined;
+  }, [project?.jobStage, scriptStages]);
 
   // ---------------------------------------------------------------------------
   // Handlers
@@ -598,12 +617,17 @@ export default function ProjectDetailPage() {
             {/* ── SCRIPT Pipeline ── */}
             <ScriptPipeline
               stages={scriptStages}
-              currentStage={project.jobStage}
+              currentStage={effectiveStage}
               blockerCount={blockedItems.length}
               decisionCount={pendingCOs.length}
               roomCount={roomNames.length}
               onSiteCount={crewMemberName ? 1 : 0}
             />
+
+            {/* ── Stage Advancement ── */}
+            <div style={{ padding: '0 14px', marginTop: 8 }}>
+              <StageAdvancePanel projectId={projectId} currentStage={effectiveStage} />
+            </div>
 
             {/* ── Content layout ── */}
             {isMobile ? (
@@ -688,7 +712,7 @@ export default function ProjectDetailPage() {
                   /* Mobile details — stacked panels */
                   <div style={{ paddingBottom: 80 }}>
                     <MobileCollapsible title="Budget" defaultOpen>
-                      <BudgetPanel projectId={projectId} budgetSummary={budgetSummary || null} estimatedCost={project.budget.estimatedCost} actualCost={derivedActualCost} budgets={budgets || []} />
+                      <BudgetPanel projectId={projectId} budgetSummary={budgetSummary || null} estimatedCost={project.budget.estimatedCost} actualCost={derivedActualCost} budgets={budgets || []} labourQuoteTotal={labourQuoteTotal} />
                     </MobileCollapsible>
                     <MobileCollapsible title="Timeline">
                       <TimelinePanel startDate={project.dates.startDate} estimatedEndDate={project.dates.estimatedEndDate} taskMilestones={taskMilestones} />
@@ -707,6 +731,9 @@ export default function ProjectDetailPage() {
                     </MobileCollapsible>
                     <MobileCollapsible title="Crew & Training">
                       <CrewTrainingPanel crewMembers={allCrewMembers} trainingRecords={allTrainingRecords} projectSopCodes={projectSopCodes} />
+                    </MobileCollapsible>
+                    <MobileCollapsible title="Punch List">
+                      <PunchListPanel projectId={projectId} />
                     </MobileCollapsible>
                     <HomeCareSheetPanel projectId={projectId} customerId={project.customerId} jobStage={project.jobStage} />
                     {/* Activity */}
@@ -816,6 +843,7 @@ export default function ProjectDetailPage() {
                     estimatedCost={project.budget.estimatedCost}
                     actualCost={derivedActualCost}
                     budgets={budgets || []}
+                    labourQuoteTotal={labourQuoteTotal}
                   />
                   <TimelinePanel
                     startDate={project.dates.startDate}
@@ -824,6 +852,7 @@ export default function ProjectDetailPage() {
                   />
                   <ExpenseSummaryPanel projectId={projectId} tasks={tasks} />
                   <InvoiceListPanel projectId={projectId} customerId={project.customerId || ''} />
+                  <PunchListPanel projectId={projectId} />
                   <HomeCareSheetPanel projectId={projectId} customerId={project.customerId} jobStage={project.jobStage} />
                   {/* Activity */}
                   <div style={{ padding: 14, borderBottom: '1px solid var(--border)' }}>

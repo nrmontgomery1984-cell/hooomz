@@ -8,6 +8,7 @@ import type { CrewScheduleRepository } from '../repositories/crewSchedule.reposi
 import type { TaskRepository } from '../repositories/task.repository';
 import type { DeployedTaskRepository } from '../repositories/deployedTask.repository';
 import type { ActivityService } from '../repositories/activity.repository';
+import type { BudgetService } from './budget.service';
 import { addDays, startOfWeek, format } from 'date-fns';
 
 export interface HoursSummary {
@@ -58,6 +59,7 @@ export function createCrewScheduleService(
   taskRepo: TaskRepository,
   deployedTaskRepo: DeployedTaskRepository,
   activityService: ActivityService,
+  budgetService?: BudgetService,
 ): CrewScheduleService {
 
   function getWeekDateRange(weekStart: string): { start: string; end: string } {
@@ -228,7 +230,18 @@ export function createCrewScheduleService(
     },
 
     async updateActualHours(blockId, hours) {
-      return scheduleRepo.update(blockId, { actualHours: hours });
+      const updated = await scheduleRepo.update(blockId, { actualHours: hours });
+
+      // Flow actual hours to TaskBudget — sum all blocks for this task
+      if (updated && budgetService) {
+        const allBlocks = await scheduleRepo.findByTaskId(updated.taskId);
+        const totalActual = allBlocks.reduce((sum, b) => sum + b.actualHours, 0);
+        await budgetService.updateActualHours(updated.taskId, totalActual).catch((err) =>
+          console.error('Failed to sync actual hours to budget:', err),
+        );
+      }
+
+      return updated;
     },
 
     async bulkSchedule(assignments) {

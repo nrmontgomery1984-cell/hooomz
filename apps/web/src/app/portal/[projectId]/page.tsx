@@ -39,6 +39,7 @@ import { DownloadQuotePDF } from '@/components/quotes/QuotePDF';
 import { useCreateNotification } from '@/lib/hooks/useNotifications';
 import type { PortalUpdate, TradeProgressItem, PortalTeamMember } from '@/lib/hooks/usePortalData';
 import type { Photo, QuoteRecord, CustomerRecord, LineItem } from '@hooomz/shared-contracts';
+import { ProductionScoreWidget } from '@/components/portal/ProductionScoreWidget';
 
 // ============================================================================
 // Page
@@ -173,6 +174,13 @@ export default function PortalPage() {
       </div>
 
       <div className="max-w-md mx-auto px-5">
+        {/* ================================================================
+            Production Score Widget — above the fold
+            ================================================================ */}
+        <div className="mt-5">
+          <ProductionScoreWidget projectId={projectId} />
+        </div>
+
         {/* ================================================================
             Section 1: Overall Progress
             ================================================================ */}

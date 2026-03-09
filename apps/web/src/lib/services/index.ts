@@ -146,6 +146,16 @@ import { FlooringLayoutService, createFlooringLayoutService } from './flooringLa
 // Phase 6: Selection → Quote integration
 import { MaterialSelectionToLineItemsService, createMaterialSelectionToLineItemsService } from './materialSelectionToLineItems.service';
 
+// Job Health (Three-Dot System)
+import { JobHealthService } from './jobHealth.service';
+
+// Punch List (v31)
+import { PunchListRepository } from '../repositories/punchList.repository';
+import { PunchListService } from './punchList.service';
+
+// Stage Gate (SCRIPT enforcement)
+import { StageGateService } from './stageGate.service';
+
 /**
  * Repository container - provides access to all offline-first repositories
  * Use this for read operations and internal access.
@@ -272,6 +282,15 @@ export interface Services {
 
   // Phase 6: Selection → Quote integration
   materialToLineItems: MaterialSelectionToLineItemsService;
+
+  // Job Health (Three-Dot System)
+  jobHealth: JobHealthService;
+
+  // Punch List (v31)
+  punchList: PunchListService;
+
+  // Stage Gate (SCRIPT enforcement)
+  stageGate: StageGateService;
 }
 
 /**
@@ -445,6 +464,7 @@ export async function initializeServices(): Promise<Services> {
         taskRepository,
         new DeployedTaskRepository(storage),
         activityService,
+        budgetService,
       ),
       scheduleNotes: createScheduleNoteService(scheduleNoteRepository, activityService),
 
@@ -551,10 +571,28 @@ export async function initializeServices(): Promise<Services> {
         new MaterialSelectionRepository(storage),
         activityService,
       ),
+
+      // Job Health (Three-Dot System) — late-bound below
+      jobHealth: null as unknown as JobHealthService,
+
+      // Punch List (v31)
+      punchList: new PunchListService(
+        new PunchListRepository(storage),
+        activityService,
+      ),
+
+      // Stage Gate — late-bound below
+      stageGate: null as unknown as StageGateService,
     };
 
     // Late-bind expense repo to budget service for derived actualMaterialCost
     budgetService.setExpenseRepo(new ExpenseRepository(storage));
+
+    // Late-bind jobHealth (needs full services reference)
+    services.jobHealth = new JobHealthService(services);
+
+    // Late-bind stageGate (needs full services reference)
+    services.stageGate = new StageGateService(services);
 
     // Late-bind payments (depends on invoices service)
     services.payments = createPaymentService(

@@ -6,10 +6,11 @@
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { ArrowRight, ChevronDown, ChevronRight } from 'lucide-react';
+import { ArrowRight, ChevronDown, ChevronRight, Clock } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import type { TaskBudget, LineItem } from '@hooomz/shared-contracts';
 import { useServicesContext } from '@/lib/services/ServicesContext';
+import { useBackfillLabourBudgets } from '@/lib/hooks/useQuotes';
 import { PanelSection } from '@/components/ui/PanelSection';
 
 function getBudgetColor(ratio: number): string {
@@ -146,6 +147,7 @@ interface BudgetPanelProps {
   estimatedCost: number;
   actualCost: number;
   budgets: TaskBudget[];
+  labourQuoteTotal?: number;
 }
 
 export function BudgetPanel({
@@ -154,8 +156,10 @@ export function BudgetPanel({
   estimatedCost,
   actualCost,
   budgets,
+  labourQuoteTotal,
 }: BudgetPanelProps) {
   const [costExpanded, setCostExpanded] = useState(false);
+  const [labourExpanded, setLabourExpanded] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const { services } = useServicesContext();
 
@@ -185,6 +189,8 @@ export function BudgetPanel({
       .map(([category, { total, items }]) => ({ category, label: getCategoryLabel(category), total, items }))
       .sort((a, b) => b.total - a.total);
   }, [lineItems]);
+
+  const backfill = useBackfillLabourBudgets();
 
   const hasBudgetData = budgetSummary && budgetSummary.totalBudgetedHours > 0;
   const hasCostData = estimatedCost > 0;
@@ -231,7 +237,85 @@ export function BudgetPanel({
   return (
     <PanelSection label="Budget" action={action}>
       {hasBudgetData && (
-        <TrackBar label="Hours" valueStr={hoursValue} pct={hoursPct} color={hoursColor} />
+        <>
+          <TrackBar label="Hours" valueStr={hoursValue} pct={hoursPct} color={hoursColor} />
+          {/* Labour breakdown — per-task hours */}
+          {budgets.length > 0 && (
+            <>
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => setLabourExpanded(!labourExpanded)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setLabourExpanded(!labourExpanded); } }}
+                style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '2px 12px', cursor: 'pointer' }}
+              >
+                <span style={{ flexShrink: 0, color: 'var(--text-3)', display: 'flex', alignItems: 'center' }}>
+                  {labourExpanded ? <ChevronDown size={9} /> : <ChevronRight size={9} />}
+                </span>
+                <span style={{ fontFamily: 'var(--font-cond)', fontSize: 9, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' as const, color: 'var(--text-3)' }}>
+                  {budgets.length} task{budgets.length !== 1 ? 's' : ''} budgeted
+                  {labourQuoteTotal ? ` · ${formatCurrency(labourQuoteTotal)} quoted` : ''}
+                </span>
+              </div>
+              {labourExpanded && (
+                <div style={{ borderTop: '1px solid var(--border)', paddingTop: 4, paddingBottom: 4 }}>
+                  {budgets.map((b) => {
+                    const taskRatio = b.budgetedHours > 0 ? b.actualHours / b.budgetedHours : 0;
+                    const taskPct = Math.round(taskRatio * 100);
+                    const remaining = Math.max(0, b.budgetedHours - b.actualHours);
+                    return (
+                      <div key={b.id} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '3px 12px 3px 24px' }}>
+                        <span style={{ fontFamily: 'var(--font-cond)', fontSize: 9, color: 'var(--text-3)', width: 60, flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {b.sopCode || b.taskId.slice(0, 8)}
+                        </span>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-2)', width: 80, flexShrink: 0 }}>
+                          {b.actualHours.toFixed(1)}h / {b.budgetedHours.toFixed(0)}h
+                        </span>
+                        <div style={{ flex: 1, height: 2, background: 'var(--border)', borderRadius: 1, overflow: 'hidden' }}>
+                          <div style={{ width: `${Math.min(taskPct, 100)}%`, height: '100%', background: getBudgetColor(taskRatio), borderRadius: 1 }} />
+                        </div>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: remaining > 0 ? 'var(--text-2)' : 'var(--red)', width: 36, textAlign: 'right', flexShrink: 0 }}>
+                          {remaining > 0 ? `${remaining.toFixed(1)}h` : 'done'}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </>
+          )}
+        </>
+      )}
+      {/* Generate hours budget button — shown when cost data exists but no hours budgets */}
+      {!hasBudgetData && hasCostData && (
+        <div style={{ padding: '6px 12px' }}>
+          <button
+            onClick={() => backfill.mutate(projectId)}
+            disabled={backfill.isPending}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '6px 10px',
+              fontSize: 10,
+              fontFamily: 'var(--font-cond)',
+              fontWeight: 600,
+              letterSpacing: '0.05em',
+              textTransform: 'uppercase',
+              color: 'var(--blue)',
+              background: 'none',
+              border: '1px solid var(--blue)',
+              borderRadius: 6,
+              cursor: backfill.isPending ? 'wait' : 'pointer',
+              opacity: backfill.isPending ? 0.6 : 1,
+              width: '100%',
+              justifyContent: 'center',
+            }}
+          >
+            <Clock size={11} />
+            {backfill.isPending ? 'Generating...' : 'Generate Hours Budget'}
+          </button>
+        </div>
       )}
       {hasCostData && (
         <>

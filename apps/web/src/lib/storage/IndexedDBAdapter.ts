@@ -7,7 +7,7 @@ import type { StorageAdapter } from './StorageAdapter';
 import { StoreNames } from './StorageAdapter';
 
 const DB_NAME = 'hooomz_db';
-const DB_VERSION = 30; // v30: Add catalogProducts, projectMaterialSelections, roomScans, rooms, flooringLayouts, millworkAssemblyConfigs, trimCalculations; add source field to lineItems
+const DB_VERSION = 32; // v32: Add iaqReports store
 
 export class IndexedDBAdapter implements StorageAdapter {
   private db: IDBDatabase | null = null;
@@ -284,6 +284,10 @@ export class IndexedDBAdapter implements StorageAdapter {
       // Trim Cut Calculator (Block 5)
       [StoreNames.MILLWORK_ASSEMBLY_CONFIGS]: [],
       [StoreNames.TRIM_CALCULATIONS]: ['roomId', 'projectId', 'openingId'],
+      // Punch List (v31)
+      [StoreNames.PUNCH_LIST_ITEMS]: ['projectId', 'status', 'priority', 'assignedTo'],
+      // IAQ Reports (v32)
+      [StoreNames.IAQ_REPORTS]: ['clientName', 'createdAt'],
     };
 
     const storeIndexes = indexes[storeName] || [];

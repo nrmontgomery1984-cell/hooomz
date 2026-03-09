@@ -21,6 +21,8 @@ import {
 import { SECTION_COLORS } from '@/lib/viewmode';
 import { useDashboardData } from '@/lib/hooks/useDashboardData';
 import { useLocalRecentActivity } from '@/lib/hooks/useLocalData';
+import { threeDotHex } from '@/lib/constants/threeDot';
+import { useAllJobHealth } from '@/lib/hooks/useJobHealth';
 import {
   SCRIPT_STAGES,
   JOB_STAGE_META,
@@ -93,6 +95,16 @@ export default function ProductionDashboardPage() {
   const dashboard = useDashboardData();
   const { data: activityData } = useLocalRecentActivity(5);
 
+  // Three-Dot weighted health scores for all active projects
+  const projectIds = dashboard.activeProjects.map((p) => p.id);
+  const { data: healthMap } = useAllJobHealth(projectIds);
+
+  /** Get weighted health score — falls back to simple task completion % */
+  function getHealthScore(projectId: string, fallback: number): number {
+    const h = healthMap?.get(projectId);
+    return h ? h.score : fallback;
+  }
+
   if (dashboard.isLoading) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}>
@@ -128,16 +140,19 @@ export default function ProductionDashboardPage() {
   // Active jobs (most recent 5)
   const activeJobs = allProjects.slice(0, 5);
 
-  // Needs attention — low health score
+  // Needs attention — low health score (Three-Dot weighted)
   const needsAttention: Array<{ icon: React.ReactNode; color: string; title: string; subtitle: string; href?: string }> = allProjects
-    .filter((p) => p.healthScore < 70)
-    .map((p) => ({
-      icon: <AlertTriangle size={13} />,
-      color: p.healthScore < 40 ? 'var(--red)' : 'var(--amber)',
-      title: p.name,
-      subtitle: `Health: ${p.healthScore}% — ${p.completedCount}/${p.taskCount} tasks`,
-      href: `/projects/${p.id}`,
-    }));
+    .filter((p) => getHealthScore(p.id, p.healthScore) < 70)
+    .map((p) => {
+      const score = getHealthScore(p.id, p.healthScore);
+      return {
+        icon: <AlertTriangle size={13} />,
+        color: threeDotHex(score),
+        title: p.name,
+        subtitle: `Health: ${score}% — ${p.completedCount}/${p.taskCount} tasks`,
+        href: `/projects/${p.id}`,
+      };
+    });
 
   // Also include over-budget tasks
   for (const task of dashboard.overBudgetTasks) {
@@ -248,12 +263,12 @@ export default function ProductionDashboardPage() {
                             minHeight: 48,
                           }}
                         >
-                          {/* Health dot */}
+                          {/* Health dot — Three-Dot weighted */}
                           <div style={{
                             width: 8,
                             height: 8,
                             borderRadius: '50%',
-                            background: job.healthScore >= 70 ? 'var(--green)' : job.healthScore >= 40 ? 'var(--amber)' : 'var(--red)',
+                            background: threeDotHex(getHealthScore(job.id, job.healthScore)),
                             flexShrink: 0,
                           }} />
                           <div style={{ flex: 1, minWidth: 0 }}>

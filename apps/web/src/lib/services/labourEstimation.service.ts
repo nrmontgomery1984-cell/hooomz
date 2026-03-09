@@ -9,6 +9,12 @@
  *   costBudget    = sellBudget / (1 + margin)
  *   budgetedHours = costBudget / skillLevel.costRate
  *
+ * Reverse formula (quote $ → hours):
+ *   costBudget             = quotedLabourAmount / (1 + margin)
+ *   managementCost         = costBudget × managementPct
+ *   productiveLabourBudget = costBudget - managementCost
+ *   plannedHours           = productiveLabourBudget / crewCostRate
+ *
  * Variance sign convention:
  *   positive = over budget = bad
  *   negative = under budget = good
@@ -25,6 +31,8 @@ import type {
   TaskLabourEstimate,
   ProjectVarianceSummary,
   CrewVarianceRecord,
+  LabourHoursBudgetParams,
+  LabourHoursBudgetResult,
 } from '../types/labourEstimation.types';
 import { round2 } from '../types/labourEstimation.types';
 
@@ -214,6 +222,29 @@ export class LabourEstimationService {
     }
 
     return updated;
+  }
+
+  /**
+   * Reverse formula: convert a quoted labour dollar amount → planned hours.
+   * Resolves margin and crew rate from config using trade/project context.
+   */
+  async computeHoursBudgetFromQuote(
+    quotedLabourAmount: number,
+    minSkillLevel: number,
+    projectType?: string,
+    tradeCategory?: string,
+  ): Promise<LabourHoursBudgetResult> {
+    const config = await this.configRepo.get();
+    const margin = this.configRepo.resolveMarginTarget(config, projectType, tradeCategory);
+    const skillLevel = this.configRepo.getSkillLevel(config, minSkillLevel);
+    const managementPct = config.managementAllocationPct ?? 0.15;
+
+    return computeLabourHoursBudget({
+      quotedLabourAmount,
+      margin,
+      managementPct,
+      crewCostRate: skillLevel.costRate,
+    });
   }
 
   /**
@@ -409,6 +440,33 @@ export class LabourEstimationService {
       new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime()
     );
   }
+}
+
+/**
+ * Reverse formula: convert quoted labour dollars → planned hours.
+ *
+ * quotedLabourAmount ÷ (1 + margin) = costBudget
+ * costBudget × managementPct = managementCost
+ * (costBudget - managementCost) ÷ crewCostRate = plannedHours
+ */
+export function computeLabourHoursBudget(params: LabourHoursBudgetParams): LabourHoursBudgetResult {
+  const { quotedLabourAmount, margin, managementPct, crewCostRate } = params;
+
+  const costBudget = round2(quotedLabourAmount / (1 + margin));
+  const managementCost = round2(costBudget * managementPct);
+  const productiveLabourBudget = round2(costBudget - managementCost);
+  const plannedHours = crewCostRate > 0 ? round2(productiveLabourBudget / crewCostRate) : 0;
+
+  return {
+    quotedAmount: quotedLabourAmount,
+    costBudget,
+    managementCost,
+    productiveLabourBudget,
+    plannedHours,
+    margin,
+    managementPct,
+    crewCostRate,
+  };
 }
 
 export function createLabourEstimationService(

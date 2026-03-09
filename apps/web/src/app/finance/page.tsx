@@ -14,6 +14,8 @@ import { SECTION_COLORS } from '@/lib/viewmode';
 import { ExpenseListPanel } from '@/components/expenses/ExpenseListPanel';
 import { useAllInvoices } from '@/lib/hooks/useInvoices';
 import { useInvoiceAging } from '@/lib/hooks/useInvoiceAging';
+import { ARAgingTable } from '@/components/finance/ARAgingTable';
+import { FinancialScoreWidget } from '@/components/finance/FinancialScoreWidget';
 
 const FINANCE_COLOR = SECTION_COLORS.finance;
 
@@ -69,6 +71,11 @@ export default function FinanceDashboard() {
         </div>
 
         <div className="max-w-lg md:max-w-full mx-auto px-4 md:px-6">
+
+          {/* Financial Score Widget */}
+          <div style={{ marginTop: 16 }}>
+            <FinancialScoreWidget />
+          </div>
 
           {/* Stat Row */}
           <div
@@ -259,6 +266,12 @@ export default function FinanceDashboard() {
                   </div>
                 )}
               </div>
+            </div>
+
+            {/* AR Aging */}
+            <div>
+              <SectionHeader title="Accounts Receivable" />
+              <ARAgingTable aging={aging} />
             </div>
 
             {/* Expenses (active project) */}

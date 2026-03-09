@@ -9,6 +9,7 @@ import type { TaskBudget, SopTaskBlueprint, DeployedTask } from '@hooomz/shared-
 import type { TaskBudgetRepository } from '../repositories/taskBudget.repository';
 import type { ActivityService } from '../repositories/activity.repository';
 import type { ExpenseRepository } from '../repositories/expense.repository';
+import type { LabourHoursBudgetResult } from '../types/labourEstimation.types';
 
 export class BudgetService {
   private expenseRepo: ExpenseRepository | null = null;
@@ -57,6 +58,53 @@ export class BudgetService {
       budgeted_hours: budgetedHours,
       wage_rate: crewWageRate,
       charged_rate: chargedRate,
+    }).catch((err) => console.error('Failed to log budget event:', err));
+
+    return budget;
+  }
+
+  /**
+   * Create or update a TaskBudget from a quoted labour amount (reverse formula).
+   * Called when a quote is accepted — computes planned hours from the sell price.
+   */
+  async createFromQuotedLabour(
+    taskId: string,
+    projectId: string,
+    sopCode: string,
+    hoursBudget: LabourHoursBudgetResult,
+  ): Promise<TaskBudget> {
+    // Check if budget already exists for this task
+    const existing = await this.budgetRepo.findByTask(taskId);
+    if (existing) {
+      const updated = await this.budgetRepo.update(existing.id, {
+        budgetedHours: hoursBudget.plannedHours,
+        crewWageRate: hoursBudget.crewCostRate,
+        chargedRate: hoursBudget.quotedAmount / (hoursBudget.plannedHours || 1),
+      });
+      return updated ?? existing;
+    }
+
+    const budget = await this.budgetRepo.create({
+      taskId,
+      blueprintId: '',
+      projectId,
+      sopCode,
+      budgetedHours: hoursBudget.plannedHours,
+      actualHours: 0,
+      budgetedMaterialCost: 0,
+      actualMaterialCost: 0,
+      crewWageRate: hoursBudget.crewCostRate,
+      chargedRate: hoursBudget.quotedAmount / (hoursBudget.plannedHours || 1),
+      efficiency: null,
+      status: 'active',
+    });
+
+    this.activity.logBudgetEvent('budget.created', projectId, budget.id, {
+      task_id: taskId,
+      sop_code: sopCode,
+      budgeted_hours: hoursBudget.plannedHours,
+      wage_rate: hoursBudget.crewCostRate,
+      charged_rate: hoursBudget.quotedAmount / (hoursBudget.plannedHours || 1),
     }).catch((err) => console.error('Failed to log budget event:', err));
 
     return budget;

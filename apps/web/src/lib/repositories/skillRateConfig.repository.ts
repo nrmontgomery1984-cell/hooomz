@@ -25,7 +25,13 @@ export class SkillRateConfigRepository {
    */
   async get(): Promise<SkillRateConfig> {
     const stored = await this.storage.get<SkillRateConfig>(this.storeName, 'singleton');
-    if (stored) return stored;
+    if (stored) {
+      // Backfill new fields for configs saved before managementAllocationPct existed
+      if (stored.managementAllocationPct === undefined) {
+        stored.managementAllocationPct = DEFAULT_SKILL_RATE_CONFIG.managementAllocationPct;
+      }
+      return stored;
+    }
 
     // Seed defaults on first access
     const defaults: SkillRateConfig = {

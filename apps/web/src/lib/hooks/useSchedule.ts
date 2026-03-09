@@ -155,6 +155,20 @@ export function useUpdateBlockStatus() {
   });
 }
 
+export function useUpdateActualHours() {
+  const { services } = useServicesContext();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (params: { blockId: string; hours: number }) =>
+      services!.schedule.updateActualHours(params.blockId, params.hours),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['schedule'] });
+      queryClient.invalidateQueries({ queryKey: ['taskBudgets'] });
+    },
+  });
+}
+
 export function useBulkSchedule() {
   const { services } = useServicesContext();
   const queryClient = useQueryClient();

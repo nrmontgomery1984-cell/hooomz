@@ -1,0 +1,1802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book a Site Visit — Hooomz Interiors</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F0EDE8;
+  --surface:#FAF8F5;
+  --surface-2:#E8E4DE;
+  --charcoal:#1A1714;
+  --dark-nav:#111010;
+  --mid:#5C5349;
+  --muted:#9A8E84;
+  --faint:#D4CEC7;
+  --border:rgba(0,0,0,.10);
+  --border-s:rgba(0,0,0,.18);
+  --accent:#6B6560;
+  --accent-bg:rgba(107,101,96,.09);
+  --accent-border:rgba(107,101,96,.22);
+  --green:#16A34A;
+  --red:#DC2626;
+  --radius:10px;
+  --radius-sm:6px;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Figtree',sans-serif;
+  background:var(--bg);
+  color:var(--charcoal);
+  font-size:15px;
+  line-height:1.6;
+  padding-top:52px;
+}
+.mono{font-family:'DM Mono',monospace}
+
+/* NAV */
+nav{
+  position:fixed;top:0;left:0;right:0;
+  height:52px;
+  background:var(--dark-nav);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;
+  z-index:100;
+}
+.nav-logo{
+  display:flex;align-items:center;gap:0;
+  font-family:'DM Mono',monospace;
+  font-size:13px;
+  font-weight:500;
+  color:#fff;
+  letter-spacing:0.06em;
+}
+.nav-dots{display:flex;align-items:center;gap:3px;margin:0 2px}
+.nav-dot{width:7px;height:7px;border-radius:50%;display:inline-block}
+.nav-dot.r{background:#DC2626}
+.nav-dot.a{background:#D97706}
+.nav-dot.g{background:#16A34A}
+.nav-interiors{color:rgba(255,255,255,.5);margin-left:6px;font-weight:400}
+.nav-back{
+  font-family:'DM Mono',monospace;
+  font-size:11px;
+  color:rgba(255,255,255,.45);
+  text-decoration:none;
+  letter-spacing:0.06em;
+}
+.nav-back:hover{color:rgba(255,255,255,.7)}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:360px 1fr;min-height:calc(100vh - 52px)}
+
+/* LEFT PANEL */
+.left-panel{
+  background:var(--dark-nav);
+  padding:40px 32px 40px;
+  position:sticky;top:52px;
+  height:calc(100vh - 52px);
+  overflow-y:auto;
+  display:flex;flex-direction:column;gap:28px;
+}
+.left-panel::-webkit-scrollbar{width:4px}
+.left-panel::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+
+.badge{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:'DM Mono',monospace;
+  font-size:10px;
+  font-weight:500;
+  letter-spacing:0.1em;
+  color:#fff;
+  background:rgba(22,163,74,.18);
+  border:1px solid rgba(22,163,74,.3);
+  border-radius:20px;
+  padding:4px 10px;
+}
+.badge-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green)}
+
+.left-headline{
+  font-size:26px;font-weight:700;color:#fff;line-height:1.2;
+}
+.left-body{
+  font-size:13.5px;color:rgba(255,255,255,.55);line-height:1.65;
+}
+
+/* DESIGN ACRONYM */
+.design-steps{display:flex;flex-direction:column;gap:10px}
+.ds-row{display:flex;gap:12px;align-items:flex-start}
+.ds-letter{
+  font-family:'DM Mono',monospace;
+  font-size:12px;font-weight:500;
+  color:rgba(255,255,255,.4);
+  min-width:16px;
+  padding-top:2px;
+  letter-spacing:0.06em;
+}
+.ds-content{}
+.ds-name{
+  font-family:'DM Mono',monospace;
+  font-size:10px;font-weight:500;
+  color:rgba(255,255,255,.35);
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  margin-bottom:1px;
+}
+.ds-desc{font-size:12px;color:rgba(255,255,255,.5);line-height:1.5}
+
+/* ESTIMATE PREVIEW */
+.estimate-preview{
+  display:none;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:var(--radius);
+  padding:16px 18px;
+}
+.estimate-preview.visible{display:block}
+.ep-label{
+  font-family:'DM Mono',monospace;
+  font-size:9px;font-weight:500;
+  letter-spacing:0.12em;
+  color:rgba(255,255,255,.35);
+  text-transform:uppercase;
+  margin-bottom:8px;
+}
+.ep-range{
+  font-size:22px;font-weight:700;color:#fff;
+  letter-spacing:-0.02em;
+  line-height:1;
+  margin-bottom:6px;
+}
+.ep-trades{font-size:12px;color:rgba(255,255,255,.5);margin-bottom:10px}
+.ep-caveat{
+  font-family:'DM Mono',monospace;
+  font-size:9px;letter-spacing:0.08em;
+  color:rgba(255,255,255,.25);
+  text-transform:uppercase;
+  line-height:1.5;
+}
+
+.left-footer{
+  margin-top:auto;
+  font-family:'DM Mono',monospace;
+  font-size:10px;
+  color:rgba(255,255,255,.25);
+  letter-spacing:0.06em;
+}
+
+/* RIGHT PANEL */
+.right-panel{
+  background:var(--surface);
+  padding:48px 40px 80px;
+}
+.form-inner{max-width:580px}
+.form-title{font-size:28px;font-weight:700;color:var(--charcoal);margin-bottom:8px}
+.form-subtitle{font-size:14px;color:var(--mid);line-height:1.6;margin-bottom:40px}
+
+/* SECTION */
+.form-section{
+  margin-bottom:0;
+  padding:28px 0;
+  border-top:1px solid var(--border);
+}
+.form-section:first-of-type{border-top:none;padding-top:0}
+.section-label{
+  font-family:'DM Mono',monospace;
+  font-size:9px;font-weight:500;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin-bottom:14px;
+  display:block;
+}
+
+/* FIELD */
+.field{margin-bottom:16px}
+.field-label{
+  font-family:'DM Mono',monospace;
+  font-size:10px;font-weight:500;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--mid);
+  margin-bottom:6px;
+  display:block;
+}
+.field-label .req{color:var(--red)}
+input[type=text],input[type=email],input[type=tel],textarea,select{
+  width:100%;
+  background:var(--bg);
+  border:1.5px solid var(--border-s);
+  border-radius:var(--radius-sm);
+  padding:10px 13px;
+  font-family:'Figtree',sans-serif;
+  font-size:14px;
+  color:var(--charcoal);
+  outline:none;
+  transition:border-color .15s;
+  -webkit-appearance:none;appearance:none;
+}
+input[type=text]:focus,input[type=email]:focus,input[type=tel]:focus,textarea:focus,select:focus{
+  border-color:var(--charcoal);
+}
+input.error,select.error,textarea.error{border-color:var(--red)!important}
+.error-msg{
+  font-family:'DM Mono',monospace;
+  font-size:10px;color:var(--red);
+  margin-top:4px;display:none;
+}
+.error-msg.visible{display:block}
+textarea{resize:vertical;min-height:90px}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239A8E84' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+
+.row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* CHECKBOX / RADIO CARDS */
+.ck-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.ck{position:relative;cursor:pointer}
+.ck input{position:absolute;opacity:0;pointer-events:none}
+.ck-box{
+  display:flex;align-items:center;gap:10px;
+  background:var(--bg);
+  border:1.5px solid var(--border-s);
+  border-radius:var(--radius);
+  padding:12px 12px;
+  transition:border-color .15s,background .15s;
+  position:relative;
+}
+.ck-box:hover{border-color:var(--charcoal)}
+.ck input:checked~.ck-box{
+  border-color:var(--charcoal);
+  background:var(--surface-2);
+}
+.ck-icon{flex-shrink:0;color:var(--mid)}
+.ck-label{font-size:13px;font-weight:500;color:var(--charcoal);line-height:1.2}
+.ck-check{
+  position:absolute;top:8px;right:8px;
+  width:14px;height:14px;
+  border-radius:3px;
+  border:1.5px solid var(--faint);
+  background:transparent;
+  transition:all .15s;
+  display:flex;align-items:center;justify-content:center;
+}
+.ck input:checked~.ck-box .ck-check{
+  background:var(--charcoal);
+  border-color:var(--charcoal);
+}
+.ck-check svg{opacity:0;transition:opacity .15s}
+.ck input:checked~.ck-box .ck-check svg{opacity:1}
+
+/* PILL RADIOS */
+.pill-group{display:flex;flex-wrap:wrap;gap:8px}
+.pill{cursor:pointer;position:relative}
+.pill input{position:absolute;opacity:0;pointer-events:none}
+.pill-box{
+  font-family:'DM Mono',monospace;
+  font-size:11px;font-weight:500;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--mid);
+  border:1.5px solid var(--border-s);
+  border-radius:20px;
+  padding:7px 14px;
+  transition:all .15s;
+  white-space:nowrap;
+}
+.pill-box:hover{border-color:var(--charcoal);color:var(--charcoal)}
+.pill input:checked~.pill-box{
+  background:var(--charcoal);
+  border-color:var(--charcoal);
+  color:#fff;
+}
+
+/* SOURCE GRID */
+.src-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.src{position:relative;cursor:pointer}
+.src input{position:absolute;opacity:0;pointer-events:none}
+.src-box{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  padding:16px 8px 12px;
+  background:var(--bg);
+  border:1.5px solid var(--border-s);
+  border-radius:var(--radius);
+  transition:all .15s;
+  text-align:center;
+}
+.src-box:hover{border-color:var(--charcoal)}
+.src input:checked~.src-box{
+  border-color:var(--charcoal);
+  background:var(--surface-2);
+}
+.src-label{
+  font-family:'DM Mono',monospace;
+  font-size:10px;font-weight:500;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--mid);
+}
+.src input:checked~.src-box .src-label{color:var(--charcoal)}
+
+/* TRIM STYLE CARDS */
+.tscard-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.tscard{cursor:pointer}
+.tscard input{display:none}
+.tscard-box{
+  display:flex;flex-direction:column;
+  border:1.5px solid var(--border-s);
+  border-radius:var(--radius);
+  padding:16px 14px 14px;
+  background:var(--bg);
+  transition:all .15s;
+}
+.tscard-box:hover{border-color:var(--charcoal)}
+.tscard.selected .tscard-box{
+  border-color:var(--charcoal);
+  background:var(--surface-2);
+}
+.ts-profile{height:40px;display:flex;align-items:flex-end;margin-bottom:10px}
+.ts-name{
+  font-family:'DM Mono',monospace;
+  font-size:11px;font-weight:500;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--charcoal);
+  margin-bottom:3px;
+}
+.ts-sub{font-size:11.5px;color:var(--mid);line-height:1.4}
+
+.tscard-samples{
+  cursor:pointer;
+  border:1.5px solid var(--border-s);
+  border-radius:var(--radius);
+  padding:12px 16px;
+  background:var(--bg);
+  display:flex;align-items:center;gap:10px;
+  transition:all .15s;
+}
+.tscard-samples:hover{border-color:var(--charcoal)}
+.tscard-samples.selected{border-color:var(--charcoal);background:var(--surface-2)}
+.tscard-samples input{display:none}
+.ts-plus{font-size:18px;color:var(--muted);line-height:1}
+.ts-samples-label{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--mid)}
+
+/* TIER BOXES */
+.tier-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tier{cursor:pointer;position:relative}
+.tier input{display:none}
+.tier-box{
+  border:1.5px solid var(--border-s);
+  border-radius:var(--radius);
+  padding:12px 14px;
+  background:var(--bg);
+  transition:all .15s;
+}
+.tier-box:hover{border-color:var(--charcoal)}
+.tier.selected .tier-box{border-color:var(--charcoal);background:var(--surface-2)}
+.tier-name{
+  font-family:'DM Mono',monospace;
+  font-size:11px;font-weight:500;
+  letter-spacing:0.08em;text-transform:uppercase;
+  color:var(--charcoal);margin-bottom:4px;
+}
+.tier-desc{font-size:12px;color:var(--mid);line-height:1.4}
+
+/* COUNTER GRID */
+.counter-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.counter-item{
+  background:var(--bg);
+  border:1.5px solid var(--border-s);
+  border-radius:var(--radius);
+  padding:14px 14px 12px;
+}
+.counter-name{
+  font-family:'DM Mono',monospace;
+  font-size:10px;font-weight:500;
+  letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--charcoal);margin-bottom:3px;
+}
+.counter-desc{font-size:12px;color:var(--mid);line-height:1.4;margin-bottom:10px}
+.counter-ctrl{
+  display:flex;align-items:center;
+  border:1.5px solid var(--border-s);
+  border-radius:var(--radius-sm);
+  overflow:hidden;
+  width:fit-content;
+}
+.counter-btn{
+  width:34px;height:34px;
+  background:var(--surface-2);
+  border:none;cursor:pointer;
+  font-size:16px;color:var(--mid);
+  display:flex;align-items:center;justify-content:center;
+  transition:background .15s,color .15s;
+}
+.counter-btn:hover{background:var(--faint);color:var(--charcoal)}
+.counter-count{
+  min-width:36px;height:34px;
+  background:var(--surface);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'DM Mono',monospace;
+  font-size:13px;color:var(--mid);
+  border-left:1.5px solid var(--border-s);
+  border-right:1.5px solid var(--border-s);
+}
+.counter-count.nonzero{color:var(--charcoal);font-weight:500}
+
+/* FINISH BOXES (2-col) */
+.finish-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* FEATURE ROOM ENTRIES */
+.feature-rooms{display:flex;flex-direction:column;gap:12px;margin-bottom:12px}
+.feature-room-entry{
+  border:1.5px solid var(--border-s);
+  border-radius:var(--radius);
+  padding:16px;
+  background:var(--bg);
+  position:relative;
+}
+.fe-remove{
+  position:absolute;top:12px;right:12px;
+  font-family:'DM Mono',monospace;
+  font-size:10px;font-weight:500;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--muted);
+  background:none;border:none;cursor:pointer;
+  padding:2px 6px;
+}
+.fe-remove:hover{color:var(--red)}
+.fe-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.fe-label{
+  font-family:'DM Mono',monospace;
+  font-size:10px;font-weight:500;
+  letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--mid);margin-bottom:8px;display:block;
+}
+.fe-ck-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fe-ck-box{
+  display:flex;align-items:center;gap:8px;
+  padding:9px 10px;font-size:12px;
+}
+
+.add-room-btn{
+  width:100%;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:12px;
+  border:1.5px dashed var(--border-s);
+  border-radius:var(--radius);
+  background:transparent;
+  cursor:pointer;
+  font-family:'DM Mono',monospace;
+  font-size:11px;font-weight:500;
+  letter-spacing:0.08em;text-transform:uppercase;
+  color:var(--muted);
+  transition:all .15s;
+}
+.add-room-btn:hover{border-color:var(--charcoal);color:var(--charcoal)}
+
+/* PER-AREA FLOORING */
+.per-area-grid{
+  border:1.5px solid var(--border-s);
+  border-radius:var(--radius);
+  overflow:hidden;
+  margin-bottom:8px;
+}
+.per-area-row{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 14px;
+  border-bottom:1px solid var(--border);
+}
+.per-area-row:last-child{border-bottom:none}
+.par-name{
+  font-family:'DM Mono',monospace;
+  font-size:10px;font-weight:500;
+  letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--mid);min-width:120px;
+}
+.par-select{flex:1}
+.par-select select{margin:0}
+
+/* SECTION HEADING */
+.section-heading{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:20px;
+}
+.sh-num{
+  font-family:'DM Mono',monospace;
+  font-size:10px;font-weight:500;
+  letter-spacing:0.1em;
+  color:var(--muted);
+}
+
+/* CONDITIONAL SECTIONS */
+.conditional{display:none;border-top:none!important;padding-top:0!important}
+.conditional.visible{border-top:1px solid var(--border)!important;padding-top:28px!important}
+.conditional.visible{display:block}
+
+/* SUB-SECTION */
+.sub-section{margin-bottom:24px}
+
+/* SUBMIT */
+.submit-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-top:24px;
+  border-top:1px solid var(--border);
+  margin-top:32px;
+}
+.submit-note{
+  font-family:'DM Mono',monospace;
+  font-size:10px;letter-spacing:0.08em;
+  color:var(--muted);text-transform:uppercase;
+}
+.submit-btn{
+  display:flex;align-items:center;gap:8px;
+  background:var(--green);
+  color:#fff;
+  border:none;cursor:pointer;
+  font-family:'DM Mono',monospace;
+  font-size:12px;font-weight:500;
+  letter-spacing:0.1em;text-transform:uppercase;
+  padding:12px 20px;
+  border-radius:var(--radius-sm);
+  transition:opacity .15s;
+}
+.submit-btn:hover{opacity:.9}
+.submit-btn:disabled{opacity:.6;cursor:not-allowed}
+
+/* SUCCESS STATE */
+.success-state{
+  display:none;
+  max-width:580px;
+  padding:60px 0;
+}
+.success-state.visible{display:block}
+.success-icon{
+  width:56px;height:56px;
+  border-radius:50%;
+  background:rgba(22,163,74,.12);
+  border:2px solid rgba(22,163,74,.3);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:20px;
+}
+.success-title{font-size:24px;font-weight:700;margin-bottom:10px}
+.success-body{font-size:14px;color:var(--mid);line-height:1.7;margin-bottom:28px;max-width:460px}
+
+/* SUMMARY CARD */
+.summary-card{
+  border:1.5px solid var(--border-s);
+  border-radius:var(--radius);
+  overflow:hidden;
+  margin-bottom:28px;
+}
+.summary-header{
+  background:var(--surface-2);
+  padding:12px 16px;
+  font-family:'DM Mono',monospace;
+  font-size:10px;font-weight:500;
+  letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--mid);
+}
+.summary-body{padding:0 16px}
+.summary-row{
+  display:flex;gap:12px;
+  padding:10px 0;
+  border-bottom:1px solid var(--border);
+  font-size:13px;
+}
+.summary-row:last-child{border-bottom:none}
+.summary-label{
+  font-family:'DM Mono',monospace;
+  font-size:10px;font-weight:500;
+  letter-spacing:0.08em;text-transform:uppercase;
+  color:var(--muted);min-width:120px;padding-top:2px;
+}
+.summary-val{color:var(--charcoal);line-height:1.5}
+.summary-tags{display:flex;flex-wrap:wrap;gap:5px}
+.summary-tag{
+  font-family:'DM Mono',monospace;
+  font-size:10px;
+  background:var(--surface-2);
+  border:1px solid var(--border-s);
+  border-radius:4px;
+  padding:2px 7px;
+  color:var(--mid);
+}
+
+/* WHAT HAPPENS NEXT */
+.next-label{
+  font-family:'DM Mono',monospace;
+  font-size:10px;font-weight:500;
+  letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:14px;
+}
+.next-steps{display:flex;flex-direction:column;gap:12px}
+.next-step{display:flex;gap:12px;align-items:flex-start;font-size:13px;color:var(--mid);line-height:1.5}
+.next-num{
+  font-family:'DM Mono',monospace;
+  font-size:11px;font-weight:500;
+  color:var(--charcoal);
+  min-width:20px;padding-top:1px;
+}
+
+/* FLOORING VARIES NOTE */
+.field-note{font-size:12px;color:var(--muted);line-height:1.5;margin-top:6px}
+
+/* DIVIDER */
+.sub-divider{
+  height:1px;background:var(--border);
+  margin:20px 0;
+}
+
+/* RESPONSIVE */
+@media(max-width:1100px){
+  .layout{grid-template-columns:300px 1fr}
+}
+@media(max-width:768px){
+  .layout{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+  .left-panel{position:static;height:auto}
+  nav{padding:0 16px}
+  .right-panel{padding:32px 20px 60px}
+  .ck-grid{grid-template-columns:repeat(2,1fr)}
+  .src-grid{grid-template-columns:repeat(2,1fr)}
+  .tscard-grid{grid-template-columns:1fr 1fr}
+  .tier-grid{grid-template-columns:1fr}
+  .counter-grid{grid-template-columns:1fr}
+  .finish-grid{grid-template-columns:1fr}
+  .row-2{grid-template-columns:1fr}
+  .fe-row{grid-template-columns:1fr}
+  .submit-row{flex-direction:column;gap:14px;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    H<span class="nav-dots"><span class="nav-dot r"></span><span class="nav-dot a"></span><span class="nav-dot g"></span></span>MZ<span class="nav-interiors">&nbsp;INTERIORS</span>
+  </div>
+  <a href="/" class="nav-back">← BACK TO HOME</a>
+</nav>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- LEFT PANEL -->
+  <aside class="left-panel">
+    <div>
+      <span class="badge"><span class="badge-dot"></span>FREE SITE VISIT</span>
+    </div>
+    <div>
+      <h1 class="left-headline">Let's see your space.</h1>
+      <p class="left-body" style="margin-top:12px">Tell us what you're thinking. We'll come to you — iPad in hand — and give you a real picture of what it will take, cost, and look like.</p>
+    </div>
+
+    <div class="design-steps">
+      <div class="ds-row"><div class="ds-letter">D</div><div class="ds-content"><div class="ds-name">Discover</div><div class="ds-desc">We come to you. Measurements, before-state photos, material samples in your actual lighting.</div></div></div>
+      <div class="ds-row"><div class="ds-letter">E</div><div class="ds-content"><div class="ds-name">Estimate</div><div class="ds-desc">Unit pricing from a fixed catalog. No vague allowances. A real number before you decide anything.</div></div></div>
+      <div class="ds-row"><div class="ds-letter">S</div><div class="ds-content"><div class="ds-name">Select</div><div class="ds-desc">Your materials, your tier. Good, Better, or Best — same scope, different spec level.</div></div></div>
+      <div class="ds-row"><div class="ds-letter">I</div><div class="ds-content"><div class="ds-name">Illustrate</div><div class="ds-desc">A rendered walkthrough of your finished space. See it before you sign.</div></div></div>
+      <div class="ds-row"><div class="ds-letter">G</div><div class="ds-content"><div class="ds-name">Go</div><div class="ds-desc">Contract signed. Start date confirmed. Everything locked before day one of work.</div></div></div>
+      <div class="ds-row"><div class="ds-letter">N</div><div class="ds-content"><div class="ds-name">Notify</div><div class="ds-desc">You're updated by email at every stage. No chasing. No wondering what's happening.</div></div></div>
+    </div>
+
+    <div id="estimatePreview" class="estimate-preview">
+      <div class="ep-label">Preliminary Range</div>
+      <div class="ep-range" id="epRange">—</div>
+      <div class="ep-trades" id="epTrades"></div>
+      <div class="ep-caveat">ROUGH RANGE ONLY · SUBJECT TO SITE VISIT</div>
+    </div>
+
+    <div class="left-footer">No pressure · Free site visit · Southern New Brunswick</div>
+  </aside>
+
+  <!-- RIGHT PANEL -->
+  <main class="right-panel">
+    <div class="form-inner">
+
+      <!-- FORM -->
+      <div id="formWrap">
+        <h2 class="form-title">Book your site visit.</h2>
+        <p class="form-subtitle">No commitment. We'll come to you, see the space, and talk through what you want.</p>
+
+        <form id="intakeForm" novalidate>
+
+          <!-- 1. YOUR INFO -->
+          <div class="form-section">
+            <span class="section-label">1 — Your Info</span>
+            <div class="row-2">
+              <div class="field">
+                <label class="field-label" for="firstName">First Name <span class="req">*</span></label>
+                <input type="text" id="firstName" name="firstName" placeholder="Jane">
+                <div class="error-msg" id="firstName-err">First name is required.</div>
+              </div>
+              <div class="field">
+                <label class="field-label" for="lastName">Last Name</label>
+                <input type="text" id="lastName" name="lastName" placeholder="Smith">
+              </div>
+            </div>
+            <div class="row-2">
+              <div class="field">
+                <label class="field-label" for="email">Email <span class="req">*</span></label>
+                <input type="email" id="email" name="email" placeholder="jane@example.com">
+                <div class="error-msg" id="email-err">A valid email is required.</div>
+              </div>
+              <div class="field">
+                <label class="field-label" for="phone">Phone</label>
+                <input type="tel" id="phone" name="phone" placeholder="506-555-0100">
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label" for="address">Address <span class="req">*</span></label>
+              <input type="text" id="address" name="address" placeholder="Start typing your address..." autocomplete="off">
+              <div class="error-msg" id="address-err">Address is required.</div>
+            </div>
+            <!-- hidden fields populated by Places autocomplete -->
+            <input type="hidden" id="place_id"   name="place_id">
+            <input type="hidden" id="place_lat"  name="place_lat">
+            <input type="hidden" id="place_lng"  name="place_lng">
+            <input type="hidden" id="maps_url"   name="maps_url">
+            <!-- street view preview (shown after address selected) -->
+            <div id="streetviewWrap" style="display:none;margin-bottom:14px">
+              <div style="position:relative;border-radius:var(--radius);overflow:hidden;border:1.5px solid var(--border-s)">
+                <img id="streetviewImg" src="" alt="Street view" style="width:100%;height:160px;object-fit:cover;display:block">
+                <div style="position:absolute;bottom:0;left:0;right:0;padding:7px 10px;background:linear-gradient(transparent,rgba(0,0,0,.55));display:flex;align-items:center;justify-content:space-between">
+                  <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.08em;color:rgba(255,255,255,.75);text-transform:uppercase">Google Street View · Cover photo</span>
+                  <a id="mapsLink" href="#" target="_blank" rel="noopener" style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.08em;color:rgba(255,255,255,.9);text-decoration:none;border:1px solid rgba(255,255,255,.35);border-radius:4px;padding:3px 7px">Open in Maps ↗</a>
+                </div>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label" for="city">City <span class="req">*</span></label>
+              <input type="text" id="city" name="city" placeholder="Auto-filled from address">
+              <div class="error-msg" id="city-err">City is required.</div>
+            </div>
+          </div>
+
+          <!-- 2. TRADES -->
+          <div class="form-section">
+            <span class="section-label">2 — What are you looking to do?</span>
+            <div class="ck-grid" id="tradesGrid">
+              <label class="ck" id="ck-flooring">
+                <input type="checkbox" name="trades" value="flooring" onchange="updateEstimate()">
+                <div class="ck-box">
+                  <span class="ck-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="4" width="7" height="3" rx="0.5" stroke="currentColor" stroke-width="1.2"/><rect x="10" y="4" width="7" height="3" rx="0.5" stroke="currentColor" stroke-width="1.2"/><rect x="4" y="8.5" width="7" height="3" rx="0.5" stroke="currentColor" stroke-width="1.2"/><rect x="1" y="13" width="7" height="3" rx="0.5" stroke="currentColor" stroke-width="1.2"/><rect x="10" y="13" width="7" height="3" rx="0.5" stroke="currentColor" stroke-width="1.2"/></svg></span>
+                  <span class="ck-label">Flooring</span>
+                  <span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                </div>
+              </label>
+              <label class="ck" id="ck-paint">
+                <input type="checkbox" name="trades" value="paint" onchange="updateEstimate()">
+                <div class="ck-box">
+                  <span class="ck-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="12" width="14" height="4" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="6" y="9" width="6" height="4" rx="0.5" stroke="currentColor" stroke-width="1.2"/><rect x="7.5" y="3" width="3" height="7" rx="0.5" stroke="currentColor" stroke-width="1.2"/></svg></span>
+                  <span class="ck-label">Paint</span>
+                  <span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                </div>
+              </label>
+              <label class="ck" id="ck-trim">
+                <input type="checkbox" name="trades" value="trim" onchange="updateEstimate()">
+                <div class="ck-box">
+                  <span class="ck-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="3" y="2" width="12" height="14" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="5.5" y="4.5" width="7" height="4" rx="0.5" stroke="currentColor" stroke-width="1.2"/><rect x="5.5" y="10" width="7" height="4" rx="0.5" stroke="currentColor" stroke-width="1.2"/></svg></span>
+                  <span class="ck-label">Trim &amp; Doors</span>
+                  <span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                </div>
+              </label>
+              <label class="ck" id="ck-feature">
+                <input type="checkbox" name="trades" value="feature" onchange="updateEstimate()">
+                <div class="ck-box">
+                  <span class="ck-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2L16 9L9 16L2 9Z" stroke="currentColor" stroke-width="1.2"/><path d="M9 2L9 16M2 9L16 9" stroke="currentColor" stroke-width="1.2"/></svg></span>
+                  <span class="ck-label">Feature Wall</span>
+                  <span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                </div>
+              </label>
+              <label class="ck" id="ck-notsure">
+                <input type="checkbox" name="trades" value="notsure" onchange="updateEstimate()">
+                <div class="ck-box">
+                  <span class="ck-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.2"/><path d="M9 13v-.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M9 10.5c0-1.5 2-2 2-3.5a2 2 0 00-4 0" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span>
+                  <span class="ck-label">Not sure yet</span>
+                  <span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                </div>
+              </label>
+              <label class="ck" id="ck-full">
+                <input type="checkbox" name="trades" value="full" onchange="updateEstimate()">
+                <div class="ck-box">
+                  <span class="ck-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2L16 8H14v7H4V8H2L9 2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><rect x="7" y="11" width="4" height="4" stroke="currentColor" stroke-width="1.2"/></svg></span>
+                  <span class="ck-label">Full Refresh</span>
+                  <span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- 3. ROOMS -->
+          <div class="form-section">
+            <span class="section-label">3 — Which rooms?</span>
+            <div class="ck-grid" id="roomsGrid">
+              <label class="ck"><input type="checkbox" name="rooms" value="Main Floor" onchange="handleRoomChange(this)"><div class="ck-box"><span class="ck-label">Main Floor</span><span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></label>
+              <label class="ck"><input type="checkbox" name="rooms" value="Kitchen" onchange="handleRoomChange(this)"><div class="ck-box"><span class="ck-label">Kitchen</span><span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></label>
+              <label class="ck"><input type="checkbox" name="rooms" value="Living / Dining" onchange="handleRoomChange(this)"><div class="ck-box"><span class="ck-label">Living / Dining</span><span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></label>
+              <label class="ck"><input type="checkbox" name="rooms" value="Bedrooms" onchange="handleRoomChange(this)"><div class="ck-box"><span class="ck-label">Bedrooms</span><span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></label>
+              <label class="ck"><input type="checkbox" name="rooms" value="Bathrooms" onchange="handleRoomChange(this)"><div class="ck-box"><span class="ck-label">Bathrooms</span><span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></label>
+              <label class="ck"><input type="checkbox" name="rooms" value="Home Office" onchange="handleRoomChange(this)"><div class="ck-box"><span class="ck-label">Home Office</span><span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></label>
+              <label class="ck"><input type="checkbox" name="rooms" value="Basement" onchange="handleRoomChange(this)"><div class="ck-box"><span class="ck-label">Basement</span><span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></label>
+              <label class="ck"><input type="checkbox" name="rooms" value="Staircase" onchange="handleRoomChange(this)"><div class="ck-box"><span class="ck-label">Staircase</span><span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></label>
+              <label class="ck" id="ck-wholehouse"><input type="checkbox" name="rooms" value="Whole House" onchange="handleWholeHouse(this)"><div class="ck-box"><span class="ck-label">Whole House</span><span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></label>
+            </div>
+          </div>
+
+          <!-- 4. SIZE -->
+          <div class="form-section">
+            <span class="section-label">4 — Approximate size</span>
+            <textarea id="sizeField" name="size" placeholder="e.g. Main floor is roughly 900 sq ft, basement around 700. Master bedroom approx 14×16. Not sure on the rest."></textarea>
+          </div>
+
+          <!-- 5. CEILING HEIGHT (conditional) -->
+          <div class="form-section conditional" id="ceilingSection">
+            <span class="section-label">5 — Ceiling height</span>
+            <div class="row-2">
+              <div class="field">
+                <label class="field-label">Ceiling Height</label>
+                <select id="ceilingHeight" name="ceilingHeight">
+                  <option value="">Select...</option>
+                  <option value="8ft">8 ft (standard)</option>
+                  <option value="9ft">9 ft</option>
+                  <option value="10ft">10 ft</option>
+                  <option value="vaulted">Vaulted / cathedral</option>
+                  <option value="mixed">Mixed / varies by room</option>
+                  <option value="notsure">Not sure</option>
+                </select>
+              </div>
+              <div class="field">
+                <label class="field-label">Include ceilings in paint scope?</label>
+                <select id="ceilingScope" name="ceilingScope">
+                  <option value="">Select...</option>
+                  <option value="yes">Yes — paint ceilings too</option>
+                  <option value="no">No — walls only</option>
+                  <option value="some">Some rooms only</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6. FINISH DETAILS (conditional) -->
+          <div class="form-section conditional" id="finishSection">
+            <span class="section-label">6 — Finish details</span>
+
+            <!-- FLOORING DETAIL -->
+            <div class="sub-section conditional" id="flooringDetailRow">
+              <label class="field-label">Flooring</label>
+              <div class="field">
+                <select id="flooringType" name="flooringType" onchange="handleFlooringChange()">
+                  <option value="">Same throughout — select type...</option>
+                  <option value="hardwood-solid">Hardwood (solid)</option>
+                  <option value="hardwood-eng">Engineered hardwood</option>
+                  <option value="lvp">LVP / vinyl plank</option>
+                  <option value="laminate">Laminate</option>
+                  <option value="tile">Tile</option>
+                  <option value="carpet">Carpet</option>
+                  <option value="concrete">Painted concrete</option>
+                  <option value="varies">It varies — I'll break it down</option>
+                  <option value="notsure">Not sure yet</option>
+                </select>
+              </div>
+              <div id="perAreaGrid" style="display:none">
+                <div class="per-area-grid" id="perAreaRows"></div>
+                <p class="field-note">Subfloor assessed on-site. Standard is OSB or plywood — concrete slab or over-existing noted during visit.</p>
+              </div>
+            </div>
+
+            <!-- TRIM DETAIL -->
+            <div class="sub-section conditional" id="trimDetailRow">
+              <div class="sub-divider" style="margin-top:4px"></div>
+              <label class="field-label" style="margin-bottom:12px">Trim Style</label>
+
+              <div class="tscard-grid" id="trimStyleGrid">
+                <div class="tscard" data-val="glebe" onclick="selectTrimStyle(this)">
+                  <input type="radio" name="trimStyle" value="glebe">
+                  <div class="tscard-box">
+                    <div class="ts-profile">
+                      <svg width="48" height="40" viewBox="0 0 48 40" fill="none">
+                        <!-- base: widest -->
+                        <rect x="4"  y="31" width="40" height="8" fill="#9A8E84"/>
+                        <!-- mid-low: slightly narrower, overlaps into base -->
+                        <rect x="9"  y="21" width="30" height="11" fill="#9A8E84"/>
+                        <!-- mid-high: narrower again, overlaps -->
+                        <rect x="14" y="12" width="20" height="10" fill="#9A8E84"/>
+                        <!-- top cap: narrowest, thin -->
+                        <rect x="17" y="6"  width="14" height="7"  fill="#9A8E84"/>
+                      </svg>
+                    </div>
+                    <div class="ts-name">GLEBE</div>
+                    <div class="ts-sub">Square-edge stacked profile · clean shadow line at top</div>
+                  </div>
+                </div>
+                <div class="tscard" data-val="flat" onclick="selectTrimStyle(this)">
+                  <input type="radio" name="trimStyle" value="flat">
+                  <div class="tscard-box">
+                    <div class="ts-profile">
+                      <svg width="48" height="40" viewBox="0 0 48 40" fill="none">
+                        <!-- single flush rectangle, full height -->
+                        <rect x="11" y="5" width="26" height="34" fill="#9A8E84"/>
+                      </svg>
+                    </div>
+                    <div class="ts-name">FLAT / MINIMAL</div>
+                    <div class="ts-sub">Single flush board · no cap, no detail</div>
+                  </div>
+                </div>
+                <div class="tscard" data-val="craftsman" onclick="selectTrimStyle(this)">
+                  <input type="radio" name="trimStyle" value="craftsman">
+                  <div class="tscard-box">
+                    <div class="ts-profile">
+                      <svg width="48" height="40" viewBox="0 0 48 40" fill="none">
+                        <!-- thin base plate at floor -->
+                        <rect x="4"  y="35" width="40" height="4"  fill="#9A8E84"/>
+                        <!-- narrow body (clear gap from cap edges) -->
+                        <rect x="15" y="16" width="18" height="20" fill="#9A8E84"/>
+                        <!-- proud cap — notably wider than body, clearly overhangs both sides -->
+                        <rect x="4"  y="6"  width="40" height="12" fill="#9A8E84"/>
+                      </svg>
+                    </div>
+                    <div class="ts-name">CRAFTSMAN</div>
+                    <div class="ts-sub">Flat face · bold top cap · strong horizontal line</div>
+                  </div>
+                </div>
+                <div class="tscard" data-val="traditional" onclick="selectTrimStyle(this)">
+                  <input type="radio" name="trimStyle" value="traditional">
+                  <div class="tscard-box">
+                    <div class="ts-profile">
+                      <svg width="48" height="40" viewBox="0 0 48 40" fill="none">
+                        <!-- flat base plinth -->
+                        <rect x="4" y="33" width="40" height="6" fill="#9A8E84"/>
+                        <!--
+                          Ogee S-curve profile body.
+                          Left edge = wall side (straight vertical).
+                          Right edge = exposed face: straight at top,
+                          then convex bulge outward, then concave cove inward — classic ogee.
+                        -->
+                        <path d="
+                          M4 33
+                          L4 5
+                          L42 5
+                          L42 12
+                          C44 15 45 19 39 23
+                          C33 27 28 28 30 33
+                          Z
+                        " fill="#9A8E84"/>
+                      </svg>
+                    </div>
+                    <div class="ts-name">TRADITIONAL</div>
+                    <div class="ts-sub">Ogee / colonial profile · classic curved detail</div>
+                  </div>
+                </div>
+              </div>
+              <div class="tscard-samples" id="tscard-samples" onclick="selectTrimSamples(this)">
+                <input type="radio" name="trimStyle" value="samples">
+                <span class="ts-plus">+</span>
+                <span class="ts-samples-label">I'd like to see samples at the site visit</span>
+              </div>
+
+              <div style="margin-top:16px">
+                <label class="field-label" style="font-size:9px;line-height:1.4">Trim Tier <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted)">(Optional — we'll walk you through this on-site)</span></label>
+                <div class="tier-grid" id="trimTierGrid">
+                  <div class="tier" data-group="trimTier" data-val="good" onclick="selectTier(this)"><input type="radio" name="trimTier" value="good"><div class="tier-box"><div class="tier-name">GOOD</div><div class="tier-desc">MDF — painted in place, crisp result, budget-friendly</div></div></div>
+                  <div class="tier" data-group="trimTier" data-val="better" onclick="selectTier(this)"><input type="radio" name="trimTier" value="better"><div class="tier-box"><div class="tier-name">BETTER</div><div class="tier-desc">Finger-jointed pine — tighter grain, holds paint longer</div></div></div>
+                  <div class="tier" data-group="trimTier" data-val="best" onclick="selectTier(this)"><input type="radio" name="trimTier" value="best"><div class="tier-box"><div class="tier-name">BEST</div><div class="tier-desc">Finger-jointed + stools &amp; aprons on windows, headers on doors · composite sill &amp; jamb in bathrooms</div></div></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PAINT DETAIL -->
+            <div class="sub-section conditional" id="paintDetailRow">
+              <div class="sub-divider" style="margin-top:4px"></div>
+              <label class="field-label">Paint</label>
+              <div class="row-2">
+                <div class="field">
+                  <label class="field-label">Paint Finish</label>
+                  <select id="paintFinish" name="paintFinish">
+                    <option value="">Select...</option>
+                    <option value="eggshell">Eggshell (most rooms)</option>
+                    <option value="satin">Satin (kitchens / baths)</option>
+                    <option value="flat">Flat / matte</option>
+                    <option value="semigloss">Semi-gloss (trim)</option>
+                    <option value="recommend">Not sure / your recommendation</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label class="field-label">Colour Direction</label>
+                  <select id="colourDirection" name="colourDirection">
+                    <option value="">Select...</option>
+                    <option value="neutral">Neutral / warm whites</option>
+                    <option value="greige">Greige / earth tones</option>
+                    <option value="bold">Bold accent colours</option>
+                    <option value="dark">Dark / moody</option>
+                    <option value="help">Help me choose</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 7. FEATURE WALL (conditional) -->
+          <div class="form-section conditional" id="featureSection">
+            <span class="section-label">7 — Feature wall details</span>
+            <div id="featureRooms" class="feature-rooms"></div>
+            <button type="button" class="add-room-btn" onclick="addFeatureRoom()">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              ADD ANOTHER ROOM
+            </button>
+            <div class="field" style="margin-top:14px">
+              <label class="field-label">Inspiration or Notes (optional)</label>
+              <input type="text" id="featureNotes" name="featureNotes" placeholder="e.g. saw something on Pinterest, want shiplap in living room...">
+            </div>
+          </div>
+
+          <!-- 8. DOOR DETAILS (conditional) -->
+          <div class="form-section conditional" id="doorSection">
+            <span class="section-label">8 — Door details</span>
+            <p style="font-size:13px;color:var(--mid);margin-bottom:16px">How many of each type are you replacing? Tap + to add.</p>
+            <div class="counter-grid">
+              <div class="counter-item">
+                <div class="counter-name">SWING</div>
+                <div class="counter-desc">Standard hinged interior doors</div>
+                <div class="counter-ctrl">
+                  <button type="button" class="counter-btn" onclick="stepCounter('doors-swing',-1)">−</button>
+                  <span class="counter-count" id="doors-swing-display">0</span>
+                  <button type="button" class="counter-btn" onclick="stepCounter('doors-swing',1)">+</button>
+                </div>
+                <input type="hidden" id="doors-swing" name="doors-swing" value="0">
+              </div>
+              <div class="counter-item">
+                <div class="counter-name">POCKET</div>
+                <div class="counter-desc">Slides into the wall cavity</div>
+                <div class="counter-ctrl">
+                  <button type="button" class="counter-btn" onclick="stepCounter('doors-pocket',-1)">−</button>
+                  <span class="counter-count" id="doors-pocket-display">0</span>
+                  <button type="button" class="counter-btn" onclick="stepCounter('doors-pocket',1)">+</button>
+                </div>
+                <input type="hidden" id="doors-pocket" name="doors-pocket" value="0">
+              </div>
+              <div class="counter-item">
+                <div class="counter-name">BI-FOLD</div>
+                <div class="counter-desc">Closet fold-in panels</div>
+                <div class="counter-ctrl">
+                  <button type="button" class="counter-btn" onclick="stepCounter('doors-bifold',-1)">−</button>
+                  <span class="counter-count" id="doors-bifold-display">0</span>
+                  <button type="button" class="counter-btn" onclick="stepCounter('doors-bifold',1)">+</button>
+                </div>
+                <input type="hidden" id="doors-bifold" name="doors-bifold" value="0">
+              </div>
+              <div class="counter-item">
+                <div class="counter-name">BARN / SLIDING</div>
+                <div class="counter-desc">Hardware-mounted sliding panels</div>
+                <div class="counter-ctrl">
+                  <button type="button" class="counter-btn" onclick="stepCounter('doors-barn',-1)">−</button>
+                  <span class="counter-count" id="doors-barn-display">0</span>
+                  <button type="button" class="counter-btn" onclick="stepCounter('doors-barn',1)">+</button>
+                </div>
+                <input type="hidden" id="doors-barn" name="doors-barn" value="0">
+              </div>
+            </div>
+
+            <div style="margin-top:18px">
+              <label class="field-label">Finish Application</label>
+              <div class="finish-grid">
+                <div class="tier" data-group="finishApp" data-val="brush" onclick="selectTier(this)">
+                  <input type="radio" name="finishApp" value="brush">
+                  <div class="tier-box">
+                    <div class="tier-name">BRUSH &amp; ROLL</div>
+                    <div class="tier-desc">Standard application — included in base pricing</div>
+                  </div>
+                </div>
+                <div class="tier" data-group="finishApp" data-val="spray" onclick="selectTier(this)">
+                  <input type="radio" name="finishApp" value="spray">
+                  <div class="tier-box">
+                    <div class="tier-name">SPRAY FINISH</div>
+                    <div class="tier-desc">Factory-smooth result on doors &amp; trim — premium add-on, discussed on-site</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="field" style="margin-top:14px">
+              <label class="field-label">Anything unusual? (optional)</label>
+              <input type="text" id="doorNotes" name="doorNotes" placeholder="e.g. arched doorways, non-standard heights, existing barn hardware to keep...">
+            </div>
+          </div>
+
+          <!-- 9. WINDOW DETAILS (conditional) -->
+          <div class="form-section conditional" id="windowSection">
+            <span class="section-label">9 — Window details</span>
+            <p style="font-size:13px;color:var(--mid);margin-bottom:16px">Used to calculate trim linear footage and paintable wall area. Tap + to add.</p>
+            <div class="counter-grid">
+              <div class="counter-item">
+                <div class="counter-name">SMALL</div>
+                <div class="counter-desc">Bathroom or basement hopper · under ~24″ wide</div>
+                <div class="counter-ctrl">
+                  <button type="button" class="counter-btn" onclick="stepCounter('win-small',-1)">−</button>
+                  <span class="counter-count" id="win-small-display">0</span>
+                  <button type="button" class="counter-btn" onclick="stepCounter('win-small',1)">+</button>
+                </div>
+                <input type="hidden" id="win-small" name="win-small" value="0">
+              </div>
+              <div class="counter-item">
+                <div class="counter-name">STANDARD</div>
+                <div class="counter-desc">Typical bedroom or living room · 24″–48″ wide</div>
+                <div class="counter-ctrl">
+                  <button type="button" class="counter-btn" onclick="stepCounter('win-standard',-1)">−</button>
+                  <span class="counter-count" id="win-standard-display">0</span>
+                  <button type="button" class="counter-btn" onclick="stepCounter('win-standard',1)">+</button>
+                </div>
+                <input type="hidden" id="win-standard" name="win-standard" value="0">
+              </div>
+              <div class="counter-item">
+                <div class="counter-name">LARGE</div>
+                <div class="counter-desc">Picture window or patio · over ~48″ wide</div>
+                <div class="counter-ctrl">
+                  <button type="button" class="counter-btn" onclick="stepCounter('win-large',-1)">−</button>
+                  <span class="counter-count" id="win-large-display">0</span>
+                  <button type="button" class="counter-btn" onclick="stepCounter('win-large',1)">+</button>
+                </div>
+                <input type="hidden" id="win-large" name="win-large" value="0">
+              </div>
+              <div class="counter-item">
+                <div class="counter-name">IRREGULAR</div>
+                <div class="counter-desc">Arched, bay, bow, or non-rectangular — custom trim required</div>
+                <div class="counter-ctrl">
+                  <button type="button" class="counter-btn" onclick="stepCounter('win-irregular',-1)">−</button>
+                  <span class="counter-count" id="win-irregular-display">0</span>
+                  <button type="button" class="counter-btn" onclick="stepCounter('win-irregular',1)">+</button>
+                </div>
+                <input type="hidden" id="win-irregular" name="win-irregular" value="0">
+              </div>
+            </div>
+            <div class="field" style="margin-top:14px">
+              <label class="field-label">Window notes (optional)</label>
+              <input type="text" id="winNotes" name="winNotes" placeholder="e.g. bay window in dining room, skylights, unusual shapes...">
+            </div>
+          </div>
+
+          <!-- 10. TIMELINE -->
+          <div class="form-section">
+            <span class="section-label">10 — Timeline</span>
+            <div class="pill-group">
+              <label class="pill"><input type="radio" name="timeline" value="asap"><span class="pill-box">ASAP</span></label>
+              <label class="pill"><input type="radio" name="timeline" value="1-2mo"><span class="pill-box">1–2 MONTHS</span></label>
+              <label class="pill"><input type="radio" name="timeline" value="3-6mo"><span class="pill-box">3–6 MONTHS</span></label>
+              <label class="pill"><input type="radio" name="timeline" value="exploring"><span class="pill-box">JUST EXPLORING</span></label>
+              <label class="pill"><input type="radio" name="timeline" value="flexible"><span class="pill-box">FLEXIBLE</span></label>
+            </div>
+          </div>
+
+          <!-- 11. PROPERTY -->
+          <div class="form-section">
+            <span class="section-label">11 — Property</span>
+            <div class="field">
+              <select id="propertyType" name="propertyType">
+                <option value="">Select property type...</option>
+                <option value="detached">Detached home</option>
+                <option value="semi">Semi-detached</option>
+                <option value="townhome">Townhome / row house</option>
+                <option value="condo">Condo / apartment</option>
+                <option value="newbuild">New build (under construction)</option>
+                <option value="rental">Rental property</option>
+                <option value="commercial">Commercial / mixed-use</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- 12. HOW DID YOU FIND US -->
+          <div class="form-section">
+            <span class="section-label">12 — How did you find us?</span>
+            <div class="src-grid">
+              <label class="src"><input type="radio" name="referral" value="word-of-mouth"><div class="src-box"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="4" stroke="currentColor" stroke-width="1.3"/><path d="M3 18c0-3.866 3.134-7 7-7s7 3.134 7 7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg><span class="src-label">WORD OF MOUTH</span></div></label>
+              <label class="src"><input type="radio" name="referral" value="home-show"><div class="src-box"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="13" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.3"/><path d="M7 2v4M13 2v4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><rect x="6" y="11" width="3" height="3" rx="0.5" fill="currentColor"/></svg><span class="src-label">HOME SHOW</span></div></label>
+              <label class="src"><input type="radio" name="referral" value="social-media"><div class="src-box"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="4" y="4" width="12" height="12" rx="3" stroke="currentColor" stroke-width="1.3"/><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.3"/><circle cx="14" cy="6" r="1" fill="currentColor"/></svg><span class="src-label">SOCIAL MEDIA</span></div></label>
+              <label class="src"><input type="radio" name="referral" value="google"><div class="src-box"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M10 10h4M10 7v6M14 10a4 4 0 01-4 4 4 4 0 01-4-4 4 4 0 014-4c1.1 0 2.1.45 2.83 1.17" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg><span class="src-label">GOOGLE</span></div></label>
+              <label class="src"><input type="radio" name="referral" value="referral-partner"><div class="src-box"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 8c0-1.1.9-2 2-2h8a2 2 0 012 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M4 12c0 1.1.9 2 2 2h8a2 2 0 002-2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M7 6l-3-2M7 14l-3 2M13 6l3-2M13 14l3 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg><span class="src-label">REFERRAL PARTNER</span></div></label>
+              <label class="src"><input type="radio" name="referral" value="other"><div class="src-box"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M10 14v-.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M10 11.5c0-1.5 2-2 2-3.5a2 2 0 00-4 0" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg><span class="src-label">OTHER</span></div></label>
+            </div>
+          </div>
+
+          <!-- 13. ANYTHING ELSE -->
+          <div class="form-section">
+            <span class="section-label">13 — Anything else?</span>
+            <textarea id="additionalNotes" name="additionalNotes" placeholder="Tell us about the space, any existing conditions we should know about, or anything that would help us prepare for the visit."></textarea>
+          </div>
+
+          <!-- 14. SUBMIT -->
+          <div class="submit-row">
+            <span class="submit-note">Free site visit · No commitment</span>
+            <button type="submit" class="submit-btn" id="submitBtn">
+              SEND REQUEST
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h12M7 1l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+
+        </form>
+      </div>
+
+      <!-- SUCCESS STATE -->
+      <div id="successState" class="success-state">
+        <div class="success-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#16A34A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h2 class="success-title">Request received.</h2>
+        <p class="success-body">We'll reach out within 24–48 hours to confirm and schedule your site visit. Here's exactly what you submitted — if anything looks off, reply to our email and we'll update it before we start.</p>
+
+        <div id="summaryCard" class="summary-card"></div>
+
+        <div class="next-label">WHAT HAPPENS NEXT</div>
+        <div class="next-steps">
+          <div class="next-step"><span class="next-num">1.</span><span>We'll email you within 24–48 hours to confirm details and schedule your site visit.</span></div>
+          <div class="next-step"><span class="next-num">2.</span><span>We come to you — iPad in hand, material samples, about 45 minutes. No commitment.</span></div>
+          <div class="next-step"><span class="next-num">3.</span><span>We send your quote by email — rendered walkthrough, line-item pricing, three material tiers. Yours to review at your own pace.</span></div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+// ——— CATALOG ———
+const CATALOG = {
+  flooring:[2400,6800],
+  paint:[900,2800],
+  trim:[800,2200],
+  feature:[600,1800],
+  full:[4500,12000]
+};
+
+const TRADE_LABELS = {
+  flooring:'Flooring',
+  paint:'Paint',
+  trim:'Trim & Doors',
+  feature:'Feature Wall',
+  full:'Full Refresh'
+};
+
+// ——— ESTIMATE ENGINE ———
+function updateEstimate(){
+  const checked = [...document.querySelectorAll('[name=trades]:checked')].map(i=>i.value);
+  const hasFull = checked.includes('full');
+  const hasSignificant = checked.some(v=>v!=='notsure');
+
+  updateConditionalSections(checked);
+
+  if(!hasSignificant || checked.length===0){
+    document.getElementById('estimatePreview').classList.remove('visible');
+    return;
+  }
+
+  let low=0,high=0;
+  let tradeNames=[];
+  if(hasFull){
+    [low,high]=CATALOG.full;
+    tradeNames=['Full Refresh'];
+  } else {
+    checked.filter(v=>v!=='notsure').forEach(v=>{
+      if(CATALOG[v]){
+        low+=CATALOG[v][0];
+        high+=CATALOG[v][1];
+        tradeNames.push(TRADE_LABELS[v]);
+      }
+    });
+  }
+
+  if(low===0 && high===0){
+    document.getElementById('estimatePreview').classList.remove('visible');
+    return;
+  }
+
+  document.getElementById('epRange').textContent=`$${low.toLocaleString('en-CA')} – $${high.toLocaleString('en-CA')}`;
+  document.getElementById('epTrades').textContent=tradeNames.join(' · ');
+  document.getElementById('estimatePreview').classList.add('visible');
+}
+
+function updateConditionalSections(checked){
+  const has = v=>checked.includes(v);
+  toggle('ceilingSection', has('paint')||has('trim')||has('full'));
+  toggle('finishSection', has('paint')||has('flooring')||has('trim')||has('full'));
+  toggle('flooringDetailRow', has('flooring')||has('full'));
+  toggle('trimDetailRow', has('trim')||has('full'));
+  toggle('paintDetailRow', has('paint')||has('full'));
+  const showFeature = has('feature')||has('full');
+  toggle('featureSection', showFeature);
+  if(showFeature) initFeatureSection();
+  toggle('doorSection', has('trim')||has('full'));
+  toggle('windowSection', has('trim')||has('paint')||has('full'));
+}
+
+function toggle(id,show){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.classList.toggle('visible',show);
+}
+
+// ——— ROOMS ———
+function handleRoomChange(cb){
+  if(cb.value==='Whole House') return;
+  // uncheck Whole House if any other room checked
+  const wh=document.querySelector('[name=rooms][value="Whole House"]');
+  if(wh) wh.checked=false;
+  updatePerAreaGrid();
+}
+
+function handleWholeHouse(cb){
+  if(cb.checked){
+    document.querySelectorAll('[name=rooms]').forEach(r=>{
+      if(r.value!=='Whole House') r.checked=false;
+    });
+  }
+  updatePerAreaGrid();
+}
+
+function getCheckedRooms(){
+  return [...document.querySelectorAll('[name=rooms]:checked')].map(r=>r.value);
+}
+
+// ——— FLOORING PER-AREA ———
+const perAreaSelections={};
+
+function handleFlooringChange(){
+  const val=document.getElementById('flooringType').value;
+  const showGrid = val==='varies';
+  document.getElementById('perAreaGrid').style.display=showGrid?'block':'none';
+  if(showGrid) updatePerAreaGrid();
+}
+
+function updatePerAreaGrid(){
+  const show=document.getElementById('flooringType')&&document.getElementById('flooringType').value==='varies';
+  if(!show) return;
+  const rooms=getCheckedRooms();
+  const container=document.getElementById('perAreaRows');
+  // Keep existing selections
+  [...container.querySelectorAll('.per-area-row')].forEach(row=>{
+    const key=row.dataset.room;
+    const sel=row.querySelector('select');
+    if(sel) perAreaSelections[key]=sel.value;
+  });
+  container.innerHTML='';
+  rooms.forEach(r=>{
+    const row=document.createElement('div');
+    row.className='per-area-row';
+    row.dataset.room=r;
+    const saved=perAreaSelections[r]||'';
+    row.innerHTML=`<span class="par-name">${r}</span><div class="par-select"><select name="par-${r}">
+      <option value="">Select flooring...</option>
+      <option value="hardwood-solid"${saved==='hardwood-solid'?' selected':''}>Hardwood (solid)</option>
+      <option value="hardwood-eng"${saved==='hardwood-eng'?' selected':''}>Engineered hardwood</option>
+      <option value="lvp"${saved==='lvp'?' selected':''}>LVP / vinyl plank</option>
+      <option value="laminate"${saved==='laminate'?' selected':''}>Laminate</option>
+      <option value="tile"${saved==='tile'?' selected':''}>Tile</option>
+      <option value="carpet"${saved==='carpet'?' selected':''}>Carpet</option>
+      <option value="concrete"${saved==='concrete'?' selected':''}>Painted concrete</option>
+      <option value="notsure"${saved==='notsure'?' selected':''}>Not sure yet</option>
+    </select></div>`;
+    container.appendChild(row);
+  });
+}
+
+// ——— TRIM STYLE ———
+function selectTrimStyle(card){
+  document.querySelectorAll('.tscard').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('tscard-samples').classList.remove('selected');
+  card.classList.add('selected');
+  const inp=card.querySelector('input[type=radio]');
+  if(inp) inp.checked=true;
+}
+
+function selectTrimSamples(el){
+  document.querySelectorAll('.tscard').forEach(c=>c.classList.remove('selected'));
+  el.classList.toggle('selected');
+  const inp=el.querySelector('input[type=radio]');
+  if(inp) inp.checked=el.classList.contains('selected');
+}
+
+// ——— TIER / FINISH BOXES ———
+function selectTier(card){
+  const group=card.dataset.group;
+  document.querySelectorAll(`.tier[data-group="${group}"]`).forEach(c=>c.classList.remove('selected'));
+  card.classList.add('selected');
+  const inp=card.querySelector('input[type=radio]');
+  if(inp) inp.checked=true;
+}
+
+// ——— COUNTER STEPPER ———
+function stepCounter(id,delta){
+  const hidden=document.getElementById(id);
+  const display=document.getElementById(id+'-display');
+  if(!hidden||!display) return;
+  let val=parseInt(hidden.value)||0;
+  val=Math.max(0,val+delta);
+  hidden.value=val;
+  display.textContent=val;
+  display.classList.toggle('nonzero',val>0);
+}
+
+// ——— FEATURE WALL ———
+let featureRoomId=0;
+
+function initFeatureSection(){
+  const container=document.getElementById('featureRooms');
+  if(container.children.length===0) addFeatureRoom();
+}
+
+function addFeatureRoom(){
+  featureRoomId++;
+  const id=featureRoomId;
+  const container=document.getElementById('featureRooms');
+  const entry=document.createElement('div');
+  entry.className='feature-room-entry';
+  entry.dataset.id=id;
+  entry.innerHTML=`
+    <button type="button" class="fe-remove" onclick="removeFeatureRoom(${id})" style="display:none">REMOVE</button>
+    <div class="fe-row">
+      <div class="field" style="margin:0">
+        <label class="field-label">Room</label>
+        <select name="fe-room-${id}">
+          <option value="">Select room...</option>
+          <option>Living room</option><option>Primary bedroom</option><option>Other bedroom</option>
+          <option>Dining room</option><option>Kitchen</option><option>Entryway / foyer</option>
+          <option>Home office</option><option>Basement / rec room</option><option>Other</option>
+        </select>
+      </div>
+      <div class="field" style="margin:0">
+        <label class="field-label">Wall count</label>
+        <select name="fe-walls-${id}">
+          <option value="">Select...</option>
+          <option>1 wall</option><option>2 walls</option><option>Full room</option><option>Not sure</option>
+        </select>
+      </div>
+    </div>
+    <span class="fe-label">Treatment</span>
+    <div class="fe-ck-grid">
+      ${['Bold paint colour','Wallpaper / mural','Board & batten','Shiplap / planks','Wainscoting','Not sure yet'].map(t=>`
+        <label class="ck"><input type="checkbox" name="fe-treat-${id}" value="${t}"><div class="ck-box fe-ck-box"><span class="ck-label">${t}</span><span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></label>
+      `).join('')}
+    </div>
+  `;
+  container.appendChild(entry);
+  updateRemoveButtons();
+}
+
+function removeFeatureRoom(id){
+  const entry=document.querySelector(`.feature-room-entry[data-id="${id}"]`);
+  if(entry) entry.remove();
+  updateRemoveButtons();
+}
+
+function updateRemoveButtons(){
+  const entries=document.querySelectorAll('.feature-room-entry');
+  entries.forEach(e=>{
+    const btn=e.querySelector('.fe-remove');
+    if(btn) btn.style.display=entries.length>=2?'block':'none';
+  });
+}
+
+// ——— VALIDATION ———
+function validateForm(){
+  let valid=true;
+
+  const firstName=document.getElementById('firstName');
+  const fnErr=document.getElementById('firstName-err');
+  if(!firstName.value.trim()){
+    firstName.classList.add('error');
+    fnErr.classList.add('visible');
+    valid=false;
+  } else {
+    firstName.classList.remove('error');
+    fnErr.classList.remove('visible');
+  }
+
+  const email=document.getElementById('email');
+  const emErr=document.getElementById('email-err');
+  const emailRx=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if(!email.value.trim()||!emailRx.test(email.value)){
+    email.classList.add('error');
+    emErr.classList.add('visible');
+    valid=false;
+  } else {
+    email.classList.remove('error');
+    emErr.classList.remove('visible');
+  }
+
+  const address=document.getElementById('address');
+  const adErr=document.getElementById('address-err');
+  if(!address.value.trim()){
+    address.classList.add('error');
+    adErr.classList.add('visible');
+    valid=false;
+  } else {
+    address.classList.remove('error');
+    adErr.classList.remove('visible');
+  }
+
+  const city=document.getElementById('city');
+  const cyErr=document.getElementById('city-err');
+  if(!city.value.trim()){
+    city.classList.add('error');
+    cyErr.classList.add('visible');
+    valid=false;
+  } else {
+    city.classList.remove('error');
+    cyErr.classList.remove('visible');
+  }
+
+  return valid;
+}
+
+// ——— SUMMARY BUILDER ———
+function fmtSelect(id){
+  const el=document.getElementById(id);
+  if(!el||!el.options||el.selectedIndex<=0) return '';
+  return el.options[el.selectedIndex].text;
+}
+
+function buildSummary(){
+  const rows=[];
+
+  const fn=document.getElementById('firstName')?.value||'';
+  const ln=document.getElementById('lastName')?.value||'';
+  const name=[fn,ln].filter(Boolean).join(' ');
+  if(name) rows.push({label:'NAME',val:name});
+
+  const email=document.getElementById('email')?.value||'';
+  if(email) rows.push({label:'EMAIL',val:email});
+
+  const phone=document.getElementById('phone')?.value||'';
+  if(phone) rows.push({label:'PHONE',val:phone});
+
+  const address=document.getElementById('address')?.value||'';
+  const city=document.getElementById('city')?.value||'';
+  const mapsUrl=document.getElementById('maps_url')?.value||'';
+  const location=[address,city].filter(Boolean).join(', ');
+  if(location) rows.push({label:'LOCATION',val:location+(mapsUrl?` <a href="${mapsUrl}" target="_blank" rel="noopener" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--green);text-decoration:none">View in Maps ↗</a>`:'')});
+
+  const prop=fmtSelect('propertyType');
+  if(prop) rows.push({label:'PROPERTY',val:prop});
+
+  const trades=[...document.querySelectorAll('[name=trades]:checked')].map(i=>TRADE_LABELS[i.value]||i.value);
+  if(trades.length) rows.push({label:'SCOPE',val:'',tags:trades});
+
+  const rooms=getCheckedRooms();
+  if(rooms.length) rows.push({label:'ROOMS',val:'',tags:rooms});
+
+  const size=document.getElementById('sizeField')?.value||'';
+  if(size) rows.push({label:'SIZE',val:size});
+
+  const ch=fmtSelect('ceilingHeight');
+  const cs=fmtSelect('ceilingScope');
+  if(ch||cs) rows.push({label:'CEILINGS',val:[ch,cs].filter(Boolean).join(' · ')});
+
+  // Flooring
+  const ft=document.getElementById('flooringType');
+  if(ft&&ft.value&&ft.value!==''){
+    if(ft.value==='varies'){
+      const perRows=[...document.querySelectorAll('#perAreaRows .per-area-row')];
+      const parts=perRows.map(r=>{
+        const sel=r.querySelector('select');
+        const room=r.dataset.room;
+        const type=sel&&sel.selectedIndex>0?sel.options[sel.selectedIndex].text:'—';
+        return `${room}: ${type}`;
+      }).join(', ');
+      rows.push({label:'FLOORING',val:parts||'Varies by room'});
+    } else {
+      rows.push({label:'FLOORING',val:ft.options[ft.selectedIndex].text});
+    }
+  }
+
+  // Trim
+  const tsEl=document.querySelector('.tscard.selected input[type=radio]')||document.querySelector('#tscard-samples.selected input[type=radio]');
+  const trimStyle=tsEl?tsEl.value:'';
+  const trimTierEl=document.querySelector('.tier[data-group=trimTier].selected input');
+  const trimTier=trimTierEl?trimTierEl.value.toUpperCase():'';
+  const finishAppEl=document.querySelector('.tier[data-group=finishApp].selected input');
+  const finishApp=finishAppEl?(finishAppEl.value==='brush'?'Brush & Roll':'Spray Finish'):'';
+  if(trimStyle){
+    const parts=[trimStyle,trimTier,finishApp].filter(Boolean).join(' · ');
+    rows.push({label:'TRIM',val:parts});
+  }
+
+  const pf=fmtSelect('paintFinish');
+  if(pf) rows.push({label:'PAINT FINISH',val:pf});
+  const cd=fmtSelect('colourDirection');
+  if(cd) rows.push({label:'COLOUR',val:cd});
+
+  // Feature walls
+  const feEntries=document.querySelectorAll('.feature-room-entry');
+  if(feEntries.length){
+    const feLines=[];
+    feEntries.forEach(e=>{
+      const id=e.dataset.id;
+      const roomSel=e.querySelector(`[name^="fe-room"]`);
+      const wallSel=e.querySelector(`[name^="fe-walls"]`);
+      const treatCbs=[...e.querySelectorAll(`[name^="fe-treat"]:checked`)].map(c=>c.value);
+      const roomName=roomSel&&roomSel.value?roomSel.value:'';
+      const walls=wallSel&&wallSel.value?wallSel.value:'';
+      const treats=treatCbs.join(', ');
+      const line=[roomName,walls,treats].filter(Boolean).join(' · ');
+      if(line) feLines.push(line);
+    });
+    const feNotes=document.getElementById('featureNotes')?.value||'';
+    if(feLines.length) rows.push({label:'FEATURE WALLS',val:feLines.join(' | ')+(feNotes?` — ${feNotes}`:'')});
+  }
+
+  // Timeline
+  const tlEl=document.querySelector('[name=timeline]:checked');
+  if(tlEl){
+    const tlLabels={'asap':'ASAP','1-2mo':'1–2 Months','3-6mo':'3–6 Months','exploring':'Just Exploring','flexible':'Flexible'};
+    rows.push({label:'TIMELINE',val:tlLabels[tlEl.value]||tlEl.value});
+  }
+
+  // Estimate
+  const epEl=document.getElementById('epRange');
+  if(epEl&&epEl.textContent&&epEl.textContent!=='—'){
+    rows.push({label:'PRELIM ESTIMATE',val:epEl.textContent+' CAD'});
+  }
+
+  // Doors
+  const doorTypes=[
+    {id:'doors-swing',name:'Swing'},
+    {id:'doors-pocket',name:'Pocket'},
+    {id:'doors-bifold',name:'Bi-fold'},
+    {id:'doors-barn',name:'Barn/Sliding'}
+  ];
+  const doorParts=doorTypes.map(d=>{
+    const v=parseInt(document.getElementById(d.id)?.value||'0');
+    return v>0?`${d.name}: ${v}`:'';
+  }).filter(Boolean).join(', ');
+  if(doorParts) rows.push({label:'DOORS',val:doorParts});
+
+  const doorNotes=document.getElementById('doorNotes')?.value||'';
+  if(doorNotes) rows.push({label:'DOOR NOTES',val:doorNotes});
+
+  // Windows
+  const winTypes=[
+    {id:'win-small',name:'Small'},
+    {id:'win-standard',name:'Standard'},
+    {id:'win-large',name:'Large'},
+    {id:'win-irregular',name:'Irregular'}
+  ];
+  const winParts=winTypes.map(w=>{
+    const v=parseInt(document.getElementById(w.id)?.value||'0');
+    return v>0?`${w.name}: ${v}`:'';
+  }).filter(Boolean).join(', ');
+  if(winParts) rows.push({label:'WINDOWS',val:winParts});
+
+  const winNotes=document.getElementById('winNotes')?.value||'';
+  if(winNotes) rows.push({label:'WINDOW NOTES',val:winNotes});
+
+  // Referral
+  const refEl=document.querySelector('[name=referral]:checked');
+  if(refEl){
+    const rLabels={
+      'word-of-mouth':'Word of Mouth','home-show':'Home Show',
+      'social-media':'Social Media','google':'Google',
+      'referral-partner':'Referral Partner','other':'Other'
+    };
+    rows.push({label:'HOW YOU FOUND US',val:rLabels[refEl.value]||refEl.value});
+  }
+
+  // Notes
+  const notes=document.getElementById('additionalNotes')?.value||'';
+  if(notes) rows.push({label:'NOTES',val:notes});
+
+  // Render
+  const card=document.getElementById('summaryCard');
+  card.innerHTML=`
+    <div class="summary-header">YOUR SUBMISSION</div>
+    <div class="summary-body">
+      ${rows.map(r=>`
+        <div class="summary-row">
+          <span class="summary-label">${r.label}</span>
+          <span class="summary-val">
+            ${r.tags?`<div class="summary-tags">${r.tags.map(t=>`<span class="summary-tag">${t}</span>`).join('')}</div>`:r.val}
+          </span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+// ——— FORM SUBMIT ———
+document.getElementById('intakeForm').addEventListener('submit',function(e){
+  e.preventDefault();
+  if(!validateForm()) return;
+
+  const btn=document.getElementById('submitBtn');
+  btn.disabled=true;
+  btn.textContent='SENDING...';
+
+  try { buildSummary(); } catch(err){ console.warn('Summary build error:',err); }
+
+  setTimeout(()=>{
+    document.getElementById('formWrap').style.display='none';
+    document.getElementById('successState').classList.add('visible');
+    window.scrollTo({top:0,behavior:'smooth'});
+  },600);
+});
+</script>
+
+<!-- ═══════════════════════════════════════════════════
+     GOOGLE PLACES AUTOCOMPLETE
+     Replace YOUR_API_KEY with your Google Maps API key.
+     Required APIs to enable in Google Cloud Console:
+       • Maps JavaScript API
+       • Places API
+       • Street View Static API
+     ═══════════════════════════════════════════════════ -->
+<script>
+const GMAPS_KEY = 'YOUR_API_KEY';
+
+function initAutocomplete() {
+  const input = document.getElementById('address');
+
+  const autocomplete = new google.maps.places.Autocomplete(input, {
+    componentRestrictions: { country: 'ca' },
+    fields: ['place_id', 'geometry', 'formatted_address', 'address_components'],
+    types: ['address'],
+  });
+
+  // Style the Google autocomplete dropdown to match the page
+  const styleEl = document.createElement('style');
+  styleEl.textContent = `.pac-container{font-family:'Figtree',sans-serif;border:1.5px solid var(--border-s);border-radius:var(--radius);box-shadow:0 4px 16px rgba(0,0,0,.08);background:var(--surface);margin-top:4px}.pac-item{padding:8px 12px;font-size:13px;color:var(--charcoal);cursor:pointer}.pac-item:hover,.pac-item-selected{background:var(--surface-2)}.pac-item-query{font-weight:600;color:var(--charcoal)}.pac-matched{font-weight:700}.pac-icon{display:none}`;
+  document.head.appendChild(styleEl);
+
+  autocomplete.addListener('place_changed', () => {
+    const place = autocomplete.getPlace();
+    if (!place.geometry) return;
+
+    const lat = place.geometry.location.lat();
+    const lng = place.geometry.location.lng();
+    const placeId = place.place_id;
+
+    // Store hidden fields for app use
+    document.getElementById('place_id').value  = placeId;
+    document.getElementById('place_lat').value = lat;
+    document.getElementById('place_lng').value = lng;
+
+    // Build the Google Maps deep link (opens place directly)
+    const mapsUrl = `https://www.google.com/maps/place/?q=place_id:${placeId}`;
+    document.getElementById('maps_url').value = mapsUrl;
+    document.getElementById('mapsLink').href = mapsUrl;
+
+    // Auto-fill city from address components
+    const comps = place.address_components || [];
+    const cityComp = comps.find(c => c.types.includes('locality'))
+                  || comps.find(c => c.types.includes('sublocality'))
+                  || comps.find(c => c.types.includes('administrative_area_level_2'));
+    if (cityComp) {
+      const cityField = document.getElementById('city');
+      cityField.value = cityComp.long_name;
+      // Clear any validation error
+      cityField.classList.remove('error');
+      document.getElementById('city-err').classList.remove('visible');
+    }
+
+    // Clear address validation error
+    input.classList.remove('error');
+    document.getElementById('address-err').classList.remove('visible');
+
+    // Street View static image (600×320, key embedded — safe for static API)
+    const svUrl = `https://maps.googleapis.com/maps/api/streetview?size=600x320&location=${lat},${lng}&fov=90&pitch=5&key=${GMAPS_KEY}`;
+    const img = document.getElementById('streetviewImg');
+    img.src = svUrl;
+    img.onerror = () => {
+      // No street view available — hide the preview
+      document.getElementById('streetviewWrap').style.display = 'none';
+    };
+    img.onload = () => {
+      document.getElementById('streetviewWrap').style.display = 'block';
+    };
+  });
+}
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places&callback=initAutocomplete" async defer></script>
+</body>
+</html>

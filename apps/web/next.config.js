@@ -22,6 +22,10 @@ const nextConfig = {
         source: '/interiors',
         destination: '/interiors.html',
       },
+      {
+        source: '/interiors/intake',
+        destination: '/interiors/intake/index.html',
+      },
     ];
   },
 }

@@ -26,6 +26,14 @@ const nextConfig = {
         source: '/interiors/intake',
         destination: '/interiors/intake/index.html',
       },
+      {
+        source: '/interiors/process',
+        destination: '/interiors/process.html',
+      },
+      {
+        source: '/interiors/floorplan',
+        destination: '/interiors/floorplan/index.html',
+      },
     ];
   },
 }

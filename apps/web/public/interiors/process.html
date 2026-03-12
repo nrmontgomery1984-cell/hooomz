@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How It Works — Hooomz Interiors</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #F0EDE8;
+      --surface: #FAF8F5;
+      --surface-2: #E8E4DE;
+      --charcoal: #1A1714;
+      --dark-nav: #111010;
+      --mid: #5C5349;
+      --muted: #9A8E84;
+      --faint: #D4CEC7;
+      --green: #16A34A;
+      --border: rgba(0,0,0,0.10);
+      --border-s: rgba(0,0,0,0.18);
+      --radius: 10px;
+      --radius-sm: 6px;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Figtree', sans-serif;
+      background: var(--bg);
+      color: var(--charcoal);
+      padding-top: 52px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ——————————————————————————————————————————
+       NAV
+    —————————————————————————————————————————— */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 52px;
+      background: var(--dark-nav);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      z-index: 100;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: #fff;
+      text-decoration: none;
+      letter-spacing: 0.02em;
+    }
+
+    .nav-logo .logo-interiors {
+      color: rgba(255,255,255,0.45);
+      margin-left: 2px;
+    }
+
+    .nav-logo svg {
+      margin: 0 1px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .nav-links a:hover {
+      color: rgba(255,255,255,0.7);
+    }
+
+    .nav-links a.active {
+      color: rgba(255,255,255,0.85);
+    }
+
+    .nav-links .btn-nav {
+      background: var(--green);
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: 100px;
+      font-size: 9px;
+      letter-spacing: 0.10em;
+    }
+
+    .nav-links .btn-nav:hover {
+      background: #15803d;
+      color: #fff;
+    }
+
+    /* ——————————————————————————————————————————
+       HERO
+    —————————————————————————————————————————— */
+    .hero {
+      background: #111010;
+      padding: 96px 32px 80px;
+    }
+
+    .hero-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 55fr 45fr;
+      gap: 56px;
+      align-items: center;
+    }
+
+    .hero-eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 16px;
+    }
+
+    .hero h1 {
+      font-family: 'Figtree', sans-serif;
+      font-weight: 700;
+      font-size: 52px;
+      line-height: 1.1;
+      color: #fff;
+      margin-bottom: 20px;
+    }
+
+    .hero-sub {
+      font-size: 16px;
+      line-height: 1.6;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 32px;
+    }
+
+    .hero-cta-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn {
+      font-family: 'DM Mono', monospace;
+      font-size: 9.5px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 100px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      transition: opacity 0.15s, background 0.15s;
+    }
+
+    .btn-green {
+      background: var(--green);
+      color: #fff;
+      border: none;
+    }
+
+    .btn-green:hover {
+      background: #15803d;
+    }
+
+    .btn-outline-white {
+      background: transparent;
+      color: #fff;
+      border: 1.5px solid rgba(255,255,255,0.35);
+    }
+
+    .btn-outline-white:hover {
+      border-color: rgba(255,255,255,0.65);
+    }
+
+    .btn-outline-dark {
+      background: transparent;
+      color: var(--charcoal);
+      border: 1.5px solid var(--charcoal);
+    }
+
+    .btn-outline-dark:hover {
+      background: var(--charcoal);
+      color: #fff;
+    }
+
+    .hero-trust {
+      margin-top: 40px;
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+
+    .trust-item {
+      padding-right: 24px;
+      margin-right: 24px;
+      border-right: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .trust-item:last-child {
+      border-right: none;
+      padding-right: 0;
+      margin-right: 0;
+    }
+
+    .trust-num {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      font-weight: 500;
+      color: #fff;
+      display: block;
+    }
+
+    .trust-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.38);
+      display: block;
+      margin-top: 3px;
+    }
+
+    /* Hero Card */
+    .hero-card {
+      background: #1A1D22;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 24px;
+    }
+
+    .hero-card-header {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      margin-bottom: 4px;
+    }
+
+    .hero-card-sub {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.22);
+      margin-bottom: 24px;
+    }
+
+    .trade-bars {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .trade-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .trade-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      width: 56px;
+      flex-shrink: 0;
+    }
+
+    .trade-bar-track {
+      flex: 1;
+      height: 5px;
+      background: rgba(255,255,255,0.07);
+      border-radius: 100px;
+      overflow: hidden;
+    }
+
+    .trade-bar-fill {
+      height: 100%;
+      border-radius: 100px;
+    }
+
+    .trade-pct {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: rgba(255,255,255,0.45);
+      width: 30px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .hero-card-footer {
+      margin-top: 22px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.28);
+    }
+
+    /* ——————————————————————————————————————————
+       HOW IT WORKS — STEPS
+    —————————————————————————————————————————— */
+    .steps-section {
+      background: var(--surface);
+      padding: 80px 32px;
+    }
+
+    .steps-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    .section-eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .section-h2 {
+      font-family: 'Figtree', sans-serif;
+      font-weight: 700;
+      font-size: 36px;
+      color: var(--charcoal);
+      margin-bottom: 56px;
+      line-height: 1.15;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 40px;
+      padding: 48px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .step:last-child {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .step-num {
+      font-family: 'DM Mono', monospace;
+      font-size: 36px;
+      font-weight: 400;
+      color: var(--faint);
+      line-height: 1;
+      padding-top: 4px;
+    }
+
+    .step-content {}
+
+    .step-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .step-title {
+      font-family: 'Figtree', sans-serif;
+      font-weight: 700;
+      font-size: 26px;
+      color: var(--charcoal);
+      margin-bottom: 14px;
+    }
+
+    .step-body {
+      font-size: 16px;
+      line-height: 1.65;
+      color: var(--mid);
+      margin-bottom: 24px;
+      max-width: 580px;
+    }
+
+    .step-facts {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .step-facts li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--mid);
+      line-height: 1.45;
+    }
+
+    .step-facts li svg {
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ——————————————————————————————————————————
+       DEMO SECTION
+    —————————————————————————————————————————— */
+    .demo-section {
+      background: var(--surface-2);
+      border-top: 1px solid var(--border);
+      padding: 80px 32px;
+    }
+
+    .demo-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    .demo-copy {
+      max-width: 620px;
+      margin-bottom: 36px;
+    }
+
+    .demo-copy .section-h2 {
+      margin-bottom: 14px;
+    }
+
+    .demo-body {
+      font-size: 16px;
+      line-height: 1.65;
+      color: var(--mid);
+    }
+
+    .demo-container {
+      border: 1.5px solid var(--border-s);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .demo-label-bar {
+      background: #111010;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .demo-label-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .green-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 6px 2px rgba(22,163,74,0.5);
+      flex-shrink: 0;
+    }
+
+    .demo-label-text {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: #fff;
+    }
+
+    .demo-label-right {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+    }
+
+    #fp-embed {
+      height: 760px;
+      background: #0E1013;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .fp-placeholder {
+      text-align: center;
+    }
+
+    .fp-placeholder-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.18);
+      margin-top: 16px;
+    }
+
+    .demo-tips {
+      margin-top: 24px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .tip-card {
+      background: var(--surface);
+      border: 1px solid var(--border-s);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+
+    .tip-icon {
+      margin-bottom: 12px;
+      color: var(--muted);
+    }
+
+    .tip-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 9.5px;
+      font-weight: 500;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--charcoal);
+      margin-bottom: 8px;
+    }
+
+    .tip-body {
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--mid);
+    }
+
+    /* ——————————————————————————————————————————
+       WHY HOOOMZ
+    —————————————————————————————————————————— */
+    .why-section {
+      background: var(--bg);
+      padding: 80px 32px;
+    }
+
+    .why-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    .why-header {
+      margin-bottom: 48px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+    }
+
+    .feature-card {
+      padding: 28px 28px 28px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .feature-card:nth-child(3) ~ .feature-card {
+      border-bottom: none;
+    }
+
+    .feature-card:not(:nth-child(3n)) {
+      padding-right: 28px;
+      border-right: 1px solid var(--border);
+    }
+
+    .feature-card:nth-child(3n) {
+      padding-right: 0;
+      padding-left: 28px;
+    }
+
+    .feature-card:nth-child(3n-1) {
+      padding-left: 28px;
+    }
+
+    .feature-card:nth-child(3n-2) {
+      padding-left: 0;
+    }
+
+    .feature-title {
+      font-family: 'Figtree', sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--charcoal);
+      margin-bottom: 8px;
+    }
+
+    .feature-desc {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--mid);
+    }
+
+    /* ——————————————————————————————————————————
+       VISIT SECTION
+    —————————————————————————————————————————— */
+    .visit-section {
+      background: var(--surface);
+      padding: 80px 32px;
+    }
+
+    .visit-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: start;
+    }
+
+    .quote-card {
+      border-left: 3px solid var(--green);
+      padding-left: 20px;
+    }
+
+    .quote-text {
+      font-size: 18px;
+      line-height: 1.65;
+      color: var(--charcoal);
+      font-style: italic;
+      margin-bottom: 16px;
+    }
+
+    .quote-attr {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+
+    .visit-facts-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    .visit-facts {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .visit-facts li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 15px;
+      line-height: 1.5;
+      color: var(--mid);
+    }
+
+    .visit-facts li svg {
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* ——————————————————————————————————————————
+       FOOTER
+    —————————————————————————————————————————— */
+    footer {
+      background: var(--dark-nav);
+      padding: 48px 32px;
+    }
+
+    .footer-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    .footer-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 32px;
+      align-items: start;
+      margin-bottom: 40px;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .footer-links a {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .footer-links a:hover {
+      color: rgba(255,255,255,0.8);
+    }
+
+    .footer-right {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.35);
+      text-align: right;
+    }
+
+    .footer-divider {
+      border: none;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 20px;
+    }
+
+    .footer-copy {
+      text-align: center;
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.28);
+    }
+
+    /* ——————————————————————————————————————————
+       RESPONSIVE
+    —————————————————————————————————————————— */
+    @media (max-width: 768px) {
+      nav {
+        padding: 0 16px;
+      }
+
+      .nav-links {
+        gap: 16px;
+      }
+
+      .nav-links li:not(:last-child):not(:first-child) {
+        display: none;
+      }
+
+      .hero {
+        padding: 56px 16px 56px;
+      }
+
+      .hero-inner {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+
+      .hero h1 {
+        font-size: 36px;
+      }
+
+      .hero-trust {
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+
+      .trust-item {
+        border-right: none;
+        padding-right: 0;
+        margin-right: 0;
+      }
+
+      .steps-section {
+        padding: 56px 16px;
+      }
+
+      .step {
+        grid-template-columns: 48px 1fr;
+        gap: 20px;
+      }
+
+      .step-num {
+        font-size: 24px;
+      }
+
+      .demo-section {
+        padding: 56px 16px;
+      }
+
+      #fp-embed {
+        height: 380px;
+      }
+
+      .demo-tips {
+        grid-template-columns: 1fr;
+      }
+
+      .why-section {
+        padding: 56px 16px;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .feature-card {
+        padding: 24px 0 !important;
+        border-right: none !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        border-bottom: 1px solid var(--border) !important;
+      }
+
+      .feature-card:last-child {
+        border-bottom: none !important;
+      }
+
+      .visit-section {
+        padding: 56px 16px;
+      }
+
+      .visit-inner {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+
+      .footer-cols {
+        grid-template-columns: 1fr;
+        gap: 28px;
+      }
+
+      .footer-right {
+        text-align: left;
+      }
+
+      .section-h2 {
+        font-size: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════ NAV ═══ -->
+  <nav>
+    <a href="#" class="nav-logo">
+      H<svg width="22" height="8" viewBox="0 0 22 8" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;margin:0 1px;">
+        <circle cx="4" cy="4" r="3" fill="#16A34A"/>
+        <circle cx="11" cy="4" r="3" fill="#F97316"/>
+        <circle cx="18" cy="4" r="3" fill="#EF4444"/>
+      </svg>MZ<span class="logo-interiors">&nbsp;INTERIORS</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#" class="active">How It Works</a></li>
+      <li><a href="#">Services</a></li>
+      <li><a href="#">About</a></li>
+      <li><a href="#" class="btn-nav btn">Book Site Visit</a></li>
+    </ul>
+  </nav>
+
+  <!-- ═══════════════════════════════════════ HERO ═══ -->
+  <section class="hero" id="top">
+    <div class="hero-inner">
+      <!-- Left -->
+      <div class="hero-left">
+        <p class="hero-eyebrow">How It Works</p>
+        <h1>From first visit to<br>final install.</h1>
+        <p class="hero-sub">We show up with a floor plan, build the scope with you room by room, and hand it off to trusted trades. No surprises.</p>
+        <div class="hero-cta-row">
+          <a href="#" class="btn btn-green">Book a Site Visit</a>
+          <a href="#" class="btn btn-outline-white">See Services</a>
+        </div>
+        <div class="hero-trust">
+          <div class="trust-item">
+            <span class="trust-num">45-min</span>
+            <span class="trust-label">Site visit</span>
+          </div>
+          <div class="trust-item">
+            <span class="trust-num">On-site</span>
+            <span class="trust-label">Scope built with you</span>
+          </div>
+          <div class="trust-item">
+            <span class="trust-num">Fixed</span>
+            <span class="trust-label">Price quotes</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right — Job card -->
+      <div class="hero-card">
+        <p class="hero-card-header">J-2024-031 · 142 Elmwood Dr, Dieppe</p>
+        <p class="hero-card-sub">Full Interior Refresh — Day 12 of 18</p>
+        <div class="trade-bars">
+          <div class="trade-bar-row">
+            <span class="trade-label">Paint</span>
+            <div class="trade-bar-track">
+              <div class="trade-bar-fill" style="width:78%;background:#F59E0B;"></div>
+            </div>
+            <span class="trade-pct">78%</span>
+          </div>
+          <div class="trade-bar-row">
+            <span class="trade-label">Flooring</span>
+            <div class="trade-bar-track">
+              <div class="trade-bar-fill" style="width:45%;background:#14B8A6;"></div>
+            </div>
+            <span class="trade-pct">45%</span>
+          </div>
+          <div class="trade-bar-row">
+            <span class="trade-label">Trim</span>
+            <div class="trade-bar-track">
+              <div class="trade-bar-fill" style="width:62%;background:#A855F7;"></div>
+            </div>
+            <span class="trade-pct">62%</span>
+          </div>
+        </div>
+        <div class="hero-card-footer">7 Rooms &middot; 24 Tasks &middot; 14 Complete</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════ STEPS ═══ -->
+  <section class="steps-section" id="how-it-works">
+    <div class="steps-inner">
+      <p class="section-eyebrow">The Process</p>
+      <h2 class="section-h2">Three steps. Zero guessing.</h2>
+
+      <!-- Step 01 -->
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <p class="step-tag">Discover</p>
+          <h3 class="step-title">The Site Visit</h3>
+          <p class="step-body">We arrive at your home with an existing floor plan loaded into our scope tool. Over 45 minutes, we walk every room with you — confirming dimensions, identifying issues, and agreeing on scope together. You're not handed a quote later. You watch it get built.</p>
+          <ul class="step-facts">
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#16A34A" stroke-width="1"/><path d="M4.5 8.5L7 11L11.5 5.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Floor plan confirmed on-site
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#16A34A" stroke-width="1"/><path d="M4.5 8.5L7 11L11.5 5.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Every room walked and documented
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#16A34A" stroke-width="1"/><path d="M4.5 8.5L7 11L11.5 5.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Scope agreed before we leave
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#16A34A" stroke-width="1"/><path d="M4.5 8.5L7 11L11.5 5.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              No vague scope — line items only
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════ DEMO ═══ -->
+  <section class="demo-section" id="demo">
+    <div class="demo-inner">
+      <div class="demo-copy">
+        <p class="section-eyebrow">Interactive Demo</p>
+        <h2 class="section-h2">Try the floor plan tool we use on-site with you.</h2>
+        <p class="demo-body">When we come to your home, we work through a live floor plan just like this one — marking rooms, tracking trades, and building out a real scope in real time. Click any room to explore what gets documented during the visit.</p>
+      </div>
+
+      <div class="demo-container">
+        <div class="demo-label-bar">
+          <div class="demo-label-left">
+            <div class="green-dot"></div>
+            <span class="demo-label-text">Hooomz OS — Floor Plan &amp; Scope Tool · Live Demo</span>
+          </div>
+          <span class="demo-label-right">Interactive</span>
+        </div>
+        <div id="fp-embed" style="height:760px;background:#0E1013;">
+          <!-- INLINE FLOORPLAN EMBED HERE -->
+          <div class="fp-placeholder">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="1" y="1" width="46" height="46" rx="4" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
+              <rect x="8" y="8" width="13" height="13" rx="1" stroke="rgba(255,255,255,0.18)" stroke-width="1.2"/>
+              <rect x="8" y="27" width="13" height="13" rx="1" stroke="rgba(255,255,255,0.18)" stroke-width="1.2"/>
+              <rect x="27" y="8" width="13" height="32" rx="1" stroke="rgba(255,255,255,0.18)" stroke-width="1.2"/>
+              <path d="M21 14H27" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+              <path d="M21 33H27" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+            </svg>
+            <p class="fp-placeholder-label">Floor plan embed area</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="demo-tips">
+        <div class="tip-card">
+          <div class="tip-icon">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M7 3.5C7 2.67 7.67 2 8.5 2C9.33 2 10 2.67 10 3.5V9L12 7.5C12.55 7.11 13.3 7.25 13.69 7.8C14.08 8.35 13.94 9.1 13.39 9.49L10 12V14C10 15.1 10.9 16 12 16H13C14.1 16 15 16.9 15 18H4C4 16.9 4.9 16 6 16H7V12L7 3.5Z" stroke="#9A8E84" stroke-width="1.3" stroke-linejoin="round"/></svg>
+          </div>
+          <p class="tip-label">Click Any Room</p>
+          <p class="tip-body">Select a space to see how scope, trades, and finishes get attached to each room during the site visit.</p>
+        </div>
+        <div class="tip-card">
+          <div class="tip-icon">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="4" width="16" height="3" rx="1" stroke="#9A8E84" stroke-width="1.3"/><rect x="2" y="8.5" width="16" height="3" rx="1" stroke="#9A8E84" stroke-width="1.3"/><rect x="2" y="13" width="16" height="3" rx="1" stroke="#9A8E84" stroke-width="1.3"/></svg>
+          </div>
+          <p class="tip-label">Switch Trade Layers</p>
+          <p class="tip-body">Toggle paint, flooring, and trim overlays to see how each trade is tracked independently.</p>
+        </div>
+        <div class="tip-card">
+          <div class="tip-icon">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#9A8E84" stroke-width="1.3"/><path d="M6.5 10.5L9 13L13.5 7" stroke="#9A8E84" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <p class="tip-label">This Is What We Use On-Site</p>
+          <p class="tip-body">No clipboard, no vague notes. Your actual scope gets built here, in front of you, during the 45-minute visit.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════ STEPS continued ═══ -->
+  <section class="steps-section" style="padding-top:0;border-top:none;">
+    <div class="steps-inner">
+
+      <!-- Step 02 -->
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <p class="step-tag">Estimate</p>
+          <h3 class="step-title">The Scope &amp; Quote</h3>
+          <p class="step-body">Within 48 hours you receive a fixed-price quote broken down by room and trade. Paint, flooring, trim — each line item tied to a specific product, quantity, and labour rate. No allowances. No "we'll figure it out."</p>
+          <ul class="step-facts">
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#16A34A" stroke-width="1"/><path d="M4.5 8.5L7 11L11.5 5.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Fixed price — not an estimate
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#16A34A" stroke-width="1"/><path d="M4.5 8.5L7 11L11.5 5.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Broken down by room and trade
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#16A34A" stroke-width="1"/><path d="M4.5 8.5L7 11L11.5 5.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Materials specified by brand, SKU, colour
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#16A34A" stroke-width="1"/><path d="M4.5 8.5L7 11L11.5 5.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Revision rounds included
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Step 03 -->
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <p class="step-tag">Install</p>
+          <h3 class="step-title">Trades On-Site</h3>
+          <p class="step-body">We coordinate and supervise every trade. You get daily progress updates through the same tool you saw at the site visit — real task statuses, material delivery confirmations, and photos as work is completed.</p>
+          <ul class="step-facts">
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#16A34A" stroke-width="1"/><path d="M4.5 8.5L7 11L11.5 5.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Trades coordinated by Hooomz
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#16A34A" stroke-width="1"/><path d="M4.5 8.5L7 11L11.5 5.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Daily status updates
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#16A34A" stroke-width="1"/><path d="M4.5 8.5L7 11L11.5 5.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Same tool, live data
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#16A34A" stroke-width="1"/><path d="M4.5 8.5L7 11L11.5 5.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Sign-off required before final invoice
+            </li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════ WHY HOOOMZ ═══ -->
+  <section class="why-section" id="why">
+    <div class="why-inner">
+      <div class="why-header">
+        <p class="section-eyebrow">Why Hooomz</p>
+        <h2 class="section-h2" style="margin-bottom:0;">Built differently.</h2>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <p class="feature-title">Fixed-price quotes</p>
+          <p class="feature-desc">You know the number before anyone picks up a tool.</p>
+        </div>
+        <div class="feature-card">
+          <p class="feature-title">Scope built with you</p>
+          <p class="feature-desc">Not handed to you. Built together during the visit.</p>
+        </div>
+        <div class="feature-card">
+          <p class="feature-title">Trades we trust</p>
+          <p class="feature-desc">We've worked with the same crew for years. They know our standards.</p>
+        </div>
+        <div class="feature-card">
+          <p class="feature-title">No project manager markup</p>
+          <p class="feature-desc">We coordinate trades directly. You pay trade rates, not agency rates.</p>
+        </div>
+        <div class="feature-card">
+          <p class="feature-title">Material specs included</p>
+          <p class="feature-desc">Every product specified by brand, SKU, finish, and quantity.</p>
+        </div>
+        <div class="feature-card">
+          <p class="feature-title">Daily progress visibility</p>
+          <p class="feature-desc">The same tool from day one shows live job status throughout install.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════ VISIT ═══ -->
+  <section class="visit-section" id="visit">
+    <div class="visit-inner">
+      <!-- Left — testimonial -->
+      <div>
+        <div class="quote-card">
+          <p class="quote-text">"We've done renovations before. This was the first time we actually understood what we were paying for before anyone showed up."</p>
+          <p class="quote-attr">— Sarah M., Moncton</p>
+        </div>
+        <a href="#" class="btn btn-outline-dark" style="margin-top:4px;">Book the Visit</a>
+      </div>
+
+      <!-- Right — visit facts -->
+      <div>
+        <p class="visit-facts-label">What Happens During the Visit</p>
+        <ul class="visit-facts">
+          <li>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#16A34A" stroke-width="1"/><path d="M4.5 8.5L7 11L11.5 5.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            We bring the floor plan — no measuring tape theatre
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#16A34A" stroke-width="1"/><path d="M4.5 8.5L7 11L11.5 5.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            You confirm every room's scope in real time
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#16A34A" stroke-width="1"/><path d="M4.5 8.5L7 11L11.5 5.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Blockers and concerns are noted immediately
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#16A34A" stroke-width="1"/><path d="M4.5 8.5L7 11L11.5 5.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Material samples on hand to review in your actual space
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════ FOOTER ═══ -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-cols">
+        <!-- Logo -->
+        <div>
+          <a href="#" class="nav-logo" style="text-decoration:none;">
+            H<svg width="22" height="8" viewBox="0 0 22 8" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;margin:0 1px;">
+              <circle cx="4" cy="4" r="3" fill="#16A34A"/>
+              <circle cx="11" cy="4" r="3" fill="#F97316"/>
+              <circle cx="18" cy="4" r="3" fill="#EF4444"/>
+            </svg>MZ<span class="logo-interiors">&nbsp;INTERIORS</span>
+          </a>
+        </div>
+        <!-- Links -->
+        <div class="footer-links">
+          <a href="#">How It Works</a>
+          <a href="#">Services</a>
+          <a href="#">About</a>
+          <a href="#">Book Site Visit</a>
+        </div>
+        <!-- Location -->
+        <div class="footer-right">
+          Dieppe, NB &middot; hooomz.ca
+        </div>
+      </div>
+      <hr class="footer-divider" />
+      <p class="footer-copy">&copy; 2026 Hooomz Interiors. All rights reserved.</p>
+    </div>
+  </footer>
+
+</body>
+</html>

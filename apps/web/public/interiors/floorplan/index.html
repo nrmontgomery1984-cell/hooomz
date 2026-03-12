@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hooomz OS — Floor Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --nb:#111316;--s1:#1A1D22;--s2:#252830;--s3:#2E3138;--s4:#363A44;
+  --tx:#F0F2F5;--txd:rgba(240,242,245,0.85);--txm:rgba(240,242,245,0.45);
+  --bdr:rgba(255,255,255,0.07);--bdr2:rgba(255,255,255,0.12);--bdr3:rgba(255,255,255,0.20);
+  --c-complete:#22C55E;--c-inprogress:#3B82F6;--c-blocked:#EF4444;--c-pending:#9CA3AF;
+  --c-paint:#F59E0B;--c-floor:#14B8A6;--c-trim:#A855F7;--royal:#1A56DB;
+}
+html,body{height:100%;overflow:hidden;background:#111316;font-family:'IBM Plex Sans',sans-serif}
+#app{height:100%;display:flex;flex-direction:column;color:var(--tx)}
+
+/* TOP BAR */
+#topbar{
+  height:44px;min-height:44px;background:var(--nb);border-bottom:1px solid var(--bdr);
+  display:flex;align-items:center;padding:0 16px;gap:0;flex-shrink:0;
+}
+#topbar .tb-left{display:flex;align-items:center;gap:8px;min-width:160px}
+#topbar .tb-dot{width:8px;height:8px;border-radius:50%;background:var(--c-complete);flex-shrink:0}
+#topbar .tb-brand{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;color:var(--tx);letter-spacing:0.1em}
+#topbar .tb-center{flex:1;display:flex;align-items:center;justify-content:center;gap:0;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--txm)}
+#topbar .tb-center .sep{margin:0 10px;opacity:0.3}
+#topbar .tb-center .hi{color:var(--txd)}
+#topbar .tb-right{display:flex;align-items:center;gap:8px;min-width:160px;justify-content:flex-end}
+#app #topbar button{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;
+  background:var(--s3);color:var(--txd);border:1px solid var(--bdr2);
+  border-radius:4px;padding:4px 10px;cursor:pointer;letter-spacing:0.08em;
+}
+#app #topbar button:hover{background:var(--s4);border-color:var(--bdr3)}
+.avatar{width:28px;height:28px;border-radius:50%;background:var(--royal);display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
+
+/* TOOLBAR */
+#toolbar{
+  height:36px;min-height:36px;background:var(--s1);border-bottom:1px solid var(--bdr);
+  display:flex;align-items:center;padding:0 16px;gap:0;flex-shrink:0;
+}
+#toolbar .tb-trades{display:flex;align-items:center;gap:4px}
+#app #toolbar button.trade-btn{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.1em;
+  background:transparent;border:1px solid transparent;border-bottom:2px solid transparent;
+  padding:4px 10px;cursor:pointer;color:var(--txm);border-radius:3px 3px 0 0;
+  height:36px;transition:all 0.15s;
+}
+#app #toolbar button.trade-btn:hover{color:var(--txd)}
+#app #toolbar button.trade-btn.active{color:var(--tx);border-bottom-color:currentColor}
+#app #toolbar button.trade-btn.active.t-all{color:var(--tx);border-bottom-color:var(--tx)}
+#app #toolbar button.trade-btn.active.t-paint{color:var(--c-paint);border-bottom-color:var(--c-paint)}
+#app #toolbar button.trade-btn.active.t-floor{color:var(--c-floor);border-bottom-color:var(--c-floor)}
+#app #toolbar button.trade-btn.active.t-trim{color:var(--c-trim);border-bottom-color:var(--c-trim)}
+#toolbar .tb-legend{flex:1;display:flex;align-items:center;justify-content:center;gap:14px}
+.legend-pill{display:flex;align-items:center;gap:5px;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:500;color:var(--txm);letter-spacing:0.08em}
+.legend-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+#toolbar .tb-hint{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--txm);letter-spacing:0.05em;white-space:nowrap}
+
+/* MAIN AREA */
+#main{flex:1;display:flex;overflow:hidden}
+
+/* PLAN WRAP */
+#plan-wrap{
+  flex:0 0 68%;width:68%;background:#F2F3F5;overflow:hidden;position:relative;cursor:grab;
+}
+#plan-wrap.grabbing{cursor:grabbing}
+#plan-canvas{
+  position:absolute;top:0;left:0;transform-origin:0 0;
+}
+#plan-canvas svg{display:block;background:#fff;box-shadow:0 2px 20px rgba(0,0,0,0.12)}
+
+/* ROOM SVG INTERACTIVITY */
+#app .room-zone{cursor:pointer}
+#app .room-zone:hover .room-bg{filter:brightness(0.93)}
+.room-zone.selected .room-bg{stroke:#1A56DB!important;stroke-width:2.5!important}
+
+/* PROJECT PANEL */
+#panel{
+  flex:0 0 32%;width:32%;background:var(--nb);border-left:1px solid var(--bdr);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+#panel-tabs{
+  display:flex;border-bottom:1px solid var(--bdr);flex-shrink:0;background:var(--s1);
+}
+#app #panel-tabs button{
+  flex:1;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.1em;
+  background:transparent;border:none;border-bottom:2px solid transparent;
+  color:var(--txm);padding:0 4px;height:36px;cursor:pointer;transition:all 0.15s;
+}
+#app #panel-tabs button:hover{color:var(--txd)}
+#app #panel-tabs button.active{color:var(--tx);border-bottom-color:var(--royal)}
+#panel-content{flex:1;overflow-y:auto;padding:12px}
+#app #panel-content::-webkit-scrollbar{width:4px}
+#app #panel-content::-webkit-scrollbar-track{background:transparent}
+#app #panel-content::-webkit-scrollbar-thumb{background:var(--s4);border-radius:2px}
+
+/* ROOM CARDS IN OVERVIEW */
+.room-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.room-card{
+  background:var(--s1);border:1px solid var(--bdr);border-radius:6px;padding:10px;
+  cursor:pointer;transition:border-color 0.15s;
+}
+.room-card:hover{border-color:var(--bdr3)}
+.room-card-top{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.room-card-name{font-family:'IBM Plex Sans',sans-serif;font-size:12px;font-weight:600;color:var(--tx);flex:1;line-height:1.2}
+.status-badge{font-family:'IBM Plex Mono',monospace;font-size:8px;font-weight:600;letter-spacing:0.08em;padding:2px 6px;border-radius:3px}
+.prog-bar-wrap{height:4px;background:var(--s3);border-radius:2px;margin-bottom:6px;overflow:hidden}
+.prog-bar-fill{height:100%;border-radius:2px;transition:width 0.3s}
+.room-card-bot{display:flex;align-items:center;justify-content:space-between}
+.room-card-pct{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--txm)}
+.room-card-tasks{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--txm)}
+.trade-dots{display:flex;gap:4px;margin-top:6px}
+.trade-dot{width:6px;height:6px;border-radius:50%}
+
+/* TASK LIST */
+.trade-group{margin-bottom:14px}
+.trade-group-header{display:flex;align-items:center;gap:6px;margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--bdr)}
+.trade-group-label{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;letter-spacing:0.15em;color:var(--txm)}
+.task-item{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid var(--bdr)}
+.task-item:last-child{border-bottom:none}
+.task-status-circle{width:14px;height:14px;border-radius:50%;border:2px solid;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center}
+.task-status-circle.complete{background:var(--c-complete);border-color:var(--c-complete)}
+.task-status-circle.complete::after{content:'';width:4px;height:7px;border:2px solid #fff;border-top:none;border-left:none;transform:rotate(45deg) translateY(-1px);display:block}
+.task-status-circle.inProgress{border-color:var(--c-inprogress);background:transparent}
+.task-status-circle.blocked{border-color:var(--c-blocked);background:transparent}
+.task-status-circle.pending{border-color:var(--c-pending);background:transparent}
+.task-label{font-family:'IBM Plex Sans',sans-serif;font-size:12px;color:var(--txd);flex:1;line-height:1.4}
+.task-meta{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0}
+.task-hours{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--txm);white-space:nowrap}
+.task-room-tag{font-family:'IBM Plex Mono',monospace;font-size:8px;color:var(--txm);letter-spacing:0.05em;white-space:nowrap}
+
+/* NOTE FEED */
+.note-item{display:flex;gap:8px;padding:8px 0;border-bottom:1px solid var(--bdr)}
+.note-item:last-child{border-bottom:none}
+.note-avatar{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;color:#fff;flex-shrink:0}
+.note-body-wrap{flex:1;min-width:0}
+.note-header{display:flex;align-items:center;gap:6px;margin-bottom:3px;flex-wrap:wrap}
+.note-author{font-family:'IBM Plex Sans',sans-serif;font-size:11px;font-weight:600;color:var(--tx)}
+.note-time{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--txm)}
+.note-tag{font-family:'IBM Plex Mono',monospace;font-size:8px;font-weight:700;letter-spacing:0.1em;padding:1px 5px;border-radius:3px}
+.note-tag.SITE{background:rgba(59,130,246,0.2);color:#60A5FA}
+.note-tag.NOTE{background:rgba(156,163,175,0.15);color:var(--txm)}
+.note-tag.BLOCKER{background:rgba(239,68,68,0.2);color:#F87171}
+.note-text{font-family:'IBM Plex Sans',sans-serif;font-size:12px;color:var(--txd);line-height:1.5}
+
+/* MATERIALS */
+.mat-group{margin-bottom:14px}
+.mat-group-header{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;letter-spacing:0.15em;color:var(--txm);margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--bdr)}
+.mat-item{display:flex;align-items:center;gap:6px;padding:6px 0;border-bottom:1px solid var(--bdr)}
+.mat-item:last-child{border-bottom:none}
+.mat-name{font-family:'IBM Plex Sans',sans-serif;font-size:12px;color:var(--txd);flex:1}
+.mat-sku{font-family:'IBM Plex Mono',monospace;font-size:8px;color:var(--txm)}
+.mat-qty{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--txm);white-space:nowrap}
+.mat-cost{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--tx);font-weight:500;white-space:nowrap}
+.mat-status{font-family:'IBM Plex Mono',monospace;font-size:8px;font-weight:600;letter-spacing:0.06em;padding:1px 5px;border-radius:3px;white-space:nowrap}
+.mat-status.used{background:rgba(34,197,94,0.15);color:#4ADE80}
+.mat-status.partial{background:rgba(59,130,246,0.15);color:#60A5FA}
+.mat-status.onsite{background:rgba(245,158,11,0.15);color:#FCD34D}
+.mat-status.ordered{background:rgba(168,85,247,0.15);color:#C084FC}
+
+/* ELEVATION CARDS */
+.elev-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.elev-card{background:var(--s1);border:1px solid var(--bdr);border-radius:6px;overflow:hidden;cursor:pointer;transition:border-color 0.15s}
+.elev-card:hover{border-color:var(--bdr3)}
+.elev-card svg{display:block;width:100%;height:auto}
+.elev-label{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.1em;color:var(--txm);padding:6px 8px;border-top:1px solid var(--bdr)}
+
+/* PHOTO CARDS */
+.photo-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.photo-card{background:var(--s2);border:1px solid var(--bdr);border-radius:6px;aspect-ratio:4/3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer}
+.photo-card:hover{border-color:var(--bdr3)}
+.photo-icon{opacity:0.3}
+.photo-label{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--txm);letter-spacing:0.08em}
+
+/* STATUS BAR */
+#statusbar{
+  height:24px;min-height:24px;background:var(--nb);border-top:1px solid var(--bdr);
+  display:flex;align-items:center;padding:0 16px;gap:16px;flex-shrink:0;
+}
+.sb-item{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--txm);display:flex;align-items:center;gap:5px}
+.sb-item .sb-val{color:var(--txd);font-weight:500}
+
+/* ROOM POPUP */
+#room-popup{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:500;
+  align-items:center;justify-content:center;
+}
+#room-popup.open{display:flex}
+#popup-card{
+  background:#fff;border-radius:6px;box-shadow:0 24px 80px rgba(0,0,0,0.5);
+  width:min(840px,96vw);height:86vh;display:flex;flex-direction:column;overflow:hidden;
+}
+#popup-topbar{
+  height:48px;min-height:48px;background:#1A1D22;display:flex;align-items:center;
+  padding:0 16px;gap:10px;flex-shrink:0;
+}
+#popup-topbar .pop-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+#popup-topbar .pop-name{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;color:var(--tx);letter-spacing:0.04em;flex:1}
+#popup-topbar .pop-meta{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--txm);white-space:nowrap}
+#app #popup-topbar .pop-close{
+  background:transparent;border:none;color:var(--txm);font-size:20px;cursor:pointer;
+  padding:4px 8px;line-height:1;border-radius:4px;font-family:sans-serif;
+}
+#app #popup-topbar .pop-close:hover{color:var(--tx);background:var(--s3)}
+#popup-body{flex:1;display:flex;overflow:hidden}
+#popup-side{width:38%;background:#F8F9FA;border-right:1px solid #E0E2E6;overflow-y:auto;padding:14px}
+#popup-side::-webkit-scrollbar{width:3px}
+#popup-side::-webkit-scrollbar-thumb{background:#D0D2D6;border-radius:2px}
+#popup-viz{flex:1;background:#ECEDF0;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center}
+#popup-viz svg{max-width:100%;max-height:100%}
+#popup-bottabs{
+  height:40px;min-height:40px;background:#1A1D22;display:flex;flex-shrink:0;
+  border-top:1px solid rgba(255,255,255,0.07);
+}
+#app #popup-bottabs button{
+  flex:1;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.1em;
+  background:transparent;border:none;border-top:2px solid transparent;
+  color:rgba(240,242,245,0.45);cursor:pointer;padding:0;transition:all 0.15s;
+}
+#app #popup-bottabs button:hover{color:rgba(240,242,245,0.85)}
+#app #popup-bottabs button.active{color:#F0F2F5;border-top-color:#1A56DB}
+
+/* Popup side panel light theme */
+#popup-side .task-item{border-bottom-color:#E0E2E6}
+#popup-side .task-label{color:#2C2E33;font-size:12px}
+#popup-side .task-hours{color:#888}
+#popup-side .task-room-tag{color:#AAA}
+#popup-side .trade-group-header{border-bottom-color:#E0E2E6}
+#popup-side .trade-group-label{color:#888}
+#popup-side .note-item{border-bottom-color:#E0E2E6}
+#popup-side .note-author{color:#1A1D22}
+#popup-side .note-text{color:#3A3C42;font-size:12px}
+#popup-side .note-time{color:#888}
+#popup-side .mat-item{border-bottom-color:#E0E2E6}
+#popup-side .mat-name{color:#2C2E33}
+#popup-side .mat-sku{color:#AAA}
+#popup-side .mat-qty{color:#888}
+#popup-side .mat-cost{color:#1A1D22}
+#popup-side .mat-group-header{color:#888;border-bottom-color:#E0E2E6}
+#popup-side .elev-card{background:#E8E9EC;border-color:#D0D2D6}
+#popup-side .elev-label{color:#666;border-top-color:#D0D2D6}
+#popup-side .photo-card{background:#E0E2E6;border-color:#D0D2D6}
+#popup-side .photo-label{color:#888}
+
+/* ELEVATION FULLSCREEN */
+#elev-fs{
+  display:none;position:fixed;inset:0;background:rgba(17,19,22,0.92);z-index:1000;
+  align-items:center;justify-content:center;
+}
+#elev-fs.open{display:flex}
+#elev-fs-card{
+  background:#fff;border-radius:6px;max-width:94vw;max-height:88vh;
+  padding:20px;position:relative;display:flex;flex-direction:column;align-items:center;gap:12px;
+  min-width:500px;
+}
+#elev-fs-title{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;letter-spacing:0.12em;color:#555}
+#elev-fs-svg-wrap{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden}
+#elev-fs-svg-wrap svg{max-width:80vw;max-height:70vh;display:block}
+#app #elev-fs-close{
+  position:absolute;top:12px;right:12px;background:#F0F2F5;border:none;
+  width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:16px;
+  display:flex;align-items:center;justify-content:center;color:#555;
+}
+#app #elev-fs-close:hover{background:#E0E2E6}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <div class="tb-left">
+    <div class="tb-dot"></div>
+    <span class="tb-brand">HOOOMZ OS</span>
+  </div>
+  <div class="tb-center">
+    <span class="hi">142 ELMWOOD DRIVE, DIEPPE NB</span>
+    <span class="sep">|</span>
+    <span>J-2024-031</span>
+    <span class="sep">|</span>
+    <span>FULL INTERIOR REFRESH</span>
+  </div>
+  <div class="tb-right">
+    <button onclick="alert('Save functionality coming soon')">SAVE</button>
+    <button onclick="alert('PDF export coming soon')">EXPORT PDF</button>
+    <div class="avatar">NT</div>
+  </div>
+</div>
+
+<!-- TOOLBAR -->
+<div id="toolbar">
+  <div class="tb-trades">
+    <button class="trade-btn t-all active" data-trade="all">ALL</button>
+    <button class="trade-btn t-paint" data-trade="paint">PAINT</button>
+    <button class="trade-btn t-floor" data-trade="floor">FLOOR</button>
+    <button class="trade-btn t-trim" data-trade="trim">TRIM</button>
+  </div>
+  <div class="tb-legend">
+    <div class="legend-pill"><div class="legend-dot" style="background:#22C55E"></div>COMPLETE</div>
+    <div class="legend-pill"><div class="legend-dot" style="background:#3B82F6"></div>IN PROGRESS</div>
+    <div class="legend-pill"><div class="legend-dot" style="background:#EF4444"></div>BLOCKED</div>
+    <div class="legend-pill"><div class="legend-dot" style="background:#9CA3AF"></div>PENDING</div>
+  </div>
+  <div class="tb-hint">CLICK ROOMS TO EXPLORE &nbsp;·&nbsp; TOGGLE TRADES &nbsp;·&nbsp; DAY 12 OF 18</div>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+
+  <!-- PLAN WRAP -->
+  <div id="plan-wrap">
+    <div id="plan-canvas">
+      <svg id="floor-svg" viewBox="0 0 920 460" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="width:920px;height:460px"></svg>
+    </div>
+  </div>
+
+  <!-- PROJECT PANEL -->
+  <div id="panel">
+    <div id="panel-tabs">
+      <button class="active" data-ptab="overview">OVERVIEW</button>
+      <button data-ptab="tasks">ALL TASKS</button>
+      <button data-ptab="notes">NOTES</button>
+      <button data-ptab="materials">MATERIALS</button>
+      <button data-ptab="elevations">ELEVATIONS</button>
+      <button data-ptab="photos">PHOTOS</button>
+    </div>
+    <div id="panel-content"></div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- STATUS BAR -->
+<div id="statusbar" id="statusbar"></div>
+
+</div><!-- /app -->
+
+<!-- ROOM POPUP -->
+<div id="room-popup">
+  <div id="popup-card">
+    <div id="popup-topbar">
+      <div class="pop-dot" id="pop-dot"></div>
+      <div class="pop-name" id="pop-name"></div>
+      <div class="pop-meta" id="pop-meta"></div>
+      <button class="pop-close" onclick="closeRoom()">×</button>
+    </div>
+    <div id="popup-body">
+      <div id="popup-side"></div>
+      <div id="popup-viz"></div>
+    </div>
+    <div id="popup-bottabs">
+      <button class="active" data-ptab2="room">ROOM</button>
+      <button data-ptab2="notes">NOTES</button>
+      <button data-ptab2="materials">MATERIALS</button>
+      <button data-ptab2="elevations">ELEVATIONS</button>
+      <button data-ptab2="photos">PHOTOS</button>
+    </div>
+  </div>
+</div>
+
+<!-- ELEVATION FULLSCREEN -->
+<div id="elev-fs">
+  <div id="elev-fs-card">
+    <div id="elev-fs-title"></div>
+    <div id="elev-fs-svg-wrap"></div>
+    <button id="elev-fs-close" onclick="closeElevFs()">×</button>
+  </div>
+</div>
+
+<script>
+(function(){
+
+// ── DATA ──────────────────────────────────────────────────────────────────────
+
+const ROOMS = {
+  living: {
+    name:'Living Room', dims:"18'×14'", area:'252 sq ft',
+    status:'complete', progress:100,
+    tasks:[
+      {trade:'paint',label:'Paint ceilings 2 coats — Benjamin Moore Ceiling White',status:'complete',hours:3},
+      {trade:'paint',label:'Paint walls 2 coats — BM Revere Pewter HC-172',status:'complete',hours:5},
+      {trade:'floor',label:'Install Shaw Floors Plus LVT — Natural Hickory 6"',status:'complete',hours:6},
+      {trade:'trim', label:'Install 3.5" Colonial baseboard HDF primed — 64 LF',status:'complete',hours:4},
+      {trade:'trim', label:'Install door casing both sides — 2 openings',status:'complete',hours:2},
+    ],
+    notes:[
+      {author:'Nathan',initials:'NT',color:'#3B82F6',time:'Day 8 · 2:14pm',tag:'SITE',body:'LVT install complete. Tight fit at hearth — used a transition piece. Looks sharp.'},
+      {author:'Nishant',initials:'N',color:'#22C55E',time:'Day 9 · 10:30am',tag:'NOTE',body:'Baseboards done, caulked and painted. Touch-up on south wall corner — minor ding from moving furniture, fixed.'},
+    ],
+    materials:[
+      {name:'BM Revere Pewter HC-172',sku:'BM-HC172-2GL',qty:'2 gal',cost:'$94',status:'used'},
+      {name:'BM Ceiling White',sku:'BM-CW-1GL',qty:'1 gal',cost:'$42',status:'used'},
+      {name:'Shaw Floors Plus LVT Natural Hickory',sku:'SF-NH6-BOX',qty:'18 boxes',cost:'$864',status:'used'},
+      {name:'Colonial Baseboard HDF 3.5"',sku:'CB35-HDF-16',qty:"4 sticks 16'",cost:'$128',status:'used'},
+    ],
+  },
+  kitchen:{
+    name:'Kitchen',dims:"14'×12'",area:'168 sq ft',
+    status:'inProgress',progress:60,
+    tasks:[
+      {trade:'paint',label:'Paint walls 2 coats — BM White Dove OC-17',status:'complete',hours:4},
+      {trade:'floor',label:'Install Emser tile 12×24 Matte Gray — 168 sq ft',status:'inProgress',hours:8},
+      {trade:'trim', label:'Install quarter-round at tile edge — 48 LF',status:'pending',hours:2},
+      {trade:'paint',label:'Paint cabinets — BM Advance Satin White',status:'pending',hours:6},
+    ],
+    notes:[
+      {author:'Nishant',initials:'N',color:'#22C55E',time:'Day 10 · 9:00am',tag:'SITE',body:'Tile layout started. Running bond pattern confirmed with Nathan. Grout color: Mapei Warm Gray.'},
+      {author:'Nathan',initials:'NT',color:'#3B82F6',time:'Day 11 · 3:45pm',tag:'NOTE',body:'Tile about 50% done. Need to cut around dishwasher opening carefully — will template tomorrow.'},
+    ],
+    materials:[
+      {name:'BM White Dove OC-17',sku:'BM-OC17-2GL',qty:'2 gal',cost:'$94',status:'used'},
+      {name:'Emser Tile 12×24 Matte Gray',sku:'ET-MG1224-CTN',qty:'8 cartons',cost:'$480',status:'partial'},
+      {name:'Mapei Warm Gray Grout',sku:'MP-WG-10LB',qty:'3 bags',cost:'$78',status:'onsite'},
+      {name:'BM Advance Satin White',sku:'BM-ADV-SW-1GL',qty:'1 gal',cost:'$68',status:'ordered'},
+    ],
+  },
+  bathroom:{
+    name:'Bathroom',dims:"9'×10'",area:'90 sq ft',
+    status:'blocked',progress:45,
+    tasks:[
+      {trade:'paint',label:'Paint walls — BM Quiet Moments 1563',status:'complete',hours:2},
+      {trade:'floor',label:'Install 3×6 subway tile floor — 90 sq ft',status:'complete',hours:5},
+      {trade:'trim', label:'Install vanity casing and mirror blocking',status:'blocked',hours:3},
+      {trade:'paint',label:'Paint ceiling — BM Ceiling White',status:'pending',hours:1},
+      {trade:'trim', label:'Install towel bar and TP holder blocking',status:'pending',hours:1},
+      {trade:'floor',label:'Grout and seal floor tile',status:'pending',hours:2},
+    ],
+    notes:[
+      {author:'Nathan',initials:'NT',color:'#3B82F6',time:'Day 10 · 11:20am',tag:'BLOCKER',body:'BLOCKER: Water damage found behind vanity — drywall soft, possible mold. Holding all work. Sending photo to owner.'},
+      {author:'Nishant',initials:'N',color:'#22C55E',time:'Day 11 · 8:30am',tag:'SITE',body:'Floor tile complete except grouting. Holding until water damage resolved per Nathan.'},
+    ],
+    materials:[
+      {name:'BM Quiet Moments 1563',sku:'BM-1563-1GL',qty:'1 gal',cost:'$47',status:'used'},
+      {name:'Subway Tile 3×6 White Matte',sku:'ST-3X6-WM-CTN',qty:'5 cartons',cost:'$295',status:'used'},
+      {name:'Mapei Bright White Grout',sku:'MP-BW-10LB',qty:'2 bags',cost:'$52',status:'onsite'},
+    ],
+  },
+  hallway:{
+    name:'Hallway',dims:"24'×4'",area:'96 sq ft',
+    status:'complete',progress:100,
+    tasks:[
+      {trade:'paint',label:'Paint walls — BM Revere Pewter HC-172',status:'complete',hours:2},
+      {trade:'floor',label:'Install Shaw LVT Natural Hickory — matches living',status:'complete',hours:3},
+      {trade:'trim', label:'Install baseboard + transitions at all doorways',status:'complete',hours:2},
+    ],
+    notes:[
+      {author:'Nathan',initials:'NT',color:'#3B82F6',time:'Day 9 · 4:00pm',tag:'NOTE',body:"Hallway done. Transitions at all 4 doorways. Paint matched living room perfectly."},
+    ],
+    materials:[
+      {name:'Shaw Floors Plus LVT Natural Hickory',sku:'SF-NH6-BOX',qty:'4 boxes',cost:'$192',status:'used'},
+      {name:'T-Molding Transition Strip',sku:'TM-OAK-36',qty:'4 pcs',cost:'$88',status:'used'},
+    ],
+  },
+  primaryBed:{
+    name:'Primary Bedroom',dims:"18'×15'",area:'270 sq ft',
+    status:'pending',progress:0,
+    tasks:[
+      {trade:'paint',label:'Paint walls — BM Pale Oak OC-20',status:'pending',hours:5},
+      {trade:'paint',label:'Paint ceiling — BM Ceiling White',status:'pending',hours:2},
+      {trade:'floor',label:'Install Shaw LVT Natural Hickory — 270 sq ft',status:'pending',hours:7},
+      {trade:'trim', label:"Install 3.5\" baseboard — 66 LF",status:'pending',hours:4},
+    ],
+    notes:[
+      {author:'Nathan',initials:'NT',color:'#3B82F6',time:'Day 11 · 5:00pm',tag:'NOTE',body:'Starting primary bedroom Day 13. Owner confirmed paint color — Pale Oak OC-20. Flooring staged in hallway.'},
+    ],
+    materials:[
+      {name:'BM Pale Oak OC-20',sku:'BM-OC20-2GL',qty:'2 gal',cost:'$94',status:'ordered'},
+      {name:'Shaw Floors Plus LVT Natural Hickory',sku:'SF-NH6-BOX',qty:'19 boxes',cost:'$912',status:'onsite'},
+      {name:'Colonial Baseboard HDF 3.5"',sku:'CB35-HDF-16',qty:"5 sticks 16'",cost:'$160',status:'onsite'},
+    ],
+  },
+  bed2:{
+    name:'Bedroom 2',dims:"14'×12'",area:'168 sq ft',
+    status:'pending',progress:0,
+    tasks:[
+      {trade:'paint',label:'Paint walls — BM Pale Oak OC-20',status:'pending',hours:4},
+      {trade:'floor',label:'Install Shaw LVT Natural Hickory — 168 sq ft',status:'pending',hours:5},
+      {trade:'trim', label:"Install 3.5\" baseboard — 52 LF",status:'pending',hours:3},
+    ],
+    notes:[
+      {author:'Nathan',initials:'NT',color:'#3B82F6',time:'Day 11 · 5:00pm',tag:'NOTE',body:'Bed 2 follows primary bedroom. Same spec. Should be able to batch paint both rooms same day.'},
+    ],
+    materials:[
+      {name:'BM Pale Oak OC-20',sku:'BM-OC20-2GL',qty:'1 gal',cost:'$47',status:'ordered'},
+      {name:'Shaw Floors Plus LVT Natural Hickory',sku:'SF-NH6-BOX',qty:'12 boxes',cost:'$576',status:'onsite'},
+    ],
+  },
+  laundry:{
+    name:'Laundry Room',dims:"9'×8'",area:'72 sq ft',
+    status:'blocked',progress:20,
+    tasks:[
+      {trade:'paint',label:'Paint walls — BM Simply White OC-17',status:'complete',hours:1},
+      {trade:'floor',label:'Install Emser tile 12×12 — 72 sq ft',status:'blocked',hours:3},
+      {trade:'trim', label:'Install baseboard — 34 LF',status:'pending',hours:2},
+      {trade:'paint',label:'Paint utility shelf and surround',status:'pending',hours:1},
+    ],
+    notes:[
+      {author:'Nishant',initials:'N',color:'#22C55E',time:'Day 10 · 2:00pm',tag:'BLOCKER',body:'Laundry floor tile on hold — appliances not moved yet. Owner to arrange.'},
+      {author:'Nathan',initials:'NT',color:'#3B82F6',time:'Day 11 · 9:00am',tag:'NOTE',body:'Followed up with owner re: appliance move. Targeting Day 14.'},
+    ],
+    materials:[
+      {name:'BM Simply White OC-17',sku:'BM-OC17-1GL',qty:'1 gal',cost:'$47',status:'used'},
+      {name:'Emser Tile 12×12 Gray',sku:'ET-G1212-CTN',qty:'3 cartons',cost:'$189',status:'onsite'},
+    ],
+  },
+};
+
+const SC={
+  complete:{label:'Complete',color:'#22C55E'},
+  inProgress:{label:'In Progress',color:'#3B82F6'},
+  blocked:{label:'Blocked',color:'#EF4444'},
+  pending:{label:'Pending',color:'#9CA3AF'},
+};
+const TC={paint:'#F59E0B',floor:'#14B8A6',trim:'#A855F7'};
+
+// Room layout definitions
+const RDEFS={
+  living:    {x:20, y:20, w:280,h:200,fills:['#ECEDF0','#E2E4E8','#D8DADD'],fi:0},
+  kitchen:   {x:300,y:20, w:220,h:180,fills:['#ECEDF0','#E2E4E8','#D8DADD'],fi:1},
+  bathroom:  {x:660,y:20, w:140,h:160,fills:['#ECEDF0','#E2E4E8','#D8DADD'],fi:2},
+  hallway:   {x:300,y:200,w:360,h:60, fills:['#ECEDF0','#E2E4E8','#D8DADD'],fi:0},
+  primaryBed:{x:20, y:220,w:280,h:220,fills:['#ECEDF0','#E2E4E8','#D8DADD'],fi:1},
+  bed2:      {x:300,y:260,w:220,h:180,fills:['#ECEDF0','#E2E4E8','#D8DADD'],fi:2},
+  laundry:   {x:660,y:180,w:140,h:120,fills:['#ECEDF0','#E2E4E8','#D8DADD'],fi:0},
+};
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let activeRoom=null, activeTrade='all', activePopupTab='room', activePanelTab='overview';
+
+// ── SVG HELPERS ───────────────────────────────────────────────────────────────
+function svgEl(tag,attrs){
+  const el=document.createElementNS('http://www.w3.org/2000/svg',tag);
+  for(const[k,v] of Object.entries(attrs)) el.setAttribute(k,v);
+  return el;
+}
+
+// ── FLOOR PLANKS ──────────────────────────────────────────────────────────────
+function drawPlanks(svg,x,y,w,h,spacing){
+  spacing=spacing||14;
+  const clip=svgEl('clipPath',{id:'clip-'+Math.random().toString(36).slice(2)});
+  const cr=svgEl('rect',{x,y,width:w,height:h});
+  clip.appendChild(cr);
+  svg.appendChild(clip);
+  const g=svgEl('g',{'clip-path':'url(#'+clip.id+')',opacity:'0.28'});
+  let row=0;
+  for(let ly=y+spacing;ly<y+h;ly+=spacing){
+    const offset=(row%2===0)?0:w*0.5;
+    const ln=svgEl('line',{x1:x+offset-w,y1:ly,x2:x+w*2,y2:ly,stroke:'#8A8C94','stroke-width':'0.5'});
+    g.appendChild(ln);
+    row++;
+  }
+  svg.appendChild(g);
+}
+
+// ── DOOR ARC ──────────────────────────────────────────────────────────────────
+function drawDoorArc(svg,cx,cy,r,startAngle,sweep){
+  // startAngle in degrees, sweep in degrees
+  const a1=startAngle*(Math.PI/180);
+  const a2=(startAngle+sweep)*(Math.PI/180);
+  const x1=cx+r*Math.cos(a1), y1=cy+r*Math.sin(a1);
+  const x2=cx+r*Math.cos(a2), y2=cy+r*Math.sin(a2);
+  const laf=Math.abs(sweep)>180?1:0;
+  const sf=sweep>0?1:0;
+  // door leaf line
+  const dl=svgEl('line',{x1:cx,y1:cy,x2:x1,y2:y1,stroke:'#666','stroke-width':'0.8',opacity:'0.6'});
+  svg.appendChild(dl);
+  const arc=svgEl('path',{d:`M ${x1} ${y1} A ${r} ${r} 0 ${laf} ${sf} ${x2} ${y2}`,stroke:'#888',fill:'none','stroke-width':'0.8',opacity:'0.5','stroke-dasharray':'3,2'});
+  svg.appendChild(arc);
+}
+
+// ── WINDOW ────────────────────────────────────────────────────────────────────
+function drawWindow(svg,x,y,w,h){
+  // h is wall thickness (~6), w is window width
+  const bg=svgEl('rect',{x,y,width:w,height:h,fill:'#B8D4F0',opacity:'0.6'});
+  const l1=svgEl('line',{x1:x,y1:y+h*0.33,x2:x+w,y2:y+h*0.33,stroke:'#6090C0','stroke-width':'0.8'});
+  const l2=svgEl('line',{x1:x,y1:y+h*0.67,x2:x+w,y2:y+h*0.67,stroke:'#6090C0','stroke-width':'0.8'});
+  svg.appendChild(bg);svg.appendChild(l1);svg.appendChild(l2);
+}
+
+// ── BUILD MAIN FLOOR PLAN ─────────────────────────────────────────────────────
+function buildFloorPlan(){
+  const svg=document.getElementById('floor-svg');
+  svg.innerHTML='';
+
+  // Defs
+  const defs=svgEl('defs',{});
+  svg.appendChild(defs);
+
+  // Background
+  const bg=svgEl('rect',{x:0,y:0,width:920,height:460,fill:'#F2F3F5'});
+  svg.appendChild(bg);
+
+  // Exterior wall shadow
+  const shadow=svgEl('rect',{x:18,y:18,width:786,height:424,fill:'none',stroke:'#AAA','stroke-width':'1',rx:'2',filter:'drop-shadow(0 2px 6px rgba(0,0,0,0.18))'});
+  svg.appendChild(shadow);
+
+  const roomOrder=['living','hallway','primaryBed','kitchen','bed2','laundry','bathroom'];
+
+  roomOrder.forEach(id=>{
+    const d=RDEFS[id];
+    const r=ROOMS[id];
+    const fills=['#ECEDF0','#E2E4E8','#D8DADD'];
+    const fillIdx=Object.keys(RDEFS).indexOf(id)%3;
+    const fill=fills[fillIdx];
+
+    // Group
+    const g=svgEl('g',{class:'room-zone',id:'zone-'+id,'data-room':id});
+
+    // Room bg
+    const rect=svgEl('rect',{
+      x:d.x,y:d.y,width:d.w,height:d.h,
+      fill:fill,stroke:'#444','stroke-width':'2',
+      class:'room-bg',rx:'0'
+    });
+    g.appendChild(rect);
+
+    // Floor planks
+    drawPlanks(g,d.x+2,d.y+2,d.w-4,d.h-4,14);
+
+    // Trade overlay (hidden by default)
+    const trades=['paint','floor','trim'];
+    trades.forEach(trade=>{
+      const hasTrade=r.tasks.some(t=>t.trade===trade);
+      if(hasTrade){
+        const ov=svgEl('rect',{
+          x:d.x+1,y:d.y+1,width:d.w-2,height:d.h-2,
+          fill:TC[trade],opacity:'0',
+          class:'trade-overlay trade-'+trade,
+          'data-room':id,'data-trade':trade,
+          style:'pointer-events:none'
+        });
+        g.appendChild(ov);
+      }
+    });
+
+    // Status dot
+    const sc=SC[r.status];
+    const sdot=svgEl('circle',{cx:d.x+14,cy:d.y+14,r:5,fill:sc.color,class:'status-dot-'+id});
+    g.appendChild(sdot);
+
+    // Room label
+    const labelX=d.x+d.w/2, labelY=d.y+d.h/2-4;
+    const nameLabel=svgEl('text',{
+      x:labelX,y:labelY,
+      'font-family':'"Barlow Condensed",sans-serif',
+      'font-size':'13','font-weight':'700',
+      fill:'#3A3C42','text-anchor':'middle',
+      'dominant-baseline':'middle',
+      style:'pointer-events:none;text-transform:uppercase;letter-spacing:0.05em'
+    });
+    nameLabel.textContent=r.name.toUpperCase();
+    g.appendChild(nameLabel);
+
+    // Dimension label
+    const dimLabel=svgEl('text',{
+      x:labelX,y:labelY+16,
+      'font-family':'"IBM Plex Mono",monospace',
+      'font-size':'7','font-weight':'400',
+      fill:'#8A8C94','text-anchor':'middle',
+      style:'pointer-events:none'
+    });
+    dimLabel.textContent=r.dims+' — '+r.area;
+    g.appendChild(dimLabel);
+
+    // Progress indicator (small bar at bottom)
+    const barY=d.y+d.h-6;
+    const barBg=svgEl('rect',{x:d.x+8,y:barY,width:d.w-16,height:3,fill:'rgba(0,0,0,0.1)',rx:'1.5'});
+    g.appendChild(barBg);
+    if(r.progress>0){
+      const barFill=svgEl('rect',{x:d.x+8,y:barY,width:(d.w-16)*r.progress/100,height:3,fill:sc.color,rx:'1.5',opacity:'0.7'});
+      g.appendChild(barFill);
+    }
+
+    // Click handler
+    g.addEventListener('click',()=>openRoom(id));
+    svg.appendChild(g);
+  });
+
+  // ── DOORS ──
+  // Living Room: door arc at bottom-right
+  drawDoorArc(svg,300,220,40,180,-90);
+  // Kitchen: door arc at left side
+  drawDoorArc(svg,300,20+90,35,0,-90);
+  // Bathroom: door arc at left side
+  drawDoorArc(svg,660,20+80,35,0,-90);
+  // Primary Bedroom: door arc at top-right
+  drawDoorArc(svg,300,220,40,270,90);
+  // Bedroom 2: door arc at top-left
+  drawDoorArc(svg,300,260,35,270,-90);
+  // Laundry: door arc at left side
+  drawDoorArc(svg,660,180+60,35,0,-90);
+
+  // ── WINDOWS ──
+  // Living Room top wall
+  drawWindow(svg,60,18,60,7);
+  drawWindow(svg,180,18,60,7);
+  // Living Room bottom wall (y=220)
+  drawWindow(svg,80,217,60,7);
+  // Kitchen top
+  drawWindow(svg,350,18,70,7);
+  // Bathroom top
+  drawWindow(svg,690,18,50,7);
+  // Bathroom right wall
+  drawWindow(svg,797,50,7,50);
+  // Primary Bedroom left wall
+  drawWindow(svg,18,280,7,60);
+  drawWindow(svg,18,370,7,50);
+  // Primary Bedroom bottom
+  drawWindow(svg,80,437,70,7);
+  // Bed2 bottom
+  drawWindow(svg,340,437,80,7);
+
+  // ── FURNITURE ──
+  drawFurniture(svg);
+
+  // Apply initial trade state
+  styleZones();
+}
+
+function drawFurniture(svg){
+  const fs='rgba(180,182,188,0.5)';
+  const fs2='rgba(160,162,168,0.4)';
+  // Living Room sofa
+  const s=svgEl('g',{opacity:'0.55',style:'pointer-events:none'});
+  s.appendChild(svgEl('rect',{x:40,y:175,width:180,height:38,rx:'3',fill:'#B8BAC2',stroke:'#999','stroke-width':'0.5'}));
+  s.appendChild(svgEl('rect',{x:40,y:163,width:180,height:14,rx:'2',fill:'#C8CAD0',stroke:'#999','stroke-width':'0.5'}));
+  // armrests
+  s.appendChild(svgEl('rect',{x:40,y:163,width:12,height:50,rx:'2',fill:'#BBBDC4',stroke:'#999','stroke-width':'0.5'}));
+  s.appendChild(svgEl('rect',{x:208,y:163,width:12,height:50,rx:'2',fill:'#BBBDC4',stroke:'#999','stroke-width':'0.5'}));
+  // coffee table
+  s.appendChild(svgEl('rect',{x:80,y:130,width:100,height:32,rx:'2',fill:'#D0D2D6',stroke:'#AAA','stroke-width':'0.5'}));
+  svg.appendChild(s);
+
+  // Kitchen L-counter + stove + sink
+  const k=svgEl('g',{opacity:'0.5',style:'pointer-events:none'});
+  k.appendChild(svgEl('rect',{x:304,y:24,width:212,height:36,rx:'1',fill:'#C8C9CC',stroke:'#AAA','stroke-width':'0.5'})); // top counter
+  k.appendChild(svgEl('rect',{x:304,y:24,width:36,height:130,rx:'1',fill:'#C8C9CC',stroke:'#AAA','stroke-width':'0.5'})); // left counter
+  // stove circles
+  [[370,55],[390,55],[370,75],[390,75]].forEach(([cx,cy])=>{
+    k.appendChild(svgEl('circle',{cx,cy,r:7,fill:'none',stroke:'#888','stroke-width':'1.2'}));
+    k.appendChild(svgEl('circle',{cx,cy,r:3,fill:'#999'}));
+  });
+  // sink
+  k.appendChild(svgEl('rect',{x:466,y:28,width:42,height:28,rx:'2',fill:'#DDE0E4',stroke:'#AAA','stroke-width':'0.8'}));
+  k.appendChild(svgEl('circle',{cx:487,cy:42,r:4,fill:'none',stroke:'#999','stroke-width':'1'}));
+  svg.appendChild(k);
+
+  // Primary Bedroom bed
+  const pb=svgEl('g',{opacity:'0.5',style:'pointer-events:none'});
+  pb.appendChild(svgEl('rect',{x:90,y:290,width:160,height:130,rx:'2',fill:'#E0E2E6',stroke:'#BBB','stroke-width':'0.8'})); // bed frame
+  pb.appendChild(svgEl('rect',{x:90,y:290,width:160,height:22,rx:'2',fill:'#C8C9CC',stroke:'#AAA','stroke-width':'0.8'})); // headboard
+  pb.appendChild(svgEl('rect',{x:97,y:316,width:68,height:88,rx:'3',fill:'#F0F1F3',stroke:'#CCC','stroke-width':'0.5'})); // pillow 1
+  pb.appendChild(svgEl('rect',{x:175,y:316,width:68,height:88,rx:'3',fill:'#F0F1F3',stroke:'#CCC','stroke-width':'0.5'})); // pillow 2
+  // nightstands
+  pb.appendChild(svgEl('rect',{x:54,y:298,width:32,height:32,rx:'2',fill:'#D0D2D6',stroke:'#AAA','stroke-width':'0.6'}));
+  pb.appendChild(svgEl('rect',{x:254,y:298,width:32,height:32,rx:'2',fill:'#D0D2D6',stroke:'#AAA','stroke-width':'0.6'}));
+  svg.appendChild(pb);
+
+  // Bedroom 2 smaller bed
+  const b2=svgEl('g',{opacity:'0.5',style:'pointer-events:none'});
+  b2.appendChild(svgEl('rect',{x:340,y:278,width:130,height:100,rx:'2',fill:'#E0E2E6',stroke:'#BBB','stroke-width':'0.8'}));
+  b2.appendChild(svgEl('rect',{x:340,y:278,width:130,height:18,rx:'2',fill:'#C8C9CC',stroke:'#AAA','stroke-width':'0.8'}));
+  b2.appendChild(svgEl('rect',{x:348,y:300,width:52,height:70,rx:'3',fill:'#F0F1F3',stroke:'#CCC','stroke-width':'0.5'}));
+  b2.appendChild(svgEl('rect',{x:410,y:300,width:52,height:70,rx:'3',fill:'#F0F1F3',stroke:'#CCC','stroke-width':'0.5'}));
+  svg.appendChild(b2);
+
+  // Bathroom fixtures
+  const bth=svgEl('g',{opacity:'0.5',style:'pointer-events:none'});
+  // toilet
+  bth.appendChild(svgEl('rect',{x:720,y:24,width:34,height:24,rx:'2',fill:'#DDE0E4',stroke:'#AAA','stroke-width':'0.8'})); // tank
+  bth.appendChild(svgEl('ellipse',{cx:737,cy:66,rx:17,ry:22,fill:'#DDE0E4',stroke:'#AAA','stroke-width':'0.8'})); // bowl
+  // vanity
+  bth.appendChild(svgEl('rect',{x:664,y:24,width:50,height:44,rx:'2',fill:'#D8DADD',stroke:'#AAA','stroke-width':'0.8'}));
+  bth.appendChild(svgEl('rect',{x:669,y:29,width:40,height:34,rx:'1',fill:'#E8EAED',stroke:'#CCC','stroke-width':'0.5'}));
+  // shower dashed
+  bth.appendChild(svgEl('rect',{x:664,y:90,width:90,height:82,rx:'2',fill:'#E8EAED',stroke:'#888','stroke-width':'0.8','stroke-dasharray':'4,3'}));
+  bth.appendChild(svgEl('circle',{cx:709,cy:128,r:6,fill:'none',stroke:'#AAA','stroke-width':'1.2'}));
+  svg.appendChild(bth);
+
+  // Laundry washer/dryer
+  const lnd=svgEl('g',{opacity:'0.5',style:'pointer-events:none'});
+  const lw=50;
+  lnd.appendChild(svgEl('rect',{x:666,y:192,width:lw,height:lw,rx:'3',fill:'#D8DADD',stroke:'#AAA','stroke-width':'0.8'}));
+  lnd.appendChild(svgEl('circle',{cx:691,cy:217,r:18,fill:'none',stroke:'#AAA','stroke-width':'1.2'}));
+  lnd.appendChild(svgEl('circle',{cx:691,cy:217,r:10,fill:'#C8CAD0'}));
+  lnd.appendChild(svgEl('rect',{x:720,y:192,width:lw,height:lw,rx:'3',fill:'#D8DADD',stroke:'#AAA','stroke-width':'0.8'}));
+  lnd.appendChild(svgEl('circle',{cx:745,cy:217,r:18,fill:'none',stroke:'#AAA','stroke-width':'1.2'}));
+  lnd.appendChild(svgEl('circle',{cx:745,cy:217,r:10,fill:'#C8CAD0'}));
+  svg.appendChild(lnd);
+}
+
+// ── STYLE ZONES (trade overlays) ──────────────────────────────────────────────
+function styleZones(){
+  document.querySelectorAll('.trade-overlay').forEach(el=>{
+    const trade=el.getAttribute('data-trade');
+    if(activeTrade==='all'){
+      el.setAttribute('opacity','0');
+    } else if(activeTrade===trade){
+      el.setAttribute('opacity','0.18');
+    } else {
+      el.setAttribute('opacity','0');
+    }
+  });
+  // Dim rooms that don't have the active trade
+  Object.keys(RDEFS).forEach(id=>{
+    const zone=document.getElementById('zone-'+id);
+    if(!zone)return;
+    if(activeTrade==='all'){
+      zone.setAttribute('opacity','1');
+    } else {
+      const hasTrade=ROOMS[id].tasks.some(t=>t.trade===activeTrade);
+      zone.setAttribute('opacity',hasTrade?'1':'0.35');
+    }
+  });
+}
+
+// ── OPEN / CLOSE ROOM ─────────────────────────────────────────────────────────
+function openRoom(id){
+  activeRoom=id;
+  activePopupTab='room';
+  // Remove selection from all
+  document.querySelectorAll('.room-zone').forEach(el=>el.classList.remove('selected'));
+  const zone=document.getElementById('zone-'+id);
+  if(zone)zone.classList.add('selected');
+  // Build popup
+  buildPopup(id);
+  document.getElementById('room-popup').classList.add('open');
+}
+
+function closeRoom(){
+  document.getElementById('room-popup').classList.remove('open');
+  document.querySelectorAll('.room-zone').forEach(el=>el.classList.remove('selected'));
+  activeRoom=null;
+}
+
+// ── BUILD POPUP ───────────────────────────────────────────────────────────────
+function buildPopup(id){
+  const r=ROOMS[id];
+  const sc=SC[r.status];
+  // Top bar
+  document.getElementById('pop-dot').style.background=sc.color;
+  document.getElementById('pop-name').textContent=r.name.toUpperCase();
+  document.getElementById('pop-meta').textContent=r.dims+' · '+r.area+' · '+sc.label.toUpperCase();
+  // Bottom tabs
+  document.querySelectorAll('#popup-bottabs button').forEach(btn=>{
+    btn.classList.toggle('active',btn.getAttribute('data-ptab2')===activePopupTab);
+  });
+  // Side + viz
+  buildPopupSide(id);
+  buildRoomPlan(id);
+}
+
+function buildPopupSide(id){
+  const side=document.getElementById('popup-side');
+  const r=ROOMS[id];
+  side.innerHTML='';
+
+  if(activePopupTab==='room'){
+    side.appendChild(buildTaskList(r.tasks,false));
+  } else if(activePopupTab==='notes'){
+    side.appendChild(buildNoteList(r.notes));
+  } else if(activePopupTab==='materials'){
+    side.appendChild(buildMatList(r.materials));
+  } else if(activePopupTab==='elevations'){
+    side.appendChild(buildElevMini());
+  } else if(activePopupTab==='photos'){
+    side.appendChild(buildPhotoGrid(2));
+  }
+}
+
+// ── BUILD ROOM PLAN (isolated SVG) ────────────────────────────────────────────
+function buildRoomPlan(id){
+  const viz=document.getElementById('popup-viz');
+  viz.innerHTML='';
+  const d=RDEFS[id];
+  const r=ROOMS[id];
+  const sc=SC[r.status];
+
+  // Scale to fit ~400×340
+  const pad=30;
+  const sw=380,sh=320;
+  const scaleX=(sw-pad*2)/d.w, scaleY=(sh-pad*2)/d.h;
+  const scale=Math.min(scaleX,scaleY);
+  const ox=pad+(sw-pad*2-d.w*scale)/2;
+  const oy=pad+(sh-pad*2-d.h*scale)/2;
+
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox',`0 0 ${sw} ${sh}`);
+  svg.setAttribute('width',sw);
+  svg.setAttribute('height',sh);
+
+  // bg
+  const bg=svgEl('rect',{x:0,y:0,width:sw,height:sh,fill:'#ECEDF0'});
+  svg.appendChild(bg);
+
+  // Room rect
+  const rx=ox, ry=oy, rw=d.w*scale, rh=d.h*scale;
+  const rm=svgEl('rect',{x:rx,y:ry,width:rw,height:rh,fill:'#fff',stroke:sc.color,'stroke-width':'2',rx:'0'});
+  svg.appendChild(rm);
+
+  // Floor planks scaled
+  drawPlanks(svg,rx+2,ry+2,rw-4,rh-4,12*scale);
+
+  // Room name label
+  const lbl=svgEl('text',{
+    x:rx+8,y:ry+20,
+    'font-family':'"Barlow Condensed",sans-serif',
+    'font-size':'18','font-weight':'700',
+    fill:'#2C2E33',
+    'dominant-baseline':'middle',
+    style:'text-transform:uppercase;letter-spacing:0.04em'
+  });
+  lbl.textContent=r.name.toUpperCase();
+  svg.appendChild(lbl);
+
+  // Dims label bottom right
+  const dlbl=svgEl('text',{
+    x:rx+rw-4,y:ry+rh-6,
+    'font-family':'"IBM Plex Mono",monospace',
+    'font-size':'8','font-weight':'400',
+    fill:'#8A8C94','text-anchor':'end',
+  });
+  dlbl.textContent=r.dims+' · '+r.area;
+  svg.appendChild(dlbl);
+
+  // Status bar at bottom of room
+  const sbw=rw*r.progress/100;
+  svg.appendChild(svgEl('rect',{x:rx,y:ry+rh+4,width:rw,height:4,fill:'rgba(0,0,0,0.08)',rx:'2'}));
+  if(sbw>0) svg.appendChild(svgEl('rect',{x:rx,y:ry+rh+4,width:sbw,height:4,fill:sc.color,rx:'2'}));
+
+  viz.appendChild(svg);
+}
+
+// ── BUILD TASK LIST ───────────────────────────────────────────────────────────
+function buildTaskList(tasks,showRoom){
+  const wrap=document.createElement('div');
+  const byTrade={paint:[],floor:[],trim:[]};
+  tasks.forEach(t=>{if(byTrade[t.trade])byTrade[t.trade].push(t);});
+  ['paint','floor','trim'].forEach(trade=>{
+    const tlist=byTrade[trade];
+    if(!tlist.length)return;
+    const grp=document.createElement('div');
+    grp.className='trade-group';
+    const hdr=document.createElement('div');
+    hdr.className='trade-group-header';
+    hdr.innerHTML=`<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${TC[trade]};margin-right:6px"></span><span class="trade-group-label">${trade.toUpperCase()}</span>`;
+    grp.appendChild(hdr);
+    tlist.forEach(t=>{
+      const item=document.createElement('div');
+      item.className='task-item';
+      const circle=document.createElement('div');
+      circle.className='task-status-circle '+t.status;
+      item.appendChild(circle);
+      const lbl=document.createElement('div');
+      lbl.className='task-label';
+      lbl.textContent=t.label;
+      item.appendChild(lbl);
+      const meta=document.createElement('div');
+      meta.className='task-meta';
+      const hrs=document.createElement('div');
+      hrs.className='task-hours';
+      hrs.textContent=t.hours+'h';
+      meta.appendChild(hrs);
+      if(showRoom && t.room){
+        const rt=document.createElement('div');
+        rt.className='task-room-tag';
+        rt.textContent=t.room;
+        meta.appendChild(rt);
+      }
+      item.appendChild(meta);
+      grp.appendChild(item);
+    });
+    wrap.appendChild(grp);
+  });
+  return wrap;
+}
+
+// ── BUILD NOTE LIST ───────────────────────────────────────────────────────────
+function buildNoteList(notes){
+  const wrap=document.createElement('div');
+  notes.forEach(n=>{
+    const item=document.createElement('div');
+    item.className='note-item';
+    const av=document.createElement('div');
+    av.className='note-avatar';
+    av.style.background=n.color;
+    av.textContent=n.initials;
+    item.appendChild(av);
+    const body=document.createElement('div');
+    body.className='note-body-wrap';
+    const hdr=document.createElement('div');
+    hdr.className='note-header';
+    hdr.innerHTML=`<span class="note-author">${n.author}</span><span class="note-time">${n.time}</span><span class="note-tag ${n.tag}">${n.tag}</span>`;
+    body.appendChild(hdr);
+    const txt=document.createElement('div');
+    txt.className='note-text';
+    txt.textContent=n.body;
+    body.appendChild(txt);
+    item.appendChild(body);
+    wrap.appendChild(item);
+  });
+  return wrap;
+}
+
+// ── BUILD MATERIAL LIST ───────────────────────────────────────────────────────
+function buildMatList(materials){
+  const wrap=document.createElement('div');
+  // Group by implied category from trade — just list all for popup
+  const grp=document.createElement('div');
+  grp.className='mat-group';
+  const hdr=document.createElement('div');
+  hdr.className='mat-group-header';
+  hdr.textContent='MATERIALS';
+  grp.appendChild(hdr);
+  materials.forEach(m=>{
+    const item=document.createElement('div');
+    item.className='mat-item';
+    const nameWrap=document.createElement('div');
+    nameWrap.style.flex='1';
+    const name=document.createElement('div');
+    name.className='mat-name';
+    name.textContent=m.name;
+    const sku=document.createElement('div');
+    sku.className='mat-sku';
+    sku.textContent=m.sku;
+    nameWrap.appendChild(name);nameWrap.appendChild(sku);
+    item.appendChild(nameWrap);
+    const qty=document.createElement('div');
+    qty.className='mat-qty';
+    qty.textContent=m.qty;
+    const cost=document.createElement('div');
+    cost.className='mat-cost';
+    cost.textContent=m.cost;
+    const st=document.createElement('div');
+    st.className='mat-status '+m.status;
+    st.textContent=m.status.toUpperCase();
+    item.appendChild(qty);item.appendChild(cost);item.appendChild(st);
+    grp.appendChild(item);
+  });
+  wrap.appendChild(grp);
+  return wrap;
+}
+
+// ── ELEVATION SVG ─────────────────────────────────────────────────────────────
+function makeElevSvg(label,doors,windows,w,h){
+  w=w||280;h=h||140;
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox',`0 0 ${w} ${h}`);
+  svg.setAttribute('width',w);
+  svg.setAttribute('height',h);
+  // bg
+  svg.appendChild(svgEl('rect',{x:0,y:0,width:w,height:h,fill:'#F8F9FA'}));
+  const floor=h-20, ceiling=20, wallH=floor-ceiling;
+  // sky/wall area
+  svg.appendChild(svgEl('rect',{x:10,y:ceiling,width:w-20,height:wallH,fill:'#ECEDF0',stroke:'#CCC','stroke-width':'0.8'}));
+  // floor line
+  svg.appendChild(svgEl('line',{x1:10,y1:floor,x2:w-10,y2:floor,stroke:'#555','stroke-width':'1.5'}));
+  // ceiling line
+  svg.appendChild(svgEl('line',{x1:10,y1:ceiling,x2:w-10,y2:ceiling,stroke:'#555','stroke-width':'1'}));
+  // left/right wall lines
+  svg.appendChild(svgEl('line',{x1:10,y1:ceiling,x2:10,y2:floor,stroke:'#555','stroke-width':'1.5'}));
+  svg.appendChild(svgEl('line',{x1:w-10,y1:ceiling,x2:w-10,y2:floor,stroke:'#555','stroke-width':'1.5'}));
+
+  // doors
+  doors.forEach(dx=>{
+    const dw=28,dh=70;
+    const dy=floor-dh;
+    svg.appendChild(svgEl('rect',{x:dx,y:dy,width:dw,height:dh,fill:'#D0D4DA',stroke:'#AAA','stroke-width':'0.8'}));
+    svg.appendChild(svgEl('line',{x1:dx+dw*0.7,y1:dy+dh*0.4,x2:dx+dw*0.7,y2:dy+dh*0.6,stroke:'#888','stroke-width':'0.7'}));
+  });
+
+  // windows
+  windows.forEach(([wx,wy])=>{
+    const ww=38,wh=38;
+    svg.appendChild(svgEl('rect',{x:wx,y:wy,width:ww,height:wh,fill:'#C8DCF0',stroke:'#888','stroke-width':'0.8'}));
+    svg.appendChild(svgEl('line',{x1:wx,y1:wy+wh/2,x2:wx+ww,y2:wy+wh/2,stroke:'#888','stroke-width':'0.6'}));
+    svg.appendChild(svgEl('line',{x1:wx+ww/2,y1:wy,x2:wx+ww/2,y2:wy+wh,stroke:'#888','stroke-width':'0.6'}));
+    // sill
+    svg.appendChild(svgEl('line',{x1:wx-3,y1:wy+wh+2,x2:wx+ww+3,y2:wy+wh+2,stroke:'#AAA','stroke-width':'1'}));
+  });
+
+  // label
+  const lbl=svgEl('text',{x:w/2,y:h-5,'font-family':'"IBM Plex Mono",monospace','font-size':'8','font-weight':'600',fill:'#888','text-anchor':'middle','letter-spacing':'0.1em'});
+  lbl.textContent=label;
+  svg.appendChild(lbl);
+
+  return svg;
+}
+
+function buildElevMini(){
+  const wrap=document.createElement('div');
+  wrap.className='elev-grid';
+  const elevs=[
+    {label:'NORTH WALL',doors:[40],windows:[[100,45],[170,45]]},
+    {label:'SOUTH WALL',doors:[200],windows:[[40,45],[110,45]]},
+  ];
+  elevs.forEach(e=>{
+    const card=document.createElement('div');
+    card.className='elev-card';
+    card.style.cursor='pointer';
+    const svgEl2=makeElevSvg(e.label,e.doors,e.windows);
+    card.appendChild(svgEl2);
+    const lbl=document.createElement('div');
+    lbl.className='elev-label';
+    lbl.textContent=e.label;
+    card.appendChild(lbl);
+    card.addEventListener('click',()=>openElevFs(e.label,e.doors,e.windows));
+    wrap.appendChild(card);
+  });
+  return wrap;
+}
+
+function buildPhotoGrid(cols){
+  const wrap=document.createElement('div');
+  wrap.className='photo-grid';
+  wrap.style.gridTemplateColumns=`repeat(${cols||2},1fr)`;
+  for(let i=0;i<(cols===2?4:6);i++){
+    const card=document.createElement('div');
+    card.className='photo-card';
+    card.innerHTML=`<svg class="photo-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="18" height="14" rx="2"/><circle cx="12" cy="14" r="3"/><path d="M9 7V5a2 2 0 014 0v2"/></svg><span class="photo-label">ADD PHOTO</span>`;
+    wrap.appendChild(card);
+  }
+  return wrap;
+}
+
+// ── ELEVATION FULLSCREEN ──────────────────────────────────────────────────────
+function openElevFs(label,doors,windows){
+  document.getElementById('elev-fs-title').textContent=label;
+  const wrap=document.getElementById('elev-fs-svg-wrap');
+  wrap.innerHTML='';
+  wrap.appendChild(makeElevSvg(label,doors,windows,560,280));
+  document.getElementById('elev-fs').classList.add('open');
+}
+
+function closeElevFs(){
+  document.getElementById('elev-fs').classList.remove('open');
+}
+window.closeElevFs=closeElevFs;
+
+// ── PROJECT PANEL ─────────────────────────────────────────────────────────────
+function buildPanelContent(){
+  const content=document.getElementById('panel-content');
+  content.innerHTML='';
+
+  if(activePanelTab==='overview'){
+    buildPPOverview(content);
+  } else if(activePanelTab==='tasks'){
+    buildPPTasks(content);
+  } else if(activePanelTab==='notes'){
+    buildPPNotes(content);
+  } else if(activePanelTab==='materials'){
+    buildPPMaterials(content);
+  } else if(activePanelTab==='elevations'){
+    buildPPElevations(content);
+  } else if(activePanelTab==='photos'){
+    buildPPPhotos(content);
+  }
+}
+
+function buildPPOverview(content){
+  const grid=document.createElement('div');
+  grid.className='room-grid';
+  Object.entries(ROOMS).forEach(([id,r])=>{
+    const sc=SC[r.status];
+    const completedTasks=r.tasks.filter(t=>t.status==='complete').length;
+    const card=document.createElement('div');
+    card.className='room-card';
+    card.innerHTML=`
+      <div class="room-card-top">
+        <div style="width:10px;height:10px;border-radius:50%;background:${sc.color};flex-shrink:0"></div>
+        <div class="room-card-name">${r.name}</div>
+        <div class="status-badge" style="background:${sc.color}22;color:${sc.color}">${sc.label.toUpperCase()}</div>
+      </div>
+      <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:${r.progress}%;background:${sc.color}"></div></div>
+      <div class="room-card-bot">
+        <div class="room-card-pct">${r.progress}%</div>
+        <div class="room-card-tasks">${completedTasks}/${r.tasks.length} TASKS</div>
+      </div>
+    `;
+    // Trade dots
+    const tradeDots=document.createElement('div');
+    tradeDots.className='trade-dots';
+    ['paint','floor','trim'].forEach(trade=>{
+      if(r.tasks.some(t=>t.trade===trade)){
+        const dot=document.createElement('div');
+        dot.className='trade-dot';
+        dot.style.background=TC[trade];
+        dot.title=trade;
+        tradeDots.appendChild(dot);
+      }
+    });
+    card.appendChild(tradeDots);
+    card.addEventListener('click',()=>openRoom(id));
+    grid.appendChild(card);
+  });
+  content.appendChild(grid);
+}
+
+function buildPPTasks(content){
+  // All tasks grouped by trade with room tag
+  const byTrade={paint:[],floor:[],trim:[]};
+  Object.entries(ROOMS).forEach(([id,r])=>{
+    r.tasks.forEach(t=>{
+      if(byTrade[t.trade])byTrade[t.trade].push({...t,roomName:r.name,roomId:id});
+    });
+  });
+  ['paint','floor','trim'].forEach(trade=>{
+    const tlist=byTrade[trade];
+    if(!tlist.length)return;
+    const grp=document.createElement('div');
+    grp.className='trade-group';
+    const hdr=document.createElement('div');
+    hdr.className='trade-group-header';
+    hdr.innerHTML=`<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${TC[trade]};margin-right:6px"></span><span class="trade-group-label">${trade.toUpperCase()}</span>`;
+    grp.appendChild(hdr);
+    tlist.forEach(t=>{
+      const item=document.createElement('div');
+      item.className='task-item';
+      const circle=document.createElement('div');
+      circle.className='task-status-circle '+t.status;
+      item.appendChild(circle);
+      const lbl=document.createElement('div');
+      lbl.className='task-label';
+      lbl.textContent=t.label;
+      item.appendChild(lbl);
+      const meta=document.createElement('div');
+      meta.className='task-meta';
+      const hrs=document.createElement('div');
+      hrs.className='task-hours';
+      hrs.textContent=t.hours+'h';
+      meta.appendChild(hrs);
+      const rt=document.createElement('div');
+      rt.className='task-room-tag';
+      rt.textContent=t.roomName.toUpperCase().slice(0,10);
+      meta.appendChild(rt);
+      item.appendChild(meta);
+      grp.appendChild(item);
+    });
+    content.appendChild(grp);
+  });
+}
+
+function buildPPNotes(content){
+  const allNotes=[];
+  Object.entries(ROOMS).forEach(([id,r])=>{
+    r.notes.forEach(n=>allNotes.push({...n,roomName:r.name}));
+  });
+  const feed=buildNoteList(allNotes);
+  content.appendChild(feed);
+}
+
+function buildPPMaterials(content){
+  // Group by trade category
+  const groups={PAINT:[],FLOORING:[],TRIM:[]};
+  const tradeGroup={paint:'PAINT',floor:'FLOORING',trim:'TRIM'};
+  Object.entries(ROOMS).forEach(([id,r])=>{
+    r.materials.forEach(m=>{
+      // determine trade from room tasks with same-ish name
+      // simple: paint=paint, floor=flooring, trim=trim — assign by material name pattern
+      let grp='PAINT';
+      const nl=m.name.toLowerCase();
+      if(nl.includes('tile')||nl.includes('lvt')||nl.includes('floor')||nl.includes('grout')||nl.includes('subway')||nl.includes('transition')||nl.includes('shaw')||nl.includes('emser')) grp='FLOORING';
+      else if(nl.includes('baseboard')||nl.includes('casing')||nl.includes('trim')||nl.includes('moulding')||nl.includes('quarter')) grp='TRIM';
+      groups[grp].push({...m,room:r.name});
+    });
+  });
+  Object.entries(groups).forEach(([grpName,mats])=>{
+    if(!mats.length)return;
+    const div=document.createElement('div');
+    div.className='mat-group';
+    const hdr=document.createElement('div');
+    hdr.className='mat-group-header';
+    hdr.textContent=grpName;
+    div.appendChild(hdr);
+    mats.forEach(m=>{
+      const item=document.createElement('div');
+      item.className='mat-item';
+      const nameWrap=document.createElement('div');
+      nameWrap.style.flex='1';
+      nameWrap.style.minWidth='0';
+      const name=document.createElement('div');
+      name.className='mat-name';
+      name.textContent=m.name;
+      name.style.fontSize='11px';
+      const sku=document.createElement('div');
+      sku.className='mat-sku';
+      sku.textContent=m.sku;
+      nameWrap.appendChild(name);nameWrap.appendChild(sku);
+      item.appendChild(nameWrap);
+      const right=document.createElement('div');
+      right.style.display='flex';right.style.flexDirection='column';right.style.alignItems='flex-end';right.style.gap='2px';right.style.flexShrink='0';
+      const cost=document.createElement('div');cost.className='mat-cost';cost.textContent=m.cost;
+      const st=document.createElement('div');st.className='mat-status '+m.status;st.textContent=m.status.toUpperCase();
+      right.appendChild(cost);right.appendChild(st);
+      item.appendChild(right);
+      div.appendChild(item);
+    });
+    content.appendChild(div);
+  });
+}
+
+function buildPPElevations(content){
+  const elevs=[
+    {label:'NORTH WALL',doors:[40],windows:[[100,45],[170,45]]},
+    {label:'SOUTH WALL',doors:[200],windows:[[40,45],[110,45]]},
+    {label:'EAST WALL',doors:[150],windows:[[50,45]]},
+    {label:'WEST WALL',doors:[60],windows:[[130,45],[190,45]]},
+  ];
+  const grid=document.createElement('div');
+  grid.className='elev-grid';
+  elevs.forEach(e=>{
+    const card=document.createElement('div');
+    card.className='elev-card';
+    const s=makeElevSvg(e.label,e.doors,e.windows);
+    card.appendChild(s);
+    const lbl=document.createElement('div');
+    lbl.className='elev-label';
+    lbl.textContent=e.label;
+    card.appendChild(lbl);
+    card.addEventListener('click',()=>openElevFs(e.label,e.doors,e.windows));
+    grid.appendChild(card);
+  });
+  content.appendChild(grid);
+}
+
+function buildPPPhotos(content){
+  const grid=buildPhotoGrid(2);
+  content.appendChild(grid);
+}
+
+// ── STATUS BAR ────────────────────────────────────────────────────────────────
+function buildStatus(){
+  const sb=document.getElementById('statusbar');
+  const totalTasks=Object.values(ROOMS).reduce((a,r)=>a+r.tasks.length,0);
+  const doneTasks=Object.values(ROOMS).reduce((a,r)=>a+r.tasks.filter(t=>t.status==='complete').length,0);
+  const blockedRooms=Object.values(ROOMS).filter(r=>r.status==='blocked').length;
+  const totalHours=Object.values(ROOMS).reduce((a,r)=>a+r.tasks.reduce((b,t)=>b+t.hours,0),0);
+  const doneHours=Object.values(ROOMS).reduce((a,r)=>a+r.tasks.filter(t=>t.status==='complete').reduce((b,t)=>b+t.hours,0),0);
+  const totalMats=Object.values(ROOMS).reduce((a,r)=>a+r.materials.reduce((b,m)=>{
+    const n=parseFloat(m.cost.replace('$','').replace(',',''))||0;return b+n;
+  },0),0);
+  sb.innerHTML=`
+    <div class="sb-item">TASKS <span class="sb-val">${doneTasks}/${totalTasks}</span></div>
+    <div class="sb-item">HOURS <span class="sb-val">${doneHours}/${totalHours}h</span></div>
+    <div class="sb-item">BLOCKERS <span class="sb-val" style="color:${blockedRooms>0?'#EF4444':'#22C55E'}">${blockedRooms}</span></div>
+    <div class="sb-item">MATERIALS <span class="sb-val">$${Math.round(totalMats).toLocaleString()} CAD</span></div>
+    <div class="sb-item">PROGRESS <span class="sb-val">${Math.round(doneTasks/totalTasks*100)}%</span></div>
+    <div class="sb-item" style="margin-left:auto">DAY <span class="sb-val">12 OF 18</span></div>
+  `;
+}
+
+// ── PAN / ZOOM ─────────────────────────────────────────────────────────────────
+(function initPanZoom(){
+  const wrap=document.getElementById('plan-wrap');
+  const canvas=document.getElementById('plan-canvas');
+  let scale=1,tx=0,ty=0,dragging=false,startX=0,startY=0,startTx=0,startTy=0;
+
+  function applyTransform(){
+    canvas.style.transform=`translate(${tx}px,${ty}px) scale(${scale})`;
+  }
+
+  // Center the plan initially
+  function center(){
+    const ww=wrap.clientWidth, wh=wrap.clientHeight;
+    const svgW=920, svgH=460;
+    const fit=Math.min((ww-40)/svgW,(wh-40)/svgH,1);
+    scale=fit;
+    tx=(ww-svgW*fit)/2;
+    ty=(wh-svgH*fit)/2;
+    applyTransform();
+  }
+  setTimeout(center,50);
+
+  wrap.addEventListener('wheel',e=>{
+    e.preventDefault();
+    const rect=wrap.getBoundingClientRect();
+    const mx=e.clientX-rect.left, my=e.clientY-rect.top;
+    const delta=e.deltaY<0?1.1:0.91;
+    const newScale=Math.max(0.3,Math.min(3,scale*delta));
+    tx=mx-(mx-tx)*(newScale/scale);
+    ty=my-(my-ty)*(newScale/scale);
+    scale=newScale;
+    applyTransform();
+  },{passive:false});
+
+  wrap.addEventListener('mousedown',e=>{
+    if(e.button!==0)return;
+    dragging=true;startX=e.clientX;startY=e.clientY;startTx=tx;startTy=ty;
+    wrap.classList.add('grabbing');
+  });
+  window.addEventListener('mousemove',e=>{
+    if(!dragging)return;
+    tx=startTx+(e.clientX-startX);ty=startTy+(e.clientY-startY);
+    applyTransform();
+  });
+  window.addEventListener('mouseup',()=>{dragging=false;wrap.classList.remove('grabbing');});
+})();
+
+// ── EVENT LISTENERS ───────────────────────────────────────────────────────────
+
+// Trade filter buttons
+document.querySelectorAll('.trade-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    activeTrade=btn.getAttribute('data-trade');
+    document.querySelectorAll('.trade-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    styleZones();
+  });
+});
+
+// Panel tabs
+document.querySelectorAll('#panel-tabs button').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    activePanelTab=btn.getAttribute('data-ptab');
+    document.querySelectorAll('#panel-tabs button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    buildPanelContent();
+  });
+});
+
+// Popup bottom tabs
+document.querySelectorAll('#popup-bottabs button').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    activePopupTab=btn.getAttribute('data-ptab2');
+    document.querySelectorAll('#popup-bottabs button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    if(activeRoom) buildPopupSide(activeRoom);
+  });
+});
+
+// Close popup on backdrop click
+document.getElementById('room-popup').addEventListener('click',e=>{
+  if(e.target===document.getElementById('room-popup')) closeRoom();
+});
+
+// Close elev-fs on backdrop click
+document.getElementById('elev-fs').addEventListener('click',e=>{
+  if(e.target===document.getElementById('elev-fs')) closeElevFs();
+});
+
+// Keyboard
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    if(document.getElementById('elev-fs').classList.contains('open')){closeElevFs();}
+    else if(document.getElementById('room-popup').classList.contains('open')){closeRoom();}
+  }
+});
+
+// Expose globals
+window.closeRoom=closeRoom;
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+buildFloorPlan();
+buildPanelContent();
+buildStatus();
+
+})();
+</script>
+</body>
+</html>

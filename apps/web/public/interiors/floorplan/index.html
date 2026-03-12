@@ -231,7 +231,8 @@ html,body{height:100%;overflow:hidden;background:var(--s2);font-family:'Figtree'
 }
 #app #popup-bottabs button{
   flex:1;font-family:'DM Mono',monospace;font-size:9px;font-weight:400;letter-spacing:0.08em;
-  background:transparent;border:none;border-bottom:2px solid transparent;
+  background:transparent;border:none;outline:none;appearance:none;-webkit-appearance:none;
+  border-bottom:2px solid transparent;
   color:var(--txm);cursor:pointer;padding:0 14px;height:36px;transition:all 0.15s;
 }
 #app #popup-bottabs button:hover{color:var(--txd)}
@@ -951,6 +952,49 @@ function buildRoomPlan(id){
   // Floor planks scaled
   drawPlanks(svg,rx+2,ry+2,rw-4,rh-4,12*scale);
 
+  // Furniture — reuse main-plan coordinates via transform
+  const tx=ox-d.x*scale, ty=oy-d.y*scale;
+  const fg=svgEl('g',{transform:`translate(${tx},${ty}) scale(${scale})`,opacity:'0.55',style:'pointer-events:none'});
+  if(id==='living'){
+    fg.appendChild(svgEl('rect',{x:40,y:175,width:180,height:38,rx:'3',fill:'#B8BAC2',stroke:'#999','stroke-width':'0.5'}));
+    fg.appendChild(svgEl('rect',{x:40,y:163,width:180,height:14,rx:'2',fill:'#C8CAD0',stroke:'#999','stroke-width':'0.5'}));
+    fg.appendChild(svgEl('rect',{x:40,y:163,width:12,height:50,rx:'2',fill:'#BBBDC4',stroke:'#999','stroke-width':'0.5'}));
+    fg.appendChild(svgEl('rect',{x:208,y:163,width:12,height:50,rx:'2',fill:'#BBBDC4',stroke:'#999','stroke-width':'0.5'}));
+    fg.appendChild(svgEl('rect',{x:80,y:130,width:100,height:32,rx:'2',fill:'#D0D2D6',stroke:'#AAA','stroke-width':'0.5'}));
+  } else if(id==='kitchen'){
+    fg.appendChild(svgEl('rect',{x:304,y:36,width:212,height:34,rx:'1',fill:'#C8C9CC',stroke:'#AAA','stroke-width':'0.5'}));
+    fg.appendChild(svgEl('rect',{x:304,y:36,width:36,height:120,rx:'1',fill:'#C8C9CC',stroke:'#AAA','stroke-width':'0.5'}));
+    [[370,60],[390,60],[370,80],[390,80]].forEach(([cx,cy])=>{fg.appendChild(svgEl('circle',{cx,cy,r:7,fill:'none',stroke:'#888','stroke-width':'1.2'}));fg.appendChild(svgEl('circle',{cx,cy,r:3,fill:'#999'}));});
+    fg.appendChild(svgEl('rect',{x:466,y:38,width:42,height:28,rx:'2',fill:'#DDE0E4',stroke:'#AAA','stroke-width':'0.8'}));
+    fg.appendChild(svgEl('circle',{cx:487,cy:52,r:4,fill:'none',stroke:'#999','stroke-width':'1'}));
+  } else if(id==='primaryBed'){
+    fg.appendChild(svgEl('rect',{x:90,y:290,width:160,height:130,rx:'2',fill:'#E0E2E6',stroke:'#BBB','stroke-width':'0.8'}));
+    fg.appendChild(svgEl('rect',{x:90,y:290,width:160,height:22,rx:'2',fill:'#C8C9CC',stroke:'#AAA','stroke-width':'0.8'}));
+    fg.appendChild(svgEl('rect',{x:97,y:316,width:68,height:88,rx:'3',fill:'#F0F1F3',stroke:'#CCC','stroke-width':'0.5'}));
+    fg.appendChild(svgEl('rect',{x:175,y:316,width:68,height:88,rx:'3',fill:'#F0F1F3',stroke:'#CCC','stroke-width':'0.5'}));
+    fg.appendChild(svgEl('rect',{x:54,y:298,width:32,height:32,rx:'2',fill:'#D0D2D6',stroke:'#AAA','stroke-width':'0.6'}));
+    fg.appendChild(svgEl('rect',{x:254,y:298,width:32,height:32,rx:'2',fill:'#D0D2D6',stroke:'#AAA','stroke-width':'0.6'}));
+  } else if(id==='bed2'){
+    fg.appendChild(svgEl('rect',{x:340,y:278,width:130,height:100,rx:'2',fill:'#E0E2E6',stroke:'#BBB','stroke-width':'0.8'}));
+    fg.appendChild(svgEl('rect',{x:340,y:278,width:130,height:18,rx:'2',fill:'#C8C9CC',stroke:'#AAA','stroke-width':'0.8'}));
+    fg.appendChild(svgEl('rect',{x:348,y:300,width:52,height:70,rx:'3',fill:'#F0F1F3',stroke:'#CCC','stroke-width':'0.5'}));
+    fg.appendChild(svgEl('rect',{x:410,y:300,width:52,height:70,rx:'3',fill:'#F0F1F3',stroke:'#CCC','stroke-width':'0.5'}));
+  } else if(id==='bathroom'){
+    fg.appendChild(svgEl('rect',{x:720,y:36,width:34,height:24,rx:'2',fill:'#DDE0E4',stroke:'#AAA','stroke-width':'0.8'}));
+    fg.appendChild(svgEl('ellipse',{cx:737,cy:78,rx:17,ry:22,fill:'#DDE0E4',stroke:'#AAA','stroke-width':'0.8'}));
+    fg.appendChild(svgEl('rect',{x:664,y:36,width:50,height:44,rx:'2',fill:'#D8DADD',stroke:'#AAA','stroke-width':'0.8'}));
+    fg.appendChild(svgEl('rect',{x:669,y:41,width:40,height:34,rx:'1',fill:'#E8EAED',stroke:'#CCC','stroke-width':'0.5'}));
+    fg.appendChild(svgEl('rect',{x:664,y:100,width:90,height:72,rx:'2',fill:'#E8EAED',stroke:'#888','stroke-width':'0.8','stroke-dasharray':'4,3'}));
+    fg.appendChild(svgEl('circle',{cx:709,cy:136,r:6,fill:'none',stroke:'#AAA','stroke-width':'1.2'}));
+  } else if(id==='laundry'){
+    [666,720].forEach((lx,i)=>{
+      fg.appendChild(svgEl('rect',{x:lx,y:192,width:50,height:50,rx:'3',fill:'#D8DADD',stroke:'#AAA','stroke-width':'0.8'}));
+      fg.appendChild(svgEl('circle',{cx:lx+25,cy:217,r:18,fill:'none',stroke:'#AAA','stroke-width':'1.2'}));
+      fg.appendChild(svgEl('circle',{cx:lx+25,cy:217,r:10,fill:'#C8CAD0'}));
+    });
+  }
+  svg.appendChild(fg);
+
   // Room name label
   const lbl=svgEl('text',{
     x:rx+8,y:ry+20,
@@ -1078,13 +1122,10 @@ function buildMatList(materials){
     const qty=document.createElement('div');
     qty.className='mat-qty';
     qty.textContent=m.qty;
-    const cost=document.createElement('div');
-    cost.className='mat-cost';
-    cost.textContent=m.cost;
     const st=document.createElement('div');
     st.className='mat-status '+m.status;
     st.textContent=m.status.toUpperCase();
-    item.appendChild(qty);item.appendChild(cost);item.appendChild(st);
+    item.appendChild(qty);item.appendChild(st);
     grp.appendChild(item);
   });
   wrap.appendChild(grp);
@@ -1339,9 +1380,8 @@ function buildPPMaterials(content){
       item.appendChild(nameWrap);
       const right=document.createElement('div');
       right.style.display='flex';right.style.flexDirection='column';right.style.alignItems='flex-end';right.style.gap='2px';right.style.flexShrink='0';
-      const cost=document.createElement('div');cost.className='mat-cost';cost.textContent=m.cost;
       const st=document.createElement('div');st.className='mat-status '+m.status;st.textContent=m.status.toUpperCase();
-      right.appendChild(cost);right.appendChild(st);
+      right.appendChild(st);
       item.appendChild(right);
       div.appendChild(item);
     });

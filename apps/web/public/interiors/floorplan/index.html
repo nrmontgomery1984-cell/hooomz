@@ -283,9 +283,30 @@ html,body{height:100%;overflow:hidden;background:var(--s2);font-family:'Figtree'
 #app #elev-fs-close:hover{color:#1A1714}
 
 /* ── MOBILE ── */
+#panel-mobile-header{display:none}
+#panel-toggle-btn{display:none}
 @media(max-width:640px){
-  /* Hide side panel — popup contains all room detail */
+  /* Panel — hidden by default, opens as full-screen overlay */
   #panel{display:none}
+  #panel.mobile-open{
+    display:flex;position:fixed;inset:0;z-index:300;
+    width:100%!important;flex-direction:column;
+  }
+  #panel-mobile-header{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 16px;height:52px;min-height:52px;flex-shrink:0;
+    border-bottom:1px solid rgba(0,0,0,0.08);background:var(--s1);
+  }
+  #panel-mobile-header span{
+    font-family:'DM Mono',monospace;font-size:10px;font-weight:500;
+    letter-spacing:0.1em;color:var(--txm);
+  }
+  #panel-mobile-header button{
+    background:transparent;border:none;font-size:22px;color:var(--txm);
+    line-height:1;padding:4px 10px;cursor:pointer;
+  }
+  /* Show panel toggle in topbar */
+  #panel-toggle-btn{display:flex}
   /* Simplify topbar */
   #topbar .tb-center{display:none}
   #topbar .tb-left{min-width:0}
@@ -360,6 +381,9 @@ html,body{height:100%;overflow:hidden;background:var(--s2);font-family:'Figtree'
     <button id="theme-toggle" title="Toggle theme" onclick="toggleTheme()">
       <svg id="theme-icon" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3.5" stroke="currentColor" stroke-width="1.5"/><path d="M8 1v1.5M8 13.5V15M1 8h1.5M13.5 8H15M3.05 3.05l1.06 1.06M11.89 11.89l1.06 1.06M3.05 12.95l1.06-1.06M11.89 4.11l1.06-1.06" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
     </button>
+    <button id="panel-toggle-btn" title="Project Panel" onclick="openPanel()">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="2.5" width="14" height="1.5" rx="0.75"/><rect x="1" y="7.25" width="14" height="1.5" rx="0.75"/><rect x="1" y="12" width="14" height="1.5" rx="0.75"/></svg>
+    </button>
     <div class="avatar">NT</div>
   </div>
 </div>
@@ -393,6 +417,10 @@ html,body{height:100%;overflow:hidden;background:var(--s2);font-family:'Figtree'
 
   <!-- PROJECT PANEL -->
   <div id="panel">
+    <div id="panel-mobile-header">
+      <span>PROJECT PANEL</span>
+      <button onclick="closePanel()">×</button>
+    </div>
     <div id="panel-tabs">
       <button class="active" data-ptab="overview">OVERVIEW</button>
       <button data-ptab="tasks">ALL TASKS</button>
@@ -1313,6 +1341,10 @@ function closeElevFs(){
 }
 window.closeElevFs=closeElevFs;
 
+function openPanel(){document.getElementById('panel').classList.add('mobile-open')}
+function closePanel(){document.getElementById('panel').classList.remove('mobile-open')}
+window.openPanel=openPanel;window.closePanel=closePanel;
+
 // ── PROJECT PANEL ─────────────────────────────────────────────────────────────
 function buildPanelContent(){
   const content=document.getElementById('panel-content');
@@ -1551,10 +1583,14 @@ function buildStatus(){
   function center(){
     const ww=wrap.clientWidth, wh=wrap.clientHeight;
     const svgW=920, svgH=460;
-    const fit=Math.min((ww-40)/svgW,(wh-40)/svgH,1);
-    scale=fit;
-    tx=(ww-svgW*fit)/2;
-    ty=(wh-svgH*fit)/2;
+    if(ww<=640){
+      // Mobile: fit to height so the plan fills the screen vertically; user pans left/right
+      const fit=(wh-8)/svgH;
+      scale=fit;tx=0;ty=(wh-svgH*fit)/2;
+    } else {
+      const fit=Math.min((ww-40)/svgW,(wh-40)/svgH,1);
+      scale=fit;tx=(ww-svgW*fit)/2;ty=(wh-svgH*fit)/2;
+    }
     applyTransform();
   }
   setTimeout(center,50);

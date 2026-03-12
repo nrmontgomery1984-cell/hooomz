@@ -284,29 +284,32 @@ html,body{height:100%;overflow:hidden;background:var(--s2);font-family:'Figtree'
 
 /* ── MOBILE ── */
 #panel-mobile-header{display:none}
-#panel-toggle-btn{display:none}
+#mobile-nav{display:none}
 @media(max-width:640px){
-  /* Panel — hidden by default, opens as full-screen overlay */
+  /* Bottom nav bar */
+  #mobile-nav{
+    display:flex;height:56px;min-height:56px;flex-shrink:0;
+    background:var(--s1);border-top:1px solid rgba(0,0,0,0.08);
+  }
+  .mnav-btn{
+    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+    background:transparent;border:none;cursor:pointer;
+    font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.1em;font-weight:500;
+    color:var(--txm);transition:color 0.15s;
+  }
+  .mnav-btn.active{color:var(--royal)}
+  /* Panel — hidden by default, full-screen when active */
   #panel{display:none}
   #panel.mobile-open{
-    display:flex;position:fixed;inset:0;z-index:300;
-    width:100%!important;flex-direction:column;
+    display:flex;position:fixed;top:0;left:0;right:0;bottom:56px;
+    z-index:300;width:100%!important;flex-direction:column;
   }
   #panel-mobile-header{
-    display:flex;align-items:center;justify-content:space-between;
-    padding:0 16px;height:52px;min-height:52px;flex-shrink:0;
-    border-bottom:1px solid rgba(0,0,0,0.08);background:var(--s1);
-  }
-  #panel-mobile-header span{
+    display:flex;align-items:center;padding:0 16px;height:48px;min-height:48px;flex-shrink:0;
+    border-bottom:1px solid rgba(0,0,0,0.08);background:var(--s2);
     font-family:'DM Mono',monospace;font-size:10px;font-weight:500;
     letter-spacing:0.1em;color:var(--txm);
   }
-  #panel-mobile-header button{
-    background:transparent;border:none;font-size:22px;color:var(--txm);
-    line-height:1;padding:4px 10px;cursor:pointer;
-  }
-  /* Show panel toggle in topbar */
-  #panel-toggle-btn{display:flex}
   /* Simplify topbar */
   #topbar .tb-center{display:none}
   #topbar .tb-left{min-width:0}
@@ -318,11 +321,12 @@ html,body{height:100%;overflow:hidden;background:var(--s2);font-family:'Figtree'
   #app #toolbar button.trade-btn{height:44px}
   /* Hide status bar */
   #statusbar{display:none}
-  /* Popup — full screen */
+  /* Popup — full screen (above bottom nav) */
   #popup-card{
-    width:100%;height:100%;max-width:100%;
+    width:100%;height:calc(100% - 56px);max-width:100%;
     border-radius:0;border:none;box-shadow:none;
   }
+  #room-popup{align-items:flex-start}
   /* Popup topbar */
   #popup-topbar .pop-name{font-size:15px}
   #popup-topbar .pop-meta{display:none}
@@ -381,10 +385,7 @@ html,body{height:100%;overflow:hidden;background:var(--s2);font-family:'Figtree'
     <button id="theme-toggle" title="Toggle theme" onclick="toggleTheme()">
       <svg id="theme-icon" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3.5" stroke="currentColor" stroke-width="1.5"/><path d="M8 1v1.5M8 13.5V15M1 8h1.5M13.5 8H15M3.05 3.05l1.06 1.06M11.89 11.89l1.06 1.06M3.05 12.95l1.06-1.06M11.89 4.11l1.06-1.06" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
     </button>
-    <button id="panel-toggle-btn" title="Project Panel" onclick="openPanel()">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="2.5" width="14" height="1.5" rx="0.75"/><rect x="1" y="7.25" width="14" height="1.5" rx="0.75"/><rect x="1" y="12" width="14" height="1.5" rx="0.75"/></svg>
-    </button>
-    <div class="avatar">NT</div>
+<div class="avatar">NT</div>
   </div>
 </div>
 
@@ -417,10 +418,7 @@ html,body{height:100%;overflow:hidden;background:var(--s2);font-family:'Figtree'
 
   <!-- PROJECT PANEL -->
   <div id="panel">
-    <div id="panel-mobile-header">
-      <span>PROJECT PANEL</span>
-      <button onclick="closePanel()">×</button>
-    </div>
+    <div id="panel-mobile-header">PROJECT PANEL</div>
     <div id="panel-tabs">
       <button class="active" data-ptab="overview">OVERVIEW</button>
       <button data-ptab="tasks">ALL TASKS</button>
@@ -433,6 +431,19 @@ html,body{height:100%;overflow:hidden;background:var(--s2);font-family:'Figtree'
   </div>
 
 </div><!-- /main -->
+
+<!-- MOBILE BOTTOM NAV -->
+<div id="mobile-nav">
+  <button id="mnav-plan" class="mnav-btn active" onclick="mnavShow('plan')">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="1" y="1" width="16" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/><rect x="4" y="4" width="4" height="4" rx="0.5" fill="currentColor" opacity="0.6"/><rect x="10" y="4" width="4" height="4" rx="0.5" fill="currentColor" opacity="0.6"/><rect x="4" y="10" width="4" height="4" rx="0.5" fill="currentColor" opacity="0.6"/><rect x="10" y="10" width="2" height="4" rx="0.5" fill="currentColor" opacity="0.6"/></svg>
+    <span>PLAN</span>
+  </button>
+  <button id="mnav-panel" class="mnav-btn" onclick="mnavShow('panel')">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="1" y="3" width="16" height="1.5" rx="0.75" fill="currentColor"/><rect x="1" y="8.25" width="16" height="1.5" rx="0.75" fill="currentColor"/><rect x="1" y="13.5" width="16" height="1.5" rx="0.75" fill="currentColor"/></svg>
+    <span>PANEL</span>
+  </button>
+</div>
+
 
 <!-- STATUS BAR -->
 <div id="statusbar" id="statusbar"></div>
@@ -1341,9 +1352,13 @@ function closeElevFs(){
 }
 window.closeElevFs=closeElevFs;
 
-function openPanel(){document.getElementById('panel').classList.add('mobile-open')}
-function closePanel(){document.getElementById('panel').classList.remove('mobile-open')}
-window.openPanel=openPanel;window.closePanel=closePanel;
+function mnavShow(tab){
+  const isPlan=tab==='plan';
+  document.getElementById('panel').classList.toggle('mobile-open',!isPlan);
+  document.getElementById('mnav-plan').classList.toggle('active',isPlan);
+  document.getElementById('mnav-panel').classList.toggle('active',!isPlan);
+}
+window.mnavShow=mnavShow;
 
 // ── PROJECT PANEL ─────────────────────────────────────────────────────────────
 function buildPanelContent(){

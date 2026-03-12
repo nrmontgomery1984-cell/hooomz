@@ -69,18 +69,18 @@ html,body{height:100%;overflow:hidden;background:#111316;font-family:'IBM Plex S
 
 /* PLAN WRAP */
 #plan-wrap{
-  flex:0 0 68%;width:68%;background:#F2F3F5;overflow:hidden;position:relative;cursor:grab;
+  flex:0 0 68%;width:68%;background:#BCBDBE;overflow:hidden;position:relative;cursor:grab;
 }
 #plan-wrap.grabbing{cursor:grabbing}
 #plan-canvas{
   position:absolute;top:0;left:0;transform-origin:0 0;
 }
-#plan-canvas svg{display:block;background:#fff;box-shadow:0 2px 20px rgba(0,0,0,0.12)}
+#plan-canvas svg{display:block;background:none;box-shadow:0 4px 24px rgba(0,0,0,0.22)}
 
 /* ROOM SVG INTERACTIVITY */
 #app .room-zone{cursor:pointer}
-#app .room-zone:hover .room-bg{filter:brightness(0.93)}
-.room-zone.selected .room-bg{stroke:#1A56DB!important;stroke-width:4!important}
+#app .room-zone:hover .room-bg{filter:brightness(0.95)}
+.room-zone.selected .room-bg{stroke:#1A56DB!important;stroke-width:2.5!important}
 
 /* PROJECT PANEL */
 #panel{
@@ -520,15 +520,15 @@ const SC={
 };
 const TC={paint:'#F59E0B',floor:'#14B8A6',trim:'#A855F7'};
 
-// Room layout definitions
+// Room layout definitions — rooms sit inside exterior walls (12px wall thickness)
 const RDEFS={
-  living:    {x:20, y:20, w:280,h:200,fills:['#ECEDF0','#E2E4E8','#D8DADD'],fi:0},
-  kitchen:   {x:300,y:20, w:220,h:180,fills:['#ECEDF0','#E2E4E8','#D8DADD'],fi:1},
-  bathroom:  {x:660,y:20, w:140,h:160,fills:['#ECEDF0','#E2E4E8','#D8DADD'],fi:2},
-  hallway:   {x:300,y:200,w:360,h:60, fills:['#ECEDF0','#E2E4E8','#D8DADD'],fi:0},
-  primaryBed:{x:20, y:220,w:280,h:220,fills:['#ECEDF0','#E2E4E8','#D8DADD'],fi:1},
-  bed2:      {x:300,y:260,w:220,h:180,fills:['#ECEDF0','#E2E4E8','#D8DADD'],fi:2},
-  laundry:   {x:660,y:180,w:140,h:120,fills:['#ECEDF0','#E2E4E8','#D8DADD'],fi:0},
+  living:    {x:32,  y:32,  w:268,h:188},
+  kitchen:   {x:300, y:32,  w:220,h:168},
+  bathroom:  {x:660, y:32,  w:128,h:148},
+  hallway:   {x:300, y:200, w:360,h:60},
+  primaryBed:{x:32,  y:220, w:268,h:208},
+  bed2:      {x:300, y:260, w:220,h:168},
+  laundry:   {x:660, y:180, w:128,h:108},
 };
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
@@ -590,145 +590,136 @@ function buildFloorPlan(){
   const svg=document.getElementById('floor-svg');
   svg.innerHTML='';
 
-  // Defs
+  // Defs — hatch pattern for void/mechanical zones
   const defs=svgEl('defs',{});
+  const hp=svgEl('pattern',{id:'void-hatch',width:'6',height:'6',patternUnits:'userSpaceOnUse',patternTransform:'rotate(45 0 0)'});
+  hp.appendChild(svgEl('line',{x1:'0',y1:'0',x2:'0',y2:'6',stroke:'#AEAFB2','stroke-width':'0.9'}));
+  defs.appendChild(hp);
   svg.appendChild(defs);
 
-  // Background
-  const bg=svgEl('rect',{x:0,y:0,width:920,height:460,fill:'#F2F3F5'});
-  svg.appendChild(bg);
+  // ── BACKGROUND (paper/site outside house) ──
+  svg.appendChild(svgEl('rect',{x:0,y:0,width:920,height:460,fill:'#BCBDBE'}));
 
-  // Exterior wall shadow
-  const shadow=svgEl('rect',{x:18,y:18,width:786,height:424,fill:'none',stroke:'#AAA','stroke-width':'1',rx:'2',filter:'drop-shadow(0 2px 6px rgba(0,0,0,0.18))'});
-  svg.appendChild(shadow);
+  // ── INTERIOR FLOOR AREA (L-shaped inner polygon) ──
+  svg.appendChild(svgEl('path',{d:'M32,32 L788,32 L788,288 L508,288 L508,428 L32,428 Z',fill:'#F8F8F6'}));
 
+  // ── EXTERIOR WALLS (evenodd donut: outer L minus inner L = wall mass) ──
+  svg.appendChild(svgEl('path',{
+    'fill-rule':'evenodd',
+    fill:'#2A2C30',
+    d:'M20,20 L800,20 L800,300 L520,300 L520,440 L20,440 Z M32,32 L788,32 L788,288 L508,288 L508,428 L32,428 Z'
+  }));
+
+  // ── VOID ZONES (no-room interior space, hatched) ──
+  svg.appendChild(svgEl('rect',{x:520,y:32,width:140,height:168,fill:'url(#void-hatch)','pointer-events':'none'}));
+  svg.appendChild(svgEl('rect',{x:520,y:260,width:140,height:28,fill:'url(#void-hatch)','pointer-events':'none'}));
+
+  // ── ROOMS ──
   const roomOrder=['living','hallway','primaryBed','kitchen','bed2','laundry','bathroom'];
-
   roomOrder.forEach(id=>{
     const d=RDEFS[id];
     const r=ROOMS[id];
-    const fill='#F7F8FA';
     const statusColor=SC[r.status]?SC[r.status].color:'#9CA3AF';
+    const sc=SC[r.status];
 
-    // Group
     const g=svgEl('g',{class:'room-zone',id:'zone-'+id,'data-room':id});
 
-    // Room bg
+    // White room fill — no status stroke (walls drawn separately)
     const rect=svgEl('rect',{
       x:d.x,y:d.y,width:d.w,height:d.h,
-      fill:fill,stroke:statusColor,'stroke-width':'3.5',
+      fill:'#FFFFFF',stroke:'none',
       class:'room-bg',rx:'0'
     });
     g.appendChild(rect);
 
-    // Floor planks
+    // Floor planks (very subtle)
     drawPlanks(g,d.x+2,d.y+2,d.w-4,d.h-4,14);
 
-    // Trade overlay (hidden by default)
-    const trades=['paint','floor','trim'];
-    trades.forEach(trade=>{
-      const hasTrade=r.tasks.some(t=>t.trade===trade);
-      if(hasTrade){
-        const ov=svgEl('rect',{
+    // Trade overlays
+    ['paint','floor','trim'].forEach(trade=>{
+      if(r.tasks.some(t=>t.trade===trade)){
+        g.appendChild(svgEl('rect',{
           x:d.x+1,y:d.y+1,width:d.w-2,height:d.h-2,
           fill:TC[trade],opacity:'0',
           class:'trade-overlay trade-'+trade,
           'data-room':id,'data-trade':trade,
           style:'pointer-events:none'
-        });
-        g.appendChild(ov);
+        }));
       }
     });
 
-    // Status fill overlay (halftone on status filter)
-    const statusOverlay=svgEl('rect',{
+    // Status fill overlay (shown on status filter)
+    g.appendChild(svgEl('rect',{
       x:d.x,y:d.y,width:d.w,height:d.h,
       fill:statusColor,opacity:'0',
       class:'status-overlay','data-status':r.status,'pointer-events':'none'
-    });
-    g.appendChild(statusOverlay);
+    }));
 
-    // Status dot
-    const sc=SC[r.status];
-    const sdot=svgEl('circle',{cx:d.x+14,cy:d.y+14,r:5,fill:sc.color,class:'status-dot-'+id});
-    g.appendChild(sdot);
+    // Status dot (top-left corner, only color in the room)
+    g.appendChild(svgEl('circle',{cx:d.x+13,cy:d.y+13,r:5,fill:sc.color}));
 
     // Room label
-    const labelX=d.x+d.w/2, labelY=d.y+d.h/2-4;
-    const nameLabel=svgEl('text',{
-      x:labelX,y:labelY,
-      'font-family':'"Barlow Condensed",sans-serif',
-      'font-size':'13','font-weight':'700',
-      fill:'#3A3C42','text-anchor':'middle',
-      'dominant-baseline':'middle',
-      style:'pointer-events:none;text-transform:uppercase;letter-spacing:0.05em'
-    });
-    nameLabel.textContent=r.name.toUpperCase();
-    g.appendChild(nameLabel);
+    const lx=d.x+d.w/2, ly=d.y+d.h/2-4;
+    const lbl=svgEl('text',{x:lx,y:ly,'font-family':'"Barlow Condensed",sans-serif','font-size':'13','font-weight':'700',fill:'#1E2024','text-anchor':'middle','dominant-baseline':'middle',style:'pointer-events:none;text-transform:uppercase;letter-spacing:0.05em'});
+    lbl.textContent=r.name.toUpperCase();
+    g.appendChild(lbl);
 
-    // Dimension label
-    const dimLabel=svgEl('text',{
-      x:labelX,y:labelY+16,
-      'font-family':'"IBM Plex Mono",monospace',
-      'font-size':'7','font-weight':'400',
-      fill:'#8A8C94','text-anchor':'middle',
-      style:'pointer-events:none'
-    });
-    dimLabel.textContent=r.dims+' — '+r.area;
-    g.appendChild(dimLabel);
+    const dlbl=svgEl('text',{x:lx,y:ly+16,'font-family':'"IBM Plex Mono",monospace','font-size':'7','font-weight':'400',fill:'#7A7C82','text-anchor':'middle',style:'pointer-events:none'});
+    dlbl.textContent=r.dims+' — '+r.area;
+    g.appendChild(dlbl);
 
-    // Progress indicator (small bar at bottom)
+    // Progress bar
     const barY=d.y+d.h-6;
-    const barBg=svgEl('rect',{x:d.x+8,y:barY,width:d.w-16,height:3,fill:'rgba(0,0,0,0.1)',rx:'1.5'});
-    g.appendChild(barBg);
+    g.appendChild(svgEl('rect',{x:d.x+8,y:barY,width:d.w-16,height:3,fill:'rgba(0,0,0,0.08)',rx:'1.5'}));
     if(r.progress>0){
-      const barFill=svgEl('rect',{x:d.x+8,y:barY,width:(d.w-16)*r.progress/100,height:3,fill:sc.color,rx:'1.5',opacity:'0.7'});
-      g.appendChild(barFill);
+      g.appendChild(svgEl('rect',{x:d.x+8,y:barY,width:(d.w-16)*r.progress/100,height:3,fill:sc.color,rx:'1.5',opacity:'0.75'}));
     }
 
-    // Click handler
     g.addEventListener('click',()=>openRoom(id));
     svg.appendChild(g);
   });
 
-  // ── DOORS ──
-  // Living Room: door arc at bottom-right
-  drawDoorArc(svg,300,220,40,180,-90);
-  // Kitchen: door arc at left side
-  drawDoorArc(svg,300,20+90,35,0,-90);
-  // Bathroom: door arc at left side
-  drawDoorArc(svg,660,20+80,35,0,-90);
-  // Primary Bedroom: door arc at top-right
-  drawDoorArc(svg,300,220,40,270,90);
-  // Bedroom 2: door arc at top-left
-  drawDoorArc(svg,300,260,35,270,-90);
-  // Laundry: door arc at left side
-  drawDoorArc(svg,660,180+60,35,0,-90);
+  // ── INTERIOR WALL LINES (drawn on top of rooms) ──
+  const WC='#2A2C30', WW=1.5;
+  function wl(x1,y1,x2,y2){
+    svg.appendChild(svgEl('line',{x1,y1,x2,y2,stroke:WC,'stroke-width':WW,'stroke-linecap':'square'}));
+  }
+  // Verticals
+  wl(300, 32,  300, 428);   // main left/right column divider (full height)
+  wl(520, 32,  520, 200);   // kitchen right wall (above hallway)
+  wl(520, 260, 520, 428);   // bed2 right wall (below hallway)
+  wl(660, 32,  660, 288);   // bathroom/laundry left wall
+  // Horizontals
+  wl(300, 200, 520, 200);   // kitchen bottom / hallway top
+  wl(32,  220, 300, 220);   // living bottom / primaryBed top
+  wl(660, 180, 788, 180);   // bathroom bottom / laundry top
+  wl(300, 260, 660, 260);   // hallway bottom / bed2 top
 
-  // ── WINDOWS ──
-  // Living Room top wall
-  drawWindow(svg,60,18,60,7);
-  drawWindow(svg,180,18,60,7);
-  // Living Room bottom wall (y=220)
-  drawWindow(svg,80,217,60,7);
-  // Kitchen top
-  drawWindow(svg,350,18,70,7);
-  // Bathroom top
-  drawWindow(svg,690,18,50,7);
-  // Bathroom right wall
-  drawWindow(svg,797,50,7,50);
-  // Primary Bedroom left wall
-  drawWindow(svg,18,280,7,60);
-  drawWindow(svg,18,370,7,50);
-  // Primary Bedroom bottom
-  drawWindow(svg,80,437,70,7);
-  // Bed2 bottom
-  drawWindow(svg,340,437,80,7);
+  // ── DOORS ──
+  drawDoorArc(svg,300,220,38,180,-90);   // Living Room / Hallway
+  drawDoorArc(svg,300,110,32,0,-90);     // Kitchen
+  drawDoorArc(svg,660,100,32,0,-90);     // Bathroom
+  drawDoorArc(svg,300,260,32,270,-90);   // Bedroom 2
+  drawDoorArc(svg,660,240,32,0,-90);     // Laundry
+
+  // ── WINDOWS (spanning full 12px wall thickness) ──
+  // Top wall (y=20, h=12)
+  drawWindow(svg,60,  20, 60, 12);   // Living top-left
+  drawWindow(svg,180, 20, 60, 12);   // Living top-right
+  drawWindow(svg,340, 20, 70, 12);   // Kitchen top
+  drawWindow(svg,690, 20, 50, 12);   // Bathroom top
+  // Right wall bathroom (x=788, w=12)
+  drawWindow(svg,788, 52, 12, 50);   // Bathroom right
+  // Left wall primary bedroom (x=20, w=12)
+  drawWindow(svg,20,  280,12, 60);   // PrimaryBed left-top
+  drawWindow(svg,20,  370,12, 50);   // PrimaryBed left-bottom
+  // Bottom wall (y=428, h=12)
+  drawWindow(svg,72,  428,70, 12);   // PrimaryBed south
+  drawWindow(svg,340, 428,80, 12);   // Bed2 south
 
   // ── FURNITURE ──
   drawFurniture(svg);
 
-  // Apply initial trade state
   styleZones();
 }
 
@@ -748,16 +739,16 @@ function drawFurniture(svg){
 
   // Kitchen L-counter + stove + sink
   const k=svgEl('g',{opacity:'0.5',style:'pointer-events:none'});
-  k.appendChild(svgEl('rect',{x:304,y:24,width:212,height:36,rx:'1',fill:'#C8C9CC',stroke:'#AAA','stroke-width':'0.5'})); // top counter
-  k.appendChild(svgEl('rect',{x:304,y:24,width:36,height:130,rx:'1',fill:'#C8C9CC',stroke:'#AAA','stroke-width':'0.5'})); // left counter
+  k.appendChild(svgEl('rect',{x:304,y:36,width:212,height:34,rx:'1',fill:'#C8C9CC',stroke:'#AAA','stroke-width':'0.5'})); // top counter
+  k.appendChild(svgEl('rect',{x:304,y:36,width:36,height:120,rx:'1',fill:'#C8C9CC',stroke:'#AAA','stroke-width':'0.5'})); // left counter
   // stove circles
-  [[370,55],[390,55],[370,75],[390,75]].forEach(([cx,cy])=>{
+  [[370,60],[390,60],[370,80],[390,80]].forEach(([cx,cy])=>{
     k.appendChild(svgEl('circle',{cx,cy,r:7,fill:'none',stroke:'#888','stroke-width':'1.2'}));
     k.appendChild(svgEl('circle',{cx,cy,r:3,fill:'#999'}));
   });
   // sink
-  k.appendChild(svgEl('rect',{x:466,y:28,width:42,height:28,rx:'2',fill:'#DDE0E4',stroke:'#AAA','stroke-width':'0.8'}));
-  k.appendChild(svgEl('circle',{cx:487,cy:42,r:4,fill:'none',stroke:'#999','stroke-width':'1'}));
+  k.appendChild(svgEl('rect',{x:466,y:38,width:42,height:28,rx:'2',fill:'#DDE0E4',stroke:'#AAA','stroke-width':'0.8'}));
+  k.appendChild(svgEl('circle',{cx:487,cy:52,r:4,fill:'none',stroke:'#999','stroke-width':'1'}));
   svg.appendChild(k);
 
   // Primary Bedroom bed
@@ -782,14 +773,14 @@ function drawFurniture(svg){
   // Bathroom fixtures
   const bth=svgEl('g',{opacity:'0.5',style:'pointer-events:none'});
   // toilet
-  bth.appendChild(svgEl('rect',{x:720,y:24,width:34,height:24,rx:'2',fill:'#DDE0E4',stroke:'#AAA','stroke-width':'0.8'})); // tank
-  bth.appendChild(svgEl('ellipse',{cx:737,cy:66,rx:17,ry:22,fill:'#DDE0E4',stroke:'#AAA','stroke-width':'0.8'})); // bowl
+  bth.appendChild(svgEl('rect',{x:720,y:36,width:34,height:24,rx:'2',fill:'#DDE0E4',stroke:'#AAA','stroke-width':'0.8'})); // tank
+  bth.appendChild(svgEl('ellipse',{cx:737,cy:78,rx:17,ry:22,fill:'#DDE0E4',stroke:'#AAA','stroke-width':'0.8'})); // bowl
   // vanity
-  bth.appendChild(svgEl('rect',{x:664,y:24,width:50,height:44,rx:'2',fill:'#D8DADD',stroke:'#AAA','stroke-width':'0.8'}));
-  bth.appendChild(svgEl('rect',{x:669,y:29,width:40,height:34,rx:'1',fill:'#E8EAED',stroke:'#CCC','stroke-width':'0.5'}));
+  bth.appendChild(svgEl('rect',{x:664,y:36,width:50,height:44,rx:'2',fill:'#D8DADD',stroke:'#AAA','stroke-width':'0.8'}));
+  bth.appendChild(svgEl('rect',{x:669,y:41,width:40,height:34,rx:'1',fill:'#E8EAED',stroke:'#CCC','stroke-width':'0.5'}));
   // shower dashed
-  bth.appendChild(svgEl('rect',{x:664,y:90,width:90,height:82,rx:'2',fill:'#E8EAED',stroke:'#888','stroke-width':'0.8','stroke-dasharray':'4,3'}));
-  bth.appendChild(svgEl('circle',{cx:709,cy:128,r:6,fill:'none',stroke:'#AAA','stroke-width':'1.2'}));
+  bth.appendChild(svgEl('rect',{x:664,y:100,width:90,height:72,rx:'2',fill:'#E8EAED',stroke:'#888','stroke-width':'0.8','stroke-dasharray':'4,3'}));
+  bth.appendChild(svgEl('circle',{cx:709,cy:136,r:6,fill:'none',stroke:'#AAA','stroke-width':'1.2'}));
   svg.appendChild(bth);
 
   // Laundry washer/dryer

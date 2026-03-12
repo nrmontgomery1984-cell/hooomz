@@ -58,7 +58,9 @@ html,body{height:100%;overflow:hidden;background:#111316;font-family:'IBM Plex S
 #app #toolbar button.trade-btn.active.t-floor{color:var(--c-floor);border-bottom-color:var(--c-floor)}
 #app #toolbar button.trade-btn.active.t-trim{color:var(--c-trim);border-bottom-color:var(--c-trim)}
 #toolbar .tb-legend{flex:1;display:flex;align-items:center;justify-content:center;gap:14px}
-.legend-pill{display:flex;align-items:center;gap:5px;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:500;color:var(--txm);letter-spacing:0.08em}
+.legend-pill{display:flex;align-items:center;gap:5px;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:500;color:var(--txm);letter-spacing:0.08em;cursor:pointer;background:transparent;border:1px solid transparent;border-radius:3px;padding:3px 7px;transition:all 0.15s}
+.legend-pill:hover{color:var(--txd);border-color:var(--bdr2)}
+.legend-pill.active{color:var(--tx);border-color:var(--bdr3);background:var(--s2)}
 .legend-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 #toolbar .tb-hint{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--txm);letter-spacing:0.05em;white-space:nowrap}
 
@@ -78,7 +80,7 @@ html,body{height:100%;overflow:hidden;background:#111316;font-family:'IBM Plex S
 /* ROOM SVG INTERACTIVITY */
 #app .room-zone{cursor:pointer}
 #app .room-zone:hover .room-bg{filter:brightness(0.93)}
-.room-zone.selected .room-bg{stroke:#1A56DB!important;stroke-width:2.5!important}
+.room-zone.selected .room-bg{stroke:#1A56DB!important;stroke-width:4!important}
 
 /* PROJECT PANEL */
 #panel{
@@ -302,10 +304,10 @@ html,body{height:100%;overflow:hidden;background:#111316;font-family:'IBM Plex S
     <button class="trade-btn t-trim" data-trade="trim">TRIM</button>
   </div>
   <div class="tb-legend">
-    <div class="legend-pill"><div class="legend-dot" style="background:#22C55E"></div>COMPLETE</div>
-    <div class="legend-pill"><div class="legend-dot" style="background:#3B82F6"></div>IN PROGRESS</div>
-    <div class="legend-pill"><div class="legend-dot" style="background:#EF4444"></div>BLOCKED</div>
-    <div class="legend-pill"><div class="legend-dot" style="background:#9CA3AF"></div>PENDING</div>
+    <button class="legend-pill status-btn" data-status="complete"   onclick="setStatusFilter('complete')"><div class="legend-dot" style="background:#22C55E"></div>COMPLETE</button>
+    <button class="legend-pill status-btn" data-status="inProgress" onclick="setStatusFilter('inProgress')"><div class="legend-dot" style="background:#3B82F6"></div>IN PROGRESS</button>
+    <button class="legend-pill status-btn" data-status="blocked"    onclick="setStatusFilter('blocked')"><div class="legend-dot" style="background:#EF4444"></div>BLOCKED</button>
+    <button class="legend-pill status-btn" data-status="pending"    onclick="setStatusFilter('pending')"><div class="legend-dot" style="background:#9CA3AF"></div>PENDING</button>
   </div>
   <div class="tb-hint">CLICK ROOMS TO EXPLORE &nbsp;·&nbsp; TOGGLE TRADES &nbsp;·&nbsp; DAY 12 OF 18</div>
 </div>
@@ -531,6 +533,7 @@ const RDEFS={
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
 let activeRoom=null, activeTrade='all', activePopupTab='room', activePanelTab='overview';
+  let activeStatus = null;
 
 // ── SVG HELPERS ───────────────────────────────────────────────────────────────
 function svgEl(tag,attrs){
@@ -604,9 +607,8 @@ function buildFloorPlan(){
   roomOrder.forEach(id=>{
     const d=RDEFS[id];
     const r=ROOMS[id];
-    const fills=['#ECEDF0','#E2E4E8','#D8DADD'];
-    const fillIdx=Object.keys(RDEFS).indexOf(id)%3;
-    const fill=fills[fillIdx];
+    const fill='#F7F8FA';
+    const statusColor=SC[r.status]?SC[r.status].color:'#9CA3AF';
 
     // Group
     const g=svgEl('g',{class:'room-zone',id:'zone-'+id,'data-room':id});
@@ -614,7 +616,7 @@ function buildFloorPlan(){
     // Room bg
     const rect=svgEl('rect',{
       x:d.x,y:d.y,width:d.w,height:d.h,
-      fill:fill,stroke:'#444','stroke-width':'2',
+      fill:fill,stroke:statusColor,'stroke-width':'3.5',
       class:'room-bg',rx:'0'
     });
     g.appendChild(rect);
@@ -637,6 +639,14 @@ function buildFloorPlan(){
         g.appendChild(ov);
       }
     });
+
+    // Status fill overlay (halftone on status filter)
+    const statusOverlay=svgEl('rect',{
+      x:d.x,y:d.y,width:d.w,height:d.h,
+      fill:statusColor,opacity:'0',
+      class:'status-overlay','data-status':r.status,'pointer-events':'none'
+    });
+    zone.appendChild(statusOverlay);
 
     // Status dot
     const sc=SC[r.status];
@@ -796,28 +806,37 @@ function drawFurniture(svg){
 
 // ── STYLE ZONES (trade overlays) ──────────────────────────────────────────────
 function styleZones(){
+  // Trade overlays
   document.querySelectorAll('.trade-overlay').forEach(el=>{
     const trade=el.getAttribute('data-trade');
-    if(activeTrade==='all'){
-      el.setAttribute('opacity','0');
-    } else if(activeTrade===trade){
-      el.setAttribute('opacity','0.18');
-    } else {
-      el.setAttribute('opacity','0');
-    }
+    el.setAttribute('opacity',(activeTrade!=='all'&&activeTrade===trade)?'0.18':'0');
   });
-  // Dim rooms that don't have the active trade
+  // Status overlays — show halftone fill when status filter active
+  document.querySelectorAll('.status-overlay').forEach(el=>{
+    const s=el.getAttribute('data-status');
+    el.setAttribute('opacity',(activeStatus&&activeStatus===s)?'0.14':'0');
+  });
+  // Room zone dimming
   Object.keys(RDEFS).forEach(id=>{
     const zone=document.getElementById('zone-'+id);
     if(!zone)return;
-    if(activeTrade==='all'){
-      zone.setAttribute('opacity','1');
-    } else {
-      const hasTrade=ROOMS[id].tasks.some(t=>t.trade===activeTrade);
-      zone.setAttribute('opacity',hasTrade?'1':'0.35');
+    let show=true;
+    if(activeTrade!=='all'){
+      if(!ROOMS[id].tasks.some(t=>t.trade===activeTrade))show=false;
     }
+    if(activeStatus&&ROOMS[id].status!==activeStatus)show=false;
+    zone.setAttribute('opacity',show?'1':'0.28');
   });
 }
+
+function setStatusFilter(s){
+  activeStatus=(activeStatus===s)?null:s;
+  document.querySelectorAll('.status-btn').forEach(btn=>{
+    btn.classList.toggle('active',btn.getAttribute('data-status')===activeStatus);
+  });
+  styleZones();
+}
+window.setStatusFilter=setStatusFilter;
 
 // ── OPEN / CLOSE ROOM ─────────────────────────────────────────────────────────
 function openRoom(id){

@@ -134,6 +134,7 @@ export function FloorPlanCanvas({
   const [offset, setOffset] = useState({ x: 40, y: 40 });
   const isDragging = useRef(false);
   const lastPos = useRef({ x: 0, y: 0 });
+  const fitScale = useRef(1); // minimum zoom = the auto-fit scale
 
   // Measure SVG container on mount / resize
   useEffect(() => {
@@ -151,6 +152,36 @@ export function FloorPlanCanvas({
     return () => ro.disconnect();
   }, [height]);
 
+  // Clamp offset so the plan can't be dragged off-screen
+  const clampOffset = useCallback(
+    (off: { x: number; y: number }, s: number) => {
+      const bbox = getBoundingBox(rooms);
+      if (!bbox) return off;
+
+      const planLeft = bbox.minX * s + off.x;
+      const planRight = bbox.maxX * s + off.x;
+      const planTop = bbox.minY * s + off.y;
+      const planBottom = bbox.maxY * s + off.y;
+
+      let { x, y } = off;
+
+      // Don't let any edge go past the viewport boundary
+      if (planLeft > 0) x = -bbox.minX * s;
+      if (planTop > 0) y = -bbox.minY * s;
+      if (planRight < svgSize.width) x = svgSize.width - bbox.maxX * s;
+      if (planBottom < svgSize.height) y = svgSize.height - bbox.maxY * s;
+
+      // If the plan is smaller than the viewport at this scale, center it
+      const planW = (bbox.maxX - bbox.minX) * s;
+      const planH = (bbox.maxY - bbox.minY) * s;
+      if (planW <= svgSize.width) x = (svgSize.width - planW) / 2 - bbox.minX * s;
+      if (planH <= svgSize.height) y = (svgSize.height - planH) / 2 - bbox.minY * s;
+
+      return { x, y };
+    },
+    [rooms, svgSize.width, svgSize.height],
+  );
+
   // Auto-fit on first load or room change
   useEffect(() => {
     const bbox = getBoundingBox(rooms);
@@ -159,15 +190,16 @@ export function FloorPlanCanvas({
     const padding = 40;
     const availW = svgSize.width - padding * 2;
     const availH = svgSize.height - padding * 2;
-    const fitScale = Math.min(availW / bbox.width, availH / bbox.height);
+    const fit = Math.min(availW / bbox.width, availH / bbox.height);
+    fitScale.current = fit; // lock minimum zoom
 
     // Center the plan
-    const planW = bbox.width * fitScale;
-    const planH = bbox.height * fitScale;
-    const offX = padding + (availW - planW) / 2 - bbox.minX * fitScale;
-    const offY = padding + (availH - planH) / 2 - bbox.minY * fitScale;
+    const planW = bbox.width * fit;
+    const planH = bbox.height * fit;
+    const offX = padding + (availW - planW) / 2 - bbox.minX * fit;
+    const offY = padding + (availH - planH) / 2 - bbox.minY * fit;
 
-    setScale(fitScale);
+    setScale(fit);
     setOffset({ x: offX, y: offY });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rooms.length, svgSize.width, svgSize.height]);
@@ -184,8 +216,8 @@ export function FloorPlanCanvas({
     const dx = e.clientX - lastPos.current.x;
     const dy = e.clientY - lastPos.current.y;
     lastPos.current = { x: e.clientX, y: e.clientY };
-    setOffset((prev) => ({ x: prev.x + dx, y: prev.y + dy }));
-  }, []);
+    setOffset((prev) => clampOffset({ x: prev.x + dx, y: prev.y + dy }, scale));
+  }, [clampOffset, scale]);
 
   const handleMouseUp = useCallback(() => {
     isDragging.current = false;
@@ -199,20 +231,21 @@ export function FloorPlanCanvas({
     const rect = svgRef.current?.getBoundingClientRect();
     if (!rect) return;
 
-    // Zoom towards cursor position
+    // Zoom towards cursor position, clamped to [fitScale, 20]
     const cursorX = e.clientX - rect.left;
     const cursorY = e.clientY - rect.top;
 
     setScale((prev) => {
-      const next = Math.min(Math.max(prev * factor, 0.05), 20);
+      const next = Math.min(Math.max(prev * factor, fitScale.current), 20);
       const ratio = next / prev;
-      setOffset((o) => ({
-        x: cursorX - ratio * (cursorX - o.x),
-        y: cursorY - ratio * (cursorY - o.y),
-      }));
+      const newOff = {
+        x: cursorX - ratio * (cursorX - offset.x),
+        y: cursorY - ratio * (cursorY - offset.y),
+      };
+      setOffset(clampOffset(newOff, next));
       return next;
     });
-  }, []);
+  }, [offset, clampOffset]);
 
   // ─── Empty state ───────────────────────────────────────────────────────────
 

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 160">
   <!-- H letter -->
-  <text x="10" y="110" font-family="'Figtree', 'Inter', Arial, Helvetica, sans-serif" font-size="110" font-weight="800" fill="#1A1714" letter-spacing="-0.03em">H</text>
+  <text x="10" y="110" font-family="'Figtree', 'Inter', Arial, Helvetica, sans-serif" font-size="110" font-weight="600" fill="#1A1714" letter-spacing="-0.03em">H</text>
 
   <!-- Three overlapping filled circles (red, amber, green) -->
   <circle cx="155" cy="72" r="38" fill="#DC2626" opacity="0.92"/>
@@ -8,7 +8,7 @@
   <circle cx="255" cy="72" r="38" fill="#16A34A" opacity="0.92"/>
 
   <!-- MZ letters -->
-  <text x="295" y="110" font-family="'Figtree', 'Inter', Arial, Helvetica, sans-serif" font-size="110" font-weight="800" fill="#1A1714" letter-spacing="-0.03em">MZ</text>
+  <text x="295" y="110" font-family="'Figtree', 'Inter', Arial, Helvetica, sans-serif" font-size="110" font-weight="600" fill="#1A1714" letter-spacing="-0.03em">MZ</text>
 
   <!-- INTERIORS subtitle -->
   <text x="80" y="148" font-family="'Figtree', 'Inter', Arial, Helvetica, sans-serif" font-size="28" font-weight="400" fill="#1A1714" letter-spacing="0.28em">INTERIORS</text>

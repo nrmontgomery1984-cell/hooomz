@@ -3,9 +3,9 @@
   <text x="10" y="110" font-family="'Figtree', 'Inter', Arial, Helvetica, sans-serif" font-size="110" font-weight="600" fill="#FFFFFF" letter-spacing="-0.03em">H</text>
 
   <!-- Three hollow O circles (red, amber, green) — stroke rings -->
-  <circle cx="120" cy="72" r="32" fill="none" stroke="#DC2626" stroke-width="14"/>
-  <circle cx="192" cy="72" r="32" fill="none" stroke="#D97706" stroke-width="14"/>
-  <circle cx="264" cy="72" r="32" fill="none" stroke="#16A34A" stroke-width="14"/>
+  <circle cx="122" cy="72" r="32" fill="none" stroke="#DC2626" stroke-width="14"/>
+  <circle cx="194" cy="72" r="32" fill="none" stroke="#D97706" stroke-width="14"/>
+  <circle cx="266" cy="72" r="32" fill="none" stroke="#16A34A" stroke-width="14"/>
 
   <!-- MZ letters -->
   <text x="310" y="110" font-family="'Figtree', 'Inter', Arial, Helvetica, sans-serif" font-size="110" font-weight="600" fill="#FFFFFF" letter-spacing="-0.03em">MZ</text>

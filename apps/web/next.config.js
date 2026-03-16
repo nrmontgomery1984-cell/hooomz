@@ -16,6 +16,32 @@ const nextConfig = {
     '@hooomz/field-docs',
     '@hooomz/reporting',
   ],
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/interiors',
+        permanent: false,
+        has: [
+          {
+            type: 'host',
+            value: 'hooomz.ca',
+          },
+        ],
+      },
+      {
+        source: '/',
+        destination: '/interiors',
+        permanent: false,
+        has: [
+          {
+            type: 'host',
+            value: 'www.hooomz.ca',
+          },
+        ],
+      },
+    ];
+  },
   async rewrites() {
     return [
       {

@@ -1,15 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 160">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 160">
   <!-- H letter -->
   <text x="10" y="110" font-family="'Figtree', 'Inter', Arial, Helvetica, sans-serif" font-size="110" font-weight="600" fill="#1A1714" letter-spacing="-0.03em">H</text>
 
-  <!-- Three overlapping filled circles (red, amber, green) -->
-  <circle cx="155" cy="72" r="38" fill="#DC2626" opacity="0.92"/>
-  <circle cx="205" cy="72" r="38" fill="#D97706" opacity="0.92"/>
-  <circle cx="255" cy="72" r="38" fill="#16A34A" opacity="0.92"/>
+  <!-- Three hollow O circles (red, amber, green) — stroke rings -->
+  <circle cx="120" cy="72" r="32" fill="none" stroke="#DC2626" stroke-width="8"/>
+  <circle cx="192" cy="72" r="32" fill="none" stroke="#D97706" stroke-width="8"/>
+  <circle cx="264" cy="72" r="32" fill="none" stroke="#16A34A" stroke-width="8"/>
 
   <!-- MZ letters -->
-  <text x="295" y="110" font-family="'Figtree', 'Inter', Arial, Helvetica, sans-serif" font-size="110" font-weight="600" fill="#1A1714" letter-spacing="-0.03em">MZ</text>
+  <text x="310" y="110" font-family="'Figtree', 'Inter', Arial, Helvetica, sans-serif" font-size="110" font-weight="600" fill="#1A1714" letter-spacing="-0.03em">MZ</text>
 
   <!-- INTERIORS subtitle -->
-  <text x="80" y="148" font-family="'Figtree', 'Inter', Arial, Helvetica, sans-serif" font-size="28" font-weight="400" fill="#1A1714" letter-spacing="0.28em">INTERIORS</text>
+  <text x="90" y="148" font-family="'Figtree', 'Inter', Arial, Helvetica, sans-serif" font-size="28" font-weight="400" fill="#1A1714" letter-spacing="0.28em">INTERIORS</text>
 </svg>

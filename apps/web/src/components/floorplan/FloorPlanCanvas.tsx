@@ -132,8 +132,6 @@ export function FloorPlanCanvas({
   // Pan/zoom state
   const [scale, setScale] = useState(1);
   const [offset, setOffset] = useState({ x: 40, y: 40 });
-  const isDragging = useRef(false);
-  const lastPos = useRef({ x: 0, y: 0 });
   const fitScale = useRef(1); // minimum zoom = the auto-fit scale
 
   // Measure SVG container on mount / resize
@@ -187,7 +185,7 @@ export function FloorPlanCanvas({
     const bbox = getBoundingBox(rooms);
     if (!bbox || bbox.width === 0 || bbox.height === 0) return;
 
-    const padding = 40;
+    const padding = 16;
     const availW = svgSize.width - padding * 2;
     const availH = svgSize.height - padding * 2;
     const fit = Math.min(availW / bbox.width, availH / bbox.height);
@@ -204,26 +202,7 @@ export function FloorPlanCanvas({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rooms.length, svgSize.width, svgSize.height]);
 
-  // ─── Pan handlers ──────────────────────────────────────────────────────────
-
-  const handleMouseDown = useCallback((e: React.MouseEvent<SVGSVGElement>) => {
-    isDragging.current = true;
-    lastPos.current = { x: e.clientX, y: e.clientY };
-  }, []);
-
-  const handleMouseMove = useCallback((e: React.MouseEvent<SVGSVGElement>) => {
-    if (!isDragging.current) return;
-    const dx = e.clientX - lastPos.current.x;
-    const dy = e.clientY - lastPos.current.y;
-    lastPos.current = { x: e.clientX, y: e.clientY };
-    setOffset((prev) => clampOffset({ x: prev.x + dx, y: prev.y + dy }, scale));
-  }, [clampOffset, scale]);
-
-  const handleMouseUp = useCallback(() => {
-    isDragging.current = false;
-  }, []);
-
-  // ─── Zoom handler ──────────────────────────────────────────────────────────
+  // ─── Zoom handler (no panning — zoom towards cursor, clamped) ─────────────
 
   const handleWheel = useCallback((e: React.WheelEvent<SVGSVGElement>) => {
     e.preventDefault();
@@ -231,7 +210,6 @@ export function FloorPlanCanvas({
     const rect = svgRef.current?.getBoundingClientRect();
     if (!rect) return;
 
-    // Zoom towards cursor position, clamped to [fitScale, 20]
     const cursorX = e.clientX - rect.left;
     const cursorY = e.clientY - rect.top;
 
@@ -279,14 +257,10 @@ export function FloorPlanCanvas({
         background: 'var(--surface-1, #F9FAFB)',
         borderRadius: 12,
         border: '1px solid var(--border, #E5E7EB)',
-        cursor: isDragging.current ? 'grabbing' : 'grab',
+        cursor: 'default',
         touchAction: 'none',
         userSelect: 'none',
       }}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
       onWheel={handleWheel}
     >
       {/* Floor plan rooms */}

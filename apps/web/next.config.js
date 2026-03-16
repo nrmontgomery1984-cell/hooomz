@@ -46,7 +46,7 @@ const nextConfig = {
     return [
       {
         source: '/interiors',
-        destination: '/interiors.html',
+        destination: '/interiors-landing.html',
       },
       {
         source: '/interiors/intake',

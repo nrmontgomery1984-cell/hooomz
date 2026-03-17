@@ -1,5 +1,5 @@
 /**
- * Hooomz Logo — plain "HMZ" text in white Figtree 800.
+ * Hooomz Logo — H + three coloured O's + MZ in white Figtree 800.
  */
 
 export function HooomzLogoMark() {
@@ -14,7 +14,11 @@ export function HooomzLogoMark() {
         lineHeight: 1,
       }}
     >
-      HMZ
+      H
+      <span style={{ color: '#DC2626' }}>O</span>
+      <span style={{ color: '#D97706' }}>O</span>
+      <span style={{ color: '#16A34A' }}>O</span>
+      MZ
     </span>
   );
 }

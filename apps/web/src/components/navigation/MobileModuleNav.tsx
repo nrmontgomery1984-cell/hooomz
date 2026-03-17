@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { SIDEBAR_SECTIONS, SECTION_COLORS } from '@/lib/viewmode';
+import { SIDEBAR_SECTIONS } from '@/lib/viewmode';
 import { useViewMode } from '@/lib/viewmode';
 
 /**
@@ -33,8 +33,6 @@ export function MobileModuleNav() {
 
   // Don't render if no matching section, or if section has only 1 item (e.g., Customers)
   if (!activeSection || activeSection.items.length <= 1) return null;
-
-  const sectionColor = SECTION_COLORS[activeSection.id] || 'var(--blue)';
 
   // Filter items by current view mode
   const visibleItems = activeSection.items.filter(
@@ -76,14 +74,15 @@ export function MobileModuleNav() {
             key={item.href}
             href={item.href}
             style={{
-              fontFamily: 'var(--font-cond)',
-              fontSize: 11,
-              fontWeight: 600,
-              letterSpacing: '0.04em',
-              color: isActive ? sectionColor : 'var(--text-3)',
+              fontFamily: "'DM Mono', monospace",
+              fontSize: 10,
+              fontWeight: 500,
+              letterSpacing: '1.5px',
+              textTransform: 'uppercase',
+              color: isActive ? '#111010' : 'var(--text-3)',
               background: 'none',
               borderBottom: isActive
-                ? `2px solid ${sectionColor}`
+                ? '2px solid #111010'
                 : '2px solid transparent',
               padding: '10px 10px',
               whiteSpace: 'nowrap',

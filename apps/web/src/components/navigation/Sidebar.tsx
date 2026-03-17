@@ -43,6 +43,12 @@ function buildSections(): NavSection[] {
       ],
     },
     {
+      label: 'Catalogue',
+      items: [
+        { icon: '▦', label: 'Cost Items', href: '/catalogue' },
+      ],
+    },
+    {
       label: 'Hooomz',
       items: [
         { icon: '◉', label: 'Labs', href: '/labs' },
@@ -89,16 +95,18 @@ export function Sidebar() {
         width: 220,
         minWidth: 220,
         flexShrink: 0,
-        background: 'var(--sidebar-bg)',
-        borderRight: '1px solid var(--border)',
+        background: '#111010',
+        borderRight: 'none',
         overflow: 'hidden',
+        color: '#ffffff',
+        fontFamily: "'DM Mono', monospace",
       }}
     >
       {/* Logo */}
       <div
         style={{
           padding: '18px 18px 14px',
-          borderBottom: '1px solid var(--border)',
+          borderBottom: '1px solid rgba(255,255,255,.08)',
           flexShrink: 0,
         }}
       >
@@ -112,12 +120,12 @@ export function Sidebar() {
             {/* Section label */}
             <div
               style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 8,
+                fontFamily: "'DM Mono', monospace",
+                fontSize: 9,
                 fontWeight: 400,
-                letterSpacing: '0.14em',
+                letterSpacing: '2px',
                 textTransform: 'uppercase',
-                color: 'var(--text-3)',
+                color: '#555',
                 padding: '0 18px',
                 marginBottom: 6,
                 lineHeight: 1,
@@ -140,7 +148,7 @@ export function Sidebar() {
                     padding: '7px 18px',
                     textDecoration: 'none',
                     borderLeft: active ? '3px solid var(--clay)' : '3px solid transparent',
-                    background: active ? 'var(--sidebar-active)' : 'transparent',
+                    background: active ? 'rgba(255,255,255,.06)' : 'transparent',
                     transition: 'background 0.15s',
                     minHeight: 34,
                   }}
@@ -152,7 +160,7 @@ export function Sidebar() {
                       textAlign: 'center',
                       fontSize: 13,
                       lineHeight: 1,
-                      color: active ? 'var(--clay)' : 'var(--text-3)',
+                      color: active ? '#fff' : '#aaa',
                       flexShrink: 0,
                     }}
                   >
@@ -162,10 +170,10 @@ export function Sidebar() {
                   {/* Label */}
                   <span
                     style={{
-                      fontFamily: 'var(--font-body)',
-                      fontSize: 12,
+                      fontFamily: "'DM Mono', monospace",
+                      fontSize: 13,
                       fontWeight: active ? 500 : 400,
-                      color: active ? 'var(--text-1)' : 'var(--text-3)',
+                      color: active ? '#fff' : '#aaa',
                       lineHeight: 1,
                       flex: 1,
                       whiteSpace: 'nowrap',
@@ -180,7 +188,7 @@ export function Sidebar() {
                   {item.badge && item.badge.count > 0 && (
                     <span
                       style={{
-                        fontFamily: 'var(--font-mono)',
+                        fontFamily: "'DM Mono', monospace",
                         fontSize: 7,
                         fontWeight: 500,
                         color: '#fff',

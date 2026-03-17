@@ -8,17 +8,26 @@
 
 /* ─── SURFACE TOKENS (light default) ─── */
 :root {
-  --bg:         #F2EDE6;
+  --bg:         #F0EDE8;
   --surface-1:  #FDFAF7;
   --surface-2:  #EAE4DB;
   --surface-3:  #E0D9CF;
-  --border:     #D8D0C6;
+  --border:     #ddd9d3;
   --border-l:   #E8E2D8;
   --border-strong: #C8BFB3;
-  --text-1:     #1E1B17;
+  --text-1:     #111010;
   --text-2:     #524C45;
-  --text-3:     #8A8278;
-  --sidebar-bg: #EAE4DB;
+  --text-3:     #888888;
+  --sidebar-bg: #111010;
+
+  /* ─── Hooomz Interiors design system aliases ─── */
+  --color-bg:      #F0EDE8;
+  --color-surface: #ffffff;
+  --color-sidebar: #111010;
+  --color-text:    #111010;
+  --color-muted:   #888888;
+  --color-border:  #ddd9d3;
+  --font-primary:  'Figtree', sans-serif;
 
   /* Legacy aliases — map old names to new tokens */
   --text:       var(--text-1);
@@ -38,13 +47,25 @@
   --blue:       #4A7FA5;
 
   /* ─── TYPOGRAPHY ─── */
-  --font-display: 'Josefin Sans', sans-serif;
+  --font-display: 'Figtree', sans-serif;
   --font-mono:    'DM Mono', monospace;
   --font-body:    'Zen Kaku Gothic New', sans-serif;
   --font-sans:    'IBM Plex Sans', system-ui, sans-serif;
   --font-cond:    'Barlow Condensed', sans-serif;
 
   --radius: 6px;
+  --radius-sm: 6px;
+
+  /* ─── 2026 INTERIORS PALETTE ALIASES ─── */
+  /* Named tokens for the Hooomz Interiors design system */
+  --surface:    #FAF8F5;   /* card / table surface */
+  --charcoal:   #1A1714;   /* primary text */
+  --dark-nav:   #111010;   /* nav rail background */
+  --mid:        #5C5349;   /* secondary text */
+  --muted:      #9A8E84;   /* tertiary / placeholder */
+  --faint:      #D4CEC7;   /* subtle dividers, ghost text */
+  --border-s:   rgba(0,0,0,.18); /* strong border */
+  --yellow:     #D97706;   /* warning / amber */
 
   /* Legacy aliases for existing components */
   --blue-dim:      rgba(74,127,165,0.08);
@@ -125,10 +146,30 @@
   --sidebar-active: rgba(160,115,85,0.15);
 }
 
+/* ─── CATALOGUE THEME SCOPE ─────────────────────────────────────────────────
+   Applied to the /catalogue subtree via .catalogue-theme wrapper in
+   apps/web/src/app/catalogue/layout.tsx.
+   Overrides only the tokens used by catalogue components — no other pages
+   are affected.
+   ─────────────────────────────────────────────────────────────────────────── */
+.catalogue-theme {
+  --bg:         #F0EDE8;
+  --surface-1:  #FAF8F5;
+  --surface-2:  #E8E4DE;
+  --border:     rgba(0,0,0,.10);
+  --text-1:     #1A1714;
+  --text-2:     #5C5349;
+  --text-3:     #9A8E84;
+  --green:      #16A34A;
+  --red:        #DC2626;
+  --radius:     10px;
+  --radius-sm:  6px;
+}
+
 body {
-  background: var(--bg);
-  color: var(--text-1);
-  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-primary);
 }
 
 /* ============================================================================
@@ -268,6 +309,12 @@ body {
 /* ============================================================================
    Navigation — bottom nav for mobile
    ============================================================================ */
+
+/* ─── Sidebar — force dark background ─── */
+aside.sidebar-root,
+.flex.min-h-screen > aside {
+  background: #111010 !important;
+}
 
 .bottom-nav {
   background: var(--surface-1);

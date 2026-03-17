@@ -39,16 +39,16 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&family=Josefin+Sans:wght@400;600;700&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&family=Josefin+Sans:wght@400;600;700&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet" />
       </head>
-      <body style={{ backgroundColor: 'var(--bg)' }}>
+      <body style={{ backgroundColor: 'var(--color-bg)', fontFamily: 'var(--font-primary)' }}>
         <Providers>
           <ServiceWorkerRegistration />
           <ErrorBoundary>
             <CrewGate>
               <div className="flex min-h-screen">
                 <Sidebar />
-                <main className="flex-1 min-h-screen min-w-0">
+                <main className="flex-1 min-h-screen min-w-0" style={{ background: '#F0EDE8', fontFamily: "'Figtree', sans-serif" }}>
                   <MobileModuleNav />
                   {children}
                 </main>

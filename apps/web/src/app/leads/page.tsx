@@ -65,6 +65,52 @@ import { calculateEstimateBreakdown } from '@/lib/instantEstimate';
 import type { DoorWindowInput } from '@/lib/instantEstimate';
 import type { ActivityEvent } from '@/lib/repositories/activity.repository';
 
+// ── Temperature → left border accent colours ──
+const TEMP_BORDER: Record<string, string> = {
+  hot:  '#c2410c',
+  warm: '#d97706',
+  cool: '#3b82f6',
+};
+
+// ── Design tokens — Hooomz Digital Brand & Design System v1.0 ──
+const FIG = "'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+const MONO = "'DM Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', ui-monospace, monospace";
+
+// Surfaces
+const BG = '#F0EDE8';                       // --bg: warm linen
+const CARD = '#FAF8F5';                     // --surface: card bg
+const SURFACE2 = '#E8E4DE';                 // --surface-2: tab bars, deeper surface
+
+// Text
+const INK = '#1A1714';                      // --charcoal: primary text
+const INK2 = '#5C5349';                     // --mid: body text
+const INK3 = '#9A8E84';                     // --muted: labels, secondary
+const FAINT = '#D4CEC7';                    // --faint: decorative lines
+
+// Borders
+const BORDER = 'rgba(0,0,0,.10)';           // --border: default
+const BORDER_S = 'rgba(0,0,0,.18)';         // --border-s: stronger (outline btns)
+
+// Accent
+const ACCENT = '#6B6560';                   // --accent
+const ACCENT_BG = 'rgba(107,101,96,.09)';   // --accent-bg
+const ACCENT_BORDER = 'rgba(107,101,96,.22)'; // --accent-border
+
+// Layout
+const RADIUS = 10;                          // --radius: cards, large containers
+const RADIUS_SM = 6;                        // --radius-sm: buttons, badges
+
+/** Outline button — mono 9.5px, per brand spec */
+const actionBtn: Record<string, string | number> = {
+  display: 'inline-flex', alignItems: 'center', gap: 8,
+  padding: '12px 24px',
+  fontFamily: MONO, fontSize: 9.5, fontWeight: 500, letterSpacing: '0.10em', textTransform: 'uppercase',
+  color: INK2, background: 'transparent',
+  border: `1px solid ${BORDER_S}`, borderRadius: RADIUS_SM,
+  cursor: 'pointer', textDecoration: 'none',
+  transition: 'background 0.15s',
+};
+
 // ============================================================================
 // Constants
 // ============================================================================
@@ -91,15 +137,6 @@ const STAGE_COLORS: Record<LeadStage, string> = {
   lost: '#9CA3AF',
 };
 
-const STAGE_BG: Record<LeadStage, string> = {
-  new: '#F5F3FF',
-  contacted: '#FFFBEB',
-  discovery: '#EFF6FF',
-  site_visit: '#EDE9FE',
-  quote_sent: '#F0FDFA',
-  won: '#ECFDF5',
-  lost: '#F9FAFB',
-};
 
 const SOURCE_LABELS: Record<string, string> = {
   home_show: 'Home Show',
@@ -110,6 +147,8 @@ const SOURCE_LABELS: Record<string, string> = {
   ritchies: 'Ritchies',
   repeat: 'Repeat',
   'home-show': 'Home Show',
+  homeowner_intake: 'Website',
+  HOMEOWNER_INTAKE: 'Website',
   other: 'Other',
   unknown: '',
 };
@@ -213,7 +252,7 @@ export default function LeadPipelinePage() {
   const pipeline = useLeadPipeline();
   const [stageFilter, setStageFilter] = useState<LeadStage | 'all'>('all');
   const [collapsedStages, setCollapsedStages] = useState<Set<LeadStage>>(
-    new Set(STAGE_ORDER)
+    new Set()
   );
 
   // Auto-expand the stage containing the highlighted lead
@@ -250,13 +289,10 @@ export default function LeadPipelinePage() {
 
   if (pipeline.isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#F3F4F6' }}>
-        <div className="text-center">
-          <div
-            className="w-10 h-10 border-3 rounded-full animate-spin mx-auto mb-3"
-            style={{ borderColor: '#E5E7EB', borderTopColor: '#0F766E' }}
-          />
-          <p className="text-xs" style={{ color: '#9CA3AF' }}>Loading pipeline...</p>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: BG }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ width: 28, height: 28, border: `2px solid ${BORDER}`, borderTopColor: INK, borderRadius: '50%', animation: 'spin 0.7s linear infinite', margin: '0 auto 10px' }} />
+          <p style={{ fontFamily: MONO, fontSize: 9, fontWeight: 400, letterSpacing: '0.12em', textTransform: 'uppercase' as const, color: INK3 }}>Loading&hellip;</p>
         </div>
       </div>
     );
@@ -267,144 +303,84 @@ export default function LeadPipelinePage() {
 
   return (
     <PageErrorBoundary>
-    <div className="min-h-screen pb-24" style={{ background: '#F3F4F6' }}>
-      {/* Header */}
-      <div style={{ background: '#FFFFFF', borderBottom: '1px solid #E5E7EB' }}>
-        <div className="max-w-lg md:max-w-4xl mx-auto px-4 md:px-8 py-3 md:py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-lg md:text-xl font-bold" style={{ color: '#111827' }}>
-              Lead Pipeline
-            </h1>
-            <p className="text-[11px] mt-0.5" style={{ color: '#9CA3AF' }}>
-              {pipeline.leads.length} lead{pipeline.leads.length !== 1 ? 's' : ''}
-              {hotCount > 0 && (
-                <span>
-                  {' '}&middot;{' '}
-                  <span style={{ color: TEMPERATURE_CONFIG.hot.color }}>{hotCount} hot</span>
-                </span>
-              )}
-              {warmCount > 0 && (
-                <span>
-                  {' '}&middot;{' '}
-                  <span style={{ color: TEMPERATURE_CONFIG.warm.color }}>{warmCount} warm</span>
-                </span>
-              )}
-            </p>
-          </div>
-          <button
-            onClick={() => router.push('/leads/new')}
-            className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl"
-            style={{ background: '#0F766E' }}
-          >
-            <Plus size={18} color="#FFFFFF" strokeWidth={2} />
-          </button>
-        </div>
+    <div style={{ minHeight: '100vh', paddingBottom: 80, background: BG }}>
 
-        {/* Stage filter strip */}
-        <div className="max-w-lg md:max-w-4xl mx-auto px-4 md:px-8 pb-3">
-          <div className="flex gap-2 overflow-x-auto">
-            <FilterPill
-              label="All"
-              count={pipeline.leads.length}
-              active={stageFilter === 'all'}
-              color="#374151"
-              onClick={() => setStageFilter('all')}
-            />
+      {/* ── Header ── */}
+      <div style={{ borderBottom: `1px solid ${BORDER}` }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '28px 40px 0' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24 }}>
+            <div>
+              <h1 style={{ fontFamily: FIG, fontSize: 'clamp(28px, 3.2vw, 46px)', fontWeight: 600, letterSpacing: '-0.02em', lineHeight: 1.05, color: INK, margin: 0 }}>
+                Lead Pipeline
+              </h1>
+              <p style={{ fontFamily: MONO, fontSize: 9, fontWeight: 400, color: INK3, marginTop: 8, letterSpacing: '0.12em', textTransform: 'uppercase' as const }}>
+                {pipeline.leads.length} lead{pipeline.leads.length !== 1 ? 's' : ''}
+                {hotCount > 0 && <span> · <span style={{ color: TEMPERATURE_CONFIG.hot.color }}>{hotCount} hot</span></span>}
+                {warmCount > 0 && <span> · <span style={{ color: TEMPERATURE_CONFIG.warm.color }}>{warmCount} warm</span></span>}
+              </p>
+            </div>
+            <button
+              onClick={() => router.push('/leads/new')}
+              style={{ width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: RADIUS_SM, background: INK, border: 'none', cursor: 'pointer' }}
+            >
+              <Plus size={16} color="#fff" strokeWidth={2.5} />
+            </button>
+          </div>
+
+          {/* ── Filter tabs — outlined pills ── */}
+          <div style={{ display: 'flex', gap: 6, paddingBottom: 16, overflowX: 'auto' }}>
+            <StageTab label="All" count={pipeline.leads.length} active={stageFilter === 'all'} onClick={() => setStageFilter('all')} />
             {STAGE_ORDER.map((stage) => {
               const count = pipeline.counts[stage];
               if (count === 0 && stage !== 'new') return null;
-              return (
-                <FilterPill
-                  key={stage}
-                  label={STAGE_LABELS[stage]}
-                  count={count}
-                  active={stageFilter === stage}
-                  color={STAGE_COLORS[stage]}
-                  onClick={() => setStageFilter(stage)}
-                />
-              );
+              return <StageTab key={stage} label={STAGE_LABELS[stage]} count={count} active={stageFilter === stage} onClick={() => setStageFilter(stage)} />;
             })}
           </div>
         </div>
       </div>
 
-      <div className="max-w-lg md:max-w-4xl mx-auto px-4 md:px-8">
+      {/* ── Content ── */}
+      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 40px' }}>
+
         {/* Empty state */}
         {filteredLeads.length === 0 && (
-          <div className="mt-8 text-center">
-            <div
-              className="w-14 h-14 mx-auto mb-3 rounded-xl flex items-center justify-center"
-              style={{ background: '#F0FDFA' }}
-            >
-              <FileText size={24} style={{ color: '#0F766E' }} strokeWidth={1.5} />
-            </div>
-            <p className="text-sm font-medium mb-1" style={{ color: '#111827' }}>
-              No leads yet
-            </p>
-            <p className="text-xs mb-4" style={{ color: '#9CA3AF' }}>
-              Capture your first lead at a home show or from a referral
-            </p>
+          <div style={{ textAlign: 'center', marginTop: 56, padding: '0 20px' }}>
+            <p style={{ fontFamily: FIG, fontSize: 16, fontWeight: 600, color: INK, marginBottom: 8, lineHeight: 1.05 }}>No leads yet</p>
+            <p style={{ fontFamily: FIG, fontSize: 14, color: INK2, marginBottom: 24, lineHeight: 1.65 }}>Capture your first lead at a home show or from a referral.</p>
             <button
               onClick={() => router.push('/leads/new')}
-              className="min-h-[44px] px-5 rounded-xl font-medium text-sm text-white"
-              style={{ background: '#0F766E' }}
+              style={{ minHeight: 40, padding: '13px 24px', borderRadius: RADIUS_SM, fontFamily: MONO, fontSize: 9.5, fontWeight: 500, letterSpacing: '0.10em', textTransform: 'uppercase' as const, background: INK, color: '#fff', border: 'none', cursor: 'pointer', transition: 'background 0.15s' }}
             >
               Capture a Lead
             </button>
           </div>
         )}
 
-        {/* Pipeline bar */}
-        {pipeline.leads.length > 0 && stageFilter === 'all' && (
-          <div className="mt-4 mb-2">
-            <div className="flex rounded-lg overflow-hidden h-2">
-              {STAGE_ORDER.map((stage) => {
-                const count = pipeline.counts[stage];
-                if (count === 0) return null;
-                const pct = (count / pipeline.leads.length) * 100;
-                return (
-                  <div
-                    key={stage}
-                    style={{ width: `${pct}%`, background: STAGE_COLORS[stage], minWidth: '4px' }}
-                  />
-                );
-              })}
-            </div>
-          </div>
-        )}
+        {/* Pipeline bar — removed (was rendering as purple line) */}
 
-        {/* Stage groups */}
+        {/* ── Stage groups ── */}
         {grouped.map(({ stage, leads }) => (
-          <div key={stage} className="mt-4">
+          <div key={stage} style={{ marginTop: 28 }}>
+            {/* Section header */}
             <button
               onClick={() => toggleCollapse(stage)}
-              className="flex items-center gap-2 mb-2 min-h-[28px]"
+              style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
             >
-              {collapsedStages.has(stage) ? (
-                <ChevronRight size={14} style={{ color: '#9CA3AF' }} />
-              ) : (
-                <ChevronDown size={14} style={{ color: '#9CA3AF' }} />
-              )}
-              <div
-                className="w-2 h-2 rounded-full"
-                style={{ background: STAGE_COLORS[stage] }}
-              />
-              <h2
-                className="text-[11px] font-semibold uppercase tracking-wider"
-                style={{ color: '#6B7280' }}
-              >
+              {collapsedStages.has(stage)
+                ? <ChevronRight size={12} style={{ color: INK3 }} />
+                : <ChevronDown size={12} style={{ color: INK3 }} />}
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: STAGE_COLORS[stage] }} />
+              <span style={{ fontFamily: MONO, fontSize: 9, fontWeight: 400, letterSpacing: '0.14em', textTransform: 'uppercase' as const, color: INK3 }}>
                 {STAGE_LABELS[stage]}
-              </h2>
-              <span
-                className="text-[10px] font-medium px-1.5 py-0.5 rounded-full"
-                style={{ background: STAGE_BG[stage], color: STAGE_COLORS[stage] }}
-              >
+              </span>
+              <span style={{ fontFamily: MONO, fontSize: 9, fontWeight: 400, letterSpacing: '0.14em', color: INK3 }}>
                 {leads.length}
               </span>
             </button>
 
+            {/* Card list */}
             {!collapsedStages.has(stage) && (
-              <div className="space-y-2">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {leads.map((lead) => (
                   <LeadCard key={lead.customer.id} lead={lead} defaultExpanded={lead.customer.id === highlightId} />
                 ))}
@@ -422,29 +398,37 @@ export default function LeadPipelinePage() {
 // Sub-components
 // ============================================================================
 
-function FilterPill({
+function StageTab({
   label,
   count,
   active,
-  color,
   onClick,
 }: {
   label: string;
   count: number;
   active: boolean;
-  color: string;
   onClick: () => void;
 }) {
   return (
     <button
       onClick={onClick}
-      className="min-h-[32px] px-3 rounded-lg text-xs font-medium whitespace-nowrap transition-colors"
       style={{
-        background: active ? color : '#F3F4F6',
-        color: active ? '#FFFFFF' : '#6B7280',
+        padding: '10px 18px',
+        fontFamily: MONO,
+        fontSize: 9.5,
+        fontWeight: 500,
+        letterSpacing: '0.10em',
+        textTransform: 'uppercase' as const,
+        whiteSpace: 'nowrap' as const,
+        background: active ? INK : 'transparent',
+        border: `1px solid ${active ? INK : BORDER_S}`,
+        borderRadius: RADIUS_SM,
+        color: active ? '#fff' : INK2,
+        cursor: 'pointer',
+        transition: 'background 0.15s',
       }}
     >
-      {label} {count > 0 && `(${count})`}
+      {label}{count > 0 ? ` ${count}` : ''}
     </button>
   );
 }
@@ -578,7 +562,6 @@ function LeadCard({ lead, defaultExpanded = false }: { lead: LeadRecord; default
   const budgetLabel = BUDGET_LABELS[budgetRange] || '';
   const createdAt = new Date(customer.metadata.createdAt);
   const timeLabel = formatRelativeDate(createdAt);
-  const stageColor = STAGE_COLORS[stage];
   const tempConfig = TEMPERATURE_CONFIG[temperature];
 
   const displayScopes = scopeTags.length > 0 ? scopeTags : interests;
@@ -751,163 +734,106 @@ function LeadCard({ lead, defaultExpanded = false }: { lead: LeadRecord; default
 
   return (
     <div
-      className="rounded-xl p-3 transition-all duration-150"
       style={{
-        background: '#FFFFFF',
-        boxShadow: expanded ? '0 2px 8px rgba(0,0,0,0.1)' : '0 1px 3px rgba(0,0,0,0.06)',
-        borderLeft: `3px solid ${stageColor}`,
-        opacity: stage === 'lost' ? 0.65 : 1,
+        padding: '14px 16px',
+        background: '#ffffff',
+        border: '1px solid #ddd9d3',
+        borderLeft: `3px solid ${TEMP_BORDER[temperature] || '#3b82f6'}`,
+        borderRadius: 2,
+        opacity: stage === 'lost' ? 0.6 : 1,
       }}
     >
       {/* Tappable content area */}
-      <div onClick={() => setExpanded(!expanded)} className="cursor-pointer">
-        {/* Top row: temp dot + name + chevron */}
-        <div className="flex items-center justify-between mb-0.5">
-          <div className="flex items-center gap-2 min-w-0">
-            <div
-              className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-              style={{ background: tempConfig.color }}
-              title={`${tempConfig.label} lead`}
-            />
-            <h3 className="text-[13px] font-semibold truncate" style={{ color: '#111827' }}>
+      <div onClick={() => setExpanded(!expanded)} style={{ cursor: 'pointer' }}>
+        {/* Row 1: Name + phone + chevron */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: tempConfig.color, flexShrink: 0 }} title={`${tempConfig.label} lead`} />
+            <span style={{ fontFamily: FIG, fontSize: 15, fontWeight: 600, letterSpacing: '-0.01em', color: INK, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>
               {fullName}
-            </h3>
+            </span>
             {lead.isOverdueFollowUp && (
-              <span
-                className="text-[8px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wide flex-shrink-0"
-                style={{ background: '#FEF2F2', color: '#EF4444' }}
-              >
+              <span style={{ fontFamily: MONO, fontSize: 7, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase' as const, padding: '2px 7px', borderRadius: 3, background: 'rgba(220,38,38,.08)', color: '#DC2626', border: '1px solid rgba(220,38,38,.2)', flexShrink: 0 }}>
                 Overdue
               </span>
             )}
-            <span
-              className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full uppercase tracking-wide flex-shrink-0"
-              style={{ background: STAGE_BG[stage], color: stageColor }}
-            >
-              {STAGE_LABELS[stage]}
-            </span>
           </div>
-          <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0, marginLeft: 8 }}>
             {customer.phone && (
-              <a
-                href={`tel:${customer.phone}`}
-                className="text-xs font-medium"
-                style={{ color: '#0F766E' }}
-                onClick={(e) => e.stopPropagation()}
-              >
+              <a href={`tel:${customer.phone}`} style={{ fontFamily: MONO, fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', color: INK3, textDecoration: 'none' }} onClick={(e) => e.stopPropagation()}>
                 {customer.phone}
               </a>
             )}
-            <ChevronDown
-              size={14}
-              style={{
-                color: '#9CA3AF',
-                transition: 'transform 150ms',
-                transform: expanded ? 'rotate(180deg)' : undefined,
-              }}
-            />
+            <ChevronDown size={14} style={{ color: INK3, transition: 'transform 150ms', transform: expanded ? 'rotate(180deg)' : undefined }} />
           </div>
         </div>
 
-      {/* Scope + source + budget + rooms + time */}
-      <div className="flex items-center gap-1 flex-wrap mb-0.5">
-        {displayScopes.map((scope) => (
-          <span
-            key={scope}
-            className="text-[9px] font-bold px-1.5 py-0.5 rounded"
-            style={{ background: '#F3F4F6', color: '#6B7280' }}
-          >
-            {SCOPE_LABELS[scope] || scope}
-          </span>
-        ))}
-        {sourceLabel && (
-          <span
-            className="text-[9px] font-medium px-1.5 py-0.5 rounded"
-            style={{ background: '#FEF3C7', color: '#92400E' }}
-          >
-            {sourceLabel}
-          </span>
-        )}
-        {budgetLabel && (
-          <span
-            className="text-[9px] font-medium px-1.5 py-0.5 rounded"
-            style={{ background: '#F0FDFA', color: '#0F766E' }}
-          >
-            {budgetLabel}
-          </span>
-        )}
-        {roomCount !== null && (
-          <span className="text-[10px]" style={{ color: '#9CA3AF' }}>
-            {roomCount === 0 ? 'Whole floor' : `${roomCount} rm${roomCount !== 1 ? 's' : ''}`}
-          </span>
-        )}
-        {totalSqft !== null && totalSqft > 0 && (
-          <span
-            className="text-[9px] font-medium px-1.5 py-0.5 rounded"
-            style={{ background: '#EFF6FF', color: '#1D4ED8' }}
-          >
-            {totalSqft.toLocaleString()} sqft
-          </span>
-        )}
-        {Object.entries(materialPrefs).flatMap(([trade, pref]) => {
-          // Trim stores comma-separated multi-select values
-          const values = trade === 'trim' ? pref.split(',').filter(Boolean) : [pref];
-          return values.map((v) => (
-            <span
-              key={`${trade}-${v}`}
-              className="text-[9px] font-medium px-1.5 py-0.5 rounded"
-              style={{ background: '#F5F3FF', color: '#6D28D9' }}
-            >
-              {MATERIAL_SHORT_LABELS[v] || v}
+        {/* Row 2: Scope tags + metadata — clean, monochrome */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+          {displayScopes.map((scope) => (
+            <span key={scope} style={{ fontFamily: MONO, fontSize: 7, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase' as const, padding: '2px 7px', borderRadius: 3, background: ACCENT_BG, color: ACCENT, border: `1px solid ${ACCENT_BORDER}` }}>
+              {SCOPE_LABELS[scope] || scope}
             </span>
-          ));
-        })}
-        <span className="text-[10px]" style={{ color: '#D1D5DB' }}>
-          &middot; {timeLabel}
-        </span>
-      </div>
+          ))}
+          {displayScopes.length > 0 && (totalSqft || sourceLabel || budgetLabel) && (
+            <span style={{ color: FAINT, fontSize: 10 }}>&middot;</span>
+          )}
+          {totalSqft !== null && totalSqft > 0 && (
+            <span style={{ fontFamily: MONO, fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', color: INK3 }}>
+              {totalSqft.toLocaleString()} sqft
+            </span>
+          )}
+          {roomCount !== null && roomCount > 0 && (
+            <span style={{ fontFamily: MONO, fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', color: INK3 }}>
+              {roomCount} rm{roomCount !== 1 ? 's' : ''}
+            </span>
+          )}
+          {sourceLabel && (
+            <span style={{ fontFamily: MONO, fontSize: 7, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase' as const, padding: '2px 7px', borderRadius: 3, background: ACCENT_BG, color: ACCENT, border: `1px solid ${ACCENT_BORDER}` }}>
+              {sourceLabel}
+            </span>
+          )}
+          <span style={{ color: FAINT, fontSize: 10 }}>&middot;</span>
+          <span style={{ fontFamily: MONO, fontSize: 10, fontWeight: 500, letterSpacing: '0.06em', color: INK3 }}>
+            {timeLabel}
+          </span>
+        </div>
 
-      {/* Estimate range */}
-      {instantEstimate && (
-        <p className="text-[11px] font-medium mb-0.5" style={{ color: '#0F766E' }}>
-          Est: ${instantEstimate.low.toLocaleString()} – ${instantEstimate.high.toLocaleString()}
-        </p>
-      )}
+        {/* Row 3: Estimate (if exists) */}
+        {instantEstimate && (
+          <div style={{ marginTop: 6 }}>
+            <span style={{ fontFamily: MONO, fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', color: INK }}>
+              ${instantEstimate.low.toLocaleString()} – ${instantEstimate.high.toLocaleString()}
+            </span>
+          </div>
+        )}
 
-      {linkedProject && (
-        <p className="text-[11px] mb-0.5" style={{ color: '#9CA3AF' }}>
-          Project: {linkedProject.name} &middot; {linkedProject.status.replace(/-/g, ' ')}
-        </p>
-      )}
-
-      {customer.notes && (
-        <p className={`text-[11px] italic mb-0.5 ${expanded ? '' : 'truncate'}`} style={{ color: '#9CA3AF' }}>
-          &ldquo;{customer.notes}&rdquo;
-        </p>
-      )}
+        {customer.notes && !expanded && (
+          <p style={{ fontFamily: FIG, fontSize: 11, fontStyle: 'italic', color: INK3, marginTop: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>
+            &ldquo;{customer.notes}&rdquo;
+          </p>
+        )}
       </div>{/* end clickable area */}
 
       {/* Expanded detail panel — EDIT MODE */}
       {expanded && editing && editData && (
-        <div className="mt-3 pt-3 space-y-3" style={{ borderTop: '1px solid #0F766E40' }}>
+        <div style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${BORDER}`, display: 'flex', flexDirection: 'column' as const, gap: 12 }}>
           {/* Edit header */}
-          <div className="flex items-center justify-between">
-            <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: '#0F766E' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <p style={{ fontFamily: MONO, fontSize: 10, fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase' as const, color: INK2, margin: 0 }}>
               Editing Intake
             </p>
-            <div className="flex gap-1.5">
+            <div style={{ display: 'flex', gap: 6 }}>
               <button
                 onClick={handleCancelEdit}
-                className="min-h-[28px] px-2.5 rounded-md text-[11px] font-medium"
-                style={{ background: '#F3F4F6', color: '#6B7280' }}
+                style={{ ...actionBtn, background: BG }}
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveEdit}
                 disabled={updateLead.isPending}
-                className="min-h-[28px] px-3 rounded-md text-[11px] font-semibold flex items-center gap-1"
-                style={{ background: '#0F766E', color: '#FFFFFF', opacity: updateLead.isPending ? 0.6 : 1 }}
+                style={{ ...actionBtn, background: INK, color: '#fff', border: `1px solid ${INK}`, opacity: updateLead.isPending ? 0.6 : 1 }}
               >
                 <Save size={11} /> {updateLead.isPending ? 'Saving...' : 'Save'}
               </button>
@@ -929,19 +855,14 @@ function LeadCard({ lead, defaultExpanded = false }: { lead: LeadRecord; default
 
           {/* Scope */}
           <EditSection title="Scope">
-            <div className="flex flex-wrap gap-1.5">
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
               {EDIT_SCOPE_OPTIONS.map((opt) => {
                 const isSelected = editData.scopeTags.includes(opt.value);
                 return (
                   <button
                     key={opt.value}
                     onClick={() => toggleEditScope(opt.value)}
-                    className="min-h-[30px] px-2.5 rounded-lg text-[11px] font-medium transition-colors"
-                    style={{
-                      background: isSelected ? '#F0FDFA' : '#FFFFFF',
-                      color: isSelected ? '#0F766E' : '#6B7280',
-                      border: isSelected ? '2px solid #0F766E' : '1px solid #E5E7EB',
-                    }}
+                    style={{ minHeight: 30, padding: '0 10px', borderRadius: RADIUS_SM, fontFamily: MONO, fontSize: 10, fontWeight: 500, letterSpacing: '0.04em', textTransform: 'uppercase' as const, cursor: 'pointer', transition: 'all 150ms', background: isSelected ? ACCENT_BG : CARD, color: isSelected ? ACCENT : INK3, border: isSelected ? `1px solid ${ACCENT_BORDER}` : `1px solid ${BORDER}` }}
                   >
                     {opt.label}
                   </button>
@@ -954,11 +875,11 @@ function LeadCard({ lead, defaultExpanded = false }: { lead: LeadRecord; default
           {editData.scopeTags.filter((s) => EDIT_MATERIAL_OPTIONS[s]).length > 0 && (
             <EditSection title="Materials">
               {editData.scopeTags.filter((s) => EDIT_MATERIAL_OPTIONS[s]).map((trade) => (
-                <div key={trade} className="mb-2">
-                  <p className="text-[10px] font-medium mb-1" style={{ color: '#9CA3AF' }}>
+                <div key={trade} style={{ marginBottom: 8 }}>
+                  <p style={{ fontFamily: MONO, fontSize: 10, fontWeight: 500, color: INK3, marginBottom: 4, margin: 0, marginTop: 0 }}>
                     {TRADE_FULL_LABELS[trade] || trade}
                   </p>
-                  <div className="flex flex-wrap gap-1.5">
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
                     {EDIT_MATERIAL_OPTIONS[trade].map((opt) => {
                       const isSelected = trade === 'trim'
                         ? (editData.materialPrefs[trade] || '').split(',').includes(opt.value)
@@ -967,12 +888,7 @@ function LeadCard({ lead, defaultExpanded = false }: { lead: LeadRecord; default
                         <button
                           key={opt.value}
                           onClick={() => updateEditMaterial(trade, opt.value)}
-                          className="min-h-[28px] px-2 rounded-lg text-[10px] font-medium transition-colors"
-                          style={{
-                            background: isSelected ? '#F5F3FF' : '#FFFFFF',
-                            color: isSelected ? '#6D28D9' : '#6B7280',
-                            border: isSelected ? '2px solid #6D28D9' : '1px solid #E5E7EB',
-                          }}
+                          style={{ minHeight: 28, padding: '0 8px', borderRadius: RADIUS_SM, fontFamily: MONO, fontSize: 10, fontWeight: 500, cursor: 'pointer', transition: 'all 150ms', background: isSelected ? ACCENT_BG : CARD, color: isSelected ? ACCENT : INK3, border: isSelected ? `1px solid ${ACCENT_BORDER}` : `1px solid ${BORDER}` }}
                         >
                           {opt.label}
                         </button>
@@ -986,38 +902,28 @@ function LeadCard({ lead, defaultExpanded = false }: { lead: LeadRecord; default
 
           {/* Doors & Windows */}
           <EditSection title="Doors & Windows">
-            <div className="grid grid-cols-2 gap-2">
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
               <EditCounterField label="Exterior" value={editData.doorWindows.exteriorDoors} onChange={(v) => setEditData({ ...editData, doorWindows: { ...editData.doorWindows, exteriorDoors: v } })} />
               <EditCounterField label="Interior" value={editData.doorWindows.interiorDoors} onChange={(v) => setEditData({ ...editData, doorWindows: { ...editData.doorWindows, interiorDoors: v } })} />
               <EditCounterField label="Closet" value={editData.doorWindows.closetDoors} onChange={(v) => setEditData({ ...editData, doorWindows: { ...editData.doorWindows, closetDoors: v } })} />
               <EditCounterField label="Patio" value={editData.doorWindows.patioDoors} onChange={(v) => setEditData({ ...editData, doorWindows: { ...editData.doorWindows, patioDoors: v } })} />
             </div>
-            <p className="text-[10px] font-medium mt-2 mb-1" style={{ color: '#9CA3AF' }}>Windows</p>
-            <div className="grid grid-cols-3 gap-2">
+            <p style={{ fontFamily: MONO, fontSize: 10, fontWeight: 500, color: INK3, marginTop: 8, marginBottom: 4 }}>Windows</p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
               <EditCounterField label="Small" value={editData.doorWindows.windowsSmall} onChange={(v) => setEditData({ ...editData, doorWindows: { ...editData.doorWindows, windowsSmall: v } })} />
               <EditCounterField label="Medium" value={editData.doorWindows.windowsMedium} onChange={(v) => setEditData({ ...editData, doorWindows: { ...editData.doorWindows, windowsMedium: v } })} />
               <EditCounterField label="Large" value={editData.doorWindows.windowsLarge} onChange={(v) => setEditData({ ...editData, doorWindows: { ...editData.doorWindows, windowsLarge: v } })} />
             </div>
-            <div className="flex gap-2 mt-2">
+            <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
               <button
                 onClick={() => setEditData({ ...editData, doorWindows: { ...editData.doorWindows, replaceHardware: !editData.doorWindows.replaceHardware } })}
-                className="flex-1 min-h-[28px] px-2 rounded-lg text-[10px] font-medium"
-                style={{
-                  background: editData.doorWindows.replaceHardware ? '#F0FDFA' : '#FFFFFF',
-                  color: editData.doorWindows.replaceHardware ? '#0F766E' : '#6B7280',
-                  border: editData.doorWindows.replaceHardware ? '2px solid #0F766E' : '1px solid #E5E7EB',
-                }}
+                style={{ flex: 1, minHeight: 28, padding: '0 8px', borderRadius: RADIUS_SM, fontFamily: MONO, fontSize: 10, fontWeight: 500, cursor: 'pointer', background: editData.doorWindows.replaceHardware ? ACCENT_BG : CARD, color: editData.doorWindows.replaceHardware ? ACCENT : INK2, border: editData.doorWindows.replaceHardware ? `1px solid ${ACCENT_BORDER}` : `1px solid ${BORDER}` }}
               >
                 Hardware
               </button>
               <button
                 onClick={() => setEditData({ ...editData, doorWindows: { ...editData.doorWindows, replaceKnobs: !editData.doorWindows.replaceKnobs } })}
-                className="flex-1 min-h-[28px] px-2 rounded-lg text-[10px] font-medium"
-                style={{
-                  background: editData.doorWindows.replaceKnobs ? '#F0FDFA' : '#FFFFFF',
-                  color: editData.doorWindows.replaceKnobs ? '#0F766E' : '#6B7280',
-                  border: editData.doorWindows.replaceKnobs ? '2px solid #0F766E' : '1px solid #E5E7EB',
-                }}
+                style={{ flex: 1, minHeight: 28, padding: '0 8px', borderRadius: RADIUS_SM, fontFamily: MONO, fontSize: 10, fontWeight: 500, cursor: 'pointer', background: editData.doorWindows.replaceKnobs ? ACCENT_BG : CARD, color: editData.doorWindows.replaceKnobs ? ACCENT : INK2, border: editData.doorWindows.replaceKnobs ? `1px solid ${ACCENT_BORDER}` : `1px solid ${BORDER}` }}
               >
                 Knobs
               </button>
@@ -1026,7 +932,7 @@ function LeadCard({ lead, defaultExpanded = false }: { lead: LeadRecord; default
 
           {/* Property */}
           <EditSection title="Property Details">
-            <div className="flex gap-3">
+            <div style={{ display: 'flex', gap: 12 }}>
               <EditField
                 label="Rooms"
                 value={String(editData.roomCount || '')}
@@ -1078,25 +984,22 @@ function LeadCard({ lead, defaultExpanded = false }: { lead: LeadRecord; default
               onChange={(e) => setEditData({ ...editData, notes: e.target.value })}
               rows={2}
               placeholder="Any notes about this lead..."
-              className="w-full px-3 py-2 rounded-lg text-[12px]"
-              style={{ background: '#F9FAFB', border: '1px solid #E5E7EB', color: '#111827', resize: 'vertical' }}
+              style={{ width: '100%', padding: '8px 12px', borderRadius: RADIUS_SM, fontFamily: FIG, fontSize: 12, background: SURFACE2, border: `1px solid ${BORDER}`, color: INK, resize: 'vertical' as const }}
             />
           </EditSection>
 
           {/* Bottom Save/Cancel */}
-          <div className="flex gap-2 pt-1">
+          <div style={{ display: 'flex', gap: 8, paddingTop: 4 }}>
             <button
               onClick={handleCancelEdit}
-              className="flex-1 min-h-[36px] rounded-lg text-[11px] font-medium"
-              style={{ background: '#F3F4F6', color: '#6B7280' }}
+              style={{ ...actionBtn, flex: 1, justifyContent: 'center', background: BG }}
             >
               Cancel
             </button>
             <button
               onClick={handleSaveEdit}
               disabled={updateLead.isPending}
-              className="flex-1 min-h-[36px] rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1"
-              style={{ background: '#0F766E', color: '#FFFFFF', opacity: updateLead.isPending ? 0.6 : 1 }}
+              style={{ ...actionBtn, flex: 1, justifyContent: 'center', background: INK, color: '#fff', border: `1px solid ${INK}`, opacity: updateLead.isPending ? 0.6 : 1 }}
             >
               <Save size={12} /> {updateLead.isPending ? 'Saving...' : 'Save Changes'}
             </button>
@@ -1106,7 +1009,7 @@ function LeadCard({ lead, defaultExpanded = false }: { lead: LeadRecord; default
 
       {/* Expanded detail panel — READ MODE */}
       {expanded && !editing && (
-        <div className="mt-3 pt-3 space-y-3" style={{ borderTop: '1px solid #F3F4F6' }}>
+        <div style={{ marginTop: 12, padding: 12, background: '#F0EDE8', borderTop: '1px solid #ddd9d3', display: 'flex', flexDirection: 'column' as const, gap: 12 }}>
           {/* Contact */}
           <DetailSection title="Contact">
             {customer.phone && <DetailRow label="Phone" value={customer.phone} />}
@@ -1203,73 +1106,58 @@ function LeadCard({ lead, defaultExpanded = false }: { lead: LeadRecord; default
           {breakdown && breakdown.lines.length > 0 && (
             <div>
               <h4
-                className="text-[10px] font-semibold uppercase tracking-wider mb-2"
-                style={{ color: '#6B7280' }}
+                style={{ fontFamily: MONO, fontSize: 9, fontWeight: 500, letterSpacing: '2px', textTransform: 'uppercase' as const, color: '#aaa', marginBottom: 8 }}
               >
                 Estimate Breakdown
               </h4>
 
               {/* Line items table */}
-              <div
-                className="rounded-lg overflow-hidden mb-2"
-                style={{ border: '1px solid #E5E7EB' }}
-              >
+              <div style={{ borderRadius: RADIUS, overflow: 'hidden', marginBottom: 8, border: `1px solid ${BORDER}` }}>
                 {breakdown.lines.map((line, i) => (
                   <div
                     key={i}
-                    className="flex items-center justify-between px-2.5 py-1.5"
                     style={{
-                      background: i % 2 === 0 ? '#FFFFFF' : '#F9FAFB',
-                      borderTop: i > 0 ? '1px solid #F3F4F6' : undefined,
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                      padding: '6px 10px',
+                      background: i % 2 === 0 ? CARD : SURFACE2,
+                      borderTop: i > 0 ? `1px solid ${BORDER}` : undefined,
                     }}
                   >
-                    <div className="min-w-0">
-                      <p className="text-[11px] font-medium" style={{ color: '#1A1A1A' }}>
+                    <div style={{ minWidth: 0 }}>
+                      <p style={{ fontFamily: FIG, fontSize: 11, fontWeight: 500, color: INK, margin: 0 }}>
                         {line.trade}
                       </p>
-                      <p className="text-[10px]" style={{ color: '#9CA3AF' }}>
+                      <p style={{ fontFamily: MONO, fontSize: 10, color: INK3, margin: 0 }}>
                         {line.material} &middot; {line.quantity.toLocaleString()} {line.unit} @ ${line.rate.toFixed(2)}/{line.unit}
                       </p>
                     </div>
-                    <p className="text-[11px] font-semibold flex-shrink-0 ml-3" style={{ color: '#374151' }}>
+                    <p style={{ fontFamily: MONO, fontSize: 11, fontWeight: 600, color: INK2, flexShrink: 0, marginLeft: 12, margin: 0 }}>
                       ${line.total.toLocaleString()}
                     </p>
                   </div>
                 ))}
 
                 {/* Total row */}
-                <div
-                  className="flex items-center justify-between px-2.5 py-2"
-                  style={{ background: '#F0FDFA', borderTop: '1px solid #E5E7EB' }}
-                >
-                  <p className="text-[11px] font-semibold" style={{ color: '#0F766E' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 10px 8px', borderTop: '1px solid #ddd9d3' }}>
+                  <p style={{ fontFamily: MONO, fontSize: 11, fontWeight: 700, color: '#111010', margin: 0 }}>
                     Estimated Total
                   </p>
-                  <p className="text-sm font-bold" style={{ color: '#0F766E' }}>
+                  <p style={{ fontFamily: FIG, fontSize: 15, fontWeight: 700, color: '#111010', margin: 0 }}>
                     ${breakdown.totalMid.toLocaleString()}
                   </p>
                 </div>
               </div>
 
               {/* Range bar */}
-              <div className="flex items-center justify-between text-[10px] mb-1" style={{ color: '#9CA3AF' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontFamily: MONO, fontSize: 10, color: '#888', marginBottom: 4 }}>
                 <span>${breakdown.low.toLocaleString()}</span>
-                <span className="font-medium" style={{ color: '#6B7280' }}>
+                <span style={{ fontWeight: 500, color: '#888' }}>
                   Range ({breakdown.totalSqft.toLocaleString()} sqft, {breakdown.roomCount} rm{breakdown.roomCount !== 1 ? 's' : ''})
                 </span>
                 <span>${breakdown.high.toLocaleString()}</span>
               </div>
-              <div
-                className="h-1.5 rounded-full overflow-hidden"
-                style={{ background: '#F3F4F6' }}
-              >
-                <div
-                  className="h-full rounded-full"
-                  style={{
-                    background: 'linear-gradient(90deg, #D1D5DB, #0F766E, #D1D5DB)',
-                    width: '100%',
-                  }}
-                />
+              <div style={{ height: 4, borderRadius: 2, overflow: 'hidden', background: '#ddd9d3' }}>
+                <div style={{ height: '100%', borderRadius: 2, background: '#111010', width: '100%' }} />
               </div>
             </div>
           )}
@@ -1289,63 +1177,46 @@ function LeadCard({ lead, defaultExpanded = false }: { lead: LeadRecord; default
 
       {/* Stage dropdown + actions (hidden during edit) */}
       {expanded && !editing && (
-        <div className="mt-3 pt-2" style={{ borderTop: '1px solid #F3F4F6' }}>
+        <div style={{ marginTop: 12, paddingTop: 8, borderTop: `1px solid ${BORDER}` }}>
           {/* Stage selector row */}
           {stage !== 'won' && (
-            <div className="flex items-center gap-2 mb-2">
-              <label className="text-[10px] font-medium" style={{ color: '#9CA3AF' }}>Stage</label>
-              {/* Only manual stages are selectable — discovery/site_visit/quote_sent advance via project status */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+              <label style={{ fontFamily: MONO, fontSize: 10, fontWeight: 500, color: INK3 }}>Stage</label>
               {(stage === 'new' || stage === 'contacted' || stage === 'lost') ? (
                 <select
                   value={stage}
                   onChange={(e) => handleStageChange(e.target.value)}
                   disabled={updateStage.isPending || passLead.isPending}
-                  className="min-h-[30px] px-2 pr-6 rounded-lg text-[11px] font-semibold appearance-none cursor-pointer"
-                  style={{
-                    background: STAGE_BG[stage],
-                    color: stageColor,
-                    border: `1px solid ${stageColor}40`,
-                    opacity: (updateStage.isPending || passLead.isPending) ? 0.6 : 1,
-                  }}
+                  style={{ minHeight: 30, padding: '4px 24px 4px 8px', borderRadius: 2, fontFamily: MONO, fontSize: 10, fontWeight: 500, letterSpacing: '1px', textTransform: 'uppercase' as const, appearance: 'none' as const, cursor: 'pointer', background: 'transparent', color: '#111010', border: '1px solid #ddd9d3', opacity: (updateStage.isPending || passLead.isPending) ? 0.6 : 1 }}
                 >
                   {(['new', 'contacted', 'lost'] as LeadStage[]).map((s) => (
-                    <option key={s} value={s}>
-                      {STAGE_LABELS[s]}
-                    </option>
+                    <option key={s} value={s}>{STAGE_LABELS[s]}</option>
                   ))}
                 </select>
               ) : (
-                <span
-                  className="min-h-[30px] px-2.5 rounded-lg text-[11px] font-semibold flex items-center"
-                  style={{ background: STAGE_BG[stage], color: stageColor, border: `1px solid ${stageColor}40` }}
-                >
+                <span style={{ minHeight: 30, padding: '4px 10px', borderRadius: 2, fontFamily: MONO, fontSize: 10, fontWeight: 500, letterSpacing: '1px', textTransform: 'uppercase' as const, display: 'inline-flex', alignItems: 'center', background: 'transparent', color: '#111010', border: '1px solid #ddd9d3' }}>
                   {STAGE_LABELS[stage]}
                 </span>
               )}
 
               {/* Follow-up date */}
               {stage !== 'lost' && (
-                <div className="flex items-center gap-1 ml-auto">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginLeft: 'auto' }}>
                   {lead.followUpDate && !showFollowUpPicker && (
                     <button
                       onClick={() => { setShowFollowUpPicker(true); setFollowUpInput(lead.followUpDate || ''); }}
-                      className="text-[10px] font-medium px-2 py-1 rounded-md"
-                      style={{
-                        background: lead.isOverdueFollowUp ? '#FEF2F2' : '#F3F4F6',
-                        color: lead.isOverdueFollowUp ? '#EF4444' : '#6B7280',
-                      }}
+                      style={{ fontFamily: MONO, fontSize: 10, fontWeight: 500, padding: '4px 8px', borderRadius: RADIUS_SM, border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 3, background: lead.isOverdueFollowUp ? '#FEF2F2' : BG, color: lead.isOverdueFollowUp ? '#EF4444' : INK3 }}
                     >
-                      <Clock size={10} className="inline mr-0.5" style={{ marginTop: -1 }} />
+                      <Clock size={10} />
                       {lead.followUpDate}
                     </button>
                   )}
                   {!lead.followUpDate && !showFollowUpPicker && (
                     <button
                       onClick={() => setShowFollowUpPicker(true)}
-                      className="text-[10px] font-medium px-2 py-1 rounded-md"
-                      style={{ background: '#F3F4F6', color: '#9CA3AF' }}
+                      style={{ fontFamily: MONO, fontSize: 10, fontWeight: 500, padding: '4px 8px', borderRadius: RADIUS_SM, border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 3, background: BG, color: INK3 }}
                     >
-                      <Clock size={10} className="inline mr-0.5" style={{ marginTop: -1 }} />
+                      <Clock size={10} />
                       Follow-up
                     </button>
                   )}
@@ -1356,37 +1227,22 @@ function LeadCard({ lead, defaultExpanded = false }: { lead: LeadRecord; default
 
           {/* Follow-up date picker (inline) */}
           {showFollowUpPicker && (
-            <div className="flex items-center gap-1.5 mb-2">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
               <input
                 type="date"
                 value={followUpInput}
                 onChange={(e) => setFollowUpInput(e.target.value)}
-                className="min-h-[30px] px-2 rounded-lg text-[11px]"
-                style={{ background: '#F9FAFB', border: '1px solid #E5E7EB', color: '#111827' }}
+                style={{ minHeight: 30, padding: '0 8px', borderRadius: RADIUS_SM, fontFamily: MONO, fontSize: 11, background: SURFACE2, border: `1px solid ${BORDER}`, color: INK }}
               />
-              <button
-                onClick={handleSetFollowUp}
-                disabled={!followUpInput || setFollowUp.isPending}
-                className="min-h-[30px] px-2.5 rounded-lg text-[10px] font-semibold"
-                style={{ background: '#0F766E', color: '#FFFFFF', opacity: (!followUpInput || setFollowUp.isPending) ? 0.5 : 1 }}
-              >
+              <button onClick={handleSetFollowUp} disabled={!followUpInput || setFollowUp.isPending} style={{ ...actionBtn, background: INK, color: '#fff', border: `1px solid ${INK}`, opacity: (!followUpInput || setFollowUp.isPending) ? 0.5 : 1 }}>
                 Set
               </button>
               {lead.followUpDate && (
-                <button
-                  onClick={handleClearFollowUp}
-                  disabled={setFollowUp.isPending}
-                  className="min-h-[30px] px-2 rounded-lg text-[10px] font-medium"
-                  style={{ background: '#FEF2F2', color: '#EF4444' }}
-                >
+                <button onClick={handleClearFollowUp} disabled={setFollowUp.isPending} style={{ ...actionBtn, background: '#FEF2F2', color: '#EF4444', border: '1px solid #FECACA' }}>
                   Clear
                 </button>
               )}
-              <button
-                onClick={() => setShowFollowUpPicker(false)}
-                className="min-h-[30px] px-2 rounded-lg text-[10px] font-medium"
-                style={{ background: '#F3F4F6', color: '#6B7280' }}
-              >
+              <button onClick={() => setShowFollowUpPicker(false)} style={{ ...actionBtn, background: BG }}>
                 Cancel
               </button>
             </div>
@@ -1395,67 +1251,41 @@ function LeadCard({ lead, defaultExpanded = false }: { lead: LeadRecord; default
       )}
 
       {/* Actions (hidden during edit) — stage-appropriate */}
-      {!editing && <div className="flex gap-1.5 mt-2 flex-wrap">
+      {!editing && <div style={{ display: 'flex', gap: 6, marginTop: 10, flexWrap: 'wrap' }}>
         {/* Call + Text — all non-lost stages */}
         {stage !== 'lost' && stage !== 'won' && customer.phone && (
-          <a
-            href={`tel:${customer.phone}`}
-            className="min-h-[32px] px-2.5 flex items-center gap-1 rounded-lg text-[11px] font-medium"
-            style={{ background: '#F3F4F6', color: '#374151' }}
-          >
-            <Phone size={12} /> Call
+          <a href={`tel:${customer.phone}`} style={actionBtn}>
+            <Phone size={11} /> Call
           </a>
         )}
         {stage !== 'lost' && stage !== 'won' && customer.phone && (
-          <a
-            href={`sms:${customer.phone}`}
-            className="min-h-[32px] px-2.5 flex items-center gap-1 rounded-lg text-[11px] font-medium"
-            style={{ background: '#F3F4F6', color: '#374151' }}
-          >
-            <MessageCircle size={12} /> Text
+          <a href={`sms:${customer.phone}`} style={actionBtn}>
+            <MessageCircle size={11} /> Text
           </a>
         )}
 
         {/* New / Contacted — Start Discovery */}
         {(stage === 'new' || stage === 'contacted') && !linkedProject && (
-          <button
-            onClick={handleStartDiscovery}
-            disabled={createProject.isPending}
-            className="min-h-[32px] px-2.5 flex items-center gap-1 rounded-lg text-[11px] font-medium"
-            style={{ background: '#F0FDFA', color: '#0F766E' }}
-          >
-            <Compass size={12} /> {createProject.isPending ? 'Creating...' : 'Start Discovery'}
+          <button onClick={handleStartDiscovery} disabled={createProject.isPending} style={{ ...actionBtn, color: INK }}>
+            <Compass size={11} /> {createProject.isPending ? 'Creating...' : 'Start Discovery'}
           </button>
         )}
 
         {/* Discovery — Continue Discovery */}
         {stage === 'discovery' && linkedProject && (
-          <button
-            onClick={() => router.push(`/discovery/${linkedProject.id}`)}
-            className="min-h-[32px] px-2.5 flex items-center gap-1 rounded-lg text-[11px] font-medium"
-            style={{ background: '#F0FDFA', color: '#0F766E' }}
-          >
-            <Compass size={12} /> Continue Discovery
+          <button onClick={() => router.push(`/discovery/${linkedProject.id}`)} style={{ ...actionBtn, color: INK }}>
+            <Compass size={11} /> Continue Discovery
           </button>
         )}
 
         {/* Site Visit — Mark Done + Build Quote */}
         {stage === 'site_visit' && linkedProject && (
           <>
-            <button
-              onClick={() => markSiteVisitDone.mutate({ projectId: linkedProject.id, customerName: fullName })}
-              disabled={markSiteVisitDone.isPending}
-              className="min-h-[32px] px-2.5 flex items-center gap-1 rounded-lg text-[11px] font-medium"
-              style={{ background: '#EDE9FE', color: '#6366F1', opacity: markSiteVisitDone.isPending ? 0.6 : 1 }}
-            >
-              <CheckCircle2 size={12} /> {markSiteVisitDone.isPending ? 'Saving...' : 'Site Visit Done'}
+            <button onClick={() => markSiteVisitDone.mutate({ projectId: linkedProject.id, customerName: fullName })} disabled={markSiteVisitDone.isPending} style={{ ...actionBtn, color: INK, opacity: markSiteVisitDone.isPending ? 0.6 : 1 }}>
+              <CheckCircle2 size={11} /> {markSiteVisitDone.isPending ? 'Saving...' : 'Site Visit Done'}
             </button>
-            <button
-              onClick={() => router.push(`/estimates/${linkedProject.id}`)}
-              className="min-h-[32px] px-2.5 flex items-center gap-1 rounded-lg text-[11px] font-medium"
-              style={{ background: '#F0FDFA', color: '#0F766E' }}
-            >
-              <FileText size={12} /> Build Quote
+            <button onClick={() => router.push(`/estimates/${linkedProject.id}`)} style={{ ...actionBtn, color: INK }}>
+              <FileText size={11} /> Build Quote
             </button>
           </>
         )}
@@ -1463,62 +1293,37 @@ function LeadCard({ lead, defaultExpanded = false }: { lead: LeadRecord; default
         {/* Quote Sent — View Quote + View Project */}
         {stage === 'quote_sent' && linkedProject && (
           <>
-            <button
-              onClick={() => router.push(`/estimates/${linkedProject.id}`)}
-              className="min-h-[32px] px-2.5 flex items-center gap-1 rounded-lg text-[11px] font-medium"
-              style={{ background: '#F0FDFA', color: '#0F766E' }}
-            >
-              <Eye size={12} /> View Quote
+            <button onClick={() => router.push(`/estimates/${linkedProject.id}`)} style={{ ...actionBtn, color: INK }}>
+              <Eye size={11} /> View Quote
             </button>
-            <button
-              onClick={() => router.push(`/projects/${linkedProject.id}`)}
-              className="min-h-[32px] px-2.5 flex items-center gap-1 rounded-lg text-[11px] font-medium"
-              style={{ background: '#F3F4F6', color: '#374151' }}
-            >
-              View Project <ArrowRight size={12} />
+            <button onClick={() => router.push(`/projects/${linkedProject.id}`)} style={actionBtn}>
+              View Project <ArrowRight size={11} />
             </button>
           </>
         )}
 
         {/* Won — View Project */}
         {stage === 'won' && linkedProject && (
-          <button
-            onClick={() => router.push(`/projects/${linkedProject.id}`)}
-            className="min-h-[32px] px-2.5 flex items-center gap-1 rounded-lg text-[11px] font-medium"
-            style={{ background: '#ECFDF5', color: '#10B981' }}
-          >
-            View Project <ArrowRight size={12} />
+          <button onClick={() => router.push(`/projects/${linkedProject.id}`)} style={{ ...actionBtn, color: INK }}>
+            View Project <ArrowRight size={11} />
           </button>
         )}
 
         {/* Lost — Restore */}
         {stage === 'lost' && (
-          <button
-            onClick={handleRestore}
-            disabled={restoreLead.isPending}
-            className="min-h-[32px] px-2.5 flex items-center gap-1 rounded-lg text-[11px] font-medium"
-            style={{ background: '#F3F4F6', color: '#374151' }}
-          >
-            <RotateCcw size={12} /> Restore
+          <button onClick={handleRestore} disabled={restoreLead.isPending} style={actionBtn}>
+            <RotateCcw size={11} /> Restore
           </button>
         )}
 
         {/* Edit button — all active stages */}
         {expanded && stage !== 'won' && stage !== 'lost' && (
-          <button
-            onClick={handleStartEdit}
-            className="min-h-[32px] px-2.5 flex items-center gap-1 rounded-lg text-[11px] font-medium"
-            style={{ background: '#EFF6FF', color: '#1D4ED8' }}
-          >
-            <Pencil size={12} /> Edit
+          <button onClick={handleStartEdit} style={actionBtn}>
+            <Pencil size={11} /> Edit
           </button>
         )}
 
-        <button
-          onClick={() => setShowDeleteConfirm(true)}
-          className="min-h-[32px] px-2 flex items-center rounded-lg text-[11px] font-medium ml-auto"
-          style={{ color: '#D1D5DB' }}
-        >
+        <button onClick={() => setShowDeleteConfirm(true)} style={{ ...actionBtn, border: 'none', marginLeft: 'auto', color: INK3, padding: '0 4px' }}>
           <Trash2 size={12} />
         </button>
       </div>}
@@ -1548,27 +1353,15 @@ function LeadCard({ lead, defaultExpanded = false }: { lead: LeadRecord; default
 
       {/* Delete confirmation */}
       {showDeleteConfirm && (
-        <div
-          className="mt-2 rounded-lg p-2.5 flex items-center justify-between"
-          style={{ background: '#FEF2F2', border: '1px solid #FECACA' }}
-        >
-          <p className="text-[11px] font-medium" style={{ color: '#991B1B' }}>
+        <div style={{ marginTop: 8, borderRadius: RADIUS, padding: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#FEF2F2', border: '1px solid #FECACA' }}>
+          <p style={{ fontFamily: FIG, fontSize: 11, fontWeight: 500, color: '#991B1B', margin: 0 }}>
             Delete {fullName}?{linkedProject ? ' Project will also be removed.' : ''}
           </p>
-          <div className="flex gap-1.5 flex-shrink-0 ml-2">
-            <button
-              onClick={() => setShowDeleteConfirm(false)}
-              className="min-h-[28px] px-2.5 rounded-md text-[11px] font-medium"
-              style={{ background: '#FFFFFF', color: '#6B7280', border: '1px solid #E5E7EB' }}
-            >
+          <div style={{ display: 'flex', gap: 6, flexShrink: 0, marginLeft: 8 }}>
+            <button onClick={() => setShowDeleteConfirm(false)} style={{ ...actionBtn, background: CARD }}>
               Cancel
             </button>
-            <button
-              onClick={handleDelete}
-              disabled={deleteLead.isPending}
-              className="min-h-[28px] px-2.5 rounded-md text-[11px] font-medium"
-              style={{ background: '#EF4444', color: '#FFFFFF' }}
-            >
+            <button onClick={handleDelete} disabled={deleteLead.isPending} style={{ ...actionBtn, background: '#EF4444', color: '#fff', border: '1px solid #EF4444' }}>
               {deleteLead.isPending ? '...' : 'Delete'}
             </button>
           </div>
@@ -1649,18 +1442,25 @@ function LeadActivitySection({
   const events = timelineData || [];
   const visibleEvents = showAllTimeline ? events : events.slice(0, 5);
 
+  const pillStyle = (isSelected: boolean, selBg = INK, selColor = CARD) => ({
+    minHeight: 26, padding: '0 8px', borderRadius: RADIUS_SM,
+    fontFamily: MONO, fontSize: 10, fontWeight: 500, cursor: 'pointer',
+    background: isSelected ? selBg : CARD,
+    color: isSelected ? selColor : INK2,
+    border: isSelected ? `1px solid ${selBg}` : `1px solid ${BORDER}`,
+  });
+
   return (
-    <div className="mt-2 pt-2" style={{ borderTop: '1px solid #F3F4F6' }}>
+    <div style={{ marginTop: 8, paddingTop: 8, borderTop: `1px solid ${BORDER}` }}>
       {/* Header + Add Note toggle */}
-      <div className="flex items-center justify-between mb-2">
-        <h4 className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: '#6B7280' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+        <h4 style={{ fontFamily: MONO, fontSize: 9, fontWeight: 500, letterSpacing: '0.14em', textTransform: 'uppercase' as const, color: INK3, margin: 0 }}>
           Activity
         </h4>
         {stage !== 'lost' && !showNoteInput && (
           <button
             onClick={() => setShowNoteInput(true)}
-            className="min-h-[24px] px-2 flex items-center gap-1 rounded-md text-[10px] font-medium"
-            style={{ background: '#F0FDFA', color: '#0F766E' }}
+            style={{ ...actionBtn, background: ACCENT_BG, color: INK2 }}
           >
             <PlusCircle size={10} /> Log Activity
           </button>
@@ -1669,72 +1469,41 @@ function LeadActivitySection({
 
       {/* Structured note input */}
       {showNoteInput && (
-        <div className="mb-3 p-2.5 rounded-lg" style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
+        <div style={{ marginBottom: 12, padding: 10, borderRadius: RADIUS, background: SURFACE2, border: `1px solid ${BORDER}` }}>
           {/* Row 1: Activity type pills */}
-          <div className="mb-2">
-            <label className="block text-[9px] font-medium mb-1" style={{ color: '#9CA3AF' }}>Type</label>
-            <div className="flex flex-wrap gap-1">
-              {LEAD_ACTIVITY_TYPE_OPTIONS.map((opt) => {
-                const isSelected = noteActivityType === opt.value;
-                return (
-                  <button
-                    key={opt.value}
-                    onClick={() => setNoteActivityType(opt.value)}
-                    className="min-h-[26px] px-2 rounded-md text-[10px] font-medium"
-                    style={{
-                      background: isSelected ? '#0F766E' : '#FFFFFF',
-                      color: isSelected ? '#FFFFFF' : '#6B7280',
-                      border: isSelected ? '1px solid #0F766E' : '1px solid #E5E7EB',
-                    }}
-                  >
-                    {opt.label}
-                  </button>
-                );
-              })}
+          <div style={{ marginBottom: 8 }}>
+            <label style={{ display: 'block', fontFamily: MONO, fontSize: 9, fontWeight: 500, color: INK3, marginBottom: 4 }}>Type</label>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+              {LEAD_ACTIVITY_TYPE_OPTIONS.map((opt) => (
+                <button key={opt.value} onClick={() => setNoteActivityType(opt.value)} style={pillStyle(noteActivityType === opt.value)}>
+                  {opt.label}
+                </button>
+              ))}
             </div>
           </div>
 
           {/* Row 2: Topic pills */}
-          <div className="mb-2">
-            <label className="block text-[9px] font-medium mb-1" style={{ color: '#9CA3AF' }}>Topic</label>
-            <div className="flex flex-wrap gap-1">
-              {LEAD_TOPIC_OPTIONS.map((opt) => {
-                const isSelected = noteTopic === opt.value;
-                return (
-                  <button
-                    key={opt.value}
-                    onClick={() => setNoteTopic(opt.value)}
-                    className="min-h-[26px] px-2 rounded-md text-[10px] font-medium"
-                    style={{
-                      background: isSelected ? '#0F766E' : '#FFFFFF',
-                      color: isSelected ? '#FFFFFF' : '#6B7280',
-                      border: isSelected ? '1px solid #0F766E' : '1px solid #E5E7EB',
-                    }}
-                  >
-                    {opt.label}
-                  </button>
-                );
-              })}
+          <div style={{ marginBottom: 8 }}>
+            <label style={{ display: 'block', fontFamily: MONO, fontSize: 9, fontWeight: 500, color: INK3, marginBottom: 4 }}>Topic</label>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+              {LEAD_TOPIC_OPTIONS.map((opt) => (
+                <button key={opt.value} onClick={() => setNoteTopic(opt.value)} style={pillStyle(noteTopic === opt.value)}>
+                  {opt.label}
+                </button>
+              ))}
             </div>
           </div>
 
           {/* Row 3: Outcome pills */}
-          <div className="mb-2">
-            <label className="block text-[9px] font-medium mb-1" style={{ color: '#9CA3AF' }}>Outcome</label>
-            <div className="flex flex-wrap gap-1">
+          <div style={{ marginBottom: 8 }}>
+            <label style={{ display: 'block', fontFamily: MONO, fontSize: 9, fontWeight: 500, color: INK3, marginBottom: 4 }}>Outcome</label>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
               {LEAD_OUTCOME_OPTIONS.map((opt) => {
                 const isSelected = noteOutcome === opt.value;
                 const colors = OUTCOME_COLORS[opt.value] || OUTCOME_COLORS.neutral;
                 return (
-                  <button
-                    key={opt.value}
-                    onClick={() => setNoteOutcome(opt.value)}
-                    className="min-h-[26px] px-2 rounded-md text-[10px] font-medium"
-                    style={{
-                      background: isSelected ? colors.bg : '#FFFFFF',
-                      color: isSelected ? colors.text : '#6B7280',
-                      border: isSelected ? `1px solid ${colors.text}40` : '1px solid #E5E7EB',
-                    }}
+                  <button key={opt.value} onClick={() => setNoteOutcome(opt.value)}
+                    style={{ minHeight: 26, padding: '0 8px', borderRadius: RADIUS_SM, fontFamily: MONO, fontSize: 10, fontWeight: 500, cursor: 'pointer', background: isSelected ? colors.bg : CARD, color: isSelected ? colors.text : INK2, border: isSelected ? `1px solid ${colors.text}40` : `1px solid ${BORDER}` }}
                   >
                     {opt.label}
                   </button>
@@ -1744,29 +1513,19 @@ function LeadActivitySection({
           </div>
 
           {/* Detail + actions */}
-          <div className="flex gap-1.5">
+          <div style={{ display: 'flex', gap: 6 }}>
             <input
               type="text"
               value={noteDetail}
               onChange={(e) => setNoteDetail(e.target.value)}
               placeholder="Detail (optional)"
-              className="flex-1 min-h-[30px] px-2 rounded-lg text-[11px]"
-              style={{ background: '#FFFFFF', border: '1px solid #E5E7EB', color: '#111827' }}
+              style={{ flex: 1, minHeight: 30, padding: '0 8px', borderRadius: RADIUS_SM, fontFamily: FIG, fontSize: 11, background: CARD, border: `1px solid ${BORDER}`, color: INK }}
               onKeyDown={(e) => { if (e.key === 'Enter') onAddNote(); }}
             />
-            <button
-              onClick={onAddNote}
-              disabled={isAddingNote}
-              className="min-h-[30px] px-3 rounded-lg text-[10px] font-semibold"
-              style={{ background: '#0F766E', color: '#FFFFFF', opacity: isAddingNote ? 0.6 : 1 }}
-            >
+            <button onClick={onAddNote} disabled={isAddingNote} style={{ ...actionBtn, background: INK, color: '#fff', border: `1px solid ${INK}`, opacity: isAddingNote ? 0.6 : 1 }}>
               {isAddingNote ? '...' : 'Log'}
             </button>
-            <button
-              onClick={() => setShowNoteInput(false)}
-              className="min-h-[30px] px-2 rounded-lg text-[10px] font-medium"
-              style={{ background: '#F3F4F6', color: '#6B7280' }}
-            >
+            <button onClick={() => setShowNoteInput(false)} style={{ ...actionBtn, background: BG }}>
               Cancel
             </button>
           </div>
@@ -1775,31 +1534,23 @@ function LeadActivitySection({
 
       {/* Timeline list */}
       {timelineLoading && (
-        <p className="text-[10px] py-2" style={{ color: '#9CA3AF' }}>Loading timeline...</p>
+        <p style={{ fontFamily: MONO, fontSize: 10, padding: '8px 0', color: INK3, margin: 0 }}>Loading timeline...</p>
       )}
       {!timelineLoading && events.length === 0 && (
-        <p className="text-[10px] py-2" style={{ color: '#D1D5DB' }}>No activity yet</p>
+        <p style={{ fontFamily: MONO, fontSize: 10, padding: '8px 0', color: INK3, margin: 0 }}>No activity yet</p>
       )}
       {!timelineLoading && visibleEvents.length > 0 && (
-        <div className="space-y-1">
+        <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 4 }}>
           {visibleEvents.map((event) => (
             <TimelineEventRow key={event.id} event={event} />
           ))}
           {events.length > 5 && !showAllTimeline && (
-            <button
-              onClick={() => setShowAllTimeline(true)}
-              className="text-[10px] font-medium py-1"
-              style={{ color: '#0F766E' }}
-            >
+            <button onClick={() => setShowAllTimeline(true)} style={{ fontFamily: MONO, fontSize: 10, fontWeight: 500, padding: '4px 0', color: INK2, background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' as const }}>
               Show all ({events.length})
             </button>
           )}
           {showAllTimeline && events.length > 5 && (
-            <button
-              onClick={() => setShowAllTimeline(false)}
-              className="text-[10px] font-medium py-1"
-              style={{ color: '#0F766E' }}
-            >
+            <button onClick={() => setShowAllTimeline(false)} style={{ fontFamily: MONO, fontSize: 10, fontWeight: 500, padding: '4px 0', color: INK2, background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' as const }}>
               Show less
             </button>
           )}
@@ -1829,24 +1580,21 @@ function TimelineEventRow({ event }: { event: ActivityEvent }) {
   const detail = eventData.detail as string | null;
 
   return (
-    <div className="flex items-start gap-2 py-1">
-      <div
-        className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
-        style={{ background: outcomeColor?.bg || '#F3F4F6' }}
-      >
-        <IconComponent size={10} style={{ color: outcomeColor?.text || '#9CA3AF' }} />
+    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '4px 0' }}>
+      <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2, background: outcomeColor?.bg || SURFACE2 }}>
+        <IconComponent size={10} style={{ color: outcomeColor?.text || INK3 }} />
       </div>
-      <div className="min-w-0 flex-1">
-        <div className="flex items-baseline justify-between gap-2">
-          <p className="text-[11px] font-medium truncate" style={{ color: '#374151' }}>
+      <div style={{ minWidth: 0, flex: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8 }}>
+          <p style={{ fontFamily: FIG, fontSize: 11, fontWeight: 500, color: INK2, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>
             {event.summary}
           </p>
-          <span className="text-[9px] flex-shrink-0" style={{ color: '#D1D5DB' }}>
+          <span style={{ fontFamily: MONO, fontSize: 9, flexShrink: 0, color: INK3 }}>
             {timeLabel}
           </span>
         </div>
         {detail && (
-          <p className="text-[10px] mt-0.5 truncate" style={{ color: '#9CA3AF' }}>
+          <p style={{ fontFamily: FIG, fontSize: 10, color: INK3, margin: 0, marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>
             {detail}
           </p>
         )}
@@ -1857,25 +1605,24 @@ function TimelineEventRow({ event }: { event: ActivityEvent }) {
 
 function DetailSection({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <div>
+    <div style={{ paddingBottom: 12, borderBottom: '1px solid #ddd9d3' }}>
       <h4
-        className="text-[10px] font-semibold uppercase tracking-wider mb-1.5"
-        style={{ color: '#6B7280' }}
+        style={{ fontFamily: MONO, fontSize: 9, fontWeight: 500, letterSpacing: '2px', textTransform: 'uppercase' as const, color: '#aaa', margin: 0, marginBottom: 6 }}
       >
         {title}
       </h4>
-      <div className="space-y-1">{children}</div>
+      <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 4 }}>{children}</div>
     </div>
   );
 }
 
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-baseline justify-between gap-2">
-      <span className="text-[10px] font-medium" style={{ color: '#9CA3AF' }}>
+    <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8 }}>
+      <span style={{ fontFamily: MONO, fontSize: 11, fontWeight: 400, color: '#888' }}>
         {label}
       </span>
-      <span className="text-[11px] font-medium text-right" style={{ color: '#374151' }}>
+      <span style={{ fontFamily: FIG, fontSize: 13, fontWeight: 400, textAlign: 'right' as const, color: '#111010' }}>
         {value}
       </span>
     </div>
@@ -1887,13 +1634,10 @@ function DetailRow({ label, value }: { label: string; value: string }) {
 function EditSection({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div>
-      <h4
-        className="text-[10px] font-semibold uppercase tracking-wider mb-1.5"
-        style={{ color: '#6B7280' }}
-      >
+      <h4 style={{ fontFamily: MONO, fontSize: 9, fontWeight: 500, letterSpacing: '0.14em', textTransform: 'uppercase' as const, color: INK3, margin: 0, marginBottom: 6 }}>
         {title}
       </h4>
-      <div className="space-y-2">{children}</div>
+      <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 8 }}>{children}</div>
     </div>
   );
 }
@@ -1911,15 +1655,14 @@ function EditField({
 }) {
   return (
     <div>
-      <label className="block text-[10px] font-medium mb-0.5" style={{ color: '#9CA3AF' }}>
+      <label style={{ display: 'block', fontFamily: MONO, fontSize: 9, fontWeight: 400, letterSpacing: '0.12em', textTransform: 'uppercase' as const, color: INK3, marginBottom: 4 }}>
         {label}
       </label>
       <input
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full min-h-[34px] px-2.5 rounded-lg text-[12px]"
-        style={{ background: '#F9FAFB', border: '1px solid #E5E7EB', color: '#111827' }}
+        style={{ width: '100%', minHeight: 34, padding: '0 12px', borderRadius: RADIUS_SM, fontFamily: FIG, fontSize: 13, background: CARD, border: `1px solid ${BORDER}`, color: INK }}
       />
     </div>
   );
@@ -1938,22 +1681,17 @@ function EditPillGroup({
 }) {
   return (
     <div>
-      <label className="block text-[10px] font-medium mb-1" style={{ color: '#9CA3AF' }}>
+      <label style={{ display: 'block', fontFamily: MONO, fontSize: 9, fontWeight: 400, letterSpacing: '0.12em', textTransform: 'uppercase' as const, color: INK3, marginBottom: 6 }}>
         {label}
       </label>
-      <div className="flex flex-wrap gap-1.5">
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
         {options.map((opt) => {
           const isSelected = selected === opt.value;
           return (
             <button
               key={opt.value}
               onClick={() => onSelect(opt.value)}
-              className="min-h-[28px] px-2 rounded-lg text-[10px] font-medium transition-colors"
-              style={{
-                background: isSelected ? '#F0FDFA' : '#FFFFFF',
-                color: isSelected ? '#0F766E' : '#6B7280',
-                border: isSelected ? '2px solid #0F766E' : '1px solid #E5E7EB',
-              }}
+              style={{ padding: '7px 14px', borderRadius: RADIUS_SM, fontFamily: MONO, fontSize: 9.5, fontWeight: 500, letterSpacing: '0.06em', cursor: 'pointer', transition: 'background 0.15s', background: isSelected ? ACCENT_BG : CARD, color: isSelected ? ACCENT : INK2, border: isSelected ? `1px solid ${ACCENT_BORDER}` : `1px solid ${BORDER}` }}
             >
               {opt.label}
             </button>
@@ -1974,23 +1712,21 @@ function EditCounterField({
   onChange: (v: number) => void;
 }) {
   return (
-    <div className="flex items-center justify-between rounded-lg px-2 py-1" style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
-      <span className="text-[10px] font-medium" style={{ color: '#6B7280' }}>{label}</span>
-      <div className="flex items-center gap-1">
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRadius: RADIUS_SM, padding: '4px 8px', background: SURFACE2, border: `1px solid ${BORDER}` }}>
+      <span style={{ fontFamily: MONO, fontSize: 10, fontWeight: 500, color: INK2 }}>{label}</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
         <button
           onClick={() => onChange(Math.max(0, value - 1))}
-          className="min-h-[24px] min-w-[24px] flex items-center justify-center rounded text-xs font-medium"
-          style={{ background: '#FFFFFF', color: value > 0 ? '#374151' : '#D1D5DB', border: '1px solid #E5E7EB' }}
+          style={{ minHeight: 24, minWidth: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4, fontFamily: MONO, fontSize: 12, fontWeight: 500, cursor: 'pointer', background: CARD, color: value > 0 ? INK2 : INK3, border: `1px solid ${BORDER}` }}
         >
           −
         </button>
-        <span className="w-5 text-center text-[11px] font-semibold" style={{ color: value > 0 ? '#111827' : '#D1D5DB' }}>
+        <span style={{ width: 20, textAlign: 'center' as const, fontFamily: MONO, fontSize: 11, fontWeight: 600, color: value > 0 ? INK : INK3 }}>
           {value}
         </span>
         <button
           onClick={() => onChange(value + 1)}
-          className="min-h-[24px] min-w-[24px] flex items-center justify-center rounded text-xs font-medium"
-          style={{ background: '#F0FDFA', color: '#0F766E', border: '1px solid #0F766E40' }}
+          style={{ minHeight: 24, minWidth: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4, fontFamily: MONO, fontSize: 12, fontWeight: 500, cursor: 'pointer', background: ACCENT_BG, color: ACCENT, border: `1px solid ${ACCENT_BORDER}` }}
         >
           +
         </button>

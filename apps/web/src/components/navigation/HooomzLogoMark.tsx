@@ -1,13 +1,20 @@
 /**
- * Hooomz Logo — SVG wordmark with filled overlapping circles.
+ * Hooomz Logo — plain "HMZ" text in white Figtree 800.
  */
 
 export function HooomzLogoMark() {
   return (
-    <img
-      src="/hooomz-logo.svg"
-      alt="Hooomz Interiors"
-      style={{ height: 32, width: 'auto' }}
-    />
+    <span
+      style={{
+        fontFamily: "'Figtree', sans-serif",
+        fontSize: 20,
+        fontWeight: 800,
+        color: '#ffffff',
+        letterSpacing: '-0.02em',
+        lineHeight: 1,
+      }}
+    >
+      HMZ
+    </span>
   );
 }

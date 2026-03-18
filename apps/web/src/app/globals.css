@@ -9,24 +9,24 @@
 /* ─── SURFACE TOKENS (light default) ─── */
 :root {
   --bg:         #F0EDE8;
-  --surface-1:  #FDFAF7;
+  --surface-1:  #FAF8F5;
   --surface-2:  #EAE4DB;
   --surface-3:  #E0D9CF;
-  --border:     #ddd9d3;
+  --border:     #E0DCD7;
   --border-l:   #E8E2D8;
   --border-strong: #C8BFB3;
-  --text-1:     #111010;
-  --text-2:     #524C45;
-  --text-3:     #888888;
+  --text-1:     #1A1714;
+  --text-2:     #5C5349;
+  --text-3:     #6B6560;
   --sidebar-bg: #111010;
 
   /* ─── Hooomz Interiors design system aliases ─── */
   --color-bg:      #F0EDE8;
-  --color-surface: #ffffff;
+  --color-surface: #FAF8F5;
   --color-sidebar: #111010;
-  --color-text:    #111010;
-  --color-muted:   #888888;
-  --color-border:  #ddd9d3;
+  --color-text:    #1A1714;
+  --color-muted:   #6B6560;
+  --color-border:  #E0DCD7;
   --font-primary:  'Figtree', sans-serif;
 
   /* Legacy aliases — map old names to new tokens */
@@ -38,12 +38,12 @@
   --clay:       #A07355;
   --clay-l:     #C4997A;
   --clay-d:     #6B4A35;
-  --o-red:      #C94F3E;
-  --o-yellow:   #D4A017;
-  --o-green:    #4A9B6F;
-  --green:      #4A9B6F;
-  --amber:      #C4872A;
-  --red:        #B85450;
+  --o-red:      #DC2626;
+  --o-yellow:   #D97706;
+  --o-green:    #16A34A;
+  --green:      #16A34A;
+  --amber:      #D97706;
+  --red:        #DC2626;
   --blue:       #4A7FA5;
 
   /* ─── TYPOGRAPHY ─── */
@@ -53,7 +53,7 @@
   --font-sans:    'IBM Plex Sans', system-ui, sans-serif;
   --font-cond:    'Barlow Condensed', sans-serif;
 
-  --radius: 6px;
+  --radius: 10px;
   --radius-sm: 6px;
 
   /* ─── 2026 INTERIORS PALETTE ALIASES ─── */
@@ -62,7 +62,7 @@
   --charcoal:   #1A1714;   /* primary text */
   --dark-nav:   #111010;   /* nav rail background */
   --mid:        #5C5349;   /* secondary text */
-  --muted:      #9A8E84;   /* tertiary / placeholder */
+  --muted:      #A09C98;   /* tertiary / placeholder */
   --faint:      #D4CEC7;   /* subtle dividers, ghost text */
   --border-s:   rgba(0,0,0,.18); /* strong border */
   --yellow:     #D97706;   /* warning / amber */
@@ -70,9 +70,9 @@
   /* Legacy aliases for existing components */
   --blue-dim:      rgba(74,127,165,0.08);
   --blue-hover:    #3A6F95;
-  --green-dim:     rgba(74,155,111,0.08);
-  --amber-dim:     rgba(196,135,42,0.08);
-  --red-dim:       rgba(184,84,80,0.07);
+  --green-dim:     rgba(22,163,74,0.08);
+  --amber-dim:     rgba(217,119,6,0.08);
+  --red-dim:       rgba(220,38,38,0.07);
   --sidebar-border: var(--border);
   --sidebar-text:  var(--text-1);
   --sidebar-muted: var(--text-3);

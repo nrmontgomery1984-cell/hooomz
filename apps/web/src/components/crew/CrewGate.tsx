@@ -19,14 +19,14 @@ export function CrewGate({ children }: CrewGateProps) {
   const pathname = usePathname();
   const { hasActiveSession, isLoading } = useActiveCrew();
 
-  // Portal routes bypass crew gate — no crew session needed for homeowner view
-  if (pathname?.startsWith('/portal')) {
+  // Portal, login, and intake routes bypass crew gate
+  if (pathname?.startsWith('/portal') || pathname?.startsWith('/login') || pathname?.startsWith('/intake')) {
     return <>{children}</>;
   }
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#F3F4F6' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg, #F0EDE8)' }}>
         <div className="text-sm text-gray-500">Loading...</div>
       </div>
     );

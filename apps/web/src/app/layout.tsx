@@ -6,6 +6,7 @@ import { QuickAddSheet } from '@/components/activity/QuickAddSheet';
 import { CrewGate } from '@/components/crew/CrewGate';
 
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { ServiceWorkerRegistration } from '@/components/ServiceWorkerRegistration';
 import { MobileModuleNav } from '@/components/navigation/MobileModuleNav';
 import './globals.css';
@@ -50,7 +51,7 @@ export default function RootLayout({
                 <Sidebar />
                 <main className="flex-1 min-h-screen min-w-0" style={{ background: '#F0EDE8', fontFamily: "'Figtree', sans-serif" }}>
                   <MobileModuleNav />
-                  {children}
+                  <ProtectedRoute>{children}</ProtectedRoute>
                 </main>
               </div>
               <BottomNav />

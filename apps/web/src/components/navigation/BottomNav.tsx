@@ -19,6 +19,7 @@ import type { ViewMode } from '@/lib/viewmode';
 import { useActiveCrew } from '@/lib/crew/ActiveCrewContext';
 import { useLocalProjects } from '@/lib/hooks/useLocalData';
 import { useDarkMode } from '@/lib/hooks/useDarkMode';
+import { usePermissions } from '@/lib/hooks/usePermissions';
 
 const ICON_MAP: Record<string, LucideIcon> = {
   Home,
@@ -31,7 +32,16 @@ const ICON_MAP: Record<string, LucideIcon> = {
 };
 
 const ALL_MODES: ViewMode[] = ['manager', 'operator', 'installer', 'homeowner'];
-const hiddenPaths = ['/intake', '/portal'];
+const hiddenPaths = ['/intake', '/portal', '/login'];
+
+/** Map bottom nav href → permission module */
+const BOTTOM_NAV_MODULE: Record<string, string> = {
+  '/': 'dashboard',
+  '/sales': 'sales',
+  '/production': 'jobs',
+  '/finance': 'dashboard',
+  '/labs': 'labs',
+};
 
 export function BottomNav() {
   const pathname = usePathname();
@@ -41,6 +51,7 @@ export function BottomNav() {
   const { crewMemberName } = useActiveCrew();
   const { data: projectsResult } = useLocalProjects();
   const { isDark, toggle: toggleDark } = useDarkMode();
+  const { hasAccess } = usePermissions();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -63,9 +74,11 @@ export function BottomNav() {
   if (hiddenPaths.some((path) => pathname?.startsWith(path))) return null;
   if (viewMode === 'homeowner') return null;
 
-  const visibleItems = BOTTOM_NAV_ITEMS.filter((item) =>
-    item.allowedModes.includes(viewMode)
-  );
+  const visibleItems = BOTTOM_NAV_ITEMS.filter((item) => {
+    if (!item.allowedModes.includes(viewMode)) return false;
+    const mod = BOTTOM_NAV_MODULE[item.href];
+    return !mod || hasAccess(mod);
+  });
   const showQuickAdd = isQuickAddButtonAllowed(viewMode);
 
   // Split items for left/right of center button

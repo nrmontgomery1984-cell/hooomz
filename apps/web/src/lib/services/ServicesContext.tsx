@@ -10,6 +10,7 @@ import type { Services } from './index';
 import { initializeServices } from './index';
 import type { TrainingGuide, StandardSOP } from '@hooomz/shared-contracts';
 import { seedQuoteStageDataIfEmpty } from '../data/seed';
+import { migrateCatalogProducts } from '../seed/migrateCatalogProducts';
 import { SyncEngine } from '../sync/SyncEngine';
 import { isSupabaseConfigured } from '../supabase/client';
 import { initializeStorage } from '../storage';
@@ -155,6 +156,11 @@ export function ServicesProvider({ children }: ServicesProviderProps) {
         // Auto-seed quote-stage catalog + assembly config if empty (fire-and-forget)
         seedQuoteStageDataIfEmpty(initializedServices).catch((err) =>
           console.error('Failed to seed quote stage data:', err)
+        );
+
+        // v33 catalogue migration: seed costItems + materialRecords if empty (fire-and-forget)
+        migrateCatalogProducts(initializedServices.storage).catch((err) =>
+          console.error('Failed to seed catalogue v33:', err)
         );
 
         if (mounted) {

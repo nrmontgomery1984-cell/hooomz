@@ -81,6 +81,7 @@ import { DiscoveryDraftRepository } from '../repositories/discoveryDraft.reposit
 
 // Cost Catalogue (admin config, local-only)
 import { StoreNames } from '../storage/StorageAdapter';
+import type { StorageAdapter } from '../storage/StorageAdapter';
 import type { CostCatalog } from '../types/costCatalog.types';
 
 // Financial Forecasting
@@ -161,6 +162,10 @@ import { StageGateService } from './stageGate.service';
  * Use this for read operations and internal access.
  */
 export interface Services {
+  // Raw storage adapter — for seed utilities and migrations only.
+  // Use service/repository methods for all normal reads and writes.
+  storage: StorageAdapter;
+
   // Activity Log - THE SPINE (every mutation logs here)
   activity: ActivityService;
 
@@ -387,6 +392,8 @@ export async function initializeServices(): Promise<Services> {
 
     // Use repositories directly for offline-first operation
     const services: Services = {
+      storage,
+
       // Activity Log - THE SPINE (every mutation logs here)
       activity: activityService,
 

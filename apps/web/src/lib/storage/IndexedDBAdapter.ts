@@ -7,7 +7,7 @@ import type { StorageAdapter } from './StorageAdapter';
 import { StoreNames } from './StorageAdapter';
 
 const DB_NAME = 'hooomz_db';
-const DB_VERSION = 32; // v32: Add iaqReports store
+const DB_VERSION = 33; // v33: Catalogue — costItems, materialRecords, labsReviews, materialPriceLog
 
 export class IndexedDBAdapter implements StorageAdapter {
   private db: IDBDatabase | null = null;
@@ -151,6 +151,16 @@ export class IndexedDBAdapter implements StorageAdapter {
           };
         }
 
+        // v33 migration: add multiEntry linked_cost_items index to materialRecords
+        // multiEntry means one record with ["FLR-020","FLR-021"] is indexed under both keys,
+        // enabling fast reverse-lookup: "which materials link to cost item FLR-020?"
+        if (oldVersion < 33 && db.objectStoreNames.contains(StoreNames.MATERIAL_RECORDS)) {
+          const matStore = tx.objectStore(StoreNames.MATERIAL_RECORDS);
+          if (!matStore.indexNames.contains('linked_cost_items')) {
+            matStore.createIndex('linked_cost_items', 'linked_cost_items', { unique: false, multiEntry: true });
+          }
+        }
+
         // Build 3b migration: fix timeEntries indexes (crewMemberId → team_member_id)
         if (oldVersion < 9 && db.objectStoreNames.contains(StoreNames.TIME_ENTRIES)) {
           const teStore = tx.objectStore(StoreNames.TIME_ENTRIES);
@@ -288,6 +298,12 @@ export class IndexedDBAdapter implements StorageAdapter {
       [StoreNames.PUNCH_LIST_ITEMS]: ['projectId', 'status', 'priority', 'assignedTo'],
       // IAQ Reports (v32)
       [StoreNames.IAQ_REPORTS]: ['clientName', 'createdAt'],
+      // Catalogue (v33)
+      [StoreNames.COST_ITEMS]: ['cat', 'section', 'phase', 'division'],
+      // materialRecords: linked_cost_items is multiEntry — handled in v33 migration below
+      [StoreNames.MATERIAL_RECORDS]: ['category', 'tier', 'division', 'labs_status', 'supplier'],
+      [StoreNames.LABS_REVIEWS]: ['material_id', 'reviewer_id'],
+      [StoreNames.MATERIAL_PRICE_LOG]: ['material_id', 'recorded_at'],
     };
 
     const storeIndexes = indexes[storeName] || [];

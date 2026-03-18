@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { HooomzLogoMark } from './HooomzLogoMark';
+import { usePermissions } from '@/lib/hooks/usePermissions';
 
 // ============================================================================
 // Nav Structure
@@ -12,6 +13,7 @@ interface NavItem {
   icon: string;   // unicode character
   label: string;
   href: string;
+  module: string; // permission module key
   badge?: { count: number; color: string };
   exactMatch?: boolean;
 }
@@ -26,33 +28,33 @@ function buildSections(): NavSection[] {
     {
       label: 'Main',
       items: [
-        { icon: '⊞', label: 'Dashboard', href: '/dashboard', exactMatch: true },
-        { icon: '◈', label: 'Jobs', href: '/jobs' },
-        { icon: '◎', label: 'Pipeline', href: '/pipeline' },
-        { icon: '$', label: 'Sales', href: '/sales' },
+        { icon: '⊞', label: 'Dashboard', href: '/dashboard', module: 'dashboard', exactMatch: true },
+        { icon: '◈', label: 'Jobs', href: '/jobs', module: 'jobs' },
+        { icon: '◎', label: 'Pipeline', href: '/pipeline', module: 'pipeline' },
+        { icon: '$', label: 'Sales', href: '/sales', module: 'sales' },
       ],
     },
     {
       label: 'Production',
       items: [
-        { icon: '⬡', label: 'Site Visits', href: '/production/site-visits' },
-        { icon: '≡', label: 'Estimates', href: '/production/estimates' },
-        { icon: '✓', label: 'Contracts', href: '/production/contracts' },
-        { icon: '▤', label: 'Materials', href: '/production/materials' },
-        { icon: '⚑', label: 'Punch Lists', href: '/production/punch-lists' },
+        { icon: '⬡', label: 'Site Visits', href: '/production/site-visits', module: 'site_visits' },
+        { icon: '≡', label: 'Estimates', href: '/production/estimates', module: 'estimates' },
+        { icon: '✓', label: 'Contracts', href: '/production/contracts', module: 'contracts' },
+        { icon: '▤', label: 'Materials', href: '/production/materials', module: 'materials' },
+        { icon: '⚑', label: 'Punch Lists', href: '/production/punch-lists', module: 'punch_lists' },
       ],
     },
     {
       label: 'Catalogue',
       items: [
-        { icon: '▦', label: 'Cost Items', href: '/catalogue' },
+        { icon: '▦', label: 'Cost Items', href: '/catalogue', module: 'cost_items' },
       ],
     },
     {
       label: 'Hooomz',
       items: [
-        { icon: '◉', label: 'Labs', href: '/labs' },
-        { icon: '⊙', label: 'Settings', href: '/settings' },
+        { icon: '◉', label: 'Labs', href: '/labs', module: 'labs' },
+        { icon: '⊙', label: 'Settings', href: '/admin/settings', module: 'settings' },
       ],
     },
   ];
@@ -68,7 +70,7 @@ function isActive(pathname: string | null, item: NavItem): boolean {
   return pathname.startsWith(item.href);
 }
 
-const hiddenPaths = ['/intake', '/portal'];
+const hiddenPaths = ['/intake', '/portal', '/login'];
 
 // ============================================================================
 // Sidebar Component
@@ -76,17 +78,23 @@ const hiddenPaths = ['/intake', '/portal'];
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { hasAccess } = usePermissions();
 
   if (hiddenPaths.some((p) => pathname?.startsWith(p))) return null;
 
-  const sections = buildSections();
+  const sections = buildSections().map((section) => ({
+    ...section,
+    items: section.items.filter((item) => hasAccess(item.module)),
+  })).filter((section) => section.items.length > 0);
 
   // Dynamic badges — Jobs green badge, Punch Lists amber badge
   // TODO: Wire to real counts from hooks when available
-  const jobsItem = sections[0].items.find((i) => i.label === 'Jobs');
-  if (jobsItem) jobsItem.badge = { count: 3, color: 'var(--green)' };
-  const punchItem = sections[1].items.find((i) => i.label === 'Punch Lists');
-  if (punchItem) punchItem.badge = { count: 2, color: 'var(--amber)' };
+  for (const section of sections) {
+    const jobsItem = section.items.find((i) => i.label === 'Jobs');
+    if (jobsItem) jobsItem.badge = { count: 3, color: 'var(--green)' };
+    const punchItem = section.items.find((i) => i.label === 'Punch Lists');
+    if (punchItem) punchItem.badge = { count: 2, color: 'var(--amber)' };
+  }
 
   return (
     <aside

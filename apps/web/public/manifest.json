@@ -2,10 +2,10 @@
   "name": "Hooomz - Construction Management",
   "short_name": "Hooomz",
   "description": "Mobile-first construction management platform for contractors",
-  "start_url": "/",
+  "start_url": "/dashboard",
   "display": "standalone",
-  "background_color": "#F0F2F7",
-  "theme_color": "#2563EB",
+  "background_color": "#111010",
+  "theme_color": "#111010",
   "orientation": "portrait-primary",
   "icons": [
     {

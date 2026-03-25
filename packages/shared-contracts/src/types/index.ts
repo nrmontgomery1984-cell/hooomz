@@ -642,6 +642,10 @@ export interface QuoteRecord {
   checklistCompletions?: Record<string, { checked: boolean; checkedAt?: string }>;  // Sales checklist state
   depositPercentage?: number;             // e.g. 25 = 25%. Configurable before sending. Default 25.
   contractGeneratedAt?: string;           // ISO — set when quote is first marked 'sent'
+  validityDays?: number;                  // Days from creation until expiry. Default 30.
+  scheduleType?: 'simple' | 'progress' | 'custom';  // Payment schedule type. Default 'simple'.
+  customMilestones?: Array<{ label: string; pct: number }>;  // Custom milestone definitions (custom schedule only)
+  generalTerms?: string[];                // Editable legal/general terms shown on quote
   _seeded?: boolean;                      // Marks seed-generated records for bulk wipe
 }
 

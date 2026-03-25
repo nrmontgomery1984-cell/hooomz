@@ -12,24 +12,16 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
-  ArrowLeft,
   Plus,
   Pencil,
-  Trash2,
   Check,
   X,
-  Repeat,
-  Clock,
   Search,
   BookOpen,
-  ChevronDown,
   MapPin,
   Send,
   Hammer,
   ChevronRight,
-  Camera,
-  Package,
-  Wrench,
   Compass,
 } from 'lucide-react';
 import { useLocalProject } from '@/lib/hooks/useLocalData';
@@ -41,27 +33,29 @@ import {
   useDeleteLineItem,
 } from '@/lib/hooks/useEstimateLocal';
 import { useApproveEstimateWithPipeline } from '@/lib/hooks/useApproveWithPipeline';
-import { useSops, useSopByCode, useSopChecklistItems, useLabsKnowledgeItems, useLabsActiveExperiments, useCreateKnowledgeItem, useCreateExperiment } from '@/lib/hooks/useLabsData';
+import { useSops } from '@/lib/hooks/useLabsData';
 import { useEffectiveCatalog } from '@/lib/hooks/useCostCatalog';
-import { getSOPById } from '@/lib/data/sops';
-import { resolveLineItemBreakdown } from '@/lib/utils/lineItemMaterials';
 import {
   resolveThreeAxes,
   getTradeDisplayName,
-  getStageDisplayName,
-  getTradeIcon,
-  getStageColor,
-  getLocationIcon,
   getTradeOrder,
-  getStageOrder,
   inferWorkCategoryCode,
 } from '@/lib/utils/axisMapping';
 import { TRADE_CODES, STAGE_CODES, ROOM_LOCATIONS } from '@/lib/types/intake.types';
-import { EstimateFilterBar, type GroupMode, type EstimateFilterValues } from '@/components/estimates/EstimateFilterBar';
-import { EstimateGroupSection } from '@/components/estimates/EstimateGroupSection';
-import type { CostCatalog } from '@/lib/types/costCatalog.types';
+// Retained for potential future mobile/list view
+// import { EstimateFilterBar, type GroupMode, type EstimateFilterValues } from '@/components/estimates/EstimateFilterBar';
+// import { EstimateGroupSection } from '@/components/estimates/EstimateGroupSection';
+import {
+  BrandHeader,
+  StatusProgressBar,
+  EditBanner,
+  TradeSection,
+  InternalNotes,
+  SummaryPanel,
+} from '@/components/estimates/detail';
+import type { TradeSectionLineItem } from '@/components/estimates/detail';
 import { CostCategory, UnitOfMeasure, ProjectStatus } from '@hooomz/shared-contracts';
-import type { CreateLineItem, LineItem, Sop } from '@hooomz/shared-contracts';
+import type { CreateLineItem, Sop } from '@hooomz/shared-contracts';
 import type { CatalogItem } from '@hooomz/estimating';
 import { useProjectMutations } from '@/lib/hooks/useActivityMutations';
 
@@ -139,36 +133,6 @@ interface LineItemFormData {
   workCategoryCode: string;
   stageCode: string;
   locationLabel: string;
-}
-
-type ViewMode = 'project' | 'labs';
-type TypeFilter = 'all' | 'material' | 'labor';
-
-interface ProjectAnnotation {
-  type: 'warning' | 'info' | 'risk';
-  label: string;
-}
-
-interface LabsAnnotation {
-  category: 'recent' | 'ongoing' | 'upcoming';
-  label: string;
-  detail?: string;
-  actionHref?: string;
-  actionLabel?: string;
-}
-
-interface SummaryFlag {
-  key: string;
-  type: ProjectAnnotation['type'];
-  label: string;
-  actionLabel: string;
-  affectedItemIds: string[];
-  acknowledgeOptions: string[];
-}
-
-interface FlagAcknowledgement {
-  reason: string;
-  note?: string;
 }
 
 // Catalog category → CostCategory mapping
@@ -264,32 +228,8 @@ export default function EstimateDetailPage() {
 
   const isLoading = projectLoading || itemsLoading;
 
-  // Filter state
-  const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
-  const [viewMode, setViewMode] = useState<ViewMode>('project');
-
-  // Three-axis grouping & filtering
-  const [groupMode, setGroupMode] = useState<GroupMode>('location');
-  const [axisFilters, setAxisFilters] = useState<EstimateFilterValues>({
-    workCategoryCode: null,
-    stageCode: null,
-    locationLabel: null,
-  });
-  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
-
-  // Interactive flags
-  const [expandedFlag, setExpandedFlag] = useState<string | null>(null);
-  const [acknowledgedFlags, setAcknowledgedFlags] = useState<Record<string, FlagAcknowledgement>>({});
-  const [showAckPrompt, setShowAckPrompt] = useState<string | null>(null);
-
-  // Cost catalog (for materials breakdown)
-  const catalog = useEffectiveCatalog();
-
-  // Labs data
-  const { data: knowledgeItems = [] } = useLabsKnowledgeItems();
-  const { data: activeExperiments = [] } = useLabsActiveExperiments();
-  const createKnowledge = useCreateKnowledgeItem();
-  const createExperiment = useCreateExperiment();
+  // Cost catalog (for materials breakdown — used by CatalogPickerModal)
+  useEffectiveCatalog();
 
   // Totals (must come before advanceStatus which references totals.total)
   const totals = useMemo(() => {
@@ -326,12 +266,6 @@ export default function EstimateDetailPage() {
     }
   }, [project, projectId, updateProjectStatus, approveAndGenerate, queryClient, statusUpdating, totals.total]);
 
-  // Expanded line item
-  const [expandedItemId, setExpandedItemId] = useState<string | null>(null);
-  const toggleExpand = useCallback((id: string) => {
-    setExpandedItemId(prev => prev === id ? null : id);
-  }, []);
-
   // Change order gate — post-quote additions require a change order
   const POST_QUOTE_STATUSES = [ProjectStatus.QUOTED, ProjectStatus.APPROVED, ProjectStatus.IN_PROGRESS, ProjectStatus.COMPLETE];
   const isPostQuote = !!project && POST_QUOTE_STATUSES.includes(project.status as ProjectStatus);
@@ -349,64 +283,81 @@ export default function EstimateDetailPage() {
     }));
   }, [lineItems]);
 
-  // Filtered items — type filter + axis filters
-  const materialCount = lineItems.filter(i => !i.isLabor).length;
-  const laborCount = lineItems.length - materialCount;
-  const filteredItems = useMemo(() => {
-    let items = enrichedItems;
-    // Type filter
-    if (typeFilter === 'material') items = items.filter(i => !i.isLabor);
-    else if (typeFilter === 'labor') items = items.filter(i => i.isLabor);
-    // Axis filters (AND logic)
-    if (axisFilters.workCategoryCode) items = items.filter(i => i.workCategoryCode === axisFilters.workCategoryCode);
-    if (axisFilters.stageCode) items = items.filter(i => i.stageCode === axisFilters.stageCode);
-    if (axisFilters.locationLabel) items = items.filter(i => i.locationLabel === axisFilters.locationLabel);
-    return items;
-  }, [enrichedItems, typeFilter, axisFilters]);
+  // ── Document layout state ──
+  const [isDocEditing, setIsDocEditing] = useState(false);
+  const [internalNotes, setInternalNotes] = useState('');
 
-  // Grouped items — group by selected axis, sort groups + items within
-  const groupedItems = useMemo(() => {
-    const groups = new Map<string, typeof filteredItems>();
-    for (const item of filteredItems) {
-      const key = groupMode === 'location' ? item.locationLabel
-        : groupMode === 'category' ? item.workCategoryCode
-        : item.stageCode;
+  // Estimate number — derived from project
+  const estNumber = useMemo(() => {
+    if (!project) return 'EST-0000-000';
+    const year = project.metadata.createdAt ? new Date(project.metadata.createdAt).getFullYear() : new Date().getFullYear();
+    // Use last 3 chars of projectId as sequence (placeholder until real sequential numbering)
+    const seq = projectId.slice(-3).replace(/\D/g, '0').padStart(3, '0');
+    return `EST-${year}-${seq}`;
+  }, [project, projectId]);
+
+  // Map project status → estimate document status
+  const estimateStatusKey = useMemo(() => {
+    if (!project) return 'draft';
+    const s = project.status as string;
+    if (['lead', 'discovery'].includes(s)) return 'draft';
+    if (s === 'site-visit') return 'sent';
+    if (s === 'quoted') return 'iterations';
+    return 'approved'; // approved, in-progress, complete
+  }, [project]);
+
+  const ESTIMATE_STATUS_STEPS = [
+    { key: 'draft', label: 'Draft' },
+    { key: 'sent', label: 'Sent' },
+    { key: 'iterations', label: 'Iterations' },
+    { key: 'approved', label: 'Approved' },
+  ];
+
+  // Trade-grouped items for document layout (group by workCategoryCode)
+  const tradeGroups = useMemo(() => {
+    const groups = new Map<string, typeof enrichedItems>();
+    for (const item of enrichedItems) {
+      const key = item.workCategoryCode || 'OTHER';
       if (!groups.has(key)) groups.set(key, []);
       groups.get(key)!.push(item);
     }
-    // Sort groups
-    const sorted = Array.from(groups.entries()).sort(([a], [b]) => {
-      if (groupMode === 'category') return getTradeOrder(a) - getTradeOrder(b);
-      if (groupMode === 'stage') return getStageOrder(a) - getStageOrder(b);
-      return a.localeCompare(b); // location: alphabetical
-    });
-    // Sort items within each group by the other two axes
-    for (const [, items] of sorted) {
-      items.sort((a, b) => {
-        if (groupMode !== 'category') {
-          const d = getTradeOrder(a.workCategoryCode) - getTradeOrder(b.workCategoryCode);
-          if (d !== 0) return d;
-        }
-        if (groupMode !== 'stage') {
-          const d = getStageOrder(a.stageCode) - getStageOrder(b.stageCode);
-          if (d !== 0) return d;
-        }
-        if (groupMode !== 'location') {
-          return a.locationLabel.localeCompare(b.locationLabel);
-        }
-        return 0;
+    return Array.from(groups.entries())
+      .sort(([a], [b]) => getTradeOrder(a) - getTradeOrder(b))
+      .map(([code, items]) => {
+        const name = getTradeDisplayName(code);
+        const subtotal = items.reduce((sum, i) => sum + i.totalCost, 0);
+        const mapped: TradeSectionLineItem[] = items.map((i) => ({
+          id: i.id,
+          description: i.description,
+          spec: i.isLabor ? 'Labor' : (CATEGORY_LABELS[i.category] || ''),
+          quantity: i.quantity,
+          unit: i.unit,
+          unitCost: i.unitCost,
+          totalCost: i.totalCost,
+        }));
+        return { code, name, items: mapped, subtotal } as const;
       });
-    }
-    return sorted;
-  }, [filteredItems, groupMode]);
+  }, [enrichedItems]);
 
-  const toggleGroupCollapse = useCallback((key: string) => {
-    setCollapsedGroups((prev) => {
-      const next = new Set(prev);
-      if (next.has(key)) next.delete(key); else next.add(key);
-      return next;
+  // Inline edit handler for TradeSection
+  const handleInlineEdit = useCallback(async (id: string, field: string, value: string | number) => {
+    const item = lineItems.find((i) => i.id === id);
+    if (!item) return;
+    const updates: Partial<Record<string, unknown>> = {};
+    if (field === 'description') updates.description = value;
+    else if (field === 'quantity') {
+      updates.quantity = value;
+      updates.totalCost = (value as number) * item.unitCost;
+    } else if (field === 'unitCost') {
+      updates.unitCost = value;
+      updates.totalCost = item.quantity * (value as number);
+    }
+    await updateLineItem.mutateAsync({
+      projectId,
+      lineItemId: id,
+      data: { ...item, ...updates } as any,
     });
-  }, []);
+  }, [lineItems, projectId, updateLineItem]);
 
   // Current SOPs for the picker
   const currentSops = useMemo(
@@ -419,27 +370,6 @@ export default function EstimateDetailPage() {
   function openAddForm() {
     setForm(EMPTY_FORM);
     setEditingId(null);
-    setShowForm(true);
-  }
-
-  function openEditForm(item: LineItem) {
-    const axes = resolveThreeAxes(item as Parameters<typeof resolveThreeAxes>[0]);
-    setForm({
-      description: item.description,
-      category: item.category as CostCategory,
-      quantity: item.quantity,
-      unit: item.unit as UnitOfMeasure,
-      unitCost: item.unitCost,
-      isLabor: item.isLabor,
-      sopCodes: item.sopCodes || [],
-      isLooped: item.isLooped || false,
-      loopContextLabel: item.loopContextLabel || '',
-      estimatedHoursPerUnit: item.estimatedHoursPerUnit || 0,
-      workCategoryCode: axes.workCategoryCode,
-      stageCode: axes.stageCode,
-      locationLabel: axes.locationLabel,
-    });
-    setEditingId(item.id);
     setShowForm(true);
   }
 
@@ -558,487 +488,316 @@ export default function EstimateDetailPage() {
     );
   }
 
+  // Status badge colors
+  const STATUS_BADGE_STYLES: Record<string, { bg: string; borderColor: string; color: string; dotBg: string }> = {
+    lead: { bg: 'var(--surface-2)', borderColor: 'var(--border)', color: 'var(--muted)', dotBg: 'var(--muted)' },
+    discovery: { bg: 'var(--blue-bg)', borderColor: 'rgba(74,127,165,0.2)', color: 'var(--blue)', dotBg: 'var(--blue)' },
+    'site-visit': { bg: 'var(--amber-bg)', borderColor: 'rgba(217,119,6,0.2)', color: 'var(--amber)', dotBg: 'var(--amber)' },
+    quoted: { bg: 'var(--amber-bg)', borderColor: 'rgba(217,119,6,0.2)', color: 'var(--amber)', dotBg: 'var(--amber)' },
+    approved: { bg: 'var(--green-bg)', borderColor: 'rgba(22,163,74,0.2)', color: 'var(--green)', dotBg: 'var(--green)' },
+    'in-progress': { bg: 'var(--green-bg)', borderColor: 'rgba(22,163,74,0.2)', color: 'var(--green)', dotBg: 'var(--green)' },
+    complete: { bg: 'var(--green-bg)', borderColor: 'rgba(22,163,74,0.2)', color: 'var(--green)', dotBg: 'var(--green)' },
+  };
+  const badgeStyle = STATUS_BADGE_STYLES[project?.status as string] || STATUS_BADGE_STYLES.lead;
+  const statusLabel = project?.status ? (project.status as string).replace(/-/g, ' ') : 'draft';
+
   return (
-    <div className="min-h-screen pb-24" style={{ background: 'var(--surface-2)' }}>
-      {/* Header */}
+    <div className="min-h-screen" style={{ background: 'var(--bg)' }}>
+      {/* ── Brand Header ── */}
+      <BrandHeader docType={pricingLabel} />
+
+      {/* ── Status Progress Bar ── */}
+      <StatusProgressBar steps={ESTIMATE_STATUS_STEPS} currentStepKey={estimateStatusKey} />
+
+      {/* ── Edit Banner ── */}
+      {isDocEditing && (
+        <EditBanner
+          docNumber={estNumber}
+          onSave={() => setIsDocEditing(false)}
+          onCancel={() => setIsDocEditing(false)}
+          isSaving={updateLineItem.isPending}
+        />
+      )}
+
+      {/* ── Header ── */}
       <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
-        <div className="max-w-lg mx-auto px-4 py-4">
-          <div className="flex items-center gap-2 mb-1">
-            <Link
-              href="/estimates"
-              className="flex items-center gap-1 text-sm hover:underline"
-              style={{ color: 'var(--accent)' }}
-            >
-              <ArrowLeft size={14} />
-              {pricingLabel}s
-            </Link>
+        <div className="px-6 py-5" style={{ maxWidth: 1200 }}>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <div
+                className="text-[11px] font-medium tracking-[0.06em]"
+                style={{ fontFamily: 'var(--font-mono)', color: 'var(--muted)' }}
+              >
+                {estNumber}
+              </div>
+              <h1 className="text-xl font-bold mt-0.5 leading-tight" style={{ color: 'var(--charcoal)' }}>
+                {project?.name || projectId}
+              </h1>
+              <div className="flex gap-5 mt-2 flex-wrap items-center">
+                <div className="text-xs" style={{ color: 'var(--mid)' }}>
+                  Created{' '}
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--charcoal)', fontWeight: 500 }}>
+                    {project?.metadata.createdAt ? new Date(project.metadata.createdAt).toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: 'numeric' }) : '—'}
+                  </span>
+                </div>
+                <div className="text-xs" style={{ color: 'var(--mid)' }}>
+                  Items{' '}
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--charcoal)', fontWeight: 500 }}>
+                    {lineItems.length}
+                  </span>
+                </div>
+                <span
+                  className="inline-flex items-center gap-[5px] px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.06em]"
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    background: badgeStyle.bg,
+                    border: `1px solid ${badgeStyle.borderColor}`,
+                    color: badgeStyle.color,
+                  }}
+                >
+                  <span className="w-[5px] h-[5px] rounded-full" style={{ background: badgeStyle.dotBg }} />
+                  {statusLabel}
+                </span>
+              </div>
+            </div>
+            {!isDocEditing && (
+              <div className="flex gap-2 flex-shrink-0">
+                <button
+                  onClick={() => setIsDocEditing(true)}
+                  className="text-[11px] font-medium tracking-[0.04em] px-4 py-2 flex items-center gap-1.5"
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    border: '1px solid var(--border)',
+                    background: 'var(--surface)',
+                    color: 'var(--charcoal)',
+                  }}
+                >
+                  <Pencil size={12} /> Edit
+                </button>
+                <button
+                  className="text-[11px] font-medium tracking-[0.04em] px-4 py-2 flex items-center gap-1.5"
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    border: '1px solid var(--border)',
+                    background: 'var(--surface)',
+                    color: 'var(--charcoal)',
+                  }}
+                >
+                  <Send size={12} /> Send to Homeowner
+                </button>
+                <button
+                  className="text-[11px] font-medium tracking-[0.04em] px-4 py-2 text-white"
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    background: 'var(--charcoal)',
+                    border: '1px solid var(--charcoal)',
+                  }}
+                >
+                  Convert to Quote
+                </button>
+              </div>
+            )}
           </div>
-          <h1 className="text-xl font-bold" style={{ color: 'var(--charcoal)' }}>
-            {project?.name || projectId}
-          </h1>
-          <p className="text-xs mt-0.5" style={{ color: 'var(--muted)' }}>
-            {lineItems.length} line item{lineItems.length !== 1 ? 's' : ''}
-          </p>
         </div>
       </div>
 
-      <div className="max-w-lg mx-auto px-4 mt-3 space-y-2">
-        {/* Summary Card */}
-        {lineItems.length > 0 && (
-          <div
-            className="bg-white rounded-xl px-4 py-2.5"
-            style={{ border: '1px solid var(--border)' }}
-          >
-            <div className="grid grid-cols-3 gap-2 text-center">
-              <div>
-                <div className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--muted)' }}>Labor</div>
-                <div className="text-sm font-bold" style={{ color: 'var(--blue)' }}>${totals.laborTotal.toLocaleString()}</div>
-              </div>
-              <div>
-                <div className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--muted)' }}>Materials</div>
-                <div className="text-sm font-bold" style={{ color: 'var(--yellow)' }}>${totals.materialTotal.toLocaleString()}</div>
-              </div>
-              <div>
-                <div className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--muted)' }}>Total</div>
-                <div className="text-base font-bold" style={{ color: 'var(--charcoal)' }}>${totals.total.toLocaleString()}</div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Filter Bar */}
-        {lineItems.length > 0 && (
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              {/* Type filter */}
-              <div className="flex gap-1">
-                {([
-                  { key: 'all' as TypeFilter, label: 'All', count: lineItems.length },
-                  { key: 'material' as TypeFilter, label: 'Material', count: materialCount },
-                  { key: 'labor' as TypeFilter, label: 'Labor', count: laborCount },
-                ]).map(({ key, label, count }) => (
-                  <button
-                    key={key}
-                    onClick={() => setTypeFilter(key)}
-                    className="text-[11px] font-medium px-2.5 py-1 rounded-full transition-colors"
-                    style={{
-                      background: typeFilter === key ? 'var(--charcoal)' : 'var(--surface-2)',
-                      color: typeFilter === key ? '#fff' : 'var(--muted)',
-                    }}
-                  >
-                    {label} {count}
-                  </button>
-                ))}
-              </div>
-              {/* View toggle */}
-              <div className="flex rounded-lg overflow-hidden" style={{ border: '1px solid var(--border)' }}>
-                {([
-                  { key: 'project' as ViewMode, label: 'Project' },
-                  { key: 'labs' as ViewMode, label: 'Labs' },
-                ]).map(({ key, label }) => (
-                  <button
-                    key={key}
-                    onClick={() => setViewMode(key)}
-                    className="text-[11px] font-medium px-2.5 py-1 transition-colors"
-                    style={{
-                      background: viewMode === key ? 'var(--accent)' : 'var(--surface)',
-                      color: viewMode === key ? '#fff' : 'var(--muted)',
-                    }}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Three-axis grouping + filtering */}
-            <EstimateFilterBar
-              items={enrichedItems as Parameters<typeof EstimateFilterBar>[0]['items']}
-              groupMode={groupMode}
-              onGroupModeChange={setGroupMode}
-              filters={axisFilters}
-              onFiltersChange={setAxisFilters}
-            />
-          </div>
-        )}
-
-        {/* Project view — interactive summary flags */}
-        {viewMode === 'project' && (() => {
-          const flags = getEstimateSummaryFlags(lineItems);
-          if (flags.length === 0) return null;
-          return (
-            <div className="space-y-1.5">
-              {flags.map(flag => {
-                const isAcked = !!acknowledgedFlags[flag.key];
-                const isExpanded = expandedFlag === flag.key;
-                const isPrompting = showAckPrompt === flag.key;
-                const affected = lineItems.filter(i => flag.affectedItemIds.includes(i.id));
-                return (
-                  <div
-                    key={flag.key}
-                    className="rounded-xl overflow-hidden"
-                    style={{
-                      background: isAcked ? 'var(--green-bg)' : 'var(--yellow-bg)',
-                      border: `1px solid ${isAcked ? 'var(--green-bg)' : 'var(--yellow-bg)'}`,
-                    }}
-                  >
-                    {/* Flag header — tap to expand */}
-                    <button
-                      onClick={() => setExpandedFlag(isExpanded ? null : flag.key)}
-                      className="w-full flex items-center gap-2 px-3 py-2 text-left"
-                      style={{ minHeight: '40px' }}
-                    >
-                      <span
-                        className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                        style={{ background: isAcked ? 'var(--green)' : 'var(--yellow)' }}
-                      />
-                      <div className="flex-1 min-w-0">
-                        <span
-                          className="text-[11px] font-medium"
-                          style={{
-                            color: isAcked ? 'var(--green)' : 'var(--yellow)',
-                            textDecoration: isAcked ? 'line-through' : 'none',
-                          }}
-                        >
-                          {flag.label}
-                        </span>
-                        {!isAcked && (
-                          <span className="text-[10px] ml-1" style={{ color: 'var(--yellow)' }}>
-                            — {flag.actionLabel}
-                          </span>
-                        )}
-                        {isAcked && (
-                          <span className="text-[10px] ml-1" style={{ color: 'var(--green)' }}>
-                            — {acknowledgedFlags[flag.key].reason}
-                          </span>
-                        )}
-                      </div>
-                      <span className="text-[10px] flex-shrink-0" style={{ color: 'var(--muted)' }}>
-                        {isExpanded ? '\u25B2' : '\u25BC'}
-                      </span>
-                    </button>
-
-                    {/* Expanded content */}
-                    {isExpanded && (
-                      <div className="px-3 pb-3 space-y-2" style={{ borderTop: '1px solid rgba(0,0,0,0.05)' }}>
-                        {/* Affected items */}
-                        <div className="space-y-0.5 pt-1">
-                          {affected.map(item => (
-                            <div key={item.id} className="flex items-center gap-2 py-1">
-                              <span
-                                className="w-1 h-4 rounded-full flex-shrink-0"
-                                style={{ background: item.isLabor ? 'var(--blue)' : 'var(--yellow)' }}
-                              />
-                              <span className="text-[11px] flex-1 truncate" style={{ color: 'var(--mid)' }}>
-                                {item.description}
-                              </span>
-                              <span className="text-[10px] flex-shrink-0" style={{ color: 'var(--muted)' }}>
-                                ${item.totalCost.toLocaleString()}
-                              </span>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  openEditForm(item);
-                                  setExpandedFlag(null);
-                                  // Scroll to form after React render
-                                  setTimeout(() => {
-                                    document.getElementById('line-item-form')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                  }, 100);
-                                }}
-                                className="text-[10px] font-semibold px-2 py-0.5 rounded"
-                                style={{ background: 'var(--accent)', color: '#fff', minHeight: '24px' }}
-                              >
-                                Edit
-                              </button>
-                            </div>
-                          ))}
-                        </div>
-
-                        {/* Acknowledge prompt */}
-                        {!isAcked && !isPrompting && (
-                          <button
-                            onClick={() => setShowAckPrompt(flag.key)}
-                            className="w-full text-[11px] font-medium py-1.5 rounded-lg"
-                            style={{ background: 'var(--surface-2)', color: 'var(--muted)', minHeight: '32px' }}
-                          >
-                            Acknowledge — proceed anyway
-                          </button>
-                        )}
-
-                        {/* Reason picker */}
-                        {isPrompting && (
-                          <div className="space-y-1.5">
-                            <p className="text-[10px] font-semibold" style={{ color: 'var(--mid)' }}>
-                              Why proceed?
-                            </p>
-                            <div className="flex flex-wrap gap-1">
-                              {flag.acknowledgeOptions.map(reason => (
-                                <button
-                                  key={reason}
-                                  onClick={() => {
-                                    setAcknowledgedFlags(prev => ({ ...prev, [flag.key]: { reason } }));
-                                    setShowAckPrompt(null);
-                                  }}
-                                  className="text-[10px] font-medium px-2.5 py-1 rounded-full"
-                                  style={{ background: 'var(--border)', color: 'var(--mid)', minHeight: '28px' }}
-                                >
-                                  {reason}
-                                </button>
-                              ))}
-                            </div>
-                            <button
-                              onClick={() => setShowAckPrompt(null)}
-                              className="text-[10px] py-1"
-                              style={{ color: 'var(--muted)' }}
-                            >
-                              Cancel
-                            </button>
-                          </div>
-                        )}
-
-                        {/* Undo acknowledge */}
-                        {isAcked && (
-                          <button
-                            onClick={() => {
-                              setAcknowledgedFlags(prev => {
-                                const next = { ...prev };
-                                delete next[flag.key];
-                                return next;
-                              });
-                            }}
-                            className="text-[10px] font-medium py-1"
-                            style={{ color: 'var(--red)' }}
-                          >
-                            Reopen this flag
-                          </button>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          );
-        })()}
-
-        {/* Line Items — grouped by axis */}
-        {groupedItems.length > 0 ? (
-          <div className="space-y-2">
-            {groupedItems.map(([groupKey, items]) => {
-              const icon = groupMode === 'category' ? getTradeIcon(groupKey)
-                : groupMode === 'location' ? getLocationIcon(groupKey)
-                : '';
-              const label = groupMode === 'category' ? getTradeDisplayName(groupKey)
-                : groupMode === 'stage' ? getStageDisplayName(groupKey)
-                : groupKey;
-              const accentColor = groupMode === 'stage' ? getStageColor(groupKey) : undefined;
-              const subtotal = items.reduce((sum, i) => sum + i.totalCost, 0);
-              const isCollapsed = collapsedGroups.has(groupKey);
-
-              return (
-                <EstimateGroupSection
-                  key={groupKey}
-                  label={label}
-                  icon={icon}
-                  itemCount={items.length}
-                  subtotal={subtotal}
-                  accentColor={accentColor}
-                  isCollapsed={isCollapsed}
-                  onToggleCollapse={() => toggleGroupCollapse(groupKey)}
-                >
-                  <div className="bg-white rounded-b-xl overflow-hidden" style={{ border: '1px solid var(--border)', borderTop: 'none' }}>
-                    {items.map((item, i) => (
-                      <LineItemRow
-                        key={item.id}
-                        item={item}
-                        isLast={i === items.length - 1}
-                        onEdit={() => openEditForm(item)}
-                        onDelete={() => handleDelete(item.id)}
-                        viewMode={viewMode}
-                        catalog={catalog}
-                        projectAnnotations={viewMode === 'project' ? getProjectAnnotations(item, lineItems) : undefined}
-                        labsAnnotations={viewMode === 'labs' ? getLabsAnnotations(item, knowledgeItems, activeExperiments) : undefined}
-                        isExpanded={expandedItemId === item.id}
-                        onToggleExpand={() => toggleExpand(item.id)}
-                        onCreateKnowledge={createKnowledge.mutateAsync}
-                        onCreateExperiment={createExperiment.mutateAsync}
-                      />
-                    ))}
-                  </div>
-                </EstimateGroupSection>
-              );
-            })}
-          </div>
-        ) : lineItems.length > 0 ? (
-          <div className="bg-white rounded-xl p-4 text-center" style={{ border: '1px solid var(--border)' }}>
-            <p className="text-xs" style={{ color: 'var(--muted)' }}>
-              No matching items
-            </p>
-          </div>
-        ) : null}
-
-        {/* Add Line Item Buttons */}
-        {!showForm && !approveResult && (
-          isPostQuote ? (
-            <div
-              className="flex items-center gap-2 px-3 py-3 rounded-xl text-xs"
-              style={{ background: 'var(--yellow-bg)', border: '1px solid var(--yellow-bg)', color: 'var(--yellow)' }}
-            >
-              <span className="font-medium">New items require a change order.</span>
-              <span className="text-[10px]" style={{ color: 'var(--yellow)' }}>
-                Quote has been generated — modifications to scope need approval.
-              </span>
-            </div>
+      {/* ── Content Grid ── */}
+      <div
+        className="grid gap-4 px-6 py-4"
+        style={{ gridTemplateColumns: '1fr 300px', maxWidth: 1200 }}
+      >
+        {/* ── Left Column: Trade Sections ── */}
+        <div>
+          {tradeGroups.length > 0 ? (
+            tradeGroups.map((group) => (
+              <TradeSection
+                key={group.code}
+                title={group.name}
+                items={group.items}
+                subtotal={group.subtotal}
+                isEditing={isDocEditing}
+                onEditItem={handleInlineEdit}
+                onRemoveItem={(id) => handleDelete(id)}
+                onAddItem={() => { openAddForm(); }}
+              />
+            ))
           ) : (
-            <div className="flex gap-2">
+            <div
+              className="px-4 py-8 text-center mb-3"
+              style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+            >
+              <p className="text-xs" style={{ color: 'var(--muted)' }}>
+                No line items yet. Add items to build this estimate.
+              </p>
+            </div>
+          )}
+
+          {/* Add Line Item (outside edit mode) */}
+          {!isDocEditing && !showForm && !approveResult && !isPostQuote && (
+            <div className="flex gap-2 mb-3">
               <button
                 onClick={() => setShowCatalog(true)}
-                className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium text-white"
-                style={{ background: 'var(--accent)', minHeight: '48px' }}
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 text-[11px] font-medium tracking-[0.04em]"
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  background: 'var(--charcoal)',
+                  color: '#fff',
+                  border: '1px solid var(--charcoal)',
+                }}
               >
-                <BookOpen size={16} />
-                Browse Catalog
+                <BookOpen size={13} /> Browse Catalog
               </button>
               <button
                 onClick={openAddForm}
-                className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium border-2 border-dashed"
+                className="flex items-center justify-center gap-2 px-4 py-2.5 text-[11px] font-medium tracking-[0.04em]"
                 style={{
-                  borderColor: 'var(--border)',
+                  fontFamily: 'var(--font-mono)',
+                  border: '1px dashed var(--border)',
+                  background: 'none',
                   color: 'var(--muted)',
-                  minHeight: '48px',
                 }}
               >
-                <Plus size={16} />
-                Manual
+                <Plus size={13} /> Manual
               </button>
             </div>
-          )
-        )}
+          )}
 
-        {/* Line Item Form */}
-        {showForm && (
-          <div id="line-item-form">
-            {matchedLabor && (
-              <div
-                className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs"
-                style={{ background: 'var(--green-bg)', border: '1px solid var(--accent-border)' }}
-              >
-                <Check size={14} style={{ color: 'var(--accent)' }} />
-                <span style={{ color: 'var(--accent)' }}>
-                  Also adds: <strong>{matchedLabor.name}</strong> at ${matchedLabor.unitCost.toFixed(2)}/{matchedLabor.unit}
-                </span>
-              </div>
-            )}
-            <LineItemForm
-              form={form}
-              setForm={setForm}
-              sops={currentSops}
-              onSave={handleSave}
-              onCancel={closeForm}
-              onToggleSop={toggleSopCode}
-              isSaving={createLineItem.isPending || updateLineItem.isPending}
-              isEditing={!!editingId}
-            />
-          </div>
-        )}
+          {/* Post-quote change order notice */}
+          {isPostQuote && !showForm && !approveResult && (
+            <div
+              className="flex items-center gap-2 px-4 py-3 mb-3 text-xs"
+              style={{ background: 'var(--amber-bg)', border: '1px solid rgba(217,119,6,0.2)', color: 'var(--amber)' }}
+            >
+              <span className="font-medium">New items require a change order.</span>
+            </div>
+          )}
 
-        {/* Approve error (shown if NextSteps quote approval fails) */}
-        {approveError && (
-          <div className="pt-4">
-            <p className="text-xs text-center" style={{ color: 'var(--red)' }}>
-              {approveError}
-            </p>
-          </div>
-        )}
+          {/* Internal Notes */}
+          <InternalNotes
+            notes={internalNotes}
+            isEditing={isDocEditing}
+            onNotesChange={setInternalNotes}
+          />
+        </div>
 
-        {/* Approval Result */}
-        {approveResult && (
+        {/* ── Right Column: Summary Panel ── */}
+        <SummaryPanel
+          homeowner={project ? [
+            { label: 'Project', value: project.name || '—' },
+          ] : undefined}
+          job={project ? [
+            { label: 'Status', value: statusLabel },
+            { label: 'Items', value: String(lineItems.length) },
+          ] : undefined}
+          trades={tradeGroups.map((g) => ({ name: g.name, total: g.subtotal }))}
+          subtotal={totals.total}
+          total={totals.total * 1.15}
+          history={project?.metadata.createdAt ? [
+            { label: 'Created', date: new Date(project.metadata.createdAt).toLocaleDateString('en-CA', { month: 'short', day: 'numeric' }) },
+          ] : undefined}
+        />
+      </div>
+
+      {/* ── Line Item Form Modal ── */}
+      {showForm && (
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
+          style={{ background: 'rgba(0,0,0,0.5)' }}
+          onClick={(e) => { if (e.target === e.currentTarget) closeForm(); }}
+        >
           <div
-            className="bg-white rounded-xl p-4"
-            style={{ border: `2px solid ${approveResult.missingSopCodes.length > 0 && approveResult.blueprintsCreated === 0 ? 'var(--yellow)' : 'var(--green)'}` }}
+            className="w-full max-w-lg rounded-t-2xl sm:rounded-xl max-h-[85vh] overflow-y-auto"
+            style={{ background: 'var(--surface)' }}
+          >
+            <div className="p-4" id="line-item-form">
+              {matchedLabor && (
+                <div
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs mb-3"
+                  style={{ background: 'var(--green-bg)', border: '1px solid var(--accent-border)' }}
+                >
+                  <Check size={14} style={{ color: 'var(--accent)' }} />
+                  <span style={{ color: 'var(--accent)' }}>
+                    Also adds: <strong>{matchedLabor.name}</strong> at ${matchedLabor.unitCost.toFixed(2)}/{matchedLabor.unit}
+                  </span>
+                </div>
+              )}
+              <LineItemForm
+                form={form}
+                setForm={setForm}
+                sops={currentSops}
+                onSave={handleSave}
+                onCancel={closeForm}
+                onToggleSop={toggleSopCode}
+                isSaving={createLineItem.isPending || updateLineItem.isPending}
+                isEditing={!!editingId}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Approve Error ── */}
+      {approveError && (
+        <div className="px-6 py-2" style={{ maxWidth: 1200 }}>
+          <p className="text-xs text-center" style={{ color: 'var(--red)' }}>
+            {approveError}
+          </p>
+        </div>
+      )}
+
+      {/* ── Approval Result ── */}
+      {approveResult && (
+        <div className="px-6 py-4" style={{ maxWidth: 1200 }}>
+          <div
+            className="p-4"
+            style={{
+              background: 'var(--surface)',
+              border: `2px solid ${approveResult.missingSopCodes.length > 0 && approveResult.blueprintsCreated === 0 ? 'var(--amber)' : 'var(--green)'}`,
+            }}
           >
             <div className="flex items-center gap-2 mb-3">
               <div
                 className="w-8 h-8 rounded-full flex items-center justify-center"
-                style={{ background: approveResult.missingSopCodes.length > 0 && approveResult.blueprintsCreated === 0 ? 'var(--yellow-bg)' : 'var(--green-bg)' }}
+                style={{ background: approveResult.missingSopCodes.length > 0 && approveResult.blueprintsCreated === 0 ? 'var(--amber-bg)' : 'var(--green-bg)' }}
               >
-                <Check size={16} style={{ color: approveResult.missingSopCodes.length > 0 && approveResult.blueprintsCreated === 0 ? 'var(--yellow)' : 'var(--green)' }} />
+                <Check size={16} style={{ color: approveResult.missingSopCodes.length > 0 && approveResult.blueprintsCreated === 0 ? 'var(--amber)' : 'var(--green)' }} />
               </div>
-              <span className="text-sm font-semibold" style={{ color: approveResult.missingSopCodes.length > 0 && approveResult.blueprintsCreated === 0 ? 'var(--yellow)' : 'var(--green)' }}>
+              <span className="text-sm font-semibold" style={{ color: approveResult.missingSopCodes.length > 0 && approveResult.blueprintsCreated === 0 ? 'var(--amber)' : 'var(--green)' }}>
                 {pricingLabel} Approved
               </span>
             </div>
             <div className="space-y-1 text-sm" style={{ color: 'var(--mid)' }}>
               <p>{approveResult.blueprintsCreated} blueprint{approveResult.blueprintsCreated !== 1 ? 's' : ''} generated</p>
               <p>{approveResult.tasksDeployed} task{approveResult.tasksDeployed !== 1 ? 's' : ''} auto-deployed</p>
-              {approveResult.loopedPending > 0 && (
-                <p className="text-xs" style={{ color: 'var(--muted)' }}>
-                  {approveResult.loopedPending} looped blueprint{approveResult.loopedPending !== 1 ? 's' : ''} pending deployment
-                </p>
-              )}
             </div>
-
-            {/* Warning: missing SOP records */}
             {approveResult.missingSopCodes.length > 0 && (
-              <div
-                className="mt-3 rounded-lg p-2.5"
-                style={{ background: 'var(--yellow-bg)', border: '1px solid var(--yellow-bg)' }}
-              >
-                <p className="text-xs font-semibold mb-1" style={{ color: 'var(--yellow)' }}>
-                  {approveResult.missingSopCodes.length} SOP{approveResult.missingSopCodes.length !== 1 ? 's' : ''} not found in database
+              <div className="mt-3 p-2.5" style={{ background: 'var(--amber-bg)' }}>
+                <p className="text-xs font-semibold mb-1" style={{ color: 'var(--amber)' }}>
+                  {approveResult.missingSopCodes.length} SOP{approveResult.missingSopCodes.length !== 1 ? 's' : ''} not found
                 </p>
-                <p className="text-[11px]" style={{ color: 'var(--yellow)' }}>
-                  {approveResult.missingSopCodes.join(', ')}
-                </p>
-                <Link
-                  href="/labs/seed"
-                  className="inline-block mt-1.5 text-[11px] font-medium hover:underline"
-                  style={{ color: 'var(--accent)' }}
-                >
-                  Load seed data to create SOP records →
+                <p className="text-[11px]" style={{ color: 'var(--amber)' }}>{approveResult.missingSopCodes.join(', ')}</p>
+                <Link href="/labs/seed" className="inline-block mt-1.5 text-[11px] font-medium hover:underline" style={{ color: 'var(--accent)' }}>
+                  Load seed data →
                 </Link>
               </div>
             )}
-
-            {/* Warning: no pipeline-eligible items */}
-            {approveResult.pipelineEligible === 0 && approveResult.totalLineItems > 0 && (
-              <div
-                className="mt-3 rounded-lg p-2.5"
-                style={{ background: 'var(--yellow-bg)', border: '1px solid var(--yellow-bg)' }}
-              >
-                <p className="text-xs font-semibold" style={{ color: 'var(--yellow)' }}>
-                  No line items have SOP codes linked
-                </p>
-                <p className="text-[11px]" style={{ color: 'var(--yellow)' }}>
-                  {approveResult.totalLineItems} line item{approveResult.totalLineItems !== 1 ? 's' : ''} found but none have SOP codes. Link SOPs to enable task generation.
-                </p>
-              </div>
-            )}
-
-            {approveResult.blueprintsCreated > approveResult.tasksDeployed && approveResult.blueprintsCreated > 0 && (
-              <Link
-                href={`/labs/structure/deploy?projectId=${projectId}`}
-                className="inline-block mt-3 text-xs font-medium hover:underline"
-                style={{ color: 'var(--accent)' }}
-              >
-                Deploy looped blueprints →
-              </Link>
-            )}
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Next Steps — project lifecycle progression */}
-        {project && project.status !== 'complete' && project.status !== 'cancelled' && (
+      {/* ── Next Steps ── */}
+      {project && project.status !== 'complete' && project.status !== 'cancelled' && (
+        <div className="px-6 pb-8" style={{ maxWidth: 1200 }}>
           <NextStepsCard
             projectStatus={project.status as string}
             projectId={projectId}
             onAdvance={advanceStatus}
             isUpdating={statusUpdating}
           />
-        )}
-      </div>
+        </div>
+      )}
 
-      {/* Catalog Picker Modal */}
+      {/* ── Catalog Picker Modal ── */}
       {showCatalog && (
         <CatalogPickerModal
           onSelect={handleCatalogSelect}
@@ -1201,774 +960,6 @@ function NextStepsCard({
           >
             View Project <ChevronRight size={14} />
           </Link>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ============================================================================
-// Annotation Helpers
-// ============================================================================
-
-function getProjectAnnotations(item: LineItem, allItems: LineItem[]): ProjectAnnotation[] {
-  const annotations: ProjectAnnotation[] = [];
-
-  // Determine what's "normal" for this estimate — only flag outliers
-  const sopCount = allItems.filter(i => i.sopCodes && i.sopCodes.length > 0).length;
-  const mostHaveSops = sopCount > allItems.length / 2;
-  const laborItems = allItems.filter(i => i.isLabor);
-  const laborWithHours = laborItems.filter(i => i.estimatedHoursPerUnit && i.estimatedHoursPerUnit > 0).length;
-  const mostLaborHasHours = laborWithHours > laborItems.length / 2;
-
-  // --- Confirmation flags (true outliers — always check) ---
-  if (item.quantity % 1 !== 0 && !['sqft', 'lf', 'cy', 'gal', 'lb', 'ton'].includes(item.unit)) {
-    annotations.push({ type: 'warning', label: 'Fractional qty — confirm' });
-  }
-  if (allItems.some(o => o.id !== item.id && o.description.toLowerCase() === item.description.toLowerCase())) {
-    annotations.push({ type: 'warning', label: 'Possible duplicate' });
-  }
-
-  // --- Lead time (threshold-based) ---
-  if (!item.isLabor && item.totalCost >= 2000) {
-    annotations.push({ type: 'info', label: 'Verify lead time' });
-  }
-
-  // --- Risk (only flag when this item is the EXCEPTION, not the norm) ---
-  if (mostHaveSops && (!item.sopCodes || item.sopCodes.length === 0)) {
-    annotations.push({ type: 'risk', label: 'No SOP linked' });
-  }
-  if (mostLaborHasHours && item.isLabor && (!item.estimatedHoursPerUnit || item.estimatedHoursPerUnit === 0)) {
-    annotations.push({ type: 'risk', label: 'No hours estimate' });
-  }
-
-  return annotations;
-}
-
-/** Summary-level flags shown as interactive expandable rows above line items */
-function getEstimateSummaryFlags(items: LineItem[]): SummaryFlag[] {
-  const flags: SummaryFlag[] = [];
-
-  const noSopItems = items.filter(i => !i.sopCodes || i.sopCodes.length === 0);
-  if (noSopItems.length > 0 && noSopItems.length >= items.length / 2) {
-    flags.push({
-      key: 'no-sop',
-      type: 'info',
-      label: `${noSopItems.length} of ${items.length} items need SOP codes`,
-      actionLabel: 'Link SOPs to enable task pipeline',
-      affectedItemIds: noSopItems.map(i => i.id),
-      acknowledgeOptions: ['Not applicable for this work', 'Will add before approval', 'Using alternative procedure'],
-    });
-  }
-
-  const laborItems = items.filter(i => i.isLabor);
-  const noHoursItems = laborItems.filter(i => !i.estimatedHoursPerUnit || i.estimatedHoursPerUnit === 0);
-  if (noHoursItems.length > 0 && noHoursItems.length >= laborItems.length / 2) {
-    flags.push({
-      key: 'no-hours',
-      type: 'info',
-      label: `${noHoursItems.length} of ${laborItems.length} labor items need hours estimates`,
-      actionLabel: 'Required for budgeting',
-      affectedItemIds: noHoursItems.map(i => i.id),
-      acknowledgeOptions: ['Fixed-price contract', 'Will estimate during work', 'Hours included in material cost'],
-    });
-  }
-
-  const highValueItems = items.filter(i => !i.isLabor && i.totalCost >= 2000);
-  if (highValueItems.length > 0) {
-    flags.push({
-      key: 'lead-time',
-      type: 'warning',
-      label: `${highValueItems.length} material${highValueItems.length > 1 ? 's' : ''} over $2k`,
-      actionLabel: 'Confirm lead times before scheduling',
-      affectedItemIds: highValueItems.map(i => i.id),
-      acknowledgeOptions: ['Confirmed with supplier', 'In stock locally', 'Acceptable delay'],
-    });
-  }
-
-  return flags;
-}
-
-function getLabsAnnotations(
-  item: LineItem,
-  knowledgeItems: { title: string; category: string; status: string; confidenceScore: number; tags?: string[]; nextReviewDate?: string }[],
-  experiments: { title: string; status: string; matchCriteria: { workCategories?: string[] } }[],
-): LabsAnnotation[] {
-  const annotations: LabsAnnotation[] = [];
-  const cat = item.category.replace(/[-_]/g, ' ').toLowerCase();
-  const catLabel = CATEGORY_LABELS[item.category] || item.category;
-  const sopCodes = item.sopCodes || [];
-
-  const matchesCategory = (wcs: string[] | undefined) =>
-    wcs?.some(wc => {
-      const w = wc.replace(/[-_]/g, ' ').toLowerCase();
-      return w.includes(cat) || cat.includes(w);
-    });
-
-  // --- Recent: published knowledge items matching category or SOP tags ---
-  const relevant = knowledgeItems.filter(k =>
-    k.status === 'published' && (
-      k.category?.toLowerCase().includes(cat) ||
-      cat.includes(k.category?.toLowerCase() || '') ||
-      k.tags?.some(t => sopCodes.includes(t))
-    )
-  ).slice(0, 2);
-
-  if (relevant.length > 0) {
-    for (const k of relevant) {
-      annotations.push({ category: 'recent', label: k.title, detail: `${k.confidenceScore}%` });
-    }
-  } else {
-    annotations.push({
-      category: 'recent',
-      label: `No research data for ${catLabel}`,
-      detail: 'gap',
-      actionLabel: 'Track',
-      actionHref: `/labs/knowledge?category=${encodeURIComponent(cat)}&action=new`,
-    });
-  }
-
-  // --- Ongoing: active experiments ---
-  const ongoing = experiments.filter(e =>
-    e.status === 'active' && matchesCategory(e.matchCriteria?.workCategories)
-  ).slice(0, 1);
-
-  if (ongoing.length > 0) {
-    for (const e of ongoing) {
-      annotations.push({ category: 'ongoing', label: e.title });
-    }
-  } else {
-    annotations.push({
-      category: 'ongoing',
-      label: `No active experiments for ${catLabel}`,
-      detail: 'gap',
-      actionLabel: 'Create',
-      actionHref: `/labs/experiments?category=${encodeURIComponent(cat)}&action=new`,
-    });
-  }
-
-  // --- Upcoming: draft experiments + knowledge items due for review ---
-  const upcoming = experiments.filter(e =>
-    e.status === 'draft' && matchesCategory(e.matchCriteria?.workCategories)
-  ).slice(0, 1);
-  for (const e of upcoming) {
-    annotations.push({ category: 'upcoming', label: e.title });
-  }
-
-  const thirtyDays = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-  const dueForReview = knowledgeItems.filter(k =>
-    k.nextReviewDate && new Date(k.nextReviewDate) <= thirtyDays &&
-    (k.category?.toLowerCase().includes(cat) || cat.includes(k.category?.toLowerCase() || ''))
-  ).slice(0, 1);
-  for (const k of dueForReview) {
-    annotations.push({
-      category: 'upcoming',
-      label: `Review: ${k.title}`,
-      detail: new Date(k.nextReviewDate!).toLocaleDateString('en-CA', { month: 'short', day: 'numeric' }),
-    });
-  }
-
-  if (upcoming.length === 0 && dueForReview.length === 0) {
-    annotations.push({
-      category: 'upcoming',
-      label: `Consider testing ${catLabel}`,
-      detail: 'gap',
-      actionLabel: 'Plan',
-      actionHref: `/labs/experiments?category=${encodeURIComponent(cat)}&action=plan`,
-    });
-  }
-
-  return annotations;
-}
-
-// ============================================================================
-// Line Item Row — compact list row
-// ============================================================================
-
-function LineItemRow({
-  item,
-  isLast,
-  onEdit,
-  onDelete,
-  viewMode = 'project',
-  catalog,
-  projectAnnotations,
-  labsAnnotations,
-  isExpanded = false,
-  onToggleExpand,
-  onCreateKnowledge,
-  onCreateExperiment,
-}: {
-  item: LineItem;
-  isLast: boolean;
-  onEdit: () => void;
-  onDelete: () => void;
-  viewMode?: ViewMode;
-  catalog: CostCatalog;
-  projectAnnotations?: ProjectAnnotation[];
-  labsAnnotations?: LabsAnnotation[];
-  isExpanded?: boolean;
-  onToggleExpand?: () => void;
-  onCreateKnowledge?: (data: any) => Promise<any>;
-  onCreateExperiment?: (data: any) => Promise<any>;
-}) {
-  const [quickCreateMode, setQuickCreateMode] = useState<'knowledge' | 'experiment' | null>(null);
-  const [quickCreateTitle, setQuickCreateTitle] = useState('');
-  const [quickCreateSaving, setQuickCreateSaving] = useState(false);
-  const [quickCreateDone, setQuickCreateDone] = useState<string | null>(null);
-
-  const annColors = {
-    warning: { bg: 'var(--yellow-bg)', text: 'var(--yellow)', dot: 'var(--yellow)' },
-    info: { bg: 'var(--blue-bg)', text: 'var(--blue)', dot: 'var(--blue)' },
-    risk: { bg: 'var(--red-bg)', text: 'var(--red)', dot: 'var(--red)' },
-  };
-  const labsColors = {
-    recent: { text: 'var(--green)', dot: 'var(--green)' },
-    ongoing: { text: 'var(--violet)', dot: 'var(--violet)' },
-    upcoming: { text: 'var(--blue)', dot: 'var(--blue)' },
-  };
-
-  const catLabel = CATEGORY_LABELS[item.category] || item.category;
-
-  async function handleQuickCreate() {
-    if (!quickCreateTitle.trim()) return;
-    setQuickCreateSaving(true);
-    try {
-      if (quickCreateMode === 'knowledge' && onCreateKnowledge) {
-        await onCreateKnowledge({
-          knowledgeType: 'material' as const,
-          category: item.category,
-          title: quickCreateTitle.trim(),
-          summary: `Tracking ${catLabel} data from estimate line item: ${item.description}`,
-          confidenceScore: 0,
-          lastConfidenceUpdate: new Date().toISOString(),
-          observationCount: 0,
-          experimentCount: 0,
-          status: 'draft' as const,
-          createdBy: 'estimate-page',
-          tags: item.sopCodes || [],
-        });
-        setQuickCreateDone('Knowledge item created');
-      } else if (quickCreateMode === 'experiment' && onCreateExperiment) {
-        await onCreateExperiment({
-          title: quickCreateTitle.trim(),
-          knowledgeType: 'material' as const,
-          status: 'draft' as const,
-          testVariables: [],
-          matchCriteria: { workCategories: [item.category] },
-          requiredSampleSize: 3,
-          currentSampleCounts: {},
-          checkpoints: [],
-          designedBy: 'estimate-page',
-        });
-        setQuickCreateDone('Experiment created');
-      }
-      setTimeout(() => {
-        setQuickCreateDone(null);
-        setQuickCreateMode(null);
-        setQuickCreateTitle('');
-      }, 2000);
-    } catch {
-      setQuickCreateDone('Error — try again');
-      setTimeout(() => setQuickCreateDone(null), 2000);
-    } finally {
-      setQuickCreateSaving(false);
-    }
-  }
-
-  return (
-    <div style={{ borderBottom: isLast ? 'none' : '1px solid var(--surface-2)' }}>
-      {/* Main row — tap to expand */}
-      <button
-        onClick={onToggleExpand}
-        className="w-full flex items-center gap-2 px-3 py-2 text-left"
-        style={{ minHeight: '44px' }}
-      >
-        {/* Labor/Material indicator */}
-        <div
-          className="w-1 h-8 rounded-full flex-shrink-0"
-          style={{ background: item.isLabor ? 'var(--blue)' : 'var(--yellow)' }}
-        />
-
-        {/* Content */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-baseline gap-1.5">
-            <span className="text-[13px] font-medium truncate" style={{ color: 'var(--charcoal)' }}>
-              {item.description}
-            </span>
-            {item.sopCodes && item.sopCodes.length > 0 && (
-              <span className="text-[9px] font-medium px-1 rounded" style={{ background: 'var(--green-bg)', color: 'var(--accent)', flexShrink: 0 }}>
-                {item.sopCodes[0]}{item.sopCodes.length > 1 ? ` +${item.sopCodes.length - 1}` : ''}
-              </span>
-            )}
-          </div>
-          <div className="flex items-center gap-1.5 text-[11px]" style={{ color: 'var(--muted)' }}>
-            <span>{item.quantity} {UNIT_LABELS[item.unit] || item.unit} &times; ${item.unitCost.toLocaleString()}</span>
-            {item.isLooped && (
-              <span className="flex items-center gap-0.5" style={{ color: 'var(--violet)' }}>
-                <Repeat size={8} />
-                {item.loopContextLabel || 'Looped'}
-              </span>
-            )}
-            {item.estimatedHoursPerUnit && item.estimatedHoursPerUnit > 0 && (
-              <span className="flex items-center gap-0.5" style={{ color: 'var(--blue)' }}>
-                <Clock size={8} />
-                {item.estimatedHoursPerUnit}h/u
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* Total */}
-        <span className="text-[13px] font-semibold flex-shrink-0" style={{ color: 'var(--charcoal)' }}>
-          ${item.totalCost.toLocaleString()}
-        </span>
-
-        {/* Expand chevron */}
-        <ChevronDown
-          size={14}
-          className="flex-shrink-0 transition-transform"
-          style={{
-            color: 'var(--muted)',
-            transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
-          }}
-        />
-      </button>
-
-      {/* Expanded content */}
-      {isExpanded && (
-        <div className="px-3 pb-3 ml-3 space-y-2" style={{ borderTop: '1px solid var(--surface)' }}>
-          {/* Actions bar */}
-          <div className="flex gap-2 pt-2">
-            <button
-              onClick={(e) => { e.stopPropagation(); onEdit(); }}
-              className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1.5 rounded-lg"
-              style={{ background: 'var(--accent)', color: '#fff', minHeight: '32px' }}
-            >
-              <Pencil size={10} /> Edit
-            </button>
-            <button
-              onClick={(e) => { e.stopPropagation(); onDelete(); }}
-              className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1.5 rounded-lg"
-              style={{ background: 'var(--red-bg)', color: 'var(--red)', minHeight: '32px' }}
-            >
-              <Trash2 size={10} /> Remove
-            </button>
-          </div>
-
-          {/* Project view annotations */}
-          {viewMode === 'project' && projectAnnotations && projectAnnotations.length > 0 && (
-            <div className="flex flex-wrap gap-1">
-              {projectAnnotations.map((a, i) => (
-                <span
-                  key={i}
-                  className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded"
-                  style={{ background: annColors[a.type].bg, color: annColors[a.type].text }}
-                >
-                  <span className="w-1 h-1 rounded-full" style={{ background: annColors[a.type].dot }} />
-                  {a.label}
-                </span>
-              ))}
-            </div>
-          )}
-
-          {/* Project view — item details */}
-          {viewMode === 'project' && (
-            <div className="space-y-1 text-[11px]" style={{ color: 'var(--muted)' }}>
-              <div className="flex justify-between">
-                <span>Category</span>
-                <span style={{ color: 'var(--charcoal)' }}>{catLabel}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Type</span>
-                <span style={{ color: item.isLabor ? 'var(--blue)' : 'var(--yellow)' }}>
-                  {item.isLabor ? 'Labor' : 'Material'}
-                </span>
-              </div>
-              {item.sopCodes && item.sopCodes.length > 0 && (
-                <div className="flex justify-between">
-                  <span>SOPs</span>
-                  <span style={{ color: 'var(--accent)' }}>{item.sopCodes.join(', ')}</span>
-                </div>
-              )}
-              {item.isLabor && (
-                <div className="flex justify-between">
-                  <span>Hours/Unit</span>
-                  <span style={{ color: item.estimatedHoursPerUnit ? 'var(--charcoal)' : 'var(--red)' }}>
-                    {item.estimatedHoursPerUnit ? `${item.estimatedHoursPerUnit}h` : 'Not set'}
-                  </span>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Procedure Steps — read-only SOP checklist */}
-          {item.sopCodes && item.sopCodes.length > 0 && (
-            <div className="space-y-2">
-              {item.sopCodes.map((code) => (
-                <ProcedureStepsSection key={code} sopCode={code} />
-              ))}
-            </div>
-          )}
-
-          {/* Materials & Tools — assembly breakdown */}
-          <MaterialsToolsSection item={item} catalog={catalog} />
-
-          {/* Labs view annotations */}
-          {viewMode === 'labs' && labsAnnotations && labsAnnotations.length > 0 && (
-            <div className="space-y-1">
-              {labsAnnotations.map((a, i) => {
-                const isGap = a.detail === 'gap';
-                return (
-                  <div key={i} className="flex items-center gap-1.5 text-[10px]">
-                    <span
-                      className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                      style={{ background: isGap ? 'var(--border)' : labsColors[a.category].dot }}
-                    />
-                    <span
-                      className="text-[9px] font-semibold uppercase w-12 flex-shrink-0"
-                      style={{ color: isGap ? 'var(--muted)' : labsColors[a.category].text }}
-                    >
-                      {a.category === 'recent' ? 'Recent' : a.category === 'ongoing' ? 'Active' : 'Soon'}
-                    </span>
-                    <span
-                      className="flex-1 truncate"
-                      style={{ color: isGap ? 'var(--muted)' : 'var(--mid)', fontStyle: isGap ? 'italic' : 'normal' }}
-                    >
-                      {a.label}
-                    </span>
-                    {a.detail && !isGap && (
-                      <span className="font-semibold flex-shrink-0" style={{ color: labsColors[a.category].text }}>
-                        {a.detail}
-                      </span>
-                    )}
-                    {isGap && a.actionLabel && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (a.actionLabel === 'Track') {
-                            setQuickCreateMode('knowledge');
-                            setQuickCreateTitle(`${catLabel} — ${item.description}`);
-                          } else {
-                            setQuickCreateMode('experiment');
-                            setQuickCreateTitle(`Test: ${catLabel} — ${item.description}`);
-                          }
-                        }}
-                        className="font-semibold flex-shrink-0 px-1.5 py-0.5 rounded"
-                        style={{ background: 'var(--accent)', color: '#fff', fontSize: '9px' }}
-                      >
-                        + {a.actionLabel}
-                      </button>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-
-          {/* Quick-create inline form */}
-          {quickCreateMode && !quickCreateDone && (
-            <div
-              className="rounded-lg p-3 space-y-2"
-              style={{ background: 'var(--green-bg)', border: '1px solid var(--accent-border)' }}
-            >
-              <p className="text-[11px] font-semibold" style={{ color: 'var(--accent)' }}>
-                {quickCreateMode === 'knowledge' ? 'Track Knowledge' : 'Create Experiment'}
-              </p>
-              <input
-                type="text"
-                value={quickCreateTitle}
-                onChange={(e) => setQuickCreateTitle(e.target.value)}
-                placeholder={quickCreateMode === 'knowledge' ? 'Knowledge item title...' : 'Experiment title...'}
-                className="w-full px-2.5 py-1.5 text-[12px] border rounded-lg focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
-                style={{ borderColor: 'var(--border)', minHeight: '36px' }}
-                onClick={(e) => e.stopPropagation()}
-              />
-              <div className="flex gap-2">
-                <button
-                  onClick={(e) => { e.stopPropagation(); handleQuickCreate(); }}
-                  disabled={!quickCreateTitle.trim() || quickCreateSaving}
-                  className="flex-1 text-[11px] font-semibold py-1.5 rounded-lg text-white disabled:opacity-50"
-                  style={{ background: 'var(--accent)', minHeight: '32px' }}
-                >
-                  {quickCreateSaving ? 'Saving...' : 'Create'}
-                </button>
-                <button
-                  onClick={(e) => { e.stopPropagation(); setQuickCreateMode(null); setQuickCreateTitle(''); }}
-                  className="text-[11px] font-medium px-3 py-1.5 rounded-lg"
-                  style={{ background: 'var(--surface-2)', color: 'var(--muted)', minHeight: '32px' }}
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Quick-create success */}
-          {quickCreateDone && (
-            <div
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-[11px] font-medium"
-              style={{ background: 'var(--green-bg)', color: 'var(--green)' }}
-            >
-              <Check size={12} />
-              {quickCreateDone}
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ============================================================================
-// Procedure Steps — read-only SOP checklist for planning
-// ============================================================================
-
-function ProcedureStepsSection({ sopCode }: { sopCode: string }) {
-  const [expanded, setExpanded] = useState(false);
-
-  // Try database SOP first
-  const { data: dbSop } = useSopByCode(sopCode);
-  const sopId = dbSop?.id || '';
-  const { data: dbChecklist } = useSopChecklistItems(sopId);
-
-  // Normalize: database checklist items OR hardcoded SOP steps
-  const steps = useMemo(() => {
-    if (dbChecklist && dbChecklist.length > 0) {
-      return dbChecklist
-        .sort((a, b) => a.stepNumber - b.stepNumber)
-        .map((item) => ({
-          number: item.stepNumber,
-          title: item.title,
-          isCritical: item.isCritical,
-          requiresPhoto: item.requiresPhoto,
-        }));
-    }
-
-    // Fallback to hardcoded SOP
-    const hardcoded = getSOPById(sopCode);
-    if (hardcoded) {
-      return hardcoded.quick_steps.map((step) => ({
-        number: step.order,
-        title: step.action,
-        isCritical: false,
-        requiresPhoto: /photo|document|capture/i.test(step.action),
-      }));
-    }
-
-    return [];
-  }, [dbChecklist, sopCode]);
-
-  if (steps.length === 0) return null;
-
-  const sopTitle = dbSop?.title || getSOPById(sopCode)?.title || sopCode;
-
-  return (
-    <div className="rounded-lg overflow-hidden" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-      <button
-        onClick={(e) => { e.stopPropagation(); setExpanded(!expanded); }}
-        className="w-full flex items-center gap-2 px-3 py-2 text-left"
-        style={{ minHeight: '36px' }}
-      >
-        <BookOpen size={12} style={{ color: 'var(--muted)' }} />
-        <span className="text-[11px] font-medium flex-1 truncate" style={{ color: 'var(--mid)' }}>
-          {sopTitle}
-        </span>
-        <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full" style={{ background: 'var(--border)', color: 'var(--muted)' }}>
-          {steps.length} steps
-        </span>
-        <ChevronDown
-          size={12}
-          className="transition-transform"
-          style={{ color: 'var(--muted)', transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)' }}
-        />
-      </button>
-
-      {expanded && (
-        <div className="px-3 pb-2 space-y-1" style={{ borderTop: '1px solid var(--border)' }}>
-          {steps.map((step) => (
-            <div key={step.number} className="flex items-start gap-2 py-1">
-              <span
-                className="text-[10px] font-semibold w-4 text-center flex-shrink-0 mt-0.5"
-                style={{ color: 'var(--muted)' }}
-              >
-                {step.number}
-              </span>
-              <span className="text-[11px] flex-1" style={{ color: 'var(--mid)' }}>
-                {step.title}
-              </span>
-              {step.isCritical && (
-                <span
-                  className="text-[8px] font-bold px-1 py-0.5 rounded flex-shrink-0"
-                  style={{ background: 'var(--red-bg)', color: 'var(--red)' }}
-                >
-                  CRITICAL
-                </span>
-              )}
-              {step.requiresPhoto && (
-                <Camera size={10} className="flex-shrink-0 mt-0.5" style={{ color: 'var(--muted)' }} />
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ============================================================================
-// Materials & Tools — assembly component breakdown
-// ============================================================================
-
-function MaterialsToolsSection({ item, catalog }: { item: LineItem; catalog: CostCatalog }) {
-  const [materialsOpen, setMaterialsOpen] = useState(false);
-  const [toolsOpen, setToolsOpen] = useState(false);
-  const [checkedMaterials, setCheckedMaterials] = useState<Set<number>>(new Set());
-  const [checkedTools, setCheckedTools] = useState<Set<number>>(new Set());
-
-  const breakdown = useMemo(() => {
-    return resolveLineItemBreakdown(item.description, item.category, item.quantity, catalog);
-  }, [item.description, item.category, item.quantity, catalog]);
-
-  if (!breakdown) {
-    return (
-      <div className="rounded-lg px-3 py-2 flex items-center gap-2" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-        <Package size={12} style={{ color: 'var(--border)' }} />
-        <span className="text-[11px]" style={{ color: 'var(--muted)' }}>No assembly data for this item</span>
-      </div>
-    );
-  }
-
-  const toggleMat = (idx: number) => {
-    setCheckedMaterials((prev) => {
-      const next = new Set(prev);
-      if (next.has(idx)) next.delete(idx); else next.add(idx);
-      return next;
-    });
-  };
-
-  const toggleTool = (idx: number) => {
-    setCheckedTools((prev) => {
-      const next = new Set(prev);
-      if (next.has(idx)) next.delete(idx); else next.add(idx);
-      return next;
-    });
-  };
-
-  return (
-    <div className="space-y-1.5">
-      {/* Materials list */}
-      {breakdown.materials.length > 0 && (
-        <div className="rounded-lg overflow-hidden" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-          <button
-            onClick={(e) => { e.stopPropagation(); setMaterialsOpen(!materialsOpen); }}
-            className="w-full flex items-center gap-2 px-3 py-2 text-left"
-            style={{ minHeight: '36px' }}
-          >
-            <Package size={12} style={{ color: 'var(--yellow)' }} />
-            <span className="text-[11px] font-medium flex-1" style={{ color: 'var(--mid)' }}>
-              Materials
-            </span>
-            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full" style={{ background: 'var(--yellow-bg)', color: 'var(--yellow)' }}>
-              {breakdown.materials.length}
-            </span>
-            <ChevronDown
-              size={12}
-              className="transition-transform"
-              style={{ color: 'var(--muted)', transform: materialsOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
-            />
-          </button>
-
-          {materialsOpen && (
-            <div className="px-3 pb-2 space-y-1 pt-1" style={{ borderTop: '1px solid var(--border)' }}>
-              {breakdown.materials.map((mat, idx) => (
-                <button
-                  key={idx}
-                  onClick={(e) => { e.stopPropagation(); toggleMat(idx); }}
-                  className="w-full flex items-center gap-2 py-1 text-left"
-                  style={{ minHeight: '32px' }}
-                >
-                  <div
-                    className="w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center"
-                    style={{
-                      borderColor: checkedMaterials.has(idx) ? 'var(--accent)' : 'var(--border)',
-                      background: checkedMaterials.has(idx) ? 'var(--accent)' : 'transparent',
-                    }}
-                  >
-                    {checkedMaterials.has(idx) && <Check size={10} style={{ color: '#fff' }} />}
-                  </div>
-                  <span
-                    className="text-[11px] font-medium flex-1 truncate"
-                    style={{
-                      color: checkedMaterials.has(idx) ? 'var(--muted)' : 'var(--mid)',
-                      textDecoration: checkedMaterials.has(idx) ? 'line-through' : 'none',
-                    }}
-                  >
-                    {mat.name}
-                  </span>
-                  <span className="text-[10px] flex-shrink-0" style={{ color: 'var(--muted)' }}>
-                    {mat.quantityNeeded} {mat.unit}
-                  </span>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Tools checklist */}
-      {breakdown.tools.length > 0 && (
-        <div className="rounded-lg overflow-hidden" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-          <button
-            onClick={(e) => { e.stopPropagation(); setToolsOpen(!toolsOpen); }}
-            className="w-full flex items-center gap-2 px-3 py-2 text-left"
-            style={{ minHeight: '36px' }}
-          >
-            <Wrench size={12} style={{ color: 'var(--muted)' }} />
-            <span className="text-[11px] font-medium flex-1" style={{ color: 'var(--mid)' }}>
-              Tools
-            </span>
-            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full" style={{ background: 'var(--surface-2)', color: 'var(--muted)' }}>
-              {breakdown.tools.length}
-            </span>
-            <ChevronDown
-              size={12}
-              className="transition-transform"
-              style={{ color: 'var(--muted)', transform: toolsOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
-            />
-          </button>
-
-          {toolsOpen && (
-            <div className="px-3 pb-2 space-y-1 pt-1" style={{ borderTop: '1px solid var(--border)' }}>
-              {breakdown.tools.map((tool, idx) => (
-                <button
-                  key={idx}
-                  onClick={(e) => { e.stopPropagation(); toggleTool(idx); }}
-                  className="w-full flex items-center gap-2 py-1 text-left"
-                  style={{ minHeight: '32px' }}
-                >
-                  <div
-                    className="w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center"
-                    style={{
-                      borderColor: checkedTools.has(idx) ? 'var(--accent)' : 'var(--border)',
-                      background: checkedTools.has(idx) ? 'var(--accent)' : 'transparent',
-                    }}
-                  >
-                    {checkedTools.has(idx) && <Check size={10} style={{ color: '#fff' }} />}
-                  </div>
-                  <span
-                    className="text-[11px] truncate"
-                    style={{
-                      color: checkedTools.has(idx) ? 'var(--muted)' : 'var(--mid)',
-                      textDecoration: checkedTools.has(idx) ? 'line-through' : 'none',
-                    }}
-                  >
-                    {tool}
-                  </span>
-                </button>
-              ))}
-            </div>
-          )}
         </div>
       )}
     </div>

@@ -92,14 +92,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     let mounted = true;
 
-    // Safety timeout — if getSession() hangs (wrong URL/key), stop loading after 12s
-    // Mobile networks need more headroom than desktop
+    // Safety timeout — if getSession() hangs (wrong URL/key), check cached JWT
+    // before giving up. 20s covers slow mobile/satellite connections.
     const timeout = setTimeout(() => {
-      if (mounted) {
-        console.warn('[Auth] Session check timed out — continuing without auth');
-        setLoading(false);
+      if (!mounted) return;
+
+      // Check localStorage for Supabase's cached session token
+      const storageKey = Object.keys(localStorage).find((k) => k.startsWith('sb-') && k.endsWith('-auth-token'));
+      if (storageKey) {
+        try {
+          const stored = JSON.parse(localStorage.getItem(storageKey) || '');
+          const token = stored?.access_token;
+          if (token) {
+            // Decode JWT payload (base64url) and check exp
+            const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+            const nowSec = Math.floor(Date.now() / 1000);
+            if (payload.exp && payload.exp > nowSec) {
+              // JWT still valid — keep waiting for Supabase to respond
+              console.warn('[Auth] Session check slow but cached JWT still valid — holding loading state');
+              return;
+            }
+          }
+        } catch {
+          // Malformed token — fall through to redirect
+        }
       }
-    }, 12000);
+
+      // No valid cached JWT — stop loading so ProtectedRoute redirects to /login
+      console.warn('[Auth] Session check timed out, no valid cached JWT — redirecting to login');
+      setLoading(false);
+    }, 20000);
 
     async function init() {
       try {

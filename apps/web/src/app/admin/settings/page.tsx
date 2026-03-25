@@ -129,7 +129,7 @@ export default function SettingsPage() {
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 <InfoRow label="Version" value="Pre-release" />
-                <InfoRow label="IndexedDB" value="v11 — 40 stores" />
+                <IdbInfoRow />
                 <InfoRow label="Storage" value="Offline-first" />
               </div>
             </div>
@@ -492,6 +492,30 @@ function RolePermissionsSection() {
       </p>
     </div>
   );
+}
+
+function IdbInfoRow() {
+  const [info, setInfo] = useState<string>('…');
+
+  useEffect(() => {
+    // Open the known IDB database to read version + store count
+    const dbName = 'hooomz';
+    const req = indexedDB.open(dbName);
+    req.onsuccess = () => {
+      const db = req.result;
+      setInfo(`v${db.version} — ${db.objectStoreNames.length} stores`);
+      db.close();
+    };
+    req.onerror = () => {
+      setInfo('unavailable');
+    };
+    // If this triggers an upgrade (no DB exists), close immediately
+    req.onupgradeneeded = () => {
+      req.transaction?.abort();
+    };
+  }, []);
+
+  return <InfoRow label="IndexedDB" value={info} />;
 }
 
 function InfoRow({ label, value }: { label: string; value: string }) {

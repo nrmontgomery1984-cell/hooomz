@@ -788,7 +788,7 @@ function buildFloorPlan(){
 
     // Room label
     const lx=d.x+d.w/2, ly=d.y+d.h/2-4;
-    const lbl=svgEl('text',{x:lx,y:ly,'font-family':'"Barlow Condensed",sans-serif','font-size':'13','font-weight':'700',fill:'#1A1714','text-anchor':'middle','dominant-baseline':'middle',style:'pointer-events:none;text-transform:uppercase;letter-spacing:0.05em'});
+    const lbl=svgEl('text',{x:lx,y:ly,'font-family':'"Figtree",sans-serif','font-size':'13','font-weight':'700',fill:'#1A1714','text-anchor':'middle','dominant-baseline':'middle',style:'pointer-events:none;text-transform:uppercase;letter-spacing:0.05em'});
     lbl.textContent=r.name.toUpperCase();
     g.appendChild(lbl);
 
@@ -1090,7 +1090,7 @@ function buildRoomPlan(id){
   // Room name label
   const lbl=svgEl('text',{
     x:rx+8,y:ry+20,
-    'font-family':'"Barlow Condensed",sans-serif',
+    'font-family':'"Figtree",sans-serif',
     'font-size':'18','font-weight':'700',
     fill:'#1A1714',
     'dominant-baseline':'middle',

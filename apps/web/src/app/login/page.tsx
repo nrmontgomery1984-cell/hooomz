@@ -8,7 +8,7 @@
  * Matches the dark instrument UI aesthetic (sidebar palette).
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { HooomzLogoMark } from '@/components/navigation/HooomzLogoMark';
@@ -18,38 +18,46 @@ const FIG = "'Figtree', sans-serif";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { signIn, loading: authLoading } = useAuth();
+  const { user, profile, signIn, loading: authLoading } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
+  // If user is already authenticated, redirect based on role
+  useEffect(() => {
+    if (!authLoading && user) {
+      const role = profile?.role;
+      if (role === 'installer') router.push('/schedule');
+      else if (role === 'operator') router.push('/production');
+      else router.push('/');
+    }
+  }, [authLoading, user, profile, router]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setSubmitting(true);
 
-    const { error: authError } = await signIn(email, password);
+    try {
+      const result = await signIn(email, password);
 
-    if (authError) {
-      setError(authError);
+      if (result.error) {
+        setError(result.error);
+        setSubmitting(false);
+        return;
+      }
+
+      // Don't router.push here — the useEffect above will redirect
+      // once AuthContext updates `user`. Pushing immediately races
+      // with ProtectedRoute which still sees user=null and bounces
+      // back to /login.
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Sign-in failed');
       setSubmitting(false);
-      return;
     }
-
-    router.push('/leads');
   };
-
-  if (authLoading) {
-    return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#111010' }}>
-        <p style={{ fontFamily: MONO, fontSize: 10, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#555' }}>
-          Loading&hellip;
-        </p>
-      </div>
-    );
-  }
 
   return (
     <div
@@ -58,7 +66,7 @@ export default function LoginPage() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: '#111010',
+        background: 'var(--dark-nav)',
         padding: 24,
       }}
     >
@@ -82,7 +90,7 @@ export default function LoginPage() {
               fontWeight: 400,
               letterSpacing: '2px',
               textTransform: 'uppercase',
-              color: '#555',
+              color: 'var(--muted)',
               marginTop: 8,
             }}
           >
@@ -100,7 +108,7 @@ export default function LoginPage() {
               fontWeight: 500,
               letterSpacing: '2px',
               textTransform: 'uppercase',
-              color: '#555',
+              color: 'var(--muted)',
             }}
           >
             Email
@@ -116,10 +124,10 @@ export default function LoginPage() {
               fontFamily: FIG,
               fontSize: 14,
               padding: '12px 14px',
-              background: '#1a1a1a',
+              background: 'var(--charcoal)',
               border: '1px solid #333',
               borderRadius: 6,
-              color: '#ffffff',
+              color: '#fff',
               outline: 'none',
             }}
           />
@@ -135,7 +143,7 @@ export default function LoginPage() {
               fontWeight: 500,
               letterSpacing: '2px',
               textTransform: 'uppercase',
-              color: '#555',
+              color: 'var(--muted)',
             }}
           >
             Password
@@ -151,10 +159,10 @@ export default function LoginPage() {
               fontFamily: FIG,
               fontSize: 14,
               padding: '12px 14px',
-              background: '#1a1a1a',
+              background: 'var(--charcoal)',
               border: '1px solid #333',
               borderRadius: 6,
-              color: '#ffffff',
+              color: '#fff',
               outline: 'none',
             }}
           />
@@ -166,11 +174,11 @@ export default function LoginPage() {
             style={{
               fontFamily: MONO,
               fontSize: 10,
-              color: '#DC2626',
+              color: 'var(--red)',
               margin: 0,
               padding: '8px 12px',
-              background: 'rgba(220,38,38,.08)',
-              border: '1px solid rgba(220,38,38,.2)',
+              background: 'var(--red-bg)',
+              border: '1px solid var(--red-bg)',
               borderRadius: 6,
             }}
           >
@@ -189,8 +197,8 @@ export default function LoginPage() {
             letterSpacing: '2px',
             textTransform: 'uppercase',
             padding: '14px 24px',
-            background: submitting ? '#333' : '#ffffff',
-            color: submitting ? '#666' : '#111010',
+            background: submitting ? '#333' : 'var(--surface)',
+            color: submitting ? '#666' : 'var(--dark-nav)',
             border: 'none',
             borderRadius: 6,
             cursor: submitting ? 'wait' : 'pointer',

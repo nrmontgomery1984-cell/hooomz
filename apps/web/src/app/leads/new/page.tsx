@@ -3,14 +3,16 @@
 /**
  * Conversational Lead Capture — /leads/new
  *
- * 7-screen progressive flow for home show / website captures.
+ * 9-screen progressive flow for home show / website captures.
  * Screen 1: Scope signals (what trades)
  * Screen 2: Room details (add rooms with L×W dimensions)
  * Screen 3: Material preferences (per-trade material type)
- * Screen 4: Budget range
- * Screen 5: Instant estimate (the payoff — now sqft-based)
- * Screen 6: Contact info + source
- * Screen 7: Timeline
+ * Screen 4: Door/window counts
+ * Screen 5: Budget range
+ * Screen 6: Instant estimate (the payoff — now sqft-based)
+ * Screen 7: Contact info + source
+ * Screen 8: Property address
+ * Screen 9: Timeline
  * → Success confirmation
  *
  * Total flow: 60-90 seconds at a booth.
@@ -52,7 +54,7 @@ import type {
 // Constants
 // ============================================================================
 
-const TOTAL_SCREENS = 8;
+const TOTAL_SCREENS = 9;
 
 const SCOPE_OPTIONS = [
   { value: 'floors', label: 'New Floors', desc: 'LVP, hardwood, laminate, carpet', icon: Layers },
@@ -133,9 +135,9 @@ const SOURCE_OPTIONS = [
 ] as const;
 
 const TIMELINE_OPTIONS = [
-  { value: 'asap', label: 'As soon as possible', desc: "Let's get moving", color: '#EF4444' },
-  { value: 'few_months', label: 'Next few months', desc: 'Planning ahead', color: '#F59E0B' },
-  { value: 'exploring', label: 'Just exploring', desc: 'No rush — learning what\'s possible', color: '#3B82F6' },
+  { value: 'asap', label: 'As soon as possible', desc: "Let's get moving", color: 'var(--red)' },
+  { value: 'few_months', label: 'Next few months', desc: 'Planning ahead', color: 'var(--yellow)' },
+  { value: 'exploring', label: 'Just exploring', desc: 'No rush — learning what\'s possible', color: 'var(--blue)' },
 ] as const;
 
 const CONTACT_OPTIONS = [
@@ -194,6 +196,11 @@ export default function NewLeadPage() {
   const [referralSource, setReferralSource] = useState('');
   const [preferredContact, setPreferredContact] = useState('text');
   const [timeline, setTimeline] = useState('');
+  const [propertyAddress, setPropertyAddress] = useState('');
+  const [propertyCity, setPropertyCity] = useState('Moncton');
+  const [propertyProvince, setPropertyProvince] = useState('NB');
+  const [propertyPostalCode, setPropertyPostalCode] = useState('');
+  const [propertyType, setPropertyType] = useState<'residential' | 'multi-unit' | 'commercial'>('residential');
 
   // ── Derived ──
   const [estimate, setEstimate] = useState<InstantEstimateResult | null>(null);
@@ -355,6 +362,11 @@ export default function NewLeadPage() {
       preferredContact,
       instantEstimate: estimate ? { low: estimate.low, mid: estimate.mid, high: estimate.high } : undefined,
       referralSource: referralSource.trim() || undefined,
+      propertyAddress: propertyAddress.trim() || undefined,
+      propertyCity: propertyCity.trim() || undefined,
+      propertyProvince: propertyProvince.trim() || undefined,
+      propertyPostalCode: propertyPostalCode.trim() || undefined,
+      propertyType,
     };
 
     try {
@@ -384,6 +396,11 @@ export default function NewLeadPage() {
     setReferralSource('');
     setPreferredContact('text');
     setTimeline('');
+    setPropertyAddress('');
+    setPropertyCity('Moncton');
+    setPropertyProvince('NB');
+    setPropertyPostalCode('');
+    setPropertyType('residential');
     setEstimate(null);
     setScreen(1);
     setView('flow');
@@ -393,44 +410,44 @@ export default function NewLeadPage() {
   // ══════════════════ SUCCESS VIEW ══════════════════
   if (view === 'success') {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#F3F4F6' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--surface-2)' }}>
         <div className="text-center px-6 max-w-sm w-full">
           <div
             className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
-            style={{ background: '#D1FAE5' }}
+            style={{ background: 'var(--green-bg)' }}
           >
-            <Check size={32} style={{ color: '#10B981' }} strokeWidth={2.5} />
+            <Check size={32} style={{ color: 'var(--green)' }} strokeWidth={2.5} />
           </div>
-          <h2 className="text-xl font-bold mb-1" style={{ color: '#111827' }}>
+          <h2 className="text-xl font-bold mb-1" style={{ color: 'var(--charcoal)' }}>
             Lead Saved!
           </h2>
-          <p className="text-base font-medium" style={{ color: '#111827' }}>
+          <p className="text-base font-medium" style={{ color: 'var(--charcoal)' }}>
             {savedName}
           </p>
-          <p className="text-sm mb-2" style={{ color: '#6B7280' }}>
+          <p className="text-sm mb-2" style={{ color: 'var(--muted)' }}>
             {savedPhone}
           </p>
 
           {estimate && (
             <div
               className="rounded-xl p-3 mb-6 mx-auto max-w-[260px]"
-              style={{ background: '#F0FDFA', border: '1px solid #CCFBF1' }}
+              style={{ background: 'var(--green-bg)', border: '1px solid var(--accent-border)' }}
             >
-              <p className="text-[11px] font-medium uppercase tracking-wider mb-1" style={{ color: '#0F766E' }}>
+              <p className="text-[11px] font-medium uppercase tracking-wider mb-1" style={{ color: 'var(--accent)' }}>
                 Preliminary Range
               </p>
-              <p className="text-lg font-bold" style={{ color: '#0F766E' }}>
+              <p className="text-lg font-bold" style={{ color: 'var(--accent)' }}>
                 {formatCurrencyFull(estimate.low)} – {formatCurrencyFull(estimate.high)}
               </p>
               {totalSqft > 0 && (
-                <p className="text-xs mt-0.5" style={{ color: '#6B7280' }}>
+                <p className="text-xs mt-0.5" style={{ color: 'var(--muted)' }}>
                   {totalSqft.toLocaleString()} sqft
                 </p>
               )}
             </div>
           )}
 
-          <p className="text-sm mb-6" style={{ color: '#9CA3AF' }}>
+          <p className="text-sm mb-6" style={{ color: 'var(--muted)' }}>
             We&apos;ll be in touch within 24 hours.
           </p>
 
@@ -438,14 +455,14 @@ export default function NewLeadPage() {
             <button
               onClick={resetForm}
               className="flex-1 min-h-[48px] flex items-center justify-center gap-2 rounded-xl text-base font-medium"
-              style={{ background: '#FFFFFF', color: '#111827', border: '1px solid #E5E7EB' }}
+              style={{ background: 'var(--surface)', color: 'var(--charcoal)', border: '1px solid var(--border)' }}
             >
               <Plus size={16} /> Another
             </button>
             <button
               onClick={() => router.push('/leads')}
               className="flex-1 min-h-[48px] flex items-center justify-center gap-2 rounded-xl text-base font-medium text-white"
-              style={{ background: '#0F766E' }}
+              style={{ background: 'var(--accent)' }}
             >
               Pipeline <ArrowRight size={16} />
             </button>
@@ -457,20 +474,20 @@ export default function NewLeadPage() {
 
   // ══════════════════ FLOW VIEW ══════════════════
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: '#F3F4F6' }}>
+    <div className="min-h-screen flex flex-col" style={{ background: 'var(--surface-2)' }}>
       {/* Header */}
-      <div style={{ background: '#FFFFFF', borderBottom: '1px solid #E5E7EB' }}>
+      <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
         <div className="max-w-lg mx-auto px-4 py-3 flex items-center gap-3">
           <button
             onClick={goBack}
             className="min-h-[44px] min-w-[44px] flex items-center justify-center -ml-2"
           >
-            <ArrowLeft size={20} style={{ color: '#6B7280' }} />
+            <ArrowLeft size={20} style={{ color: 'var(--muted)' }} />
           </button>
-          <h1 className="text-lg font-bold" style={{ color: '#111827' }}>
+          <h1 className="text-lg font-bold" style={{ color: 'var(--charcoal)' }}>
             New Lead
           </h1>
-          <span className="ml-auto text-xs font-medium" style={{ color: '#9CA3AF' }}>
+          <span className="ml-auto text-xs font-medium" style={{ color: 'var(--muted)' }}>
             {screen}/{TOTAL_SCREENS}
           </span>
         </div>
@@ -549,6 +566,22 @@ export default function NewLeadPage() {
             />
           )}
           {screen === 8 && (
+            <ScreenAddress
+              propertyAddress={propertyAddress}
+              propertyCity={propertyCity}
+              propertyProvince={propertyProvince}
+              propertyPostalCode={propertyPostalCode}
+              propertyType={propertyType}
+              onAddressChange={setPropertyAddress}
+              onCityChange={setPropertyCity}
+              onProvinceChange={setPropertyProvince}
+              onPostalCodeChange={setPropertyPostalCode}
+              onPropertyTypeChange={setPropertyType}
+              canAdvance={propertyAddress.trim().length > 0 && propertyPostalCode.trim().length > 0}
+              onNext={goForward}
+            />
+          )}
+          {screen === 9 && (
             <ScreenTimeline
               selected={timeline}
               onSelect={selectTimeline}
@@ -561,7 +594,7 @@ export default function NewLeadPage() {
       </div>
 
       {/* Progress dots */}
-      <div className="fixed bottom-0 left-0 right-0 pb-6 pt-3" style={{ background: 'linear-gradient(transparent, #F3F4F6 30%)' }}>
+      <div className="fixed bottom-0 left-0 right-0 pb-6 pt-3" style={{ background: 'linear-gradient(transparent, var(--surface-2) 30%)' }}>
         <div className="flex justify-center gap-2">
           {Array.from({ length: TOTAL_SCREENS }, (_, i) => {
             const step = i + 1;
@@ -574,7 +607,7 @@ export default function NewLeadPage() {
                 style={{
                   width: isCurrent ? 24 : 8,
                   height: 8,
-                  background: isComplete ? '#0F766E' : isCurrent ? '#0F766E' : '#D1D5DB',
+                  background: isComplete ? 'var(--accent)' : isCurrent ? 'var(--accent)' : 'var(--border)',
                 }}
               />
             );
@@ -612,10 +645,10 @@ function ScreenScope({
 }) {
   return (
     <>
-      <h2 className="text-2xl font-bold mb-1" style={{ color: '#111827' }}>
+      <h2 className="text-2xl font-bold mb-1" style={{ color: 'var(--charcoal)' }}>
         What are you thinking about?
       </h2>
-      <p className="text-sm mb-6" style={{ color: '#6B7280' }}>
+      <p className="text-sm mb-6" style={{ color: 'var(--muted)' }}>
         Select all that apply — we&apos;ll figure out the details together.
       </p>
       <div className="grid grid-cols-2 gap-3">
@@ -627,24 +660,24 @@ function ScreenScope({
               onClick={() => onToggle(value)}
               className="rounded-xl p-4 text-left transition-all duration-150 min-h-[90px]"
               style={{
-                background: isSelected ? '#F0FDFA' : '#FFFFFF',
-                border: isSelected ? '2px solid #0F766E' : '1px solid #E5E7EB',
-                boxShadow: isSelected ? '0 0 0 1px #0F766E' : '0 1px 2px rgba(0,0,0,0.04)',
+                background: isSelected ? 'var(--green-bg)' : 'var(--surface)',
+                border: isSelected ? '2px solid var(--accent)' : '1px solid var(--border)',
+                boxShadow: isSelected ? '0 0 0 1px var(--accent)' : '0 1px 2px rgba(0,0,0,0.04)',
               }}
             >
               <Icon
                 size={20}
                 className="mb-2"
-                style={{ color: isSelected ? '#0F766E' : '#6B7280' }}
+                style={{ color: isSelected ? 'var(--accent)' : 'var(--muted)' }}
                 strokeWidth={1.5}
               />
               <p
                 className="text-sm font-semibold mb-0.5"
-                style={{ color: isSelected ? '#0F766E' : '#111827' }}
+                style={{ color: isSelected ? 'var(--accent)' : 'var(--charcoal)' }}
               >
                 {label}
               </p>
-              <p className="text-[11px]" style={{ color: '#9CA3AF' }}>
+              <p className="text-[11px]" style={{ color: 'var(--muted)' }}>
                 {desc}
               </p>
             </button>
@@ -659,8 +692,8 @@ function ScreenScope({
           className="w-full mt-6 py-3 rounded-xl text-sm font-semibold transition-colors"
           style={{
             minHeight: '48px',
-            background: '#0F766E',
-            color: '#FFFFFF',
+            background: 'var(--accent)',
+            color: '#fff',
           }}
         >
           Next
@@ -694,10 +727,10 @@ function ScreenRooms({
 
   return (
     <>
-      <h2 className="text-2xl font-bold mb-1" style={{ color: '#111827' }}>
+      <h2 className="text-2xl font-bold mb-1" style={{ color: 'var(--charcoal)' }}>
         Which rooms?
       </h2>
-      <p className="text-sm mb-5" style={{ color: '#6B7280' }}>
+      <p className="text-sm mb-5" style={{ color: 'var(--muted)' }}>
         Add rooms and rough dimensions — don&apos;t worry about being exact.
       </p>
 
@@ -708,22 +741,22 @@ function ScreenRooms({
             <div
               key={`${room.name}-${idx}`}
               className="rounded-xl p-3"
-              style={{ background: '#FFFFFF', border: '1px solid #E5E7EB' }}
+              style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-semibold" style={{ color: '#111827' }}>
+                <span className="text-sm font-semibold" style={{ color: 'var(--charcoal)' }}>
                   {room.name}
                 </span>
                 <div className="flex items-center gap-2">
                   {room.sqft > 0 && (
-                    <span className="text-xs font-medium" style={{ color: '#0F766E' }}>
+                    <span className="text-xs font-medium" style={{ color: 'var(--accent)' }}>
                       {room.sqft} sqft
                     </span>
                   )}
                   <button
                     onClick={() => onRemoveRoom(idx)}
                     className="min-h-[32px] min-w-[32px] flex items-center justify-center rounded-lg"
-                    style={{ color: '#9CA3AF' }}
+                    style={{ color: 'var(--muted)' }}
                   >
                     <X size={16} />
                   </button>
@@ -731,7 +764,7 @@ function ScreenRooms({
               </div>
               <div className="flex items-center gap-2">
                 <div className="flex-1">
-                  <label className="block text-[10px] font-medium mb-0.5" style={{ color: '#9CA3AF' }}>
+                  <label className="block text-[10px] font-medium mb-0.5" style={{ color: 'var(--muted)' }}>
                     Length (ft)
                   </label>
                   <input
@@ -743,12 +776,12 @@ function ScreenRooms({
                     onChange={(e) => onUpdateDimension(idx, 'lengthFt', parseFloat(e.target.value) || 0)}
                     placeholder="12"
                     className="w-full min-h-[40px] px-3 rounded-lg text-sm"
-                    style={{ background: '#F9FAFB', border: '1px solid #E5E7EB', color: '#111827' }}
+                    style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--charcoal)' }}
                   />
                 </div>
-                <span className="text-sm font-medium pt-4" style={{ color: '#9CA3AF' }}>×</span>
+                <span className="text-sm font-medium pt-4" style={{ color: 'var(--muted)' }}>×</span>
                 <div className="flex-1">
-                  <label className="block text-[10px] font-medium mb-0.5" style={{ color: '#9CA3AF' }}>
+                  <label className="block text-[10px] font-medium mb-0.5" style={{ color: 'var(--muted)' }}>
                     Width (ft)
                   </label>
                   <input
@@ -760,7 +793,7 @@ function ScreenRooms({
                     onChange={(e) => onUpdateDimension(idx, 'widthFt', parseFloat(e.target.value) || 0)}
                     placeholder="15"
                     className="w-full min-h-[40px] px-3 rounded-lg text-sm"
-                    style={{ background: '#F9FAFB', border: '1px solid #E5E7EB', color: '#111827' }}
+                    style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--charcoal)' }}
                   />
                 </div>
               </div>
@@ -770,8 +803,8 @@ function ScreenRooms({
           {/* Total sqft */}
           {totalSqft > 0 && (
             <div className="flex items-center justify-between px-1">
-              <span className="text-xs font-medium" style={{ color: '#6B7280' }}>Total</span>
-              <span className="text-sm font-bold" style={{ color: '#0F766E' }}>
+              <span className="text-xs font-medium" style={{ color: 'var(--muted)' }}>Total</span>
+              <span className="text-sm font-bold" style={{ color: 'var(--accent)' }}>
                 {totalSqft.toLocaleString()} sqft
               </span>
             </div>
@@ -782,7 +815,7 @@ function ScreenRooms({
       {/* Room picker */}
       {showPicker ? (
         <div className="mb-4">
-          <p className="text-[11px] font-semibold uppercase tracking-wider mb-2" style={{ color: '#9CA3AF' }}>
+          <p className="text-[11px] font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--muted)' }}>
             Tap to add
           </p>
           <div className="grid grid-cols-3 gap-2">
@@ -794,10 +827,10 @@ function ScreenRooms({
                   if (rooms.length >= 2) setShowPicker(false);
                 }}
                 className="rounded-xl p-2.5 text-center transition-colors min-h-[52px]"
-                style={{ background: '#FFFFFF', border: '1px solid #E5E7EB' }}
+                style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
               >
                 <span className="text-base block mb-0.5">{preset.icon}</span>
-                <span className="text-[11px] font-medium" style={{ color: '#374151' }}>
+                <span className="text-[11px] font-medium" style={{ color: 'var(--mid)' }}>
                   {preset.name}
                 </span>
               </button>
@@ -808,7 +841,7 @@ function ScreenRooms({
         <button
           onClick={() => setShowPicker(true)}
           className="w-full min-h-[44px] rounded-xl text-sm font-medium flex items-center justify-center gap-1.5 mb-4"
-          style={{ background: '#FFFFFF', border: '1px dashed #D1D5DB', color: '#6B7280' }}
+          style={{ background: 'var(--surface)', border: '1px dashed var(--border)', color: 'var(--muted)' }}
         >
           <Plus size={16} /> Add Room
         </button>
@@ -820,7 +853,7 @@ function ScreenRooms({
         disabled={rooms.length === 0}
         className="w-full min-h-[52px] rounded-xl text-base font-semibold text-white mt-2"
         style={{
-          background: rooms.length > 0 ? '#0F766E' : '#9CA3AF',
+          background: rooms.length > 0 ? 'var(--accent)' : 'var(--muted)',
         }}
       >
         Next
@@ -857,10 +890,10 @@ function ScreenMaterials({
 
   return (
     <>
-      <h2 className="text-2xl font-bold mb-1" style={{ color: '#111827' }}>
+      <h2 className="text-2xl font-bold mb-1" style={{ color: 'var(--charcoal)' }}>
         Material preferences
       </h2>
-      <p className="text-sm mb-6" style={{ color: '#6B7280' }}>
+      <p className="text-sm mb-6" style={{ color: 'var(--muted)' }}>
         Helps us give you a better estimate. You can always change your mind later.
       </p>
 
@@ -872,7 +905,7 @@ function ScreenMaterials({
 
           return (
             <div key={trade}>
-              <p className="text-[11px] font-semibold uppercase tracking-wider mb-2" style={{ color: '#9CA3AF' }}>
+              <p className="text-[11px] font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--muted)' }}>
                 {config.label}
               </p>
               <div className="flex flex-wrap gap-2">
@@ -887,9 +920,9 @@ function ScreenMaterials({
                       onClick={() => onUpdateMaterial(trade, opt.value)}
                       className="min-h-[40px] px-3.5 rounded-xl text-sm font-medium transition-colors"
                       style={{
-                        background: isSelected ? '#F0FDFA' : '#FFFFFF',
-                        color: isSelected ? '#0F766E' : '#374151',
-                        border: isSelected ? '2px solid #0F766E' : '1px solid #E5E7EB',
+                        background: isSelected ? 'var(--green-bg)' : 'var(--surface)',
+                        color: isSelected ? 'var(--accent)' : 'var(--mid)',
+                        border: isSelected ? '2px solid var(--accent)' : '1px solid var(--border)',
                       }}
                     >
                       {opt.label}
@@ -903,7 +936,7 @@ function ScreenMaterials({
       </div>
 
       {activeTrades.length === 0 && (
-        <p className="text-sm text-center py-8" style={{ color: '#9CA3AF' }}>
+        <p className="text-sm text-center py-8" style={{ color: 'var(--muted)' }}>
           No specific material choices needed — we&apos;ll discuss during the site visit.
         </p>
       )}
@@ -911,7 +944,7 @@ function ScreenMaterials({
       <button
         onClick={onNext}
         className="w-full min-h-[52px] rounded-xl text-base font-semibold text-white mt-6"
-        style={{ background: '#0F766E' }}
+        style={{ background: 'var(--accent)' }}
       >
         Next
       </button>
@@ -936,15 +969,15 @@ function ScreenDoorsWindows({
 
   return (
     <>
-      <h2 className="text-2xl font-bold mb-1" style={{ color: '#111827' }}>
+      <h2 className="text-2xl font-bold mb-1" style={{ color: 'var(--charcoal)' }}>
         Doors & Windows
       </h2>
-      <p className="text-sm mb-5" style={{ color: '#6B7280' }}>
+      <p className="text-sm mb-5" style={{ color: 'var(--muted)' }}>
         Quick counts help us estimate trim and hardware. Skip if not sure.
       </p>
 
       {/* Doors */}
-      <p className="text-[11px] font-semibold uppercase tracking-wider mb-2" style={{ color: '#9CA3AF' }}>
+      <p className="text-[11px] font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--muted)' }}>
         Doors
       </p>
       <div className="space-y-2 mb-5">
@@ -955,7 +988,7 @@ function ScreenDoorsWindows({
       </div>
 
       {/* Windows */}
-      <p className="text-[11px] font-semibold uppercase tracking-wider mb-2" style={{ color: '#9CA3AF' }}>
+      <p className="text-[11px] font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--muted)' }}>
         Windows
       </p>
       <div className="space-y-2 mb-5">
@@ -967,7 +1000,7 @@ function ScreenDoorsWindows({
       {/* Hardware upsells — only show if doors > 0 */}
       {totalDoors > 0 && (
         <>
-          <p className="text-[11px] font-semibold uppercase tracking-wider mb-2" style={{ color: '#9CA3AF' }}>
+          <p className="text-[11px] font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--muted)' }}>
             Upsells
           </p>
           <div className="space-y-2 mb-5">
@@ -990,14 +1023,14 @@ function ScreenDoorsWindows({
       <button
         onClick={onNext}
         className="w-full min-h-[52px] rounded-xl text-base font-semibold text-white mt-2"
-        style={{ background: '#0F766E' }}
+        style={{ background: 'var(--accent)' }}
       >
         Next
       </button>
       <button
         onClick={onNext}
         className="w-full min-h-[44px] rounded-xl text-sm font-medium mt-2"
-        style={{ color: '#6B7280' }}
+        style={{ color: 'var(--muted)' }}
       >
         Skip — not sure yet
       </button>
@@ -1020,30 +1053,30 @@ function CounterRow({
   return (
     <div
       className="flex items-center justify-between rounded-xl p-3"
-      style={{ background: '#FFFFFF', border: '1px solid #E5E7EB' }}
+      style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
     >
       <div className="min-w-0">
-        <p className="text-sm font-medium" style={{ color: '#111827' }}>{label}</p>
-        <p className="text-[11px]" style={{ color: '#9CA3AF' }}>{hint}</p>
+        <p className="text-sm font-medium" style={{ color: 'var(--charcoal)' }}>{label}</p>
+        <p className="text-[11px]" style={{ color: 'var(--muted)' }}>{hint}</p>
       </div>
       <div className="flex items-center gap-2 flex-shrink-0">
         <button
           onClick={() => onChange(Math.max(0, value - 1))}
           className="min-h-[36px] min-w-[36px] flex items-center justify-center rounded-lg text-lg font-medium"
-          style={{ background: '#F3F4F6', color: value > 0 ? '#374151' : '#D1D5DB' }}
+          style={{ background: 'var(--surface-2)', color: value > 0 ? 'var(--mid)' : 'var(--border)' }}
         >
           −
         </button>
         <span
           className="w-8 text-center text-sm font-semibold"
-          style={{ color: value > 0 ? '#111827' : '#D1D5DB' }}
+          style={{ color: value > 0 ? 'var(--charcoal)' : 'var(--border)' }}
         >
           {value}
         </span>
         <button
           onClick={() => onChange(value + 1)}
           className="min-h-[36px] min-w-[36px] flex items-center justify-center rounded-lg text-lg font-medium"
-          style={{ background: '#F0FDFA', color: '#0F766E' }}
+          style={{ background: 'var(--green-bg)', color: 'var(--accent)' }}
         >
           +
         </button>
@@ -1069,17 +1102,17 @@ function ToggleRow({
       onClick={() => onChange(!checked)}
       className="w-full flex items-center justify-between rounded-xl p-3 text-left"
       style={{
-        background: checked ? '#F0FDFA' : '#FFFFFF',
-        border: checked ? '2px solid #0F766E' : '1px solid #E5E7EB',
+        background: checked ? 'var(--green-bg)' : 'var(--surface)',
+        border: checked ? '2px solid var(--accent)' : '1px solid var(--border)',
       }}
     >
       <div className="min-w-0">
-        <p className="text-sm font-medium" style={{ color: checked ? '#0F766E' : '#111827' }}>{label}</p>
-        <p className="text-[11px]" style={{ color: '#9CA3AF' }}>{hint}</p>
+        <p className="text-sm font-medium" style={{ color: checked ? 'var(--accent)' : 'var(--charcoal)' }}>{label}</p>
+        <p className="text-[11px]" style={{ color: 'var(--muted)' }}>{hint}</p>
       </div>
       <div
         className="w-10 h-6 rounded-full flex-shrink-0 relative transition-colors"
-        style={{ background: checked ? '#0F766E' : '#D1D5DB' }}
+        style={{ background: checked ? 'var(--accent)' : 'var(--border)' }}
       >
         <div
           className="w-5 h-5 bg-white rounded-full absolute top-0.5 transition-all"
@@ -1103,10 +1136,10 @@ function ScreenBudget({
 }) {
   return (
     <>
-      <h2 className="text-2xl font-bold mb-1" style={{ color: '#111827' }}>
+      <h2 className="text-2xl font-bold mb-1" style={{ color: 'var(--charcoal)' }}>
         Do you have a budget range in mind?
       </h2>
-      <p className="text-sm mb-6" style={{ color: '#6B7280' }}>
+      <p className="text-sm mb-6" style={{ color: 'var(--muted)' }}>
         This helps us tailor our recommendations. No wrong answers.
       </p>
       <div className="space-y-3">
@@ -1118,18 +1151,18 @@ function ScreenBudget({
               onClick={() => onSelect(value)}
               className="w-full rounded-xl p-4 text-left transition-all duration-150 min-h-[60px]"
               style={{
-                background: isSelected ? '#F0FDFA' : '#FFFFFF',
-                border: isSelected ? '2px solid #0F766E' : '1px solid #E5E7EB',
-                boxShadow: isSelected ? '0 0 0 1px #0F766E' : '0 1px 2px rgba(0,0,0,0.04)',
+                background: isSelected ? 'var(--green-bg)' : 'var(--surface)',
+                border: isSelected ? '2px solid var(--accent)' : '1px solid var(--border)',
+                boxShadow: isSelected ? '0 0 0 1px var(--accent)' : '0 1px 2px rgba(0,0,0,0.04)',
               }}
             >
               <p
                 className="text-base font-semibold"
-                style={{ color: isSelected ? '#0F766E' : '#111827' }}
+                style={{ color: isSelected ? 'var(--accent)' : 'var(--charcoal)' }}
               >
                 {label}
               </p>
-              <p className="text-xs mt-0.5" style={{ color: '#9CA3AF' }}>
+              <p className="text-xs mt-0.5" style={{ color: 'var(--muted)' }}>
                 {hint}
               </p>
             </button>
@@ -1155,29 +1188,29 @@ function ScreenEstimate({
 
   return (
     <>
-      <h2 className="text-2xl font-bold mb-1" style={{ color: '#111827' }}>
+      <h2 className="text-2xl font-bold mb-1" style={{ color: 'var(--charcoal)' }}>
         Here&apos;s what we&apos;re seeing.
       </h2>
-      <p className="text-sm mb-8" style={{ color: '#6B7280' }}>
+      <p className="text-sm mb-8" style={{ color: 'var(--muted)' }}>
         {estimate.description} in the Moncton area.
       </p>
 
       <div
         className="rounded-2xl p-6 text-center mb-4"
-        style={{ background: '#FFFFFF', boxShadow: '0 4px 20px rgba(0,0,0,0.06)' }}
+        style={{ background: 'var(--surface)', boxShadow: '0 4px 20px rgba(0,0,0,0.06)' }}
       >
-        <p className="text-[11px] font-semibold uppercase tracking-wider mb-3" style={{ color: '#9CA3AF' }}>
+        <p className="text-[11px] font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--muted)' }}>
           Preliminary Range
         </p>
-        <p className="text-4xl font-bold mb-1" style={{ color: '#111827' }}>
+        <p className="text-4xl font-bold mb-1" style={{ color: 'var(--charcoal)' }}>
           {formatCurrencyFull(estimate.low)} – {formatCurrencyFull(estimate.high)}
         </p>
-        <p className="text-sm" style={{ color: '#6B7280' }}>
+        <p className="text-sm" style={{ color: 'var(--muted)' }}>
           CAD, before tax
         </p>
       </div>
 
-      <p className="text-[11px] text-center mb-8 px-4" style={{ color: '#9CA3AF' }}>
+      <p className="text-[11px] text-center mb-8 px-4" style={{ color: 'var(--muted)' }}>
         This is a preliminary range based on your room sizes and material preferences.
         Your actual estimate will be based on a site visit and detailed scope.
       </p>
@@ -1185,14 +1218,14 @@ function ScreenEstimate({
       <button
         onClick={onNext}
         className="w-full min-h-[52px] rounded-xl text-base font-semibold text-white mb-3"
-        style={{ background: '#0F766E' }}
+        style={{ background: 'var(--accent)' }}
       >
         Let&apos;s get specific — book a free site visit
       </button>
       <button
         onClick={onNext}
         className="w-full min-h-[44px] rounded-xl text-sm font-medium"
-        style={{ color: '#6B7280' }}
+        style={{ color: 'var(--muted)' }}
       >
         Just exploring? No problem — we&apos;ll follow up.
       </button>
@@ -1239,16 +1272,16 @@ function ScreenContact({
 }) {
   return (
     <>
-      <h2 className="text-2xl font-bold mb-1" style={{ color: '#111827' }}>
+      <h2 className="text-2xl font-bold mb-1" style={{ color: 'var(--charcoal)' }}>
         How should we reach you?
       </h2>
-      <p className="text-sm mb-5" style={{ color: '#6B7280' }}>
+      <p className="text-sm mb-5" style={{ color: 'var(--muted)' }}>
         We&apos;ll follow up within 24 hours.
       </p>
 
       {/* Name */}
       <div className="mb-3">
-        <label className="block text-sm font-medium mb-1" style={{ color: '#374151' }}>
+        <label className="block text-sm font-medium mb-1" style={{ color: 'var(--mid)' }}>
           Name
         </label>
         <input
@@ -1259,13 +1292,13 @@ function ScreenContact({
           onChange={(e) => onNameChange(e.target.value)}
           placeholder="Sarah Johnson"
           className="w-full min-h-[48px] px-4 rounded-xl text-base"
-          style={{ background: '#FFFFFF', border: '1px solid #D1D5DB', color: '#111827' }}
+          style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--charcoal)' }}
         />
       </div>
 
       {/* Phone */}
       <div className="mb-3">
-        <label className="block text-sm font-medium mb-1" style={{ color: '#374151' }}>
+        <label className="block text-sm font-medium mb-1" style={{ color: 'var(--mid)' }}>
           Phone
         </label>
         <input
@@ -1274,14 +1307,14 @@ function ScreenContact({
           onChange={(e) => onPhoneChange(e.target.value)}
           placeholder="506-555-0123"
           className="w-full min-h-[48px] px-4 rounded-xl text-base"
-          style={{ background: '#FFFFFF', border: '1px solid #D1D5DB', color: '#111827' }}
+          style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--charcoal)' }}
         />
       </div>
 
       {/* Email */}
       <div className="mb-4">
-        <label className="block text-sm font-medium mb-1" style={{ color: '#374151' }}>
-          Email <span className="font-normal" style={{ color: '#9CA3AF' }}>(optional)</span>
+        <label className="block text-sm font-medium mb-1" style={{ color: 'var(--mid)' }}>
+          Email <span className="font-normal" style={{ color: 'var(--muted)' }}>(optional)</span>
         </label>
         <input
           type="email"
@@ -1289,13 +1322,13 @@ function ScreenContact({
           onChange={(e) => onEmailChange(e.target.value)}
           placeholder="sarah@example.com"
           className="w-full min-h-[48px] px-4 rounded-xl text-base"
-          style={{ background: '#FFFFFF', border: '1px solid #D1D5DB', color: '#111827' }}
+          style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--charcoal)' }}
         />
       </div>
 
       {/* Preferred contact method */}
       <div className="mb-4">
-        <label className="block text-sm font-medium mb-1.5" style={{ color: '#374151' }}>
+        <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--mid)' }}>
           Best way to reach you
         </label>
         <div className="flex gap-2">
@@ -1307,9 +1340,9 @@ function ScreenContact({
                 onClick={() => onPreferredContactChange(value)}
                 className="flex-1 min-h-[40px] rounded-xl text-sm font-medium transition-colors"
                 style={{
-                  background: isSelected ? '#F0FDFA' : '#FFFFFF',
-                  color: isSelected ? '#0F766E' : '#374151',
-                  border: isSelected ? '2px solid #0F766E' : '1px solid #D1D5DB',
+                  background: isSelected ? 'var(--green-bg)' : 'var(--surface)',
+                  color: isSelected ? 'var(--accent)' : 'var(--mid)',
+                  border: isSelected ? '2px solid var(--accent)' : '1px solid var(--border)',
                 }}
               >
                 {label}
@@ -1321,7 +1354,7 @@ function ScreenContact({
 
       {/* Source */}
       <div className="mb-3">
-        <label className="block text-sm font-medium mb-1.5" style={{ color: '#374151' }}>
+        <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--mid)' }}>
           How did you hear about us?
         </label>
         <div className="flex flex-wrap gap-2">
@@ -1333,9 +1366,9 @@ function ScreenContact({
                 onClick={() => onSourceChange(value)}
                 className="min-h-[40px] px-4 rounded-xl text-sm font-medium transition-colors"
                 style={{
-                  background: isSelected ? '#F0FDFA' : '#FFFFFF',
-                  color: isSelected ? '#0F766E' : '#374151',
-                  border: isSelected ? '2px solid #0F766E' : '1px solid #D1D5DB',
+                  background: isSelected ? 'var(--green-bg)' : 'var(--surface)',
+                  color: isSelected ? 'var(--accent)' : 'var(--mid)',
+                  border: isSelected ? '2px solid var(--accent)' : '1px solid var(--border)',
                 }}
               >
                 {label}
@@ -1348,7 +1381,7 @@ function ScreenContact({
       {/* Referral source */}
       {source === 'referral' && (
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-1" style={{ color: '#374151' }}>
+          <label className="block text-sm font-medium mb-1" style={{ color: 'var(--mid)' }}>
             Who referred you?
           </label>
           <input
@@ -1357,7 +1390,7 @@ function ScreenContact({
             onChange={(e) => onReferralSourceChange(e.target.value)}
             placeholder="e.g., Jim at Ritchies"
             className="w-full min-h-[48px] px-4 rounded-xl text-base"
-            style={{ background: '#FFFFFF', border: '1px solid #D1D5DB', color: '#111827' }}
+            style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--charcoal)' }}
           />
         </div>
       )}
@@ -1368,7 +1401,7 @@ function ScreenContact({
         disabled={!canAdvance}
         className="w-full min-h-[52px] rounded-xl text-base font-semibold text-white mt-4 transition-opacity"
         style={{
-          background: canAdvance ? '#0F766E' : '#9CA3AF',
+          background: canAdvance ? 'var(--accent)' : 'var(--muted)',
           opacity: 1,
         }}
       >
@@ -1379,7 +1412,157 @@ function ScreenContact({
 }
 
 // ============================================================================
-// Screen 7: Timeline
+// Screen 7b: Property Address
+// ============================================================================
+
+const PROPERTY_TYPE_OPTIONS = [
+  { value: 'residential', label: 'Residential' },
+  { value: 'multi-unit', label: 'Multi-Unit' },
+  { value: 'commercial', label: 'Commercial' },
+] as const;
+
+function ScreenAddress({
+  propertyAddress,
+  propertyCity,
+  propertyProvince,
+  propertyPostalCode,
+  propertyType,
+  onAddressChange,
+  onCityChange,
+  onProvinceChange,
+  onPostalCodeChange,
+  onPropertyTypeChange,
+  canAdvance,
+  onNext,
+}: {
+  propertyAddress: string;
+  propertyCity: string;
+  propertyProvince: string;
+  propertyPostalCode: string;
+  propertyType: 'residential' | 'multi-unit' | 'commercial';
+  onAddressChange: (v: string) => void;
+  onCityChange: (v: string) => void;
+  onProvinceChange: (v: string) => void;
+  onPostalCodeChange: (v: string) => void;
+  onPropertyTypeChange: (v: 'residential' | 'multi-unit' | 'commercial') => void;
+  canAdvance: boolean;
+  onNext: () => void;
+}) {
+  return (
+    <>
+      <h2 className="text-2xl font-bold mb-1" style={{ color: 'var(--charcoal)' }}>
+        Where&apos;s the property?
+      </h2>
+      <p className="text-sm mb-5" style={{ color: 'var(--muted)' }}>
+        The address where the work will be done.
+      </p>
+
+      {/* Street Address */}
+      <div className="mb-3">
+        <label className="block text-sm font-medium mb-1" style={{ color: 'var(--mid)' }}>
+          Property Address
+        </label>
+        <input
+          type="text"
+          autoCapitalize="words"
+          value={propertyAddress}
+          onChange={(e) => onAddressChange(e.target.value)}
+          placeholder="123 Main Street"
+          className="w-full min-h-[48px] px-4 rounded-xl text-base"
+          style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--charcoal)' }}
+        />
+      </div>
+
+      {/* City + Province row */}
+      <div className="flex gap-3 mb-3">
+        <div className="flex-1">
+          <label className="block text-sm font-medium mb-1" style={{ color: 'var(--mid)' }}>
+            City
+          </label>
+          <input
+            type="text"
+            value={propertyCity}
+            onChange={(e) => onCityChange(e.target.value)}
+            placeholder="Moncton"
+            className="w-full min-h-[48px] px-4 rounded-xl text-base"
+            style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--charcoal)' }}
+          />
+        </div>
+        <div style={{ width: 100 }}>
+          <label className="block text-sm font-medium mb-1" style={{ color: 'var(--mid)' }}>
+            Province
+          </label>
+          <input
+            type="text"
+            value={propertyProvince}
+            onChange={(e) => onProvinceChange(e.target.value)}
+            placeholder="NB"
+            className="w-full min-h-[48px] px-4 rounded-xl text-base"
+            style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--charcoal)' }}
+          />
+        </div>
+      </div>
+
+      {/* Postal Code */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-1" style={{ color: 'var(--mid)' }}>
+          Postal Code
+        </label>
+        <input
+          type="text"
+          autoCapitalize="characters"
+          value={propertyPostalCode}
+          onChange={(e) => onPostalCodeChange(e.target.value.toUpperCase())}
+          placeholder="E1A 1A1"
+          className="w-full min-h-[48px] px-4 rounded-xl text-base"
+          style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--charcoal)', maxWidth: 160 }}
+        />
+      </div>
+
+      {/* Property Type */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--mid)' }}>
+          Property Type
+        </label>
+        <div className="flex gap-2">
+          {PROPERTY_TYPE_OPTIONS.map(({ value, label }) => {
+            const isSelected = propertyType === value;
+            return (
+              <button
+                key={value}
+                onClick={() => onPropertyTypeChange(value)}
+                className="flex-1 min-h-[40px] rounded-xl text-sm font-medium transition-colors"
+                style={{
+                  background: isSelected ? 'var(--green-bg)' : 'var(--surface)',
+                  color: isSelected ? 'var(--accent)' : 'var(--mid)',
+                  border: isSelected ? '2px solid var(--accent)' : '1px solid var(--border)',
+                }}
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Next */}
+      <button
+        onClick={onNext}
+        disabled={!canAdvance}
+        className="w-full min-h-[52px] rounded-xl text-base font-semibold text-white mt-4 transition-opacity"
+        style={{
+          background: canAdvance ? 'var(--accent)' : 'var(--muted)',
+          opacity: 1,
+        }}
+      >
+        Almost done
+      </button>
+    </>
+  );
+}
+
+// ============================================================================
+// Screen 8: Timeline
 // ============================================================================
 
 function ScreenTimeline({
@@ -1397,10 +1580,10 @@ function ScreenTimeline({
 }) {
   return (
     <>
-      <h2 className="text-2xl font-bold mb-1" style={{ color: '#111827' }}>
+      <h2 className="text-2xl font-bold mb-1" style={{ color: 'var(--charcoal)' }}>
         When are you looking to get started?
       </h2>
-      <p className="text-sm mb-6" style={{ color: '#6B7280' }}>
+      <p className="text-sm mb-6" style={{ color: 'var(--muted)' }}>
         This helps us prioritize your project.
       </p>
 
@@ -1413,9 +1596,9 @@ function ScreenTimeline({
               onClick={() => onSelect(value)}
               className="w-full rounded-xl p-4 text-left transition-all duration-150 min-h-[60px] flex items-center gap-4"
               style={{
-                background: isSelected ? '#F0FDFA' : '#FFFFFF',
-                border: isSelected ? '2px solid #0F766E' : '1px solid #E5E7EB',
-                boxShadow: isSelected ? '0 0 0 1px #0F766E' : '0 1px 2px rgba(0,0,0,0.04)',
+                background: isSelected ? 'var(--green-bg)' : 'var(--surface)',
+                border: isSelected ? '2px solid var(--accent)' : '1px solid var(--border)',
+                boxShadow: isSelected ? '0 0 0 1px var(--accent)' : '0 1px 2px rgba(0,0,0,0.04)',
               }}
             >
               <div
@@ -1425,11 +1608,11 @@ function ScreenTimeline({
               <div>
                 <p
                   className="text-base font-semibold"
-                  style={{ color: isSelected ? '#0F766E' : '#111827' }}
+                  style={{ color: isSelected ? 'var(--accent)' : 'var(--charcoal)' }}
                 >
                   {label}
                 </p>
-                <p className="text-xs mt-0.5" style={{ color: '#9CA3AF' }}>
+                <p className="text-xs mt-0.5" style={{ color: 'var(--muted)' }}>
                   {desc}
                 </p>
               </div>
@@ -1443,7 +1626,7 @@ function ScreenTimeline({
         disabled={!selected || isPending}
         className="w-full min-h-[52px] rounded-xl text-base font-semibold text-white transition-opacity"
         style={{
-          background: selected ? '#0F766E' : '#9CA3AF',
+          background: selected ? 'var(--accent)' : 'var(--muted)',
           opacity: isPending ? 0.7 : 1,
         }}
       >
@@ -1451,7 +1634,7 @@ function ScreenTimeline({
       </button>
 
       {error && (
-        <p className="text-sm mt-2 text-center" style={{ color: '#EF4444' }}>
+        <p className="text-sm mt-2 text-center" style={{ color: 'var(--red)' }}>
           Failed to save lead. Please try again.
         </p>
       )}

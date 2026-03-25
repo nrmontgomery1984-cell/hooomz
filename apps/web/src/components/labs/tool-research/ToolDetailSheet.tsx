@@ -10,8 +10,8 @@ import {
   useMarkAsReceived,
 } from '@/lib/hooks/useLabsData';
 
-const TEAL = '#2A9D8F';
-const CORAL = '#E76F51';
+const TEAL = 'var(--accent)';
+const CORAL = '#E76F51'; /* tool-research category — no canonical equivalent */
 
 interface ToolDetailSheetProps {
   isOpen: boolean;
@@ -86,32 +86,32 @@ export function ToolDetailSheet({ isOpen, onClose, item, ownedItems }: ToolDetai
       <div style={{ marginBottom: 16 }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, fontSize: 12 }}>
           <div>
-            <span style={{ color: '#9CA3AF' }}>Brand</span>
-            <div style={{ fontWeight: 600, color: '#111827' }}>{item.brand}</div>
+            <span style={{ color: 'var(--muted)' }}>Brand</span>
+            <div style={{ fontWeight: 600, color: 'var(--charcoal)' }}>{item.brand}</div>
           </div>
           <div>
-            <span style={{ color: '#9CA3AF' }}>Platform</span>
-            <div style={{ fontWeight: 600, color: '#111827' }}>{item.platform}</div>
+            <span style={{ color: 'var(--muted)' }}>Platform</span>
+            <div style={{ fontWeight: 600, color: 'var(--charcoal)' }}>{item.platform}</div>
           </div>
           <div>
-            <span style={{ color: '#9CA3AF' }}>Status</span>
-            <div style={{ fontWeight: 600, color: '#111827' }}>{item.status}</div>
+            <span style={{ color: 'var(--muted)' }}>Status</span>
+            <div style={{ fontWeight: 600, color: 'var(--charcoal)' }}>{item.status}</div>
           </div>
           <div>
-            <span style={{ color: '#9CA3AF' }}>Paid</span>
-            <div style={{ fontWeight: 600, color: '#111827' }}>
+            <span style={{ color: 'var(--muted)' }}>Paid</span>
+            <div style={{ fontWeight: 600, color: 'var(--charcoal)' }}>
               {item.pricePaid != null ? `$${item.pricePaid}` : '\u2014'}
             </div>
           </div>
           {item.usageCount != null && item.usageCount > 0 && (
             <>
               <div>
-                <span style={{ color: '#9CA3AF' }}>Uses</span>
-                <div style={{ fontWeight: 600, color: '#111827' }}>{item.usageCount}</div>
+                <span style={{ color: 'var(--muted)' }}>Uses</span>
+                <div style={{ fontWeight: 600, color: 'var(--charcoal)' }}>{item.usageCount}</div>
               </div>
               <div>
-                <span style={{ color: '#9CA3AF' }}>$/Use</span>
-                <div style={{ fontWeight: 600, color: '#111827' }}>
+                <span style={{ color: 'var(--muted)' }}>$/Use</span>
+                <div style={{ fontWeight: 600, color: 'var(--charcoal)' }}>
                   {item.pricePaid != null ? `$${(item.pricePaid / item.usageCount).toFixed(2)}` : '\u2014'}
                 </div>
               </div>
@@ -119,12 +119,12 @@ export function ToolDetailSheet({ isOpen, onClose, item, ownedItems }: ToolDetai
           )}
         </div>
         {item.notes && (
-          <div style={{ marginTop: 8, fontSize: 12, color: '#6B7280' }}>{item.notes}</div>
+          <div style={{ marginTop: 8, fontSize: 12, color: 'var(--muted)' }}>{item.notes}</div>
         )}
       </div>
 
       {/* Divider */}
-      <div style={{ borderTop: '1px solid #E5E7EB', marginBottom: 16 }} />
+      <div style={{ borderTop: '1px solid var(--border)', marginBottom: 16 }} />
 
       {/* Action Buttons (when no action selected) */}
       {action === 'none' && (
@@ -138,7 +138,7 @@ export function ToolDetailSheet({ isOpen, onClose, item, ownedItems }: ToolDetai
                 border: `1px solid ${TEAL}`,
                 borderRadius: 8,
                 background: `${TEAL}08`,
-                color: '#111827',
+                color: 'var(--charcoal)',
                 fontSize: 13,
                 fontWeight: 500,
                 cursor: 'pointer',
@@ -159,10 +159,10 @@ export function ToolDetailSheet({ isOpen, onClose, item, ownedItems }: ToolDetai
               onClick={() => setAction('not_owned')}
               style={{
                 padding: '10px 16px',
-                border: '1px solid #E5E7EB',
+                border: '1px solid var(--border)',
                 borderRadius: 8,
-                background: 'white',
-                color: '#111827',
+                background: 'var(--surface)',
+                color: 'var(--charcoal)',
                 fontSize: 13,
                 fontWeight: 500,
                 cursor: 'pointer',
@@ -171,7 +171,7 @@ export function ToolDetailSheet({ isOpen, onClose, item, ownedItems }: ToolDetai
               }}
             >
               No longer owned
-              <span style={{ display: 'block', fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>
+              <span style={{ display: 'block', fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>
                 Mark as retired with a reason (sold, lost, broken, etc.)
               </span>
             </button>
@@ -183,10 +183,10 @@ export function ToolDetailSheet({ isOpen, onClose, item, ownedItems }: ToolDetai
               onClick={() => setAction('archive')}
               style={{
                 padding: '10px 16px',
-                border: '1px solid #E5E7EB',
+                border: '1px solid var(--border)',
                 borderRadius: 8,
-                background: 'white',
-                color: '#111827',
+                background: 'var(--surface)',
+                color: 'var(--charcoal)',
                 fontSize: 13,
                 fontWeight: 500,
                 cursor: 'pointer',
@@ -195,7 +195,7 @@ export function ToolDetailSheet({ isOpen, onClose, item, ownedItems }: ToolDetai
               }}
             >
               Archive
-              <span style={{ display: 'block', fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>
+              <span style={{ display: 'block', fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>
                 Hide from main list but keep the record
               </span>
             </button>
@@ -228,11 +228,11 @@ export function ToolDetailSheet({ isOpen, onClose, item, ownedItems }: ToolDetai
       {/* Mark as Received Form */}
       {action === 'received' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--charcoal)' }}>
             Mark as received
           </div>
           <div>
-            <label style={{ fontSize: 11, color: '#6B7280', display: 'block', marginBottom: 4 }}>Date received</label>
+            <label style={{ fontSize: 11, color: 'var(--muted)', display: 'block', marginBottom: 4 }}>Date received</label>
             <input
               type="date"
               value={receivedDate}
@@ -240,7 +240,7 @@ export function ToolDetailSheet({ isOpen, onClose, item, ownedItems }: ToolDetai
               style={{
                 width: '100%',
                 padding: '8px 12px',
-                border: '1px solid #D1D5DB',
+                border: '1px solid var(--border)',
                 borderRadius: 6,
                 fontSize: 13,
                 minHeight: 40,
@@ -248,7 +248,7 @@ export function ToolDetailSheet({ isOpen, onClose, item, ownedItems }: ToolDetai
             />
           </div>
           <div>
-            <label style={{ fontSize: 11, color: '#6B7280', display: 'block', marginBottom: 4 }}>Price paid (optional)</label>
+            <label style={{ fontSize: 11, color: 'var(--muted)', display: 'block', marginBottom: 4 }}>Price paid (optional)</label>
             <input
               type="number"
               placeholder="0.00"
@@ -257,7 +257,7 @@ export function ToolDetailSheet({ isOpen, onClose, item, ownedItems }: ToolDetai
               style={{
                 width: '100%',
                 padding: '8px 12px',
-                border: '1px solid #D1D5DB',
+                border: '1px solid var(--border)',
                 borderRadius: 6,
                 fontSize: 13,
                 minHeight: 40,
@@ -270,10 +270,10 @@ export function ToolDetailSheet({ isOpen, onClose, item, ownedItems }: ToolDetai
               style={{
                 flex: 1,
                 padding: '8px 16px',
-                border: '1px solid #D1D5DB',
+                border: '1px solid var(--border)',
                 borderRadius: 6,
-                background: 'white',
-                color: '#6B7280',
+                background: 'var(--surface)',
+                color: 'var(--muted)',
                 fontSize: 13,
                 fontWeight: 500,
                 cursor: 'pointer',
@@ -308,7 +308,7 @@ export function ToolDetailSheet({ isOpen, onClose, item, ownedItems }: ToolDetai
       {/* Not Owned Form */}
       {action === 'not_owned' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--charcoal)' }}>
             Why is this no longer owned?
           </div>
           <select
@@ -316,7 +316,7 @@ export function ToolDetailSheet({ isOpen, onClose, item, ownedItems }: ToolDetai
             onChange={(e) => setReason(e.target.value)}
             style={{
               padding: '8px 12px',
-              border: '1px solid #D1D5DB',
+              border: '1px solid var(--border)',
               borderRadius: 6,
               fontSize: 13,
               minHeight: 40,
@@ -338,7 +338,7 @@ export function ToolDetailSheet({ isOpen, onClose, item, ownedItems }: ToolDetai
               onChange={(e) => setReplacedById(e.target.value)}
               style={{
                 padding: '8px 12px',
-                border: '1px solid #D1D5DB',
+                border: '1px solid var(--border)',
                 borderRadius: 6,
                 fontSize: 13,
                 minHeight: 40,
@@ -356,10 +356,10 @@ export function ToolDetailSheet({ isOpen, onClose, item, ownedItems }: ToolDetai
               style={{
                 flex: 1,
                 padding: '8px 16px',
-                border: '1px solid #D1D5DB',
+                border: '1px solid var(--border)',
                 borderRadius: 6,
-                background: 'white',
-                color: '#6B7280',
+                background: 'var(--surface)',
+                color: 'var(--muted)',
                 fontSize: 13,
                 fontWeight: 500,
                 cursor: 'pointer',
@@ -376,7 +376,7 @@ export function ToolDetailSheet({ isOpen, onClose, item, ownedItems }: ToolDetai
                 padding: '8px 16px',
                 border: 'none',
                 borderRadius: 6,
-                background: reason ? TEAL : '#D1D5DB',
+                background: reason ? TEAL : 'var(--border)',
                 color: 'white',
                 fontSize: 13,
                 fontWeight: 600,
@@ -394,10 +394,10 @@ export function ToolDetailSheet({ isOpen, onClose, item, ownedItems }: ToolDetai
       {/* Archive Form */}
       {action === 'archive' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--charcoal)' }}>
             Archive this tool?
           </div>
-          <p style={{ fontSize: 12, color: '#6B7280', margin: 0 }}>
+          <p style={{ fontSize: 12, color: 'var(--muted)', margin: 0 }}>
             It will be hidden from the main inventory list but the record will be kept.
           </p>
           <input
@@ -407,7 +407,7 @@ export function ToolDetailSheet({ isOpen, onClose, item, ownedItems }: ToolDetai
             onChange={(e) => setReason(e.target.value)}
             style={{
               padding: '8px 12px',
-              border: '1px solid #D1D5DB',
+              border: '1px solid var(--border)',
               borderRadius: 6,
               fontSize: 13,
               minHeight: 40,
@@ -419,10 +419,10 @@ export function ToolDetailSheet({ isOpen, onClose, item, ownedItems }: ToolDetai
               style={{
                 flex: 1,
                 padding: '8px 16px',
-                border: '1px solid #D1D5DB',
+                border: '1px solid var(--border)',
                 borderRadius: 6,
-                background: 'white',
-                color: '#6B7280',
+                background: 'var(--surface)',
+                color: 'var(--muted)',
                 fontSize: 13,
                 fontWeight: 500,
                 cursor: 'pointer',
@@ -460,10 +460,10 @@ export function ToolDetailSheet({ isOpen, onClose, item, ownedItems }: ToolDetai
           <div style={{ fontSize: 13, fontWeight: 600, color: CORAL }}>
             Delete &ldquo;{item.item}&rdquo; permanently?
           </div>
-          <p style={{ fontSize: 12, color: '#6B7280', margin: 0 }}>
+          <p style={{ fontSize: 12, color: 'var(--muted)', margin: 0 }}>
             This cannot be undone. The tool will be removed from your inventory and all usage/maintenance history will be lost.
           </p>
-          <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#111827' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: 'var(--charcoal)' }}>
             <input
               type="checkbox"
               checked={confirmDelete}
@@ -478,10 +478,10 @@ export function ToolDetailSheet({ isOpen, onClose, item, ownedItems }: ToolDetai
               style={{
                 flex: 1,
                 padding: '8px 16px',
-                border: '1px solid #D1D5DB',
+                border: '1px solid var(--border)',
                 borderRadius: 6,
-                background: 'white',
-                color: '#6B7280',
+                background: 'var(--surface)',
+                color: 'var(--muted)',
                 fontSize: 13,
                 fontWeight: 500,
                 cursor: 'pointer',
@@ -498,7 +498,7 @@ export function ToolDetailSheet({ isOpen, onClose, item, ownedItems }: ToolDetai
                 padding: '8px 16px',
                 border: 'none',
                 borderRadius: 6,
-                background: confirmDelete ? CORAL : '#D1D5DB',
+                background: confirmDelete ? CORAL : 'var(--border)',
                 color: 'white',
                 fontSize: 13,
                 fontWeight: 600,

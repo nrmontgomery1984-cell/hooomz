@@ -2,10 +2,10 @@
 
 import { ToolResearchCard } from './ToolResearchCard';
 
-const NAVY = '#1B2A4A';
-const TEAL = '#2A9D8F';
-const GOLD = '#E9C46A';
-const LIGHT_BG = '#F5F7FA';
+const NAVY = 'var(--charcoal)';
+const TEAL = 'var(--accent)';
+const GOLD = '#E9C46A'; /* tool-research category — no canonical equivalent */
+const LIGHT_BG = 'var(--surface-2)';
 
 export function ShoppingPlanTab() {
   const stops = [
@@ -72,7 +72,7 @@ export function ShoppingPlanTab() {
                 gap: 12,
                 alignItems: 'start',
                 padding: '10px 12px',
-                background: s.num % 2 === 0 ? LIGHT_BG : 'white',
+                background: s.num % 2 === 0 ? LIGHT_BG : 'var(--surface)',
                 borderRadius: 6,
               }}
             >
@@ -93,7 +93,7 @@ export function ShoppingPlanTab() {
                 {s.num}
               </div>
               <div style={{ fontWeight: 700, fontSize: 13 }}>{s.store}</div>
-              <div style={{ fontSize: 11, color: '#888' }}>{s.time}</div>
+              <div style={{ fontSize: 11, color: 'var(--muted)' }}>{s.time}</div>
               <div style={{ fontSize: 12 }}>{s.focus}</div>
               <div style={{ fontSize: 11, color: TEAL, fontStyle: 'italic' }}>{s.tips}</div>
             </div>
@@ -125,7 +125,7 @@ export function ShoppingPlanTab() {
           ).map(([store, tips], i) => (
             <div key={i} style={{ padding: 10, background: LIGHT_BG, borderRadius: 6 }}>
               <div style={{ fontSize: 11, fontWeight: 700, color: NAVY }}>{store}</div>
-              <div style={{ fontSize: 12, color: '#555', marginTop: 4 }}>{tips}</div>
+              <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 4 }}>{tips}</div>
             </div>
           ))}
         </div>

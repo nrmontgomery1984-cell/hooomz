@@ -70,7 +70,7 @@ export interface TabsListProps {
 export function TabsList({ children, className = '' }: TabsListProps) {
   return (
     <div
-      className={`flex border-b border-gray-200 overflow-x-auto ${className}`}
+      className={`flex border-b border-[var(--border)] overflow-x-auto ${className}`}
       role="tablist"
     >
       {children}
@@ -98,7 +98,7 @@ export function TabsTrigger({
 
   const stateStyles = isActive
     ? 'text-primary-600 border-b-2 border-primary-600'
-    : 'text-gray-500 hover:text-gray-700 border-b-2 border-transparent';
+    : 'text-[var(--muted)] hover:text-[var(--mid)] border-b-2 border-transparent';
 
   const disabledStyles = disabled
     ? 'opacity-50 cursor-not-allowed'

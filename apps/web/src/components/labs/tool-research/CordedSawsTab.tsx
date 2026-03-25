@@ -9,8 +9,8 @@ import { InlineEditCell } from './InlineEditCell';
 import { PurchaseModal } from './PurchaseModal';
 import { ContentStatusBadge } from './ContentStatusBadge';
 
-const GOLD = '#E9C46A';
-const TEAL = '#2A9D8F';
+const GOLD = '#E9C46A'; /* tool-research category — no canonical equivalent */
+const TEAL = 'var(--accent)';
 
 interface CordedSawsTabProps {
   items: ToolResearchItem[];
@@ -38,7 +38,7 @@ export function CordedSawsTab({ items }: CordedSawsTabProps) {
   };
 
   const purchasedRowStyle = (row: ToolResearchItem) =>
-    row.purchased ? { background: '#E8F5E9' } : undefined;
+    row.purchased ? { background: 'var(--green-bg)' } : undefined;
 
   const actionColumn = {
     key: '_action',
@@ -46,7 +46,7 @@ export function CordedSawsTab({ items }: CordedSawsTabProps) {
     nowrap: true as const,
     render: (_: unknown, row: ToolResearchItem) =>
       row.purchased ? (
-        <span style={{ color: '#2E7D32', fontSize: 11, fontWeight: 600 }}>Purchased</span>
+        <span style={{ color: 'var(--green)', fontSize: 11, fontWeight: 600 }}>Purchased</span>
       ) : (
         <button
           onClick={(e) => { e.stopPropagation(); setPurchaseItem(row); }}
@@ -54,7 +54,7 @@ export function CordedSawsTab({ items }: CordedSawsTabProps) {
             padding: '4px 10px',
             border: `1px solid ${TEAL}`,
             borderRadius: 6,
-            background: 'white',
+            background: 'var(--surface)',
             color: TEAL,
             fontSize: 11,
             fontWeight: 600,
@@ -74,7 +74,7 @@ export function CordedSawsTab({ items }: CordedSawsTabProps) {
         accent="P0 — Buy before first job"
         color={GOLD}
       >
-        <p style={{ fontSize: 12, color: '#666', margin: '0 0 12px' }}>
+        <p style={{ fontSize: 12, color: 'var(--muted)', margin: '0 0 12px' }}>
           Corded = no platform lock-in. Budget for a Diablo blade upgrade (~$30–40) on any budget
           saw — the blade matters more than the brand. Budget entry: King Canada or Mastercraft
           sliding. Mid-tier: Makita LS1040 (lightest, smooth direct drive). Aspirational: Makita
@@ -124,7 +124,7 @@ export function CordedSawsTab({ items }: CordedSawsTabProps) {
         accent="P1 — Track saw may replace table saw for finish work"
         color={GOLD}
       >
-        <p style={{ fontSize: 12, color: '#666', margin: '0 0 12px' }}>
+        <p style={{ fontSize: 12, color: 'var(--muted)', margin: '0 0 12px' }}>
           <strong>Track saw vs table saw:</strong> For sheet goods, long rips, and finish
           carpentry, a track saw with guide rail can replace a portable table saw entirely — with
           better dust extraction and zero-tearout cuts. The Festool TS 55 is the industry standard;

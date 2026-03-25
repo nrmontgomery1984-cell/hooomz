@@ -16,10 +16,10 @@ interface RevealGauge {
 }
 
 const SEED_GAUGES: RevealGauge[] = [
-  { id: 'SEED-REVEAL-001', label: '1/4"', value: 0.25, color: '#3B82F6' },
-  { id: 'SEED-REVEAL-002', label: '3/8"', value: 0.375, color: '#10B981' },
-  { id: 'SEED-REVEAL-003', label: '1/2"', value: 0.5, color: '#F59E0B' },
-  { id: 'SEED-REVEAL-004', label: '5/8"', value: 0.625, color: '#EF4444' },
+  { id: 'SEED-REVEAL-001', label: '1/4"', value: 0.25, color: 'var(--blue)' },
+  { id: 'SEED-REVEAL-002', label: '3/8"', value: 0.375, color: 'var(--green)' },
+  { id: 'SEED-REVEAL-003', label: '1/2"', value: 0.5, color: 'var(--yellow)' },
+  { id: 'SEED-REVEAL-004', label: '5/8"', value: 0.625, color: 'var(--red)' },
 ];
 
 export function seedRevealGauges(): boolean {

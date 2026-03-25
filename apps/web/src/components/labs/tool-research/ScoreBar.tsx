@@ -1,6 +1,6 @@
 'use client';
 
-const TEAL = '#2A9D8F';
+const TEAL = 'var(--accent)';
 
 interface ScoreBarProps {
   value: number;
@@ -15,7 +15,7 @@ export function ScoreBar({ value, max = 5, color = TEAL }: ScoreBarProps) {
         style={{
           width: 60,
           height: 8,
-          background: '#E0E0E0',
+          background: 'var(--border)',
           borderRadius: 4,
           overflow: 'hidden',
         }}
@@ -29,7 +29,7 @@ export function ScoreBar({ value, max = 5, color = TEAL }: ScoreBarProps) {
           }}
         />
       </div>
-      <span style={{ fontSize: 11, color: '#666', minWidth: 14 }}>{value}</span>
+      <span style={{ fontSize: 11, color: 'var(--muted)', minWidth: 14 }}>{value}</span>
     </div>
   );
 }

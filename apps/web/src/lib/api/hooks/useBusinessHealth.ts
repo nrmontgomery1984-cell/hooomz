@@ -112,9 +112,9 @@ export function useBusinessHealth(): BusinessHealthData {
  * Used for sphere coloring and status indicators
  */
 export function getHealthColor(score: number): string {
-  if (score >= 70) return 'var(--theme-status-green, #10b981)';
-  if (score >= 40) return 'var(--theme-status-amber, #f59e0b)';
-  return 'var(--theme-status-red, #ef4444)';
+  if (score >= 70) return 'var(--green)';
+  if (score >= 40) return 'var(--yellow)';
+  return 'var(--red)';
 }
 
 /**

@@ -25,6 +25,7 @@ const MODULE_PRIORITY = [
   'jobs',
   'pipeline',
   'sales',
+  'customers',
   'site_visits',
   'estimates',
   'contracts',

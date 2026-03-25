@@ -61,69 +61,70 @@ export default function CreateSOPPage() {
   };
 
   return (
-    <div className="min-h-screen pb-24" style={{ background: '#F3F4F6' }}>
+    <div className="min-h-screen pb-24" style={{ background: 'var(--surface-2)' }}>
       {/* Header */}
-      <div style={{ background: '#FFFFFF', borderBottom: '1px solid #E5E7EB' }}>
+      <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
         <div className="max-w-lg mx-auto px-4 py-4">
           <div className="flex items-center gap-2 mb-1">
-            <Link href="/labs" className="text-sm text-teal-700 hover:underline">Labs</Link>
-            <span className="text-xs text-gray-400">/</span>
-            <Link href="/labs/sops" className="text-sm text-teal-700 hover:underline">SOPs</Link>
-            <span className="text-xs text-gray-400">/</span>
+            <Link href="/labs" className="text-sm hover:underline" style={{ color: 'var(--accent)' }}>Labs</Link>
+            <span className="text-xs" style={{ color: 'var(--muted)' }}>/</span>
+            <Link href="/labs/sops" className="text-sm hover:underline" style={{ color: 'var(--accent)' }}>SOPs</Link>
+            <span className="text-xs" style={{ color: 'var(--muted)' }}>/</span>
           </div>
-          <h1 className="text-xl font-bold" style={{ color: '#111827' }}>New SOP</h1>
+          <h1 className="text-xl font-bold" style={{ color: 'var(--charcoal)' }}>New SOP</h1>
         </div>
       </div>
 
       <div className="max-w-lg mx-auto px-4 mt-4">
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* SOP Code */}
-          <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
-            <label className="block text-xs font-medium text-gray-700 mb-1">SOP Code *</label>
+          <div className="rounded-xl border p-4 shadow-sm" style={{ background: 'var(--surface)', borderColor: 'var(--border)' }}>
+            <label className="block text-xs font-medium mb-1" style={{ color: 'var(--mid)' }}>SOP Code *</label>
             <input
               type="text"
               value={sopCode}
               onChange={(e) => setSopCode(e.target.value.toUpperCase())}
               placeholder="HI-SOP-FL-001"
-              className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-600 focus:border-transparent"
-              style={{ minHeight: '44px' }}
+              className="w-full px-3 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent"
+              style={{ minHeight: '44px', borderColor: 'var(--border-s)' }}
             />
-            <p className="text-xs text-gray-400 mt-1">Format: HI-SOP-[TRADE]-[NUMBER]</p>
+            <p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>Format: HI-SOP-[TRADE]-[NUMBER]</p>
           </div>
 
           {/* Title */}
-          <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
-            <label className="block text-xs font-medium text-gray-700 mb-1">Title *</label>
+          <div className="rounded-xl border p-4 shadow-sm" style={{ background: 'var(--surface)', borderColor: 'var(--border)' }}>
+            <label className="block text-xs font-medium mb-1" style={{ color: 'var(--mid)' }}>Title *</label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="LVP Installation — Standard Room"
-              className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-600 focus:border-transparent"
-              style={{ minHeight: '44px' }}
+              className="w-full px-3 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent"
+              style={{ minHeight: '44px', borderColor: 'var(--border-s)' }}
             />
           </div>
 
           {/* Description */}
-          <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
-            <label className="block text-xs font-medium text-gray-700 mb-1">Description</label>
+          <div className="rounded-xl border p-4 shadow-sm" style={{ background: 'var(--surface)', borderColor: 'var(--border)' }}>
+            <label className="block text-xs font-medium mb-1" style={{ color: 'var(--mid)' }}>Description</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Brief description of this procedure..."
               rows={3}
-              className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-600 focus:border-transparent resize-none"
+              className="w-full px-3 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent resize-none"
+              style={{ borderColor: 'var(--border-s)' }}
             />
           </div>
 
           {/* Trade Family */}
-          <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
-            <label className="block text-xs font-medium text-gray-700 mb-1">Trade Family</label>
+          <div className="rounded-xl border p-4 shadow-sm" style={{ background: 'var(--surface)', borderColor: 'var(--border)' }}>
+            <label className="block text-xs font-medium mb-1" style={{ color: 'var(--mid)' }}>Trade Family</label>
             <select
               value={tradeFamily}
               onChange={(e) => setTradeFamily(e.target.value)}
-              className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-600 focus:border-transparent"
-              style={{ minHeight: '44px' }}
+              className="w-full px-3 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent"
+              style={{ minHeight: '44px', borderColor: 'var(--border-s)' }}
             >
               {TRADE_FAMILIES.map((tf) => (
                 <option key={tf} value={tf}>{tf}</option>
@@ -132,8 +133,8 @@ export default function CreateSOPPage() {
           </div>
 
           {/* Observation Mode */}
-          <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
-            <label className="block text-xs font-medium text-gray-700 mb-2">Observation Mode</label>
+          <div className="rounded-xl border p-4 shadow-sm" style={{ background: 'var(--surface)', borderColor: 'var(--border)' }}>
+            <label className="block text-xs font-medium mb-2" style={{ color: 'var(--mid)' }}>Observation Mode</label>
             <div className="space-y-2">
               {OBSERVATION_MODES.map((m) => (
                 <button
@@ -142,21 +143,24 @@ export default function CreateSOPPage() {
                   onClick={() => setMode(m.value)}
                   className={`w-full text-left px-3 py-2.5 rounded-lg border transition-colors ${
                     mode === m.value
-                      ? 'border-teal-600 bg-teal-50'
-                      : 'border-gray-200 hover:bg-gray-50'
+                      ? 'border-[var(--accent)] bg-[var(--accent-bg)]'
+                      : ''
                   }`}
-                  style={{ minHeight: '44px' }}
+                  style={{
+                    minHeight: '44px',
+                    ...(mode !== m.value ? { borderColor: 'var(--border)' } : {}),
+                  }}
                 >
-                  <span className="text-sm font-medium text-gray-900">{m.label}</span>
-                  <span className="text-xs text-gray-500 ml-2">{m.desc}</span>
+                  <span className="text-sm font-medium" style={{ color: 'var(--charcoal)' }}>{m.label}</span>
+                  <span className="text-xs ml-2" style={{ color: 'var(--muted)' }}>{m.desc}</span>
                 </button>
               ))}
             </div>
           </div>
 
           {/* Certification Level */}
-          <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
-            <label className="block text-xs font-medium text-gray-700 mb-2">Certification Level</label>
+          <div className="rounded-xl border p-4 shadow-sm" style={{ background: 'var(--surface)', borderColor: 'var(--border)' }}>
+            <label className="block text-xs font-medium mb-2" style={{ color: 'var(--mid)' }}>Certification Level</label>
             <div className="flex gap-2">
               {CERT_LEVELS.map((cl) => (
                 <button
@@ -165,10 +169,13 @@ export default function CreateSOPPage() {
                   onClick={() => setCertLevel(cl.value)}
                   className={`flex-1 px-3 py-2.5 text-sm font-medium rounded-lg border transition-colors ${
                     certLevel === cl.value
-                      ? 'border-teal-600 bg-teal-50 text-teal-700'
-                      : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                      ? 'border-[var(--accent)] bg-[var(--accent-bg)] text-[var(--accent)]'
+                      : ''
                   }`}
-                  style={{ minHeight: '44px' }}
+                  style={{
+                    minHeight: '44px',
+                    ...(certLevel !== cl.value ? { borderColor: 'var(--border)', color: 'var(--mid)' } : {}),
+                  }}
                 >
                   {cl.label}
                 </button>
@@ -177,18 +184,21 @@ export default function CreateSOPPage() {
           </div>
 
           {/* Status */}
-          <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
-            <label className="block text-xs font-medium text-gray-700 mb-2">Initial Status</label>
+          <div className="rounded-xl border p-4 shadow-sm" style={{ background: 'var(--surface)', borderColor: 'var(--border)' }}>
+            <label className="block text-xs font-medium mb-2" style={{ color: 'var(--mid)' }}>Initial Status</label>
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => setStatus('draft')}
                 className={`flex-1 px-3 py-2.5 text-sm font-medium rounded-lg border transition-colors ${
                   status === 'draft'
-                    ? 'border-teal-600 bg-teal-50 text-teal-700'
-                    : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                    ? 'border-[var(--accent)] bg-[var(--accent-bg)] text-[var(--accent)]'
+                    : ''
                 }`}
-                style={{ minHeight: '44px' }}
+                style={{
+                  minHeight: '44px',
+                  ...(status !== 'draft' ? { borderColor: 'var(--border)', color: 'var(--mid)' } : {}),
+                }}
               >
                 Draft
               </button>
@@ -197,10 +207,13 @@ export default function CreateSOPPage() {
                 onClick={() => setStatus('active')}
                 className={`flex-1 px-3 py-2.5 text-sm font-medium rounded-lg border transition-colors ${
                   status === 'active'
-                    ? 'border-teal-600 bg-teal-50 text-teal-700'
-                    : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                    ? 'border-[var(--accent)] bg-[var(--accent-bg)] text-[var(--accent)]'
+                    : ''
                 }`}
-                style={{ minHeight: '44px' }}
+                style={{
+                  minHeight: '44px',
+                  ...(status !== 'active' ? { borderColor: 'var(--border)', color: 'var(--mid)' } : {}),
+                }}
               >
                 Active
               </button>
@@ -212,7 +225,7 @@ export default function CreateSOPPage() {
             type="submit"
             disabled={!canSubmit}
             className="w-full py-3 text-sm font-semibold text-white rounded-xl transition-colors disabled:opacity-50"
-            style={{ background: '#0F766E', minHeight: '48px' }}
+            style={{ background: 'var(--accent)', minHeight: '48px' }}
           >
             {createSop.isPending ? 'Creating...' : 'Create SOP'}
           </button>

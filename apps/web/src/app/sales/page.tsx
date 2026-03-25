@@ -118,11 +118,11 @@ function BarChart({ data, color }: { data: Array<{ label: string; value: number 
         return (
           <g key={i}>
             <rect x={x} y={y} width={barW} height={barH} rx={3} fill={d.value > 0 ? color : 'var(--border)'} opacity={0.85} />
-            <text x={x + barW / 2} y={chartH + 12} textAnchor="middle" fontSize={8} fontFamily="var(--font-mono)" fill="var(--text-3)">
+            <text x={x + barW / 2} y={chartH + 12} textAnchor="middle" fontSize={8} fontFamily="var(--font-mono)" fill="var(--muted)">
               {d.label}
             </text>
             {d.value > 0 && (
-              <text x={x + barW / 2} y={y - 4} textAnchor="middle" fontSize={7} fontFamily="var(--font-mono)" fill="var(--text-2)">
+              <text x={x + barW / 2} y={y - 4} textAnchor="middle" fontSize={7} fontFamily="var(--font-mono)" fill="var(--mid)">
                 {formatCurrency(d.value)}
               </text>
             )}
@@ -140,7 +140,7 @@ function DonutChart({ segments, size = 100 }: { segments: Array<{ label: string;
     return (
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
         <circle cx={size / 2} cy={size / 2} r={size / 2 - 4} fill="none" stroke="var(--border)" strokeWidth={12} />
-        <text x={size / 2} y={size / 2 + 3} textAnchor="middle" fontSize={10} fontFamily="var(--font-mono)" fill="var(--text-3)">
+        <text x={size / 2} y={size / 2 + 3} textAnchor="middle" fontSize={10} fontFamily="var(--font-mono)" fill="var(--muted)">
           No data
         </text>
       </svg>
@@ -177,10 +177,10 @@ function DonutChart({ segments, size = 100 }: { segments: Array<{ label: string;
           />
         );
       })}
-      <text x={cx} y={cy - 2} textAnchor="middle" fontSize={14} fontFamily="var(--font-mono)" fontWeight={700} fill="var(--text)">
+      <text x={cx} y={cy - 2} textAnchor="middle" fontSize={14} fontFamily="var(--font-mono)" fontWeight={700} fill="var(--charcoal)">
         {formatCurrency(total)}
       </text>
-      <text x={cx} y={cy + 10} textAnchor="middle" fontSize={7} fontFamily="var(--font-mono)" fill="var(--text-3)" style={{ textTransform: 'uppercase' }}>
+      <text x={cx} y={cy + 10} textAnchor="middle" fontSize={7} fontFamily="var(--font-mono)" fill="var(--muted)" style={{ textTransform: 'uppercase' }}>
         TOTAL
       </text>
     </svg>
@@ -267,7 +267,7 @@ export default function SalesDashboardPage() {
     const revenueColour = revenue >= 15000 ? 'var(--green)' : revenue >= 12000 ? 'var(--amber)' : 'var(--red)';
     const pipelineColour = pipelineValue >= 45000 ? 'var(--green)' : pipelineValue >= 15000 ? 'var(--amber)' : 'var(--red)';
     const winRateTooFew = (accepted + declined) < 3;
-    const winRateColour = winRateTooFew ? 'var(--text-3)' : winRate >= 70 ? 'var(--green)' : winRate >= 50 ? 'var(--amber)' : 'var(--red)';
+    const winRateColour = winRateTooFew ? 'var(--muted)' : winRate >= 70 ? 'var(--green)' : winRate >= 50 ? 'var(--amber)' : 'var(--red)';
     const marginColour = avgMargin >= 38 ? 'var(--green)' : avgMargin >= 30 ? 'var(--amber)' : 'var(--red)';
     const outstandingColour = outstanding === 0 ? 'var(--green)' : outstanding <= 5000 ? 'var(--amber)' : 'var(--red)';
 
@@ -308,7 +308,7 @@ export default function SalesDashboardPage() {
       const label = type.replace(/_/g, ' ').replace(/^\w/, c => c.toUpperCase());
       typeMap[label] = (typeMap[label] ?? 0) + inv.amountPaid;
     }
-    const colors = ['var(--clay)', 'var(--blue)', 'var(--green)', 'var(--amber)', 'var(--red)'];
+    const colors = ['var(--accent)', 'var(--blue)', 'var(--green)', 'var(--amber)', 'var(--red)'];
     return Object.entries(typeMap)
       .sort((a, b) => b[1] - a[1])
       .map(([label, value], i) => ({ label, value, color: colors[i % colors.length] }));
@@ -372,7 +372,7 @@ export default function SalesDashboardPage() {
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}>
         <div style={{ textAlign: 'center' }}>
           <div style={{ width: 32, height: 32, border: '2px solid var(--border)', borderTopColor: COLOR, borderRadius: '50%', animation: 'spin 0.7s linear infinite', margin: '0 auto 8px' }} />
-          <p style={{ fontSize: 11, color: 'var(--text-3)' }}>Loading...</p>
+          <p style={{ fontSize: 11, color: 'var(--muted)' }}>Loading...</p>
         </div>
       </div>
     );
@@ -380,14 +380,14 @@ export default function SalesDashboardPage() {
 
   return (
     <PageErrorBoundary>
-      <div style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text-1)', fontFamily: 'var(--font-body)' }}>
+      <div style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--charcoal)', fontFamily: 'var(--font-body)' }}>
 
         {/* ================================================================ */}
         {/* HEADER                                                           */}
         {/* ================================================================ */}
-        <div style={{ background: 'var(--surface-1)', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
           <div style={{ padding: '16px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-1)', fontFamily: 'var(--font-display)', letterSpacing: '0.04em', textTransform: 'uppercase', margin: 0 }}>
+            <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--charcoal)', fontFamily: 'var(--font-display)', letterSpacing: '0.04em', textTransform: 'uppercase', margin: 0 }}>
               Sales
             </h1>
 
@@ -406,8 +406,8 @@ export default function SalesDashboardPage() {
                     letterSpacing: '0.08em',
                     background: 'none',
                     border: 'none',
-                    borderBottom: period === p ? '2px solid var(--clay)' : '2px solid transparent',
-                    color: period === p ? 'var(--text-1)' : 'var(--text-3)',
+                    borderBottom: period === p ? '2px solid var(--accent)' : '2px solid transparent',
+                    color: period === p ? 'var(--charcoal)' : 'var(--muted)',
                     cursor: 'pointer',
                     transition: 'color 150ms',
                   }}
@@ -480,12 +480,12 @@ export default function SalesDashboardPage() {
             {/* Revenue Bar Chart */}
             <div style={{ marginBottom: 24 }}>
               <SectionHeader title="Monthly Revenue (6 mo)" />
-              <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 6, padding: '16px 20px', boxShadow: 'var(--shadow-card)' }}>
+              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 6, padding: '16px 20px', boxShadow: 'var(--shadow-card)' }}>
                 {revenueByMonth.every(m => m.value === 0) ? (
-                  <p style={{ fontSize: 12, color: 'var(--text-3)', textAlign: 'center', padding: '20px 0' }}>No revenue data yet</p>
+                  <p style={{ fontSize: 12, color: 'var(--muted)', textAlign: 'center', padding: '20px 0' }}>No revenue data yet</p>
                 ) : (
                   <div style={{ display: 'flex', justifyContent: 'center' }}>
-                    <BarChart data={revenueByMonth} color="var(--clay)" />
+                    <BarChart data={revenueByMonth} color="var(--accent)" />
                   </div>
                 )}
               </div>
@@ -496,17 +496,17 @@ export default function SalesDashboardPage() {
               {/* Revenue by Type */}
               <div>
                 <SectionHeader title="Revenue by Type" />
-                <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 6, padding: '16px', boxShadow: 'var(--shadow-card)', display: 'flex', alignItems: 'center', gap: 16 }}>
+                <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 6, padding: '16px', boxShadow: 'var(--shadow-card)', display: 'flex', alignItems: 'center', gap: 16 }}>
                   <DonutChart segments={revenueByType.length > 0 ? revenueByType : [{ label: 'None', value: 0, color: 'var(--border)' }]} size={100} />
                   <div style={{ flex: 1 }}>
                     {revenueByType.length === 0 ? (
-                      <p style={{ fontSize: 11, color: 'var(--text-3)' }}>No data yet</p>
+                      <p style={{ fontSize: 11, color: 'var(--muted)' }}>No data yet</p>
                     ) : (
                       revenueByType.slice(0, 4).map((seg, i) => (
                         <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
                           <div style={{ width: 6, height: 6, borderRadius: 2, background: seg.color, flexShrink: 0 }} />
-                          <span style={{ fontSize: 10, color: 'var(--text-2)', flex: 1 }}>{seg.label}</span>
-                          <span style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: 'var(--text-3)' }}>{formatCurrency(seg.value)}</span>
+                          <span style={{ fontSize: 10, color: 'var(--mid)', flex: 1 }}>{seg.label}</span>
+                          <span style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: 'var(--muted)' }}>{formatCurrency(seg.value)}</span>
                         </div>
                       ))
                     )}
@@ -517,24 +517,24 @@ export default function SalesDashboardPage() {
               {/* Pipeline Funnel */}
               <div>
                 <SectionHeader title="Pipeline Funnel" />
-                <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 6, padding: '16px', boxShadow: 'var(--shadow-card)' }}>
+                <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 6, padding: '16px', boxShadow: 'var(--shadow-card)' }}>
                   {stageCounters.map((sc, i) => {
                     const maxCount = Math.max(...stageCounters.map(s => s.count), 1);
                     const barPct = (sc.count / maxCount) * 100;
                     const funnelColor =
-                      sc.stage === JobStage.LEAD ? 'var(--text-3)' :
+                      sc.stage === JobStage.LEAD ? 'var(--muted)' :
                       sc.stage === JobStage.ESTIMATE || sc.stage === JobStage.CONSULTATION ? 'var(--blue)' :
                       sc.stage === JobStage.QUOTE ? 'var(--amber)' :
-                      sc.stage === JobStage.CONTRACT ? 'var(--clay)' : COLOR;
+                      sc.stage === JobStage.CONTRACT ? 'var(--accent)' : COLOR;
                     return (
                       <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: i < stageCounters.length - 1 ? 8 : 0 }}>
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.08em', width: 70, textAlign: 'right', flexShrink: 0 }}>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.08em', width: 70, textAlign: 'right', flexShrink: 0 }}>
                           {sc.label}
                         </span>
                         <div style={{ flex: 1, height: 12, background: 'var(--surface-2, var(--border))', borderRadius: 3 }}>
                           <div style={{ width: `${barPct}%`, height: '100%', background: funnelColor, borderRadius: 3, transition: 'width 300ms', opacity: 0.8 }} />
                         </div>
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 600, color: sc.count > 0 ? 'var(--text)' : 'var(--text-3)', width: 24, textAlign: 'right', flexShrink: 0 }}>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 600, color: sc.count > 0 ? 'var(--charcoal)' : 'var(--muted)', width: 24, textAlign: 'right', flexShrink: 0 }}>
                           {sc.count}
                         </span>
                       </div>
@@ -547,15 +547,15 @@ export default function SalesDashboardPage() {
             {/* Job Profitability Table */}
             <div>
               <SectionHeader title="Job Profitability" />
-              <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 6, overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
+              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 6, overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
                 {profitableJobs.length === 0 ? (
-                  <p style={{ fontSize: 12, color: 'var(--text-3)', textAlign: 'center', padding: '20px 0' }}>No project data yet</p>
+                  <p style={{ fontSize: 12, color: 'var(--muted)', textAlign: 'center', padding: '20px 0' }}>No project data yet</p>
                 ) : (
                   <>
                     {/* Header row */}
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px 80px 60px 60px', gap: 8, padding: '8px 14px', borderBottom: '1px solid var(--border)' }}>
                       {['Job', 'Quoted', 'Actual', 'Margin', ''].map((h, i) => (
-                        <span key={i} style={{ fontFamily: 'var(--font-mono)', fontSize: 7, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-3)' }}>
+                        <span key={i} style={{ fontFamily: 'var(--font-mono)', fontSize: 7, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--muted)' }}>
                           {h}
                         </span>
                       ))}
@@ -576,13 +576,13 @@ export default function SalesDashboardPage() {
                           cursor: 'pointer',
                         }}
                       >
-                        <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--charcoal)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {job.name}
                         </span>
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-2)' }}>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--mid)' }}>
                           {formatFullCurrency(job.estimatedCost)}
                         </span>
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: job.actualCost > 0 ? 'var(--text-2)' : 'var(--text-3)' }}>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: job.actualCost > 0 ? 'var(--mid)' : 'var(--muted)' }}>
                           {job.actualCost > 0 ? formatFullCurrency(job.actualCost) : '—'}
                         </span>
                         <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 600, color: job.margin >= 38 ? 'var(--green)' : job.margin >= 30 ? 'var(--amber)' : 'var(--red)' }}>
@@ -613,7 +613,7 @@ export default function SalesDashboardPage() {
               minWidth: 280,
               flexShrink: 0,
               borderLeft: '1px solid var(--border)',
-              background: 'var(--surface-1)',
+              background: 'var(--surface)',
               padding: '24px 20px',
               overflowY: 'auto',
             }}
@@ -626,7 +626,7 @@ export default function SalesDashboardPage() {
                   <span style={{ fontFamily: 'var(--font-mono)', fontSize: 20, fontWeight: 700, color: metrics.revenueColour }}>
                     {formatCurrency(metrics.revenue)}
                   </span>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-3)' }}>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--muted)' }}>
                     / {formatCurrency(monthlyTarget)}
                   </span>
                 </div>
@@ -685,7 +685,7 @@ export default function SalesDashboardPage() {
                   );
                 })()}
                 {dashboard.hotLeadCount === 0 && aging.days90plus === 0 && metrics.pipelineValue === 0 && metrics.closedValue === 0 && (
-                  <p style={{ fontSize: 11, color: 'var(--text-3)', fontStyle: 'italic' }}>No insights yet — data will appear as you add jobs and invoices.</p>
+                  <p style={{ fontSize: 11, color: 'var(--muted)', fontStyle: 'italic' }}>No insights yet — data will appear as you add jobs and invoices.</p>
                 )}
               </div>
             </div>
@@ -695,7 +695,7 @@ export default function SalesDashboardPage() {
               <SectionHeader title="Leads by Source" />
               <div style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 6, overflow: 'hidden' }}>
                 {leadsBySource.length === 0 ? (
-                  <p style={{ fontSize: 11, color: 'var(--text-3)', padding: '14px', textAlign: 'center' }}>No leads yet</p>
+                  <p style={{ fontSize: 11, color: 'var(--muted)', padding: '14px', textAlign: 'center' }}>No leads yet</p>
                 ) : (
                   leadsBySource.slice(0, 5).map(([source, count], i) => (
                     <div
@@ -708,7 +708,7 @@ export default function SalesDashboardPage() {
                         borderBottom: i < Math.min(leadsBySource.length, 5) - 1 ? '1px solid var(--border)' : 'none',
                       }}
                     >
-                      <span style={{ fontSize: 11, color: 'var(--text-2)' }}>{source}</span>
+                      <span style={{ fontSize: 11, color: 'var(--mid)' }}>{source}</span>
                       <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 600, color: COLOR }}>{count}</span>
                     </div>
                   ))
@@ -721,7 +721,7 @@ export default function SalesDashboardPage() {
               <SectionHeader title="Top Jobs by Margin" />
               <div style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 6, overflow: 'hidden' }}>
                 {profitableJobs.length === 0 ? (
-                  <p style={{ fontSize: 11, color: 'var(--text-3)', padding: '14px', textAlign: 'center' }}>No data yet</p>
+                  <p style={{ fontSize: 11, color: 'var(--muted)', padding: '14px', textAlign: 'center' }}>No data yet</p>
                 ) : (
                   profitableJobs.slice(0, 3).map((job, i) => (
                     <Link
@@ -737,7 +737,7 @@ export default function SalesDashboardPage() {
                         minHeight: 36,
                       }}
                     >
-                      <span style={{ fontSize: 11, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+                      <span style={{ fontSize: 11, color: 'var(--charcoal)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
                         {job.name}
                       </span>
                       <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 600, color: job.margin >= 38 ? 'var(--green)' : job.margin >= 30 ? 'var(--amber)' : 'var(--red)', flexShrink: 0, marginLeft: 8 }}>
@@ -761,7 +761,7 @@ export default function SalesDashboardPage() {
                 </div>
                 {aging.totalOutstanding > 0 && (
                   <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Total Outstanding</span>
+                    <span style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Total Outstanding</span>
                     <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 600, color: 'var(--amber)' }}>{formatFullCurrency(aging.totalOutstanding)}</span>
                   </div>
                 )}
@@ -782,7 +782,7 @@ export default function SalesDashboardPage() {
 function SectionHeader({ title }: { title: string }) {
   return (
     <div style={{ marginBottom: 8 }}>
-      <span style={{ fontFamily: 'var(--font-cond)', fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-3)' }}>
+      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)' }}>
         {title}
       </span>
     </div>
@@ -804,7 +804,7 @@ function KPICard({
   const inner = (
     <div
       style={{
-        background: 'var(--surface-1)',
+        background: 'var(--surface)',
         borderLeft: '1px solid var(--border)',
         borderRight: '1px solid var(--border)',
         borderBottom: '1px solid var(--border)',
@@ -819,7 +819,7 @@ function KPICard({
       onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 22, fontWeight: 600, color: empty ? 'var(--text-3)' : color, lineHeight: 1 }}>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 22, fontWeight: 600, color: empty ? 'var(--muted)' : color, lineHeight: 1 }}>
           {value}
         </div>
         {sparkData && sparkData.some(v => v > 0) && (
@@ -827,9 +827,9 @@ function KPICard({
         )}
       </div>
       {sub && (
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--text-3)', marginBottom: 2 }}>{sub}</div>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--muted)', marginBottom: 2 }}>{sub}</div>
       )}
-      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
         {label}
       </div>
     </div>
@@ -858,7 +858,7 @@ function InsightCard({ text, color, href }: { text: string; color: string; href?
         width: '100%',
       }}
     >
-      <span style={{ fontSize: 11, color: 'var(--text)', lineHeight: 1.3 }}>{text}</span>
+      <span style={{ fontSize: 11, color: 'var(--charcoal)', lineHeight: 1.3 }}>{text}</span>
     </button>
   );
 }
@@ -866,10 +866,10 @@ function InsightCard({ text, color, href }: { text: string; color: string; href?
 function AgingBucket({ label, count, color }: { label: string; count: number; color: string }) {
   return (
     <div style={{ textAlign: 'center' }}>
-      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 16, fontWeight: 700, color: count > 0 ? color : 'var(--text-3)', lineHeight: 1 }}>
+      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 16, fontWeight: 700, color: count > 0 ? color : 'var(--muted)', lineHeight: 1 }}>
         {count}
       </div>
-      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 7, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 3 }}>
+      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 7, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 3 }}>
         {label}
       </div>
     </div>

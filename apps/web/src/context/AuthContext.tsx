@@ -92,6 +92,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     let mounted = true;
 
+    // Safety timeout — if getSession() hangs (wrong URL/key), stop loading after 12s
+    // Mobile networks need more headroom than desktop
+    const timeout = setTimeout(() => {
+      if (mounted) {
+        console.warn('[Auth] Session check timed out — continuing without auth');
+        setLoading(false);
+      }
+    }, 12000);
+
     async function init() {
       try {
         const { data: { session } } = await getSession();
@@ -103,12 +112,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } catch {
         // Supabase not reachable — continue without auth
       } finally {
+        clearTimeout(timeout);
         if (mounted) setLoading(false);
       }
     }
 
     init();
-    return () => { mounted = false; };
+    return () => { mounted = false; clearTimeout(timeout); };
   }, [loadProfile]);
 
   // Subscribe to auth state changes
@@ -127,10 +137,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // ── Actions ──
 
   const signIn = useCallback(async (email: string, password: string) => {
-    const { error } = await supabaseSignIn(email, password);
+    const { data, error } = await supabaseSignIn(email, password);
     if (error) return { error: error.message };
+    // Eagerly set user state so ProtectedRoute sees it immediately
+    // on navigation — don't rely solely on onAuthStateChange which
+    // fires asynchronously and loses the race with router.push('/').
+    const authUser = data?.user ?? null;
+    if (authUser) {
+      setUser(authUser);
+      await loadProfile(authUser);
+    }
     return { error: null };
-  }, []);
+  }, [loadProfile]);
 
   const signOut = useCallback(async () => {
     await supabaseSignOut();

@@ -66,7 +66,7 @@ export function SalesChecklist({
             >
               <span
                 style={{
-                  color: 'var(--text-3)',
+                  color: 'var(--muted)',
                   display: 'flex',
                   alignItems: 'center',
                   flexShrink: 0,
@@ -80,12 +80,12 @@ export function SalesChecklist({
               </span>
               <span
                 style={{
-                  fontFamily: 'var(--font-cond)',
+                  fontFamily: 'var(--font-mono)',
                   fontSize: 10,
                   fontWeight: 600,
                   letterSpacing: '0.06em',
                   textTransform: 'uppercase',
-                  color: 'var(--text-3)',
+                  color: 'var(--muted)',
                   flex: 1,
                 }}
               >
@@ -97,12 +97,12 @@ export function SalesChecklist({
                   fontFamily: 'var(--font-mono)',
                   fontSize: 9,
                   fontWeight: 600,
-                  color: allDone ? 'var(--green, #10b981)' : 'var(--text-3)',
+                  color: allDone ? 'var(--green)' : 'var(--muted)',
                   padding: '1px 6px',
                   borderRadius: 4,
                   background: allDone
-                    ? 'rgba(16, 185, 129, 0.1)'
-                    : 'var(--bg, #F9FAFB)',
+                    ? 'var(--green-bg)'
+                    : 'var(--bg)',
                   flexShrink: 0,
                 }}
               >
@@ -137,13 +137,13 @@ export function SalesChecklist({
                       {isChecked ? (
                         <CheckSquare
                           size={14}
-                          style={{ color: 'var(--teal, #0F766E)', flexShrink: 0 }}
+                          style={{ color: 'var(--accent)', flexShrink: 0 }}
                           strokeWidth={2}
                         />
                       ) : (
                         <Square
                           size={14}
-                          style={{ color: 'var(--text-3, #9CA3AF)', flexShrink: 0 }}
+                          style={{ color: 'var(--muted)', flexShrink: 0 }}
                           strokeWidth={1.5}
                         />
                       )}
@@ -151,8 +151,8 @@ export function SalesChecklist({
                         style={{
                           fontSize: 12,
                           color: isChecked
-                            ? 'var(--text-3, #9CA3AF)'
-                            : 'var(--text, #111827)',
+                            ? 'var(--muted)'
+                            : 'var(--charcoal)',
                           textDecoration: isChecked ? 'line-through' : 'none',
                           lineHeight: 1.3,
                         }}

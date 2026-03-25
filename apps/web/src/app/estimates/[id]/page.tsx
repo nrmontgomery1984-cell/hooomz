@@ -546,37 +546,37 @@ export default function EstimateDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen pb-24" style={{ background: '#F3F4F6' }}>
+      <div className="min-h-screen pb-24" style={{ background: 'var(--surface-2)' }}>
         <div className="text-center py-16">
           <div
             className="w-8 h-8 border-3 rounded-full animate-spin mx-auto mb-3"
-            style={{ borderColor: '#E5E7EB', borderTopColor: '#0F766E' }}
+            style={{ borderColor: 'var(--border)', borderTopColor: 'var(--accent)' }}
           />
-          <p className="text-sm text-gray-400">Loading estimate...</p>
+          <p className="text-sm" style={{ color: 'var(--muted)' }}>Loading estimate...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen pb-24" style={{ background: '#F3F4F6' }}>
+    <div className="min-h-screen pb-24" style={{ background: 'var(--surface-2)' }}>
       {/* Header */}
-      <div style={{ background: '#FFFFFF', borderBottom: '1px solid #E5E7EB' }}>
+      <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
         <div className="max-w-lg mx-auto px-4 py-4">
           <div className="flex items-center gap-2 mb-1">
             <Link
               href="/estimates"
               className="flex items-center gap-1 text-sm hover:underline"
-              style={{ color: '#0F766E' }}
+              style={{ color: 'var(--accent)' }}
             >
               <ArrowLeft size={14} />
               {pricingLabel}s
             </Link>
           </div>
-          <h1 className="text-xl font-bold" style={{ color: '#111827' }}>
+          <h1 className="text-xl font-bold" style={{ color: 'var(--charcoal)' }}>
             {project?.name || projectId}
           </h1>
-          <p className="text-xs mt-0.5" style={{ color: '#9CA3AF' }}>
+          <p className="text-xs mt-0.5" style={{ color: 'var(--muted)' }}>
             {lineItems.length} line item{lineItems.length !== 1 ? 's' : ''}
           </p>
         </div>
@@ -587,20 +587,20 @@ export default function EstimateDetailPage() {
         {lineItems.length > 0 && (
           <div
             className="bg-white rounded-xl px-4 py-2.5"
-            style={{ border: '1px solid #E5E7EB' }}
+            style={{ border: '1px solid var(--border)' }}
           >
             <div className="grid grid-cols-3 gap-2 text-center">
               <div>
-                <div className="text-[10px] uppercase tracking-wider" style={{ color: '#6B7280' }}>Labor</div>
-                <div className="text-sm font-bold" style={{ color: '#3B82F6' }}>${totals.laborTotal.toLocaleString()}</div>
+                <div className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--muted)' }}>Labor</div>
+                <div className="text-sm font-bold" style={{ color: 'var(--blue)' }}>${totals.laborTotal.toLocaleString()}</div>
               </div>
               <div>
-                <div className="text-[10px] uppercase tracking-wider" style={{ color: '#6B7280' }}>Materials</div>
-                <div className="text-sm font-bold" style={{ color: '#F59E0B' }}>${totals.materialTotal.toLocaleString()}</div>
+                <div className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--muted)' }}>Materials</div>
+                <div className="text-sm font-bold" style={{ color: 'var(--yellow)' }}>${totals.materialTotal.toLocaleString()}</div>
               </div>
               <div>
-                <div className="text-[10px] uppercase tracking-wider" style={{ color: '#6B7280' }}>Total</div>
-                <div className="text-base font-bold" style={{ color: '#111827' }}>${totals.total.toLocaleString()}</div>
+                <div className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--muted)' }}>Total</div>
+                <div className="text-base font-bold" style={{ color: 'var(--charcoal)' }}>${totals.total.toLocaleString()}</div>
               </div>
             </div>
           </div>
@@ -622,8 +622,8 @@ export default function EstimateDetailPage() {
                     onClick={() => setTypeFilter(key)}
                     className="text-[11px] font-medium px-2.5 py-1 rounded-full transition-colors"
                     style={{
-                      background: typeFilter === key ? '#111827' : '#F3F4F6',
-                      color: typeFilter === key ? '#FFFFFF' : '#6B7280',
+                      background: typeFilter === key ? 'var(--charcoal)' : 'var(--surface-2)',
+                      color: typeFilter === key ? '#fff' : 'var(--muted)',
                     }}
                   >
                     {label} {count}
@@ -631,7 +631,7 @@ export default function EstimateDetailPage() {
                 ))}
               </div>
               {/* View toggle */}
-              <div className="flex rounded-lg overflow-hidden" style={{ border: '1px solid #E5E7EB' }}>
+              <div className="flex rounded-lg overflow-hidden" style={{ border: '1px solid var(--border)' }}>
                 {([
                   { key: 'project' as ViewMode, label: 'Project' },
                   { key: 'labs' as ViewMode, label: 'Labs' },
@@ -641,8 +641,8 @@ export default function EstimateDetailPage() {
                     onClick={() => setViewMode(key)}
                     className="text-[11px] font-medium px-2.5 py-1 transition-colors"
                     style={{
-                      background: viewMode === key ? '#0F766E' : '#FFFFFF',
-                      color: viewMode === key ? '#FFFFFF' : '#6B7280',
+                      background: viewMode === key ? 'var(--accent)' : 'var(--surface)',
+                      color: viewMode === key ? '#fff' : 'var(--muted)',
                     }}
                   >
                     {label}
@@ -678,8 +678,8 @@ export default function EstimateDetailPage() {
                     key={flag.key}
                     className="rounded-xl overflow-hidden"
                     style={{
-                      background: isAcked ? '#F0FDF4' : '#FFFBEB',
-                      border: `1px solid ${isAcked ? '#BBF7D0' : '#FDE68A'}`,
+                      background: isAcked ? 'var(--green-bg)' : 'var(--yellow-bg)',
+                      border: `1px solid ${isAcked ? 'var(--green-bg)' : 'var(--yellow-bg)'}`,
                     }}
                   >
                     {/* Flag header — tap to expand */}
@@ -690,30 +690,30 @@ export default function EstimateDetailPage() {
                     >
                       <span
                         className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                        style={{ background: isAcked ? '#10B981' : '#F59E0B' }}
+                        style={{ background: isAcked ? 'var(--green)' : 'var(--yellow)' }}
                       />
                       <div className="flex-1 min-w-0">
                         <span
                           className="text-[11px] font-medium"
                           style={{
-                            color: isAcked ? '#065F46' : '#92400E',
+                            color: isAcked ? 'var(--green)' : 'var(--yellow)',
                             textDecoration: isAcked ? 'line-through' : 'none',
                           }}
                         >
                           {flag.label}
                         </span>
                         {!isAcked && (
-                          <span className="text-[10px] ml-1" style={{ color: '#B45309' }}>
+                          <span className="text-[10px] ml-1" style={{ color: 'var(--yellow)' }}>
                             — {flag.actionLabel}
                           </span>
                         )}
                         {isAcked && (
-                          <span className="text-[10px] ml-1" style={{ color: '#065F46' }}>
+                          <span className="text-[10px] ml-1" style={{ color: 'var(--green)' }}>
                             — {acknowledgedFlags[flag.key].reason}
                           </span>
                         )}
                       </div>
-                      <span className="text-[10px] flex-shrink-0" style={{ color: '#9CA3AF' }}>
+                      <span className="text-[10px] flex-shrink-0" style={{ color: 'var(--muted)' }}>
                         {isExpanded ? '\u25B2' : '\u25BC'}
                       </span>
                     </button>
@@ -727,12 +727,12 @@ export default function EstimateDetailPage() {
                             <div key={item.id} className="flex items-center gap-2 py-1">
                               <span
                                 className="w-1 h-4 rounded-full flex-shrink-0"
-                                style={{ background: item.isLabor ? '#3B82F6' : '#F59E0B' }}
+                                style={{ background: item.isLabor ? 'var(--blue)' : 'var(--yellow)' }}
                               />
-                              <span className="text-[11px] flex-1 truncate" style={{ color: '#374151' }}>
+                              <span className="text-[11px] flex-1 truncate" style={{ color: 'var(--mid)' }}>
                                 {item.description}
                               </span>
-                              <span className="text-[10px] flex-shrink-0" style={{ color: '#9CA3AF' }}>
+                              <span className="text-[10px] flex-shrink-0" style={{ color: 'var(--muted)' }}>
                                 ${item.totalCost.toLocaleString()}
                               </span>
                               <button
@@ -746,7 +746,7 @@ export default function EstimateDetailPage() {
                                   }, 100);
                                 }}
                                 className="text-[10px] font-semibold px-2 py-0.5 rounded"
-                                style={{ background: '#0F766E', color: '#FFFFFF', minHeight: '24px' }}
+                                style={{ background: 'var(--accent)', color: '#fff', minHeight: '24px' }}
                               >
                                 Edit
                               </button>
@@ -759,7 +759,7 @@ export default function EstimateDetailPage() {
                           <button
                             onClick={() => setShowAckPrompt(flag.key)}
                             className="w-full text-[11px] font-medium py-1.5 rounded-lg"
-                            style={{ background: '#F3F4F6', color: '#6B7280', minHeight: '32px' }}
+                            style={{ background: 'var(--surface-2)', color: 'var(--muted)', minHeight: '32px' }}
                           >
                             Acknowledge — proceed anyway
                           </button>
@@ -768,7 +768,7 @@ export default function EstimateDetailPage() {
                         {/* Reason picker */}
                         {isPrompting && (
                           <div className="space-y-1.5">
-                            <p className="text-[10px] font-semibold" style={{ color: '#374151' }}>
+                            <p className="text-[10px] font-semibold" style={{ color: 'var(--mid)' }}>
                               Why proceed?
                             </p>
                             <div className="flex flex-wrap gap-1">
@@ -780,7 +780,7 @@ export default function EstimateDetailPage() {
                                     setShowAckPrompt(null);
                                   }}
                                   className="text-[10px] font-medium px-2.5 py-1 rounded-full"
-                                  style={{ background: '#E5E7EB', color: '#374151', minHeight: '28px' }}
+                                  style={{ background: 'var(--border)', color: 'var(--mid)', minHeight: '28px' }}
                                 >
                                   {reason}
                                 </button>
@@ -789,7 +789,7 @@ export default function EstimateDetailPage() {
                             <button
                               onClick={() => setShowAckPrompt(null)}
                               className="text-[10px] py-1"
-                              style={{ color: '#9CA3AF' }}
+                              style={{ color: 'var(--muted)' }}
                             >
                               Cancel
                             </button>
@@ -807,7 +807,7 @@ export default function EstimateDetailPage() {
                               });
                             }}
                             className="text-[10px] font-medium py-1"
-                            style={{ color: '#991B1B' }}
+                            style={{ color: 'var(--red)' }}
                           >
                             Reopen this flag
                           </button>
@@ -846,7 +846,7 @@ export default function EstimateDetailPage() {
                   isCollapsed={isCollapsed}
                   onToggleCollapse={() => toggleGroupCollapse(groupKey)}
                 >
-                  <div className="bg-white rounded-b-xl overflow-hidden" style={{ border: '1px solid #E5E7EB', borderTop: 'none' }}>
+                  <div className="bg-white rounded-b-xl overflow-hidden" style={{ border: '1px solid var(--border)', borderTop: 'none' }}>
                     {items.map((item, i) => (
                       <LineItemRow
                         key={item.id}
@@ -870,8 +870,8 @@ export default function EstimateDetailPage() {
             })}
           </div>
         ) : lineItems.length > 0 ? (
-          <div className="bg-white rounded-xl p-4 text-center" style={{ border: '1px solid #E5E7EB' }}>
-            <p className="text-xs" style={{ color: '#9CA3AF' }}>
+          <div className="bg-white rounded-xl p-4 text-center" style={{ border: '1px solid var(--border)' }}>
+            <p className="text-xs" style={{ color: 'var(--muted)' }}>
               No matching items
             </p>
           </div>
@@ -882,10 +882,10 @@ export default function EstimateDetailPage() {
           isPostQuote ? (
             <div
               className="flex items-center gap-2 px-3 py-3 rounded-xl text-xs"
-              style={{ background: '#FFFBEB', border: '1px solid #FDE68A', color: '#92400E' }}
+              style={{ background: 'var(--yellow-bg)', border: '1px solid var(--yellow-bg)', color: 'var(--yellow)' }}
             >
               <span className="font-medium">New items require a change order.</span>
-              <span className="text-[10px]" style={{ color: '#B45309' }}>
+              <span className="text-[10px]" style={{ color: 'var(--yellow)' }}>
                 Quote has been generated — modifications to scope need approval.
               </span>
             </div>
@@ -894,7 +894,7 @@ export default function EstimateDetailPage() {
               <button
                 onClick={() => setShowCatalog(true)}
                 className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium text-white"
-                style={{ background: '#0F766E', minHeight: '48px' }}
+                style={{ background: 'var(--accent)', minHeight: '48px' }}
               >
                 <BookOpen size={16} />
                 Browse Catalog
@@ -903,8 +903,8 @@ export default function EstimateDetailPage() {
                 onClick={openAddForm}
                 className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium border-2 border-dashed"
                 style={{
-                  borderColor: '#D1D5DB',
-                  color: '#6B7280',
+                  borderColor: 'var(--border)',
+                  color: 'var(--muted)',
                   minHeight: '48px',
                 }}
               >
@@ -921,10 +921,10 @@ export default function EstimateDetailPage() {
             {matchedLabor && (
               <div
                 className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs"
-                style={{ background: '#F0FDFA', border: '1px solid #99F6E4' }}
+                style={{ background: 'var(--green-bg)', border: '1px solid var(--accent-border)' }}
               >
-                <Check size={14} style={{ color: '#0F766E' }} />
-                <span style={{ color: '#0F766E' }}>
+                <Check size={14} style={{ color: 'var(--accent)' }} />
+                <span style={{ color: 'var(--accent)' }}>
                   Also adds: <strong>{matchedLabor.name}</strong> at ${matchedLabor.unitCost.toFixed(2)}/{matchedLabor.unit}
                 </span>
               </div>
@@ -945,7 +945,7 @@ export default function EstimateDetailPage() {
         {/* Approve error (shown if NextSteps quote approval fails) */}
         {approveError && (
           <div className="pt-4">
-            <p className="text-xs text-center" style={{ color: '#EF4444' }}>
+            <p className="text-xs text-center" style={{ color: 'var(--red)' }}>
               {approveError}
             </p>
           </div>
@@ -955,24 +955,24 @@ export default function EstimateDetailPage() {
         {approveResult && (
           <div
             className="bg-white rounded-xl p-4"
-            style={{ border: `2px solid ${approveResult.missingSopCodes.length > 0 && approveResult.blueprintsCreated === 0 ? '#F59E0B' : '#10B981'}` }}
+            style={{ border: `2px solid ${approveResult.missingSopCodes.length > 0 && approveResult.blueprintsCreated === 0 ? 'var(--yellow)' : 'var(--green)'}` }}
           >
             <div className="flex items-center gap-2 mb-3">
               <div
                 className="w-8 h-8 rounded-full flex items-center justify-center"
-                style={{ background: approveResult.missingSopCodes.length > 0 && approveResult.blueprintsCreated === 0 ? '#FEF3C7' : '#D1FAE5' }}
+                style={{ background: approveResult.missingSopCodes.length > 0 && approveResult.blueprintsCreated === 0 ? 'var(--yellow-bg)' : 'var(--green-bg)' }}
               >
-                <Check size={16} style={{ color: approveResult.missingSopCodes.length > 0 && approveResult.blueprintsCreated === 0 ? '#92400E' : '#065F46' }} />
+                <Check size={16} style={{ color: approveResult.missingSopCodes.length > 0 && approveResult.blueprintsCreated === 0 ? 'var(--yellow)' : 'var(--green)' }} />
               </div>
-              <span className="text-sm font-semibold" style={{ color: approveResult.missingSopCodes.length > 0 && approveResult.blueprintsCreated === 0 ? '#92400E' : '#065F46' }}>
+              <span className="text-sm font-semibold" style={{ color: approveResult.missingSopCodes.length > 0 && approveResult.blueprintsCreated === 0 ? 'var(--yellow)' : 'var(--green)' }}>
                 {pricingLabel} Approved
               </span>
             </div>
-            <div className="space-y-1 text-sm" style={{ color: '#374151' }}>
+            <div className="space-y-1 text-sm" style={{ color: 'var(--mid)' }}>
               <p>{approveResult.blueprintsCreated} blueprint{approveResult.blueprintsCreated !== 1 ? 's' : ''} generated</p>
               <p>{approveResult.tasksDeployed} task{approveResult.tasksDeployed !== 1 ? 's' : ''} auto-deployed</p>
               {approveResult.loopedPending > 0 && (
-                <p className="text-xs" style={{ color: '#6B7280' }}>
+                <p className="text-xs" style={{ color: 'var(--muted)' }}>
                   {approveResult.loopedPending} looped blueprint{approveResult.loopedPending !== 1 ? 's' : ''} pending deployment
                 </p>
               )}
@@ -982,18 +982,18 @@ export default function EstimateDetailPage() {
             {approveResult.missingSopCodes.length > 0 && (
               <div
                 className="mt-3 rounded-lg p-2.5"
-                style={{ background: '#FFFBEB', border: '1px solid #FDE68A' }}
+                style={{ background: 'var(--yellow-bg)', border: '1px solid var(--yellow-bg)' }}
               >
-                <p className="text-xs font-semibold mb-1" style={{ color: '#92400E' }}>
+                <p className="text-xs font-semibold mb-1" style={{ color: 'var(--yellow)' }}>
                   {approveResult.missingSopCodes.length} SOP{approveResult.missingSopCodes.length !== 1 ? 's' : ''} not found in database
                 </p>
-                <p className="text-[11px]" style={{ color: '#A16207' }}>
+                <p className="text-[11px]" style={{ color: 'var(--yellow)' }}>
                   {approveResult.missingSopCodes.join(', ')}
                 </p>
                 <Link
                   href="/labs/seed"
                   className="inline-block mt-1.5 text-[11px] font-medium hover:underline"
-                  style={{ color: '#0F766E' }}
+                  style={{ color: 'var(--accent)' }}
                 >
                   Load seed data to create SOP records →
                 </Link>
@@ -1004,12 +1004,12 @@ export default function EstimateDetailPage() {
             {approveResult.pipelineEligible === 0 && approveResult.totalLineItems > 0 && (
               <div
                 className="mt-3 rounded-lg p-2.5"
-                style={{ background: '#FFFBEB', border: '1px solid #FDE68A' }}
+                style={{ background: 'var(--yellow-bg)', border: '1px solid var(--yellow-bg)' }}
               >
-                <p className="text-xs font-semibold" style={{ color: '#92400E' }}>
+                <p className="text-xs font-semibold" style={{ color: 'var(--yellow)' }}>
                   No line items have SOP codes linked
                 </p>
-                <p className="text-[11px]" style={{ color: '#A16207' }}>
+                <p className="text-[11px]" style={{ color: 'var(--yellow)' }}>
                   {approveResult.totalLineItems} line item{approveResult.totalLineItems !== 1 ? 's' : ''} found but none have SOP codes. Link SOPs to enable task generation.
                 </p>
               </div>
@@ -1019,7 +1019,7 @@ export default function EstimateDetailPage() {
               <Link
                 href={`/labs/structure/deploy?projectId=${projectId}`}
                 className="inline-block mt-3 text-xs font-medium hover:underline"
-                style={{ color: '#0F766E' }}
+                style={{ color: 'var(--accent)' }}
               >
                 Deploy looped blueprints →
               </Link>
@@ -1127,14 +1127,14 @@ function NextStepsCard({
   if (!nextStep && projectStatus !== 'in-progress') return null;
 
   return (
-    <div className="rounded-xl overflow-hidden" style={{ background: '#FFFFFF', border: '1px solid #E5E7EB' }}>
-      <div className="px-4 py-3" style={{ borderBottom: '1px solid #F3F4F6' }}>
-        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#9CA3AF' }}>
+    <div className="rounded-xl overflow-hidden" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+      <div className="px-4 py-3" style={{ borderBottom: '1px solid var(--surface-2)' }}>
+        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--muted)' }}>
           Next Steps
         </p>
       </div>
 
-      <div className="divide-y" style={{ borderColor: '#F3F4F6' }}>
+      <div className="divide-y" style={{ borderColor: 'var(--surface-2)' }}>
         {LIFECYCLE_STEPS.map((step) => {
           const stepIdx = statusOrder.indexOf(step.status);
           const isComplete = stepIdx < currentIdx;
@@ -1151,24 +1151,24 @@ function NextStepsCard({
               <div
                 className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
                 style={{
-                  background: isComplete ? '#D1FAE5' : isCurrent ? '#F0FDFA' : '#F3F4F6',
-                  border: isCurrent ? '2px solid #0F766E' : 'none',
+                  background: isComplete ? 'var(--green-bg)' : isCurrent ? 'var(--green-bg)' : 'var(--surface-2)',
+                  border: isCurrent ? '2px solid var(--accent)' : 'none',
                 }}
               >
                 {isComplete ? (
-                  <Check size={14} style={{ color: '#065F46' }} />
+                  <Check size={14} style={{ color: 'var(--green)' }} />
                 ) : (
-                  <Icon size={14} style={{ color: isCurrent ? '#0F766E' : '#9CA3AF' }} />
+                  <Icon size={14} style={{ color: isCurrent ? 'var(--accent)' : 'var(--muted)' }} />
                 )}
               </div>
               <div className="flex-1 min-w-0">
                 <p
                   className="text-sm font-medium"
-                  style={{ color: isComplete ? '#6B7280' : '#111827' }}
+                  style={{ color: isComplete ? 'var(--muted)' : 'var(--charcoal)' }}
                 >
                   {step.label}
                 </p>
-                <p className="text-xs" style={{ color: '#9CA3AF' }}>
+                <p className="text-xs" style={{ color: 'var(--muted)' }}>
                   {step.description}
                 </p>
               </div>
@@ -1177,14 +1177,14 @@ function NextStepsCard({
                   onClick={() => onAdvance(step.targetStatus)}
                   disabled={isUpdating}
                   className="min-h-[36px] px-3 rounded-lg text-xs font-semibold text-white flex items-center gap-1.5 flex-shrink-0"
-                  style={{ background: isUpdating ? '#9CA3AF' : '#0F766E' }}
+                  style={{ background: isUpdating ? 'var(--muted)' : 'var(--accent)' }}
                 >
                   {isUpdating ? 'Updating...' : step.actionLabel}
                   {!isUpdating && <ChevronRight size={14} />}
                 </button>
               )}
               {isComplete && (
-                <Check size={16} style={{ color: '#10B981' }} className="flex-shrink-0" />
+                <Check size={16} style={{ color: 'var(--green)' }} className="flex-shrink-0" />
               )}
             </div>
           );
@@ -1193,11 +1193,11 @@ function NextStepsCard({
 
       {/* Project link */}
       {projectStatus === 'in-progress' && (
-        <div className="px-4 py-3" style={{ borderTop: '1px solid #F3F4F6', background: '#F9FAFB' }}>
+        <div className="px-4 py-3" style={{ borderTop: '1px solid var(--surface-2)', background: 'var(--surface)' }}>
           <Link
             href={`/projects/${projectId}`}
             className="text-xs font-medium flex items-center gap-1 hover:underline"
-            style={{ color: '#0F766E' }}
+            style={{ color: 'var(--accent)' }}
           >
             View Project <ChevronRight size={14} />
           </Link>
@@ -1418,14 +1418,14 @@ function LineItemRow({
   const [quickCreateDone, setQuickCreateDone] = useState<string | null>(null);
 
   const annColors = {
-    warning: { bg: '#FFFBEB', text: '#92400E', dot: '#F59E0B' },
-    info: { bg: '#F0F9FF', text: '#1E40AF', dot: '#3B82F6' },
-    risk: { bg: '#FEF2F2', text: '#991B1B', dot: '#EF4444' },
+    warning: { bg: 'var(--yellow-bg)', text: 'var(--yellow)', dot: 'var(--yellow)' },
+    info: { bg: 'var(--blue-bg)', text: 'var(--blue)', dot: 'var(--blue)' },
+    risk: { bg: 'var(--red-bg)', text: 'var(--red)', dot: 'var(--red)' },
   };
   const labsColors = {
-    recent: { text: '#065F46', dot: '#10B981' },
-    ongoing: { text: '#5B21B6', dot: '#7C3AED' },
-    upcoming: { text: '#1E40AF', dot: '#3B82F6' },
+    recent: { text: 'var(--green)', dot: 'var(--green)' },
+    ongoing: { text: 'var(--violet)', dot: 'var(--violet)' },
+    upcoming: { text: 'var(--blue)', dot: 'var(--blue)' },
   };
 
   const catLabel = CATEGORY_LABELS[item.category] || item.category;
@@ -1477,7 +1477,7 @@ function LineItemRow({
   }
 
   return (
-    <div style={{ borderBottom: isLast ? 'none' : '1px solid #F3F4F6' }}>
+    <div style={{ borderBottom: isLast ? 'none' : '1px solid var(--surface-2)' }}>
       {/* Main row — tap to expand */}
       <button
         onClick={onToggleExpand}
@@ -1487,31 +1487,31 @@ function LineItemRow({
         {/* Labor/Material indicator */}
         <div
           className="w-1 h-8 rounded-full flex-shrink-0"
-          style={{ background: item.isLabor ? '#3B82F6' : '#F59E0B' }}
+          style={{ background: item.isLabor ? 'var(--blue)' : 'var(--yellow)' }}
         />
 
         {/* Content */}
         <div className="flex-1 min-w-0">
           <div className="flex items-baseline gap-1.5">
-            <span className="text-[13px] font-medium truncate" style={{ color: '#111827' }}>
+            <span className="text-[13px] font-medium truncate" style={{ color: 'var(--charcoal)' }}>
               {item.description}
             </span>
             {item.sopCodes && item.sopCodes.length > 0 && (
-              <span className="text-[9px] font-medium px-1 rounded" style={{ background: '#F0FDFA', color: '#0F766E', flexShrink: 0 }}>
+              <span className="text-[9px] font-medium px-1 rounded" style={{ background: 'var(--green-bg)', color: 'var(--accent)', flexShrink: 0 }}>
                 {item.sopCodes[0]}{item.sopCodes.length > 1 ? ` +${item.sopCodes.length - 1}` : ''}
               </span>
             )}
           </div>
-          <div className="flex items-center gap-1.5 text-[11px]" style={{ color: '#9CA3AF' }}>
+          <div className="flex items-center gap-1.5 text-[11px]" style={{ color: 'var(--muted)' }}>
             <span>{item.quantity} {UNIT_LABELS[item.unit] || item.unit} &times; ${item.unitCost.toLocaleString()}</span>
             {item.isLooped && (
-              <span className="flex items-center gap-0.5" style={{ color: '#6B21A8' }}>
+              <span className="flex items-center gap-0.5" style={{ color: 'var(--violet)' }}>
                 <Repeat size={8} />
                 {item.loopContextLabel || 'Looped'}
               </span>
             )}
             {item.estimatedHoursPerUnit && item.estimatedHoursPerUnit > 0 && (
-              <span className="flex items-center gap-0.5" style={{ color: '#1E40AF' }}>
+              <span className="flex items-center gap-0.5" style={{ color: 'var(--blue)' }}>
                 <Clock size={8} />
                 {item.estimatedHoursPerUnit}h/u
               </span>
@@ -1520,7 +1520,7 @@ function LineItemRow({
         </div>
 
         {/* Total */}
-        <span className="text-[13px] font-semibold flex-shrink-0" style={{ color: '#111827' }}>
+        <span className="text-[13px] font-semibold flex-shrink-0" style={{ color: 'var(--charcoal)' }}>
           ${item.totalCost.toLocaleString()}
         </span>
 
@@ -1529,7 +1529,7 @@ function LineItemRow({
           size={14}
           className="flex-shrink-0 transition-transform"
           style={{
-            color: '#9CA3AF',
+            color: 'var(--muted)',
             transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
           }}
         />
@@ -1537,20 +1537,20 @@ function LineItemRow({
 
       {/* Expanded content */}
       {isExpanded && (
-        <div className="px-3 pb-3 ml-3 space-y-2" style={{ borderTop: '1px solid #F9FAFB' }}>
+        <div className="px-3 pb-3 ml-3 space-y-2" style={{ borderTop: '1px solid var(--surface)' }}>
           {/* Actions bar */}
           <div className="flex gap-2 pt-2">
             <button
               onClick={(e) => { e.stopPropagation(); onEdit(); }}
               className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1.5 rounded-lg"
-              style={{ background: '#0F766E', color: '#FFFFFF', minHeight: '32px' }}
+              style={{ background: 'var(--accent)', color: '#fff', minHeight: '32px' }}
             >
               <Pencil size={10} /> Edit
             </button>
             <button
               onClick={(e) => { e.stopPropagation(); onDelete(); }}
               className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1.5 rounded-lg"
-              style={{ background: '#FEF2F2', color: '#991B1B', minHeight: '32px' }}
+              style={{ background: 'var(--red-bg)', color: 'var(--red)', minHeight: '32px' }}
             >
               <Trash2 size={10} /> Remove
             </button>
@@ -1574,27 +1574,27 @@ function LineItemRow({
 
           {/* Project view — item details */}
           {viewMode === 'project' && (
-            <div className="space-y-1 text-[11px]" style={{ color: '#6B7280' }}>
+            <div className="space-y-1 text-[11px]" style={{ color: 'var(--muted)' }}>
               <div className="flex justify-between">
                 <span>Category</span>
-                <span style={{ color: '#111827' }}>{catLabel}</span>
+                <span style={{ color: 'var(--charcoal)' }}>{catLabel}</span>
               </div>
               <div className="flex justify-between">
                 <span>Type</span>
-                <span style={{ color: item.isLabor ? '#3B82F6' : '#F59E0B' }}>
+                <span style={{ color: item.isLabor ? 'var(--blue)' : 'var(--yellow)' }}>
                   {item.isLabor ? 'Labor' : 'Material'}
                 </span>
               </div>
               {item.sopCodes && item.sopCodes.length > 0 && (
                 <div className="flex justify-between">
                   <span>SOPs</span>
-                  <span style={{ color: '#0F766E' }}>{item.sopCodes.join(', ')}</span>
+                  <span style={{ color: 'var(--accent)' }}>{item.sopCodes.join(', ')}</span>
                 </div>
               )}
               {item.isLabor && (
                 <div className="flex justify-between">
                   <span>Hours/Unit</span>
-                  <span style={{ color: item.estimatedHoursPerUnit ? '#111827' : '#EF4444' }}>
+                  <span style={{ color: item.estimatedHoursPerUnit ? 'var(--charcoal)' : 'var(--red)' }}>
                     {item.estimatedHoursPerUnit ? `${item.estimatedHoursPerUnit}h` : 'Not set'}
                   </span>
                 </div>
@@ -1623,17 +1623,17 @@ function LineItemRow({
                   <div key={i} className="flex items-center gap-1.5 text-[10px]">
                     <span
                       className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                      style={{ background: isGap ? '#D1D5DB' : labsColors[a.category].dot }}
+                      style={{ background: isGap ? 'var(--border)' : labsColors[a.category].dot }}
                     />
                     <span
                       className="text-[9px] font-semibold uppercase w-12 flex-shrink-0"
-                      style={{ color: isGap ? '#9CA3AF' : labsColors[a.category].text }}
+                      style={{ color: isGap ? 'var(--muted)' : labsColors[a.category].text }}
                     >
                       {a.category === 'recent' ? 'Recent' : a.category === 'ongoing' ? 'Active' : 'Soon'}
                     </span>
                     <span
                       className="flex-1 truncate"
-                      style={{ color: isGap ? '#9CA3AF' : '#374151', fontStyle: isGap ? 'italic' : 'normal' }}
+                      style={{ color: isGap ? 'var(--muted)' : 'var(--mid)', fontStyle: isGap ? 'italic' : 'normal' }}
                     >
                       {a.label}
                     </span>
@@ -1655,7 +1655,7 @@ function LineItemRow({
                           }
                         }}
                         className="font-semibold flex-shrink-0 px-1.5 py-0.5 rounded"
-                        style={{ background: '#0F766E', color: '#FFFFFF', fontSize: '9px' }}
+                        style={{ background: 'var(--accent)', color: '#fff', fontSize: '9px' }}
                       >
                         + {a.actionLabel}
                       </button>
@@ -1670,9 +1670,9 @@ function LineItemRow({
           {quickCreateMode && !quickCreateDone && (
             <div
               className="rounded-lg p-3 space-y-2"
-              style={{ background: '#F0FDFA', border: '1px solid #99F6E4' }}
+              style={{ background: 'var(--green-bg)', border: '1px solid var(--accent-border)' }}
             >
-              <p className="text-[11px] font-semibold" style={{ color: '#0F766E' }}>
+              <p className="text-[11px] font-semibold" style={{ color: 'var(--accent)' }}>
                 {quickCreateMode === 'knowledge' ? 'Track Knowledge' : 'Create Experiment'}
               </p>
               <input
@@ -1680,8 +1680,8 @@ function LineItemRow({
                 value={quickCreateTitle}
                 onChange={(e) => setQuickCreateTitle(e.target.value)}
                 placeholder={quickCreateMode === 'knowledge' ? 'Knowledge item title...' : 'Experiment title...'}
-                className="w-full px-2.5 py-1.5 text-[12px] border rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-600"
-                style={{ borderColor: '#D1D5DB', minHeight: '36px' }}
+                className="w-full px-2.5 py-1.5 text-[12px] border rounded-lg focus:outline-none focus:ring-1 focus:ring-[var(--accent)]"
+                style={{ borderColor: 'var(--border)', minHeight: '36px' }}
                 onClick={(e) => e.stopPropagation()}
               />
               <div className="flex gap-2">
@@ -1689,14 +1689,14 @@ function LineItemRow({
                   onClick={(e) => { e.stopPropagation(); handleQuickCreate(); }}
                   disabled={!quickCreateTitle.trim() || quickCreateSaving}
                   className="flex-1 text-[11px] font-semibold py-1.5 rounded-lg text-white disabled:opacity-50"
-                  style={{ background: '#0F766E', minHeight: '32px' }}
+                  style={{ background: 'var(--accent)', minHeight: '32px' }}
                 >
                   {quickCreateSaving ? 'Saving...' : 'Create'}
                 </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); setQuickCreateMode(null); setQuickCreateTitle(''); }}
                   className="text-[11px] font-medium px-3 py-1.5 rounded-lg"
-                  style={{ background: '#F3F4F6', color: '#6B7280', minHeight: '32px' }}
+                  style={{ background: 'var(--surface-2)', color: 'var(--muted)', minHeight: '32px' }}
                 >
                   Cancel
                 </button>
@@ -1708,7 +1708,7 @@ function LineItemRow({
           {quickCreateDone && (
             <div
               className="flex items-center gap-2 px-3 py-2 rounded-lg text-[11px] font-medium"
-              style={{ background: '#D1FAE5', color: '#065F46' }}
+              style={{ background: 'var(--green-bg)', color: 'var(--green)' }}
             >
               <Check size={12} />
               {quickCreateDone}
@@ -1764,49 +1764,49 @@ function ProcedureStepsSection({ sopCode }: { sopCode: string }) {
   const sopTitle = dbSop?.title || getSOPById(sopCode)?.title || sopCode;
 
   return (
-    <div className="rounded-lg overflow-hidden" style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
+    <div className="rounded-lg overflow-hidden" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
       <button
         onClick={(e) => { e.stopPropagation(); setExpanded(!expanded); }}
         className="w-full flex items-center gap-2 px-3 py-2 text-left"
         style={{ minHeight: '36px' }}
       >
-        <BookOpen size={12} style={{ color: '#6B7280' }} />
-        <span className="text-[11px] font-medium flex-1 truncate" style={{ color: '#374151' }}>
+        <BookOpen size={12} style={{ color: 'var(--muted)' }} />
+        <span className="text-[11px] font-medium flex-1 truncate" style={{ color: 'var(--mid)' }}>
           {sopTitle}
         </span>
-        <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full" style={{ background: '#E5E7EB', color: '#6B7280' }}>
+        <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full" style={{ background: 'var(--border)', color: 'var(--muted)' }}>
           {steps.length} steps
         </span>
         <ChevronDown
           size={12}
           className="transition-transform"
-          style={{ color: '#9CA3AF', transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)' }}
+          style={{ color: 'var(--muted)', transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)' }}
         />
       </button>
 
       {expanded && (
-        <div className="px-3 pb-2 space-y-1" style={{ borderTop: '1px solid #E5E7EB' }}>
+        <div className="px-3 pb-2 space-y-1" style={{ borderTop: '1px solid var(--border)' }}>
           {steps.map((step) => (
             <div key={step.number} className="flex items-start gap-2 py-1">
               <span
                 className="text-[10px] font-semibold w-4 text-center flex-shrink-0 mt-0.5"
-                style={{ color: '#9CA3AF' }}
+                style={{ color: 'var(--muted)' }}
               >
                 {step.number}
               </span>
-              <span className="text-[11px] flex-1" style={{ color: '#374151' }}>
+              <span className="text-[11px] flex-1" style={{ color: 'var(--mid)' }}>
                 {step.title}
               </span>
               {step.isCritical && (
                 <span
                   className="text-[8px] font-bold px-1 py-0.5 rounded flex-shrink-0"
-                  style={{ background: '#FEF2F2', color: '#DC2626' }}
+                  style={{ background: 'var(--red-bg)', color: 'var(--red)' }}
                 >
                   CRITICAL
                 </span>
               )}
               {step.requiresPhoto && (
-                <Camera size={10} className="flex-shrink-0 mt-0.5" style={{ color: '#9CA3AF' }} />
+                <Camera size={10} className="flex-shrink-0 mt-0.5" style={{ color: 'var(--muted)' }} />
               )}
             </div>
           ))}
@@ -1832,9 +1832,9 @@ function MaterialsToolsSection({ item, catalog }: { item: LineItem; catalog: Cos
 
   if (!breakdown) {
     return (
-      <div className="rounded-lg px-3 py-2 flex items-center gap-2" style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
-        <Package size={12} style={{ color: '#D1D5DB' }} />
-        <span className="text-[11px]" style={{ color: '#9CA3AF' }}>No assembly data for this item</span>
+      <div className="rounded-lg px-3 py-2 flex items-center gap-2" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+        <Package size={12} style={{ color: 'var(--border)' }} />
+        <span className="text-[11px]" style={{ color: 'var(--muted)' }}>No assembly data for this item</span>
       </div>
     );
   }
@@ -1859,28 +1859,28 @@ function MaterialsToolsSection({ item, catalog }: { item: LineItem; catalog: Cos
     <div className="space-y-1.5">
       {/* Materials list */}
       {breakdown.materials.length > 0 && (
-        <div className="rounded-lg overflow-hidden" style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
+        <div className="rounded-lg overflow-hidden" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
           <button
             onClick={(e) => { e.stopPropagation(); setMaterialsOpen(!materialsOpen); }}
             className="w-full flex items-center gap-2 px-3 py-2 text-left"
             style={{ minHeight: '36px' }}
           >
-            <Package size={12} style={{ color: '#F59E0B' }} />
-            <span className="text-[11px] font-medium flex-1" style={{ color: '#374151' }}>
+            <Package size={12} style={{ color: 'var(--yellow)' }} />
+            <span className="text-[11px] font-medium flex-1" style={{ color: 'var(--mid)' }}>
               Materials
             </span>
-            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full" style={{ background: '#FEF3C7', color: '#92400E' }}>
+            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full" style={{ background: 'var(--yellow-bg)', color: 'var(--yellow)' }}>
               {breakdown.materials.length}
             </span>
             <ChevronDown
               size={12}
               className="transition-transform"
-              style={{ color: '#9CA3AF', transform: materialsOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
+              style={{ color: 'var(--muted)', transform: materialsOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
             />
           </button>
 
           {materialsOpen && (
-            <div className="px-3 pb-2 space-y-1 pt-1" style={{ borderTop: '1px solid #E5E7EB' }}>
+            <div className="px-3 pb-2 space-y-1 pt-1" style={{ borderTop: '1px solid var(--border)' }}>
               {breakdown.materials.map((mat, idx) => (
                 <button
                   key={idx}
@@ -1891,22 +1891,22 @@ function MaterialsToolsSection({ item, catalog }: { item: LineItem; catalog: Cos
                   <div
                     className="w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center"
                     style={{
-                      borderColor: checkedMaterials.has(idx) ? '#0F766E' : '#D1D5DB',
-                      background: checkedMaterials.has(idx) ? '#0F766E' : 'transparent',
+                      borderColor: checkedMaterials.has(idx) ? 'var(--accent)' : 'var(--border)',
+                      background: checkedMaterials.has(idx) ? 'var(--accent)' : 'transparent',
                     }}
                   >
-                    {checkedMaterials.has(idx) && <Check size={10} style={{ color: '#FFFFFF' }} />}
+                    {checkedMaterials.has(idx) && <Check size={10} style={{ color: '#fff' }} />}
                   </div>
                   <span
                     className="text-[11px] font-medium flex-1 truncate"
                     style={{
-                      color: checkedMaterials.has(idx) ? '#9CA3AF' : '#374151',
+                      color: checkedMaterials.has(idx) ? 'var(--muted)' : 'var(--mid)',
                       textDecoration: checkedMaterials.has(idx) ? 'line-through' : 'none',
                     }}
                   >
                     {mat.name}
                   </span>
-                  <span className="text-[10px] flex-shrink-0" style={{ color: '#6B7280' }}>
+                  <span className="text-[10px] flex-shrink-0" style={{ color: 'var(--muted)' }}>
                     {mat.quantityNeeded} {mat.unit}
                   </span>
                 </button>
@@ -1918,28 +1918,28 @@ function MaterialsToolsSection({ item, catalog }: { item: LineItem; catalog: Cos
 
       {/* Tools checklist */}
       {breakdown.tools.length > 0 && (
-        <div className="rounded-lg overflow-hidden" style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
+        <div className="rounded-lg overflow-hidden" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
           <button
             onClick={(e) => { e.stopPropagation(); setToolsOpen(!toolsOpen); }}
             className="w-full flex items-center gap-2 px-3 py-2 text-left"
             style={{ minHeight: '36px' }}
           >
-            <Wrench size={12} style={{ color: '#6B7280' }} />
-            <span className="text-[11px] font-medium flex-1" style={{ color: '#374151' }}>
+            <Wrench size={12} style={{ color: 'var(--muted)' }} />
+            <span className="text-[11px] font-medium flex-1" style={{ color: 'var(--mid)' }}>
               Tools
             </span>
-            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full" style={{ background: '#F3F4F6', color: '#6B7280' }}>
+            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full" style={{ background: 'var(--surface-2)', color: 'var(--muted)' }}>
               {breakdown.tools.length}
             </span>
             <ChevronDown
               size={12}
               className="transition-transform"
-              style={{ color: '#9CA3AF', transform: toolsOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
+              style={{ color: 'var(--muted)', transform: toolsOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
             />
           </button>
 
           {toolsOpen && (
-            <div className="px-3 pb-2 space-y-1 pt-1" style={{ borderTop: '1px solid #E5E7EB' }}>
+            <div className="px-3 pb-2 space-y-1 pt-1" style={{ borderTop: '1px solid var(--border)' }}>
               {breakdown.tools.map((tool, idx) => (
                 <button
                   key={idx}
@@ -1950,16 +1950,16 @@ function MaterialsToolsSection({ item, catalog }: { item: LineItem; catalog: Cos
                   <div
                     className="w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center"
                     style={{
-                      borderColor: checkedTools.has(idx) ? '#0F766E' : '#D1D5DB',
-                      background: checkedTools.has(idx) ? '#0F766E' : 'transparent',
+                      borderColor: checkedTools.has(idx) ? 'var(--accent)' : 'var(--border)',
+                      background: checkedTools.has(idx) ? 'var(--accent)' : 'transparent',
                     }}
                   >
-                    {checkedTools.has(idx) && <Check size={10} style={{ color: '#FFFFFF' }} />}
+                    {checkedTools.has(idx) && <Check size={10} style={{ color: '#fff' }} />}
                   </div>
                   <span
                     className="text-[11px] truncate"
                     style={{
-                      color: checkedTools.has(idx) ? '#9CA3AF' : '#374151',
+                      color: checkedTools.has(idx) ? 'var(--muted)' : 'var(--mid)',
                       textDecoration: checkedTools.has(idx) ? 'line-through' : 'none',
                     }}
                   >
@@ -2004,20 +2004,20 @@ function LineItemForm({
   return (
     <div
       className="bg-white rounded-xl p-4 space-y-4"
-      style={{ border: '2px solid #0F766E' }}
+      style={{ border: '2px solid var(--accent)' }}
     >
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold" style={{ color: '#111827' }}>
+        <h3 className="text-sm font-semibold" style={{ color: 'var(--charcoal)' }}>
           {isEditing ? 'Edit Line Item' : 'Add Line Item'}
         </h3>
-        <button onClick={onCancel} className="p-1.5 rounded-lg hover:bg-gray-100">
-          <X size={16} style={{ color: '#6B7280' }} />
+        <button onClick={onCancel} className="p-1.5 rounded-lg hover:bg-[var(--surface)]">
+          <X size={16} style={{ color: 'var(--muted)' }} />
         </button>
       </div>
 
       {/* Description */}
       <div>
-        <label className="text-xs font-medium mb-1 block" style={{ color: '#374151' }}>
+        <label className="text-xs font-medium mb-1 block" style={{ color: 'var(--mid)' }}>
           Description *
         </label>
         <input
@@ -2025,15 +2025,15 @@ function LineItemForm({
           value={form.description}
           onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
           placeholder="e.g., Install LVP flooring"
-          className="w-full px-3 py-2 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-600"
-          style={{ borderColor: '#D1D5DB', minHeight: '44px' }}
+          className="w-full px-3 py-2 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+          style={{ borderColor: 'var(--border)', minHeight: '44px' }}
         />
       </div>
 
       {/* Category + Labor toggle */}
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="text-xs font-medium mb-1 block" style={{ color: '#374151' }}>
+          <label className="text-xs font-medium mb-1 block" style={{ color: 'var(--mid)' }}>
             Category *
           </label>
           <select
@@ -2041,8 +2041,8 @@ function LineItemForm({
             onChange={(e) =>
               setForm((prev) => ({ ...prev, category: e.target.value as CostCategory }))
             }
-            className="w-full px-3 py-2 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-600 bg-white"
-            style={{ borderColor: '#D1D5DB', minHeight: '44px' }}
+            className="w-full px-3 py-2 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--accent)] bg-white"
+            style={{ borderColor: 'var(--border)', minHeight: '44px' }}
           >
             {Object.values(CostCategory).map((cat) => (
               <option key={cat} value={cat}>
@@ -2052,17 +2052,17 @@ function LineItemForm({
           </select>
         </div>
         <div>
-          <label className="text-xs font-medium mb-1 block" style={{ color: '#374151' }}>
+          <label className="text-xs font-medium mb-1 block" style={{ color: 'var(--mid)' }}>
             Type *
           </label>
-          <div className="flex rounded-xl overflow-hidden border" style={{ borderColor: '#D1D5DB', minHeight: '44px' }}>
+          <div className="flex rounded-xl overflow-hidden border" style={{ borderColor: 'var(--border)', minHeight: '44px' }}>
             <button
               type="button"
               onClick={() => setForm((prev) => ({ ...prev, isLabor: true }))}
               className="flex-1 text-sm font-medium transition-colors"
               style={{
-                background: form.isLabor ? '#3B82F6' : '#FFFFFF',
-                color: form.isLabor ? '#FFFFFF' : '#6B7280',
+                background: form.isLabor ? 'var(--blue)' : 'var(--surface)',
+                color: form.isLabor ? '#fff' : 'var(--muted)',
               }}
             >
               Labor
@@ -2072,8 +2072,8 @@ function LineItemForm({
               onClick={() => setForm((prev) => ({ ...prev, isLabor: false }))}
               className="flex-1 text-sm font-medium transition-colors"
               style={{
-                background: !form.isLabor ? '#F59E0B' : '#FFFFFF',
-                color: !form.isLabor ? '#FFFFFF' : '#6B7280',
+                background: !form.isLabor ? 'var(--yellow)' : 'var(--surface)',
+                color: !form.isLabor ? '#fff' : 'var(--muted)',
               }}
             >
               Material
@@ -2085,7 +2085,7 @@ function LineItemForm({
       {/* Three-axis pickers: Trade / Stage / Location */}
       <div className="grid grid-cols-3 gap-3">
         <div>
-          <label className="text-xs font-medium mb-1 block" style={{ color: '#374151' }}>
+          <label className="text-xs font-medium mb-1 block" style={{ color: 'var(--mid)' }}>
             Trade
           </label>
           <select
@@ -2093,8 +2093,8 @@ function LineItemForm({
             onChange={(e) =>
               setForm((prev) => ({ ...prev, workCategoryCode: e.target.value }))
             }
-            className="w-full px-2 py-2 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-600 bg-white"
-            style={{ borderColor: '#D1D5DB', minHeight: '44px' }}
+            className="w-full px-2 py-2 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--accent)] bg-white"
+            style={{ borderColor: 'var(--border)', minHeight: '44px' }}
           >
             {Object.entries(TRADE_CODES).map(([code, meta]) => (
               <option key={code} value={code}>
@@ -2104,7 +2104,7 @@ function LineItemForm({
           </select>
         </div>
         <div>
-          <label className="text-xs font-medium mb-1 block" style={{ color: '#374151' }}>
+          <label className="text-xs font-medium mb-1 block" style={{ color: 'var(--mid)' }}>
             Stage
           </label>
           <select
@@ -2112,8 +2112,8 @@ function LineItemForm({
             onChange={(e) =>
               setForm((prev) => ({ ...prev, stageCode: e.target.value }))
             }
-            className="w-full px-2 py-2 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-600 bg-white"
-            style={{ borderColor: '#D1D5DB', minHeight: '44px' }}
+            className="w-full px-2 py-2 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--accent)] bg-white"
+            style={{ borderColor: 'var(--border)', minHeight: '44px' }}
           >
             {Object.entries(STAGE_CODES).map(([code, meta]) => (
               <option key={code} value={code}>
@@ -2123,7 +2123,7 @@ function LineItemForm({
           </select>
         </div>
         <div>
-          <label className="text-xs font-medium mb-1 block" style={{ color: '#374151' }}>
+          <label className="text-xs font-medium mb-1 block" style={{ color: 'var(--mid)' }}>
             Location
           </label>
           <select
@@ -2131,8 +2131,8 @@ function LineItemForm({
             onChange={(e) =>
               setForm((prev) => ({ ...prev, locationLabel: e.target.value }))
             }
-            className="w-full px-2 py-2 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-600 bg-white"
-            style={{ borderColor: '#D1D5DB', minHeight: '44px' }}
+            className="w-full px-2 py-2 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--accent)] bg-white"
+            style={{ borderColor: 'var(--border)', minHeight: '44px' }}
           >
             <option value="General">General</option>
             {Object.entries(ROOM_LOCATIONS).map(([key, meta]) => (
@@ -2147,7 +2147,7 @@ function LineItemForm({
       {/* Quantity + Unit + Unit Cost */}
       <div className="grid grid-cols-3 gap-3">
         <div>
-          <label className="text-xs font-medium mb-1 block" style={{ color: '#374151' }}>
+          <label className="text-xs font-medium mb-1 block" style={{ color: 'var(--mid)' }}>
             Qty *
           </label>
           <input
@@ -2158,12 +2158,12 @@ function LineItemForm({
             }
             min={0}
             step="any"
-            className="w-full px-3 py-2 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-600"
-            style={{ borderColor: '#D1D5DB', minHeight: '44px' }}
+            className="w-full px-3 py-2 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+            style={{ borderColor: 'var(--border)', minHeight: '44px' }}
           />
         </div>
         <div>
-          <label className="text-xs font-medium mb-1 block" style={{ color: '#374151' }}>
+          <label className="text-xs font-medium mb-1 block" style={{ color: 'var(--mid)' }}>
             Unit *
           </label>
           <select
@@ -2171,8 +2171,8 @@ function LineItemForm({
             onChange={(e) =>
               setForm((prev) => ({ ...prev, unit: e.target.value as UnitOfMeasure }))
             }
-            className="w-full px-3 py-2 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-600 bg-white"
-            style={{ borderColor: '#D1D5DB', minHeight: '44px' }}
+            className="w-full px-3 py-2 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--accent)] bg-white"
+            style={{ borderColor: 'var(--border)', minHeight: '44px' }}
           >
             {Object.values(UnitOfMeasure).map((u) => (
               <option key={u} value={u}>
@@ -2182,7 +2182,7 @@ function LineItemForm({
           </select>
         </div>
         <div>
-          <label className="text-xs font-medium mb-1 block" style={{ color: '#374151' }}>
+          <label className="text-xs font-medium mb-1 block" style={{ color: 'var(--mid)' }}>
             $/Unit *
           </label>
           <input
@@ -2193,18 +2193,18 @@ function LineItemForm({
             }
             min={0}
             step="any"
-            className="w-full px-3 py-2 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-600"
-            style={{ borderColor: '#D1D5DB', minHeight: '44px' }}
+            className="w-full px-3 py-2 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+            style={{ borderColor: 'var(--border)', minHeight: '44px' }}
           />
         </div>
       </div>
 
       {/* Calculated total */}
-      <div className="flex items-center justify-between px-3 py-2 rounded-xl" style={{ background: '#F9FAFB' }}>
-        <span className="text-xs" style={{ color: '#6B7280' }}>
+      <div className="flex items-center justify-between px-3 py-2 rounded-xl" style={{ background: 'var(--surface)' }}>
+        <span className="text-xs" style={{ color: 'var(--muted)' }}>
           {form.quantity} &times; ${form.unitCost.toLocaleString()} =
         </span>
-        <span className="text-sm font-bold" style={{ color: '#111827' }}>
+        <span className="text-sm font-bold" style={{ color: 'var(--charcoal)' }}>
           ${calculatedTotal.toLocaleString()}
         </span>
       </div>
@@ -2212,7 +2212,7 @@ function LineItemForm({
       {/* Estimated Hours (for labor items) */}
       {form.isLabor && (
         <div>
-          <label className="text-xs font-medium mb-1 block" style={{ color: '#374151' }}>
+          <label className="text-xs font-medium mb-1 block" style={{ color: 'var(--mid)' }}>
             Est. Hours per Unit
           </label>
           <input
@@ -2227,8 +2227,8 @@ function LineItemForm({
             min={0}
             step="0.5"
             placeholder="e.g., 4"
-            className="w-full px-3 py-2 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-600"
-            style={{ borderColor: '#D1D5DB', minHeight: '44px' }}
+            className="w-full px-3 py-2 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+            style={{ borderColor: 'var(--border)', minHeight: '44px' }}
           />
         </div>
       )}
@@ -2236,7 +2236,7 @@ function LineItemForm({
       {/* SOP Code Picker */}
       {sops.length > 0 && (
         <div>
-          <label className="text-xs font-medium mb-1.5 block" style={{ color: '#374151' }}>
+          <label className="text-xs font-medium mb-1.5 block" style={{ color: 'var(--mid)' }}>
             SOP Codes (enables pipeline)
           </label>
           <div className="flex flex-wrap gap-1.5">
@@ -2249,8 +2249,8 @@ function LineItemForm({
                   onClick={() => onToggleSop(sop.sopCode)}
                   className="text-[11px] font-medium px-2 py-1 rounded-full transition-colors"
                   style={{
-                    background: selected ? '#0F766E' : '#F3F4F6',
-                    color: selected ? '#FFFFFF' : '#6B7280',
+                    background: selected ? 'var(--accent)' : 'var(--surface-2)',
+                    color: selected ? '#fff' : 'var(--muted)',
                     minHeight: '28px',
                   }}
                 >
@@ -2270,14 +2270,14 @@ function LineItemForm({
               type="button"
               onClick={() => setForm((prev) => ({ ...prev, isLooped: !prev.isLooped }))}
               className="w-10 h-6 rounded-full transition-colors relative"
-              style={{ background: form.isLooped ? '#0F766E' : '#D1D5DB' }}
+              style={{ background: form.isLooped ? 'var(--accent)' : 'var(--border)' }}
             >
               <div
                 className="w-4 h-4 rounded-full bg-white absolute top-1 transition-transform"
                 style={{ left: form.isLooped ? '20px' : '4px' }}
               />
             </button>
-            <span className="text-xs font-medium" style={{ color: '#374151' }}>
+            <span className="text-xs font-medium" style={{ color: 'var(--mid)' }}>
               Looped (per-room deploy)
             </span>
           </div>
@@ -2290,8 +2290,8 @@ function LineItemForm({
                 setForm((prev) => ({ ...prev, loopContextLabel: e.target.value }))
               }
               placeholder="Per Room"
-              className="w-full px-3 py-2 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-600"
-              style={{ borderColor: '#D1D5DB', minHeight: '44px' }}
+              className="w-full px-3 py-2 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+              style={{ borderColor: 'var(--border)', minHeight: '44px' }}
             />
           )}
         </div>
@@ -2302,7 +2302,7 @@ function LineItemForm({
         <button
           onClick={onCancel}
           className="flex-1 py-2.5 text-sm font-medium rounded-xl border"
-          style={{ borderColor: '#D1D5DB', color: '#6B7280', minHeight: '44px' }}
+          style={{ borderColor: 'var(--border)', color: 'var(--muted)', minHeight: '44px' }}
         >
           Cancel
         </button>
@@ -2310,7 +2310,7 @@ function LineItemForm({
           onClick={onSave}
           disabled={!canSave || isSaving}
           className="flex-1 py-2.5 text-sm font-semibold text-white rounded-xl transition-colors disabled:opacity-50"
-          style={{ background: '#0F766E', minHeight: '44px' }}
+          style={{ background: 'var(--accent)', minHeight: '44px' }}
         >
           {isSaving ? 'Saving...' : isEditing ? 'Update' : 'Add'}
         </button>
@@ -2408,16 +2408,16 @@ function CatalogPickerModal({
     >
       <div
         className="w-full max-w-lg rounded-t-2xl flex flex-col"
-        style={{ background: '#FFFFFF', maxHeight: '85vh' }}
+        style={{ background: 'var(--surface)', maxHeight: '85vh' }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b" style={{ borderColor: '#E5E7EB' }}>
-          <h2 className="text-base font-bold" style={{ color: '#111827' }}>Browse Catalog</h2>
+        <div className="flex items-center justify-between px-4 py-3 border-b" style={{ borderColor: 'var(--border)' }}>
+          <h2 className="text-base font-bold" style={{ color: 'var(--charcoal)' }}>Browse Catalog</h2>
           <button
             onClick={onClose}
             className="min-h-[44px] min-w-[44px] flex items-center justify-center"
           >
-            <X size={20} style={{ color: '#6B7280' }} />
+            <X size={20} style={{ color: 'var(--muted)' }} />
           </button>
         </div>
 
@@ -2433,8 +2433,8 @@ function CatalogPickerModal({
               onClick={() => handleTabChange(key)}
               className="flex-1 min-h-[40px] rounded-lg text-xs font-medium transition-colors"
               style={{
-                background: tabMode === key ? '#0F766E' : '#F3F4F6',
-                color: tabMode === key ? '#FFFFFF' : '#6B7280',
+                background: tabMode === key ? 'var(--accent)' : 'var(--surface-2)',
+                color: tabMode === key ? '#fff' : 'var(--muted)',
               }}
             >
               {label}
@@ -2448,7 +2448,7 @@ function CatalogPickerModal({
             <Search
               size={16}
               className="absolute left-3 top-1/2 -translate-y-1/2"
-              style={{ color: '#9CA3AF' }}
+              style={{ color: 'var(--muted)' }}
             />
             <input
               type="text"
@@ -2456,7 +2456,7 @@ function CatalogPickerModal({
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search items..."
               className="w-full min-h-[40px] pl-9 pr-3 rounded-lg text-sm"
-              style={{ background: '#F3F4F6', border: '1px solid #E5E7EB', color: '#111827' }}
+              style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--charcoal)' }}
             />
           </div>
         </div>
@@ -2469,8 +2469,8 @@ function CatalogPickerModal({
                 onClick={() => setCategoryFilter('')}
                 className="min-h-[32px] px-2.5 rounded-lg text-xs font-medium whitespace-nowrap"
                 style={{
-                  background: !categoryFilter ? '#0F766E' : '#F3F4F6',
-                  color: !categoryFilter ? '#FFFFFF' : '#6B7280',
+                  background: !categoryFilter ? 'var(--accent)' : 'var(--surface-2)',
+                  color: !categoryFilter ? '#fff' : 'var(--muted)',
                 }}
               >
                 All
@@ -2481,8 +2481,8 @@ function CatalogPickerModal({
                   onClick={() => setCategoryFilter(cat)}
                   className="min-h-[32px] px-2.5 rounded-lg text-xs font-medium whitespace-nowrap"
                   style={{
-                    background: categoryFilter === cat ? '#0F766E' : '#F3F4F6',
-                    color: categoryFilter === cat ? '#FFFFFF' : '#6B7280',
+                    background: categoryFilter === cat ? 'var(--accent)' : 'var(--surface-2)',
+                    color: categoryFilter === cat ? '#fff' : 'var(--muted)',
                   }}
                 >
                   {CATALOG_CATEGORY_LABELS[cat] || cat}
@@ -2498,14 +2498,14 @@ function CatalogPickerModal({
             <div className="flex items-center justify-center py-8">
               <div
                 className="w-8 h-8 border-3 rounded-full animate-spin"
-                style={{ borderColor: '#E5E7EB', borderTopColor: '#0F766E' }}
+                style={{ borderColor: 'var(--border)', borderTopColor: 'var(--accent)' }}
               />
             </div>
           )}
 
           {!isLoading && items.length === 0 && (
             <div className="text-center py-8">
-              <p className="text-sm" style={{ color: '#9CA3AF' }}>
+              <p className="text-sm" style={{ color: 'var(--muted)' }}>
                 {searchQuery ? 'No items match your search' : 'No items in this category'}
               </p>
             </div>
@@ -2517,33 +2517,33 @@ function CatalogPickerModal({
               <button
                 key={item.id}
                 onClick={() => onSelect(item, matched)}
-                className="w-full text-left p-3 rounded-xl transition-colors hover:bg-gray-50"
-                style={{ border: '1px solid #E5E7EB' }}
+                className="w-full text-left p-3 rounded-xl transition-colors hover:bg-[var(--surface)]"
+                style={{ border: '1px solid var(--border)' }}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate" style={{ color: '#111827' }}>
+                    <p className="text-sm font-medium truncate" style={{ color: 'var(--charcoal)' }}>
                       {item.name}
                     </p>
-                    <p className="text-xs mt-0.5" style={{ color: '#9CA3AF' }}>
+                    <p className="text-xs mt-0.5" style={{ color: 'var(--muted)' }}>
                       {CATALOG_CATEGORY_LABELS[item.category] || item.category}
                       {item.supplier && ` · ${item.supplier}`}
                     </p>
                     {matched && (
-                      <p className="text-xs mt-0.5" style={{ color: '#0F766E' }}>
+                      <p className="text-xs mt-0.5" style={{ color: 'var(--accent)' }}>
                         + {matched.name} ${matched.unitCost.toFixed(2)}/{matched.unit}
                       </p>
                     )}
                   </div>
                   <div className="text-right flex-shrink-0 ml-3">
-                    <p className="text-sm font-semibold" style={{ color: '#0F766E' }}>
+                    <p className="text-sm font-semibold" style={{ color: 'var(--accent)' }}>
                       ${item.unitCost.toFixed(2)}
                     </p>
-                    <p className="text-xs" style={{ color: '#9CA3AF' }}>
+                    <p className="text-xs" style={{ color: 'var(--muted)' }}>
                       /{item.unit}
                     </p>
                     {matched && (
-                      <p className="text-[10px] font-medium mt-0.5" style={{ color: '#0F766E' }}>
+                      <p className="text-[10px] font-medium mt-0.5" style={{ color: 'var(--accent)' }}>
                         ${(item.unitCost + matched.unitCost).toFixed(2)} total
                       </p>
                     )}

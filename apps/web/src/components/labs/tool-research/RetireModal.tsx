@@ -4,7 +4,7 @@ import { useState } from 'react';
 import type { ToolInventoryItem } from '@hooomz/shared-contracts';
 import { Modal } from '@/components/ui/Modal';
 
-const CORAL = '#E76F51';
+const CORAL = '#E76F51'; /* tool-research category — no canonical equivalent */
 
 interface RetireModalProps {
   isOpen: boolean;
@@ -38,14 +38,14 @@ export function RetireModal({ isOpen, onClose, item, ownedItems, onConfirm, isPe
             marginBottom: 16,
           }}
         >
-          <div style={{ fontWeight: 700, fontSize: 14, color: '#1a1a1a' }}>{item.item}</div>
-          <div style={{ fontSize: 12, color: '#666', marginTop: 2 }}>
+          <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--charcoal)' }}>{item.item}</div>
+          <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>
             {item.platform} {item.brand ? `\u2022 ${item.brand}` : ''}
           </div>
         </div>
 
         <label style={{ display: 'block', marginBottom: 12 }}>
-          <span style={{ fontSize: 12, fontWeight: 600, color: '#555', display: 'block', marginBottom: 4 }}>
+          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--muted)', display: 'block', marginBottom: 4 }}>
             Reason for Retiring
           </span>
           <input
@@ -56,7 +56,7 @@ export function RetireModal({ isOpen, onClose, item, ownedItems, onConfirm, isPe
             style={{
               width: '100%',
               padding: '8px 12px',
-              border: '1px solid #D1D5DB',
+              border: '1px solid var(--border)',
               borderRadius: 6,
               fontSize: 13,
               minHeight: 44,
@@ -66,7 +66,7 @@ export function RetireModal({ isOpen, onClose, item, ownedItems, onConfirm, isPe
 
         {replacements.length > 0 && (
           <label style={{ display: 'block', marginBottom: 16 }}>
-            <span style={{ fontSize: 12, fontWeight: 600, color: '#555', display: 'block', marginBottom: 4 }}>
+            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--muted)', display: 'block', marginBottom: 4 }}>
               Replaced By (optional)
             </span>
             <select
@@ -75,11 +75,11 @@ export function RetireModal({ isOpen, onClose, item, ownedItems, onConfirm, isPe
               style={{
                 width: '100%',
                 padding: '8px 12px',
-                border: '1px solid #D1D5DB',
+                border: '1px solid var(--border)',
                 borderRadius: 6,
                 fontSize: 13,
                 minHeight: 44,
-                background: 'white',
+                background: 'var(--surface)',
               }}
             >
               <option value="">None</option>
@@ -98,9 +98,9 @@ export function RetireModal({ isOpen, onClose, item, ownedItems, onConfirm, isPe
             onClick={onClose}
             style={{
               padding: '8px 16px',
-              border: '1px solid #D1D5DB',
+              border: '1px solid var(--border)',
               borderRadius: 6,
-              background: 'white',
+              background: 'var(--surface)',
               fontSize: 13,
               cursor: 'pointer',
               minHeight: 44,

@@ -27,13 +27,13 @@ function formatCurrency(amount: number): string {
 }
 
 const STATUS_COLORS: Record<InvoiceStatus, { bg: string; text: string }> = {
-  draft: { bg: '#F3F4F6', text: '#6B7280' },
-  sent: { bg: '#DBEAFE', text: '#2563EB' },
-  viewed: { bg: '#DBEAFE', text: '#2563EB' },
-  partial: { bg: '#FEF3C7', text: '#D97706' },
-  paid: { bg: '#D1FAE5', text: '#059669' },
-  overdue: { bg: '#FEE2E2', text: '#DC2626' },
-  cancelled: { bg: '#F3F4F6', text: '#9CA3AF' },
+  draft: { bg: 'var(--surface-2)', text: 'var(--muted)' },
+  sent: { bg: 'var(--blue-bg)', text: 'var(--blue)' },
+  viewed: { bg: 'var(--blue-bg)', text: 'var(--blue)' },
+  partial: { bg: 'var(--yellow-bg)', text: 'var(--yellow)' },
+  paid: { bg: 'var(--green-bg)', text: 'var(--green)' },
+  overdue: { bg: 'var(--red-bg)', text: 'var(--red)' },
+  cancelled: { bg: 'var(--surface-2)', text: 'var(--muted)' },
 };
 
 const TYPE_LABELS: Record<string, string> = {
@@ -66,7 +66,7 @@ export function InvoiceListPanel({ projectId, customerId }: InvoiceListPanelProp
         alignItems: 'center',
         gap: 3,
         fontSize: 10,
-        color: 'var(--teal)',
+        color: 'var(--accent)',
         background: 'none',
         border: 'none',
         cursor: 'pointer',
@@ -83,19 +83,19 @@ export function InvoiceListPanel({ projectId, customerId }: InvoiceListPanelProp
       <PanelSection label="Invoices" action={action}>
         {invoices.length === 0 ? (
           <div style={{ padding: '6px 12px' }}>
-            <span style={{ fontSize: 11, color: 'var(--text-3)' }}>No invoices yet</span>
+            <span style={{ fontSize: 11, color: 'var(--muted)' }}>No invoices yet</span>
           </div>
         ) : (
           <>
             {/* Total outstanding */}
             <div style={{ padding: '4px 12px 6px', display: 'flex', alignItems: 'baseline', gap: 6 }}>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 16, fontWeight: 700, color: 'var(--text)' }}>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 16, fontWeight: 700, color: 'var(--charcoal)' }}>
                 {formatCurrency(totalOutstanding)}
               </span>
-              <span style={{ fontSize: 10, color: 'var(--text-3)' }}>
+              <span style={{ fontSize: 10, color: 'var(--muted)' }}>
                 outstanding
               </span>
-              <span style={{ fontSize: 10, color: 'var(--text-3)', marginLeft: 'auto' }}>
+              <span style={{ fontSize: 10, color: 'var(--muted)', marginLeft: 'auto' }}>
                 {invoices.length} {invoices.length === 1 ? 'invoice' : 'invoices'}
               </span>
             </div>
@@ -121,7 +121,7 @@ export function InvoiceListPanel({ projectId, customerId }: InvoiceListPanelProp
                   <span style={{
                     fontFamily: 'var(--font-mono)',
                     fontSize: 10,
-                    color: 'var(--text-2)',
+                    color: 'var(--mid)',
                     width: 80,
                     flexShrink: 0,
                   }}>
@@ -130,11 +130,11 @@ export function InvoiceListPanel({ projectId, customerId }: InvoiceListPanelProp
 
                   {/* Type pill */}
                   <span style={{
-                    fontFamily: 'var(--font-cond)',
+                    fontFamily: 'var(--font-mono)',
                     fontSize: 8,
                     fontWeight: 700,
                     letterSpacing: '0.06em',
-                    color: 'var(--text-3)',
+                    color: 'var(--muted)',
                     background: 'var(--surface-2)',
                     padding: '1px 5px',
                     borderRadius: 3,
@@ -145,7 +145,7 @@ export function InvoiceListPanel({ projectId, customerId }: InvoiceListPanelProp
 
                   {/* Status badge */}
                   <span style={{
-                    fontFamily: 'var(--font-cond)',
+                    fontFamily: 'var(--font-mono)',
                     fontSize: 8,
                     fontWeight: 700,
                     letterSpacing: '0.06em',
@@ -166,7 +166,7 @@ export function InvoiceListPanel({ projectId, customerId }: InvoiceListPanelProp
                   <span style={{
                     fontFamily: 'var(--font-mono)',
                     fontSize: 10,
-                    color: inv.status === 'paid' ? '#059669' : 'var(--text)',
+                    color: inv.status === 'paid' ? 'var(--green)' : 'var(--charcoal)',
                     fontWeight: 600,
                     flexShrink: 0,
                   }}>

@@ -59,6 +59,7 @@ const SEED_CUSTOMERS_V2 = [
     notes: 'Margaret & Tom Arsenault. Main floor refresh in progress. Referred by Ritchies.',
     status: 'active' as const,
     jobIds: [] as string[],
+    household_members: [],
     _seeded: true,
   },
   {
@@ -74,6 +75,7 @@ const SEED_CUSTOMERS_V2 = [
     notes: 'Kitchen & hallway renovation. Met at Home Show.',
     status: 'active' as const,
     jobIds: [] as string[],
+    household_members: [],
     _seeded: true,
   },
   {
@@ -89,6 +91,7 @@ const SEED_CUSTOMERS_V2 = [
     notes: 'Two projects: master bedroom flooring + basement stairs trim. Referred by a friend.',
     status: 'active' as const,
     jobIds: [] as string[],
+    household_members: [],
     _seeded: true,
   },
   {
@@ -104,6 +107,7 @@ const SEED_CUSTOMERS_V2 = [
     notes: 'James & Carol Steeves. Initial inquiry via website. Hot lead.',
     status: 'lead' as const,
     jobIds: [] as string[],
+    household_members: [],
     _seeded: true,
   },
   {
@@ -119,6 +123,7 @@ const SEED_CUSTOMERS_V2 = [
     notes: 'Repeat customer. Living room project completed. Basement upcoming.',
     status: 'past' as const,
     jobIds: [] as string[],
+    household_members: [],
     _seeded: true,
   },
 ];

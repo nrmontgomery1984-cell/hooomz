@@ -27,7 +27,7 @@ export function CrewGate({ children }: CrewGateProps) {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg, #F0EDE8)' }}>
-        <div className="text-sm text-gray-500">Loading...</div>
+        <div className="text-sm text-[var(--muted)]">Loading...</div>
       </div>
     );
   }

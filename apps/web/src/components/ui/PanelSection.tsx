@@ -18,7 +18,7 @@ export function PanelSection({ label, count, countColor, action, children }: Pan
   return (
     <div
       style={{
-        background: 'var(--surface-1)',
+        background: 'var(--surface)',
         border: '1px solid var(--border)',
         borderRadius: 'var(--radius)',
         overflow: 'hidden',
@@ -37,12 +37,12 @@ export function PanelSection({ label, count, countColor, action, children }: Pan
       >
         <span
           style={{
-            fontFamily: 'var(--font-cond)',
+            fontFamily: 'var(--font-mono)',
             fontSize: 9,
             fontWeight: 700,
             letterSpacing: '0.14em',
             textTransform: 'uppercase',
-            color: 'var(--text-3)',
+            color: 'var(--muted)',
             flex: 1,
           }}
         >

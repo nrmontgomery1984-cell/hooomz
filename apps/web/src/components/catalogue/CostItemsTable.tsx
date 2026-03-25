@@ -43,7 +43,7 @@ function thBase(align: 'left' | 'right' | 'center'): CSSProperties {
     fontWeight: 500,
     letterSpacing: '0.1em',
     textTransform: 'uppercase',
-    color: 'var(--text-3)',
+    color: 'var(--muted)',
     background: 'var(--surface-2)',
     whiteSpace: 'nowrap',
   };
@@ -55,8 +55,8 @@ function rateCell(leftBorder: boolean): CSSProperties {
     textAlign: 'right',
     fontFamily: 'var(--font-mono)',
     fontSize: '0.75rem',
-    color: 'var(--text-1)',
-    background: 'var(--surface-1)',
+    color: 'var(--charcoal)',
+    background: 'var(--surface)',
     borderLeft: leftBorder ? '1px solid var(--border)' : 'none',
     borderBottom: '1px solid var(--border)',
   };
@@ -115,7 +115,7 @@ export function CostItemsTable({
           style={{
             fontFamily: 'var(--font-mono)',
             fontSize: '0.7rem',
-            color: 'var(--text-3)',
+            color: 'var(--muted)',
           }}
         >
           No items
@@ -225,7 +225,7 @@ function SectionGroup({
     fontSize: '0.57rem',
     letterSpacing: '0.12em',
     textTransform: 'uppercase',
-    color: 'var(--text-3)',
+    color: 'var(--muted)',
     background: 'var(--surface-2)',
     padding: '6px 14px',
     borderBottom: '1px solid var(--border)',
@@ -242,7 +242,7 @@ function SectionGroup({
       {items.map((item, i) => {
         const flagged = flaggedIds.has(item.id);
         const phase = PHASE_META[item.phase] ?? {
-          color: 'var(--text-2)',
+          color: 'var(--mid)',
           bg: 'var(--surface-2)',
           label: item.phase,
         };
@@ -252,7 +252,7 @@ function SectionGroup({
         const rowBg = flagged
           ? FLAG_ROW_BG
           : i % 2 === 0
-          ? 'var(--surface-1)'
+          ? 'var(--surface)'
           : 'var(--surface-2)';
         const tdBase: CSSProperties = { borderBottom: '1px solid var(--border)' };
 
@@ -280,7 +280,7 @@ function SectionGroup({
                   cursor: 'pointer',
                   fontFamily: 'var(--font-mono)',
                   fontSize: '0.8rem',
-                  color: flagged ? FLAG_ACTIVE : 'var(--text-1)',
+                  color: flagged ? FLAG_ACTIVE : 'var(--charcoal)',
                   opacity: flagged ? 1 : 0.15,
                   padding: '2px 4px',
                   lineHeight: 1,
@@ -297,7 +297,7 @@ function SectionGroup({
                 padding: '7px 12px',
                 fontFamily: 'var(--font-mono)',
                 fontSize: '0.62rem',
-                color: 'var(--text-3)',
+                color: 'var(--muted)',
                 whiteSpace: 'nowrap',
               }}
             >
@@ -311,7 +311,7 @@ function SectionGroup({
                 padding: '7px 12px',
                 fontFamily: 'var(--font-display)',
                 fontSize: '0.81rem',
-                color: 'var(--text-1)',
+                color: 'var(--charcoal)',
               }}
             >
               {item.name}
@@ -344,7 +344,7 @@ function SectionGroup({
                 padding: '7px 12px',
                 fontFamily: 'var(--font-mono)',
                 fontSize: '0.67rem',
-                color: 'var(--text-3)',
+                color: 'var(--muted)',
               }}
             >
               {item.unit}

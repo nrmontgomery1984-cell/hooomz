@@ -514,6 +514,7 @@ export interface LocalBusinessHealthData {
     name: string;
     status: string;
     jobStage?: JobStage;
+    design_stage?: string;
     health_score?: number;
     taskCount: number;
     completedCount: number;
@@ -586,6 +587,7 @@ export function useLocalBusinessHealth(): LocalBusinessHealthData {
       name: p.name,
       status: p.status,
       jobStage: p.jobStage,
+      design_stage: (p as Record<string, unknown>).design_stage as string | undefined,
       health_score: calculateProjectHealth(projectTasks),
       taskCount: projectTasks.length,
       completedCount,

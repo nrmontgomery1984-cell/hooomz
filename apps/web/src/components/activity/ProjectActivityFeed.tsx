@@ -224,7 +224,7 @@ export function ProjectActivityFeed({
         {/* Skeleton filter pills */}
         <div className="flex gap-2 mb-4 animate-pulse">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-[44px] w-20 bg-slate-200 rounded-full" />
+            <div key={i} className="h-[44px] w-20 bg-[var(--surface-2)] rounded-full" />
           ))}
         </div>
         {/* Skeleton events */}
@@ -239,10 +239,10 @@ export function ProjectActivityFeed({
   if (isError) {
     return (
       <div className={`py-8 text-center ${className}`}>
-        <p className="text-slate-500 mb-3">Failed to load activity</p>
+        <p className="text-[var(--muted)] mb-3">Failed to load activity</p>
         <button
           onClick={() => refetch()}
-          className="text-teal font-medium min-h-[44px] px-4"
+          className="text-[var(--accent)] font-medium min-h-[44px] px-4"
         >
           Try again
         </button>
@@ -271,14 +271,14 @@ export function ProjectActivityFeed({
 
       {/* Active filter summary */}
       {hasThreeAxisFilters && (
-        <div className="mb-4 text-xs text-slate-500">
+        <div className="mb-4 text-xs text-[var(--muted)]">
           Showing events matching selected filters
         </div>
       )}
 
       {/* Refresh indicator */}
       {isRefreshing && (
-        <div className="text-center py-2 text-sm text-slate-400">
+        <div className="text-center py-2 text-sm text-[var(--muted)]">
           Refreshing...
         </div>
       )}
@@ -323,9 +323,9 @@ export function ProjectActivityFeed({
             onClick={() => fetchNextPage()}
             disabled={isFetchingNextPage}
             className="
-              w-full py-3 text-sm font-medium text-teal
+              w-full py-3 text-sm font-medium text-[var(--accent)]
               min-h-[44px] rounded-lg
-              hover:bg-teal/5 transition-colors
+              hover:bg-[var(--accent-bg)] transition-colors
               disabled:opacity-50 disabled:cursor-not-allowed
             "
           >
@@ -341,9 +341,9 @@ export function ProjectActivityFeed({
             onClick={handleRefresh}
             disabled={isRefreshing}
             className="
-              text-sm text-slate-400
+              text-sm text-[var(--muted)]
               min-h-[44px] px-4
-              hover:text-slate-600 transition-colors
+              hover:text-[var(--mid)] transition-colors
             "
           >
             {isRefreshing ? 'Refreshing...' : 'Pull to refresh'}
@@ -377,11 +377,11 @@ function EmptyState({ filter, hasThreeAxisFilters, onClearFilters }: EmptyStateP
 
   return (
     <div className="py-12 text-center">
-      <p className="text-slate-400 text-sm">{messages[filter]}</p>
+      <p className="text-[var(--muted)] text-sm">{messages[filter]}</p>
       {hasAnyFilter && (
         <button
           onClick={onClearFilters}
-          className="mt-3 text-teal text-sm font-medium min-h-[44px] px-4"
+          className="mt-3 text-[var(--accent)] text-sm font-medium min-h-[44px] px-4"
         >
           Clear all filters
         </button>

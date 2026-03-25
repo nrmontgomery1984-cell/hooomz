@@ -158,9 +158,9 @@ function PillGrid<T extends string | number>({
             onClick={() => onChange(opt.value)}
             className="min-h-[44px] px-3 rounded-xl text-sm font-medium transition-colors"
             style={{
-              background: isSelected ? '#F0FDFA' : '#FFFFFF',
-              color: isSelected ? '#0F766E' : '#374151',
-              border: isSelected ? '2px solid #0F766E' : '1px solid #E5E7EB',
+              background: isSelected ? 'var(--accent-bg)' : 'var(--surface)',
+              color: isSelected ? 'var(--accent)' : 'var(--mid)',
+              border: isSelected ? '2px solid var(--accent)' : '1px solid var(--border)',
             }}
           >
             {opt.label}
@@ -211,9 +211,9 @@ function MultiPillGrid<T extends string>({
             disabled={isDisabled}
             className="min-h-[44px] px-3 rounded-xl text-sm font-medium transition-colors"
             style={{
-              background: isSelected ? '#F0FDFA' : '#FFFFFF',
-              color: isSelected ? '#0F766E' : isDisabled ? '#9CA3AF' : '#374151',
-              border: isSelected ? '2px solid #0F766E' : '1px solid #E5E7EB',
+              background: isSelected ? 'var(--accent-bg)' : 'var(--surface)',
+              color: isSelected ? 'var(--accent)' : isDisabled ? 'var(--muted)' : 'var(--mid)',
+              border: isSelected ? '2px solid var(--accent)' : '1px solid var(--border)',
               opacity: isDisabled ? 0.5 : 1,
             }}
           >
@@ -234,12 +234,12 @@ function SectionCard({ label, children }: { label: string; children: React.React
     <div
       className="rounded-xl p-4 mb-4"
       style={{
-        background: '#FFFFFF',
-        border: '1px solid #E5E7EB',
+        background: 'var(--surface)',
+        border: '1px solid var(--border)',
         boxShadow: '0 1px 3px rgba(0,0,0,0.03)',
       }}
     >
-      <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: '#6B7280' }}>
+      <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--muted)' }}>
         {label}
       </p>
       {children}
@@ -404,8 +404,8 @@ export default function DiscoveryPage() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-10 w-10 border-b-2" style={{ borderColor: '#0F766E' }} />
-          <p className="mt-3 text-sm" style={{ color: '#6B7280' }}>Loading discovery...</p>
+          <div className="inline-block animate-spin rounded-full h-10 w-10 border-b-2" style={{ borderColor: 'var(--accent)' }} />
+          <p className="mt-3 text-sm" style={{ color: 'var(--muted)' }}>Loading discovery...</p>
         </div>
       </div>
     );
@@ -415,11 +415,11 @@ export default function DiscoveryPage() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <p className="text-lg font-semibold" style={{ color: '#1A1A1A' }}>Project not found</p>
+          <p className="text-lg font-semibold" style={{ color: 'var(--charcoal)' }}>Project not found</p>
           <button
             onClick={() => router.push('/leads')}
             className="mt-4 px-4 py-2 rounded-xl text-sm font-medium text-white"
-            style={{ background: '#0F766E' }}
+            style={{ background: 'var(--accent)' }}
           >
             Back to Pipeline
           </button>
@@ -429,30 +429,30 @@ export default function DiscoveryPage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ background: '#F9FAFB' }}>
+    <div className="min-h-screen" style={{ background: 'var(--surface)' }}>
       {/* Header */}
       <div
         className="sticky top-0 z-10 px-4 py-3"
-        style={{ background: '#FFFFFF', borderBottom: '1px solid #E5E7EB' }}
+        style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}
       >
         <div className="max-w-lg mx-auto">
           <div className="flex items-center justify-between mb-2">
             <button
               onClick={() => router.push('/leads')}
               className="flex items-center gap-1 text-sm font-medium"
-              style={{ color: '#6B7280' }}
+              style={{ color: 'var(--muted)' }}
             >
               <ArrowLeft size={16} /> Pipeline
             </button>
-            <span className="text-xs font-medium" style={{ color: saveStatus === 'saved' ? '#10B981' : '#9CA3AF' }}>
+            <span className="text-xs font-medium" style={{ color: saveStatus === 'saved' ? 'var(--green)' : 'var(--muted)' }}>
               {saveStatus === 'saving' ? 'Saving...' : saveStatus === 'saved' ? 'Saved' : ''}
             </span>
           </div>
 
-          <p className="text-base font-semibold" style={{ color: '#1A1A1A' }}>
+          <p className="text-base font-semibold" style={{ color: 'var(--charcoal)' }}>
             {customerName}
           </p>
-          <p className="text-xs" style={{ color: '#6B7280' }}>
+          <p className="text-xs" style={{ color: 'var(--muted)' }}>
             Discovery — Step {step} of 2
           </p>
 
@@ -462,7 +462,7 @@ export default function DiscoveryPage() {
               <div
                 key={s}
                 className="flex-1 h-1.5 rounded-full transition-colors"
-                style={{ background: s <= step ? '#0F766E' : '#E5E7EB' }}
+                style={{ background: s <= step ? 'var(--accent)' : 'var(--border)' }}
               />
             ))}
           </div>
@@ -475,12 +475,12 @@ export default function DiscoveryPage() {
           <>
             {/* Step 1 Header */}
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: '#F0FDFA' }}>
-                <Home size={16} style={{ color: '#0F766E' }} />
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'var(--accent-bg)' }}>
+                <Home size={16} style={{ color: 'var(--accent)' }} />
               </div>
               <div>
-                <p className="text-base font-semibold" style={{ color: '#1A1A1A' }}>Property Overview</p>
-                <p className="text-xs" style={{ color: '#6B7280' }}>Tell us about the home</p>
+                <p className="text-base font-semibold" style={{ color: 'var(--charcoal)' }}>Property Overview</p>
+                <p className="text-xs" style={{ color: 'var(--muted)' }}>Tell us about the home</p>
               </div>
             </div>
 
@@ -492,7 +492,7 @@ export default function DiscoveryPage() {
                 value={property.address.street}
                 onChange={(e) => updateAddress('street', e.target.value)}
                 className="w-full min-h-[44px] px-3 rounded-lg text-sm mb-2"
-                style={{ border: '1px solid #E5E7EB', color: '#1A1A1A' }}
+                style={{ border: '1px solid var(--border)', color: 'var(--charcoal)' }}
               />
               <div className="grid grid-cols-2 gap-2">
                 <input
@@ -501,7 +501,7 @@ export default function DiscoveryPage() {
                   value={property.address.city}
                   onChange={(e) => updateAddress('city', e.target.value)}
                   className="min-h-[44px] px-3 rounded-lg text-sm"
-                  style={{ border: '1px solid #E5E7EB', color: '#1A1A1A' }}
+                  style={{ border: '1px solid var(--border)', color: 'var(--charcoal)' }}
                 />
                 <div className="grid grid-cols-2 gap-2">
                   <input
@@ -510,7 +510,7 @@ export default function DiscoveryPage() {
                     value={property.address.province}
                     onChange={(e) => updateAddress('province', e.target.value)}
                     className="min-h-[44px] px-3 rounded-lg text-sm"
-                    style={{ border: '1px solid #E5E7EB', color: '#1A1A1A' }}
+                    style={{ border: '1px solid var(--border)', color: 'var(--charcoal)' }}
                   />
                   <input
                     type="text"
@@ -518,7 +518,7 @@ export default function DiscoveryPage() {
                     value={property.address.postalCode}
                     onChange={(e) => updateAddress('postalCode', e.target.value)}
                     className="min-h-[44px] px-3 rounded-lg text-sm"
-                    style={{ border: '1px solid #E5E7EB', color: '#1A1A1A' }}
+                    style={{ border: '1px solid var(--border)', color: 'var(--charcoal)' }}
                   />
                 </div>
               </div>
@@ -562,7 +562,7 @@ export default function DiscoveryPage() {
                 value={property.totalSqft ?? ''}
                 onChange={(e) => updateProperty('totalSqft', e.target.value ? Number(e.target.value) : null)}
                 className="w-full min-h-[44px] px-3 rounded-lg text-sm"
-                style={{ border: '1px solid #E5E7EB', color: '#1A1A1A' }}
+                style={{ border: '1px solid var(--border)', color: 'var(--charcoal)' }}
                 inputMode="numeric"
               />
             </SectionCard>
@@ -594,9 +594,9 @@ export default function DiscoveryPage() {
                   onClick={() => updateProperty('pets', !property.pets)}
                   className="min-h-[44px] px-4 rounded-xl text-sm font-medium transition-colors"
                   style={{
-                    background: property.pets ? '#F0FDFA' : '#FFFFFF',
-                    color: property.pets ? '#0F766E' : '#374151',
-                    border: property.pets ? '2px solid #0F766E' : '1px solid #E5E7EB',
+                    background: property.pets ? 'var(--accent-bg)' : 'var(--surface)',
+                    color: property.pets ? 'var(--accent)' : 'var(--mid)',
+                    border: property.pets ? '2px solid var(--accent)' : '1px solid var(--border)',
                   }}
                 >
                   {property.pets ? 'Yes — has pets' : 'No pets'}
@@ -609,7 +609,7 @@ export default function DiscoveryPage() {
                   value={property.petDetails}
                   onChange={(e) => updateProperty('petDetails', e.target.value)}
                   className="w-full min-h-[44px] px-3 rounded-lg text-sm"
-                  style={{ border: '1px solid #E5E7EB', color: '#1A1A1A' }}
+                  style={{ border: '1px solid var(--border)', color: 'var(--charcoal)' }}
                 />
               )}
             </SectionCard>
@@ -622,7 +622,7 @@ export default function DiscoveryPage() {
                 onChange={(e) => updateProperty('accessNotes', e.target.value)}
                 rows={2}
                 className="w-full min-h-[44px] px-3 py-2 rounded-lg text-sm resize-none"
-                style={{ border: '1px solid #E5E7EB', color: '#1A1A1A' }}
+                style={{ border: '1px solid var(--border)', color: 'var(--charcoal)' }}
               />
             </SectionCard>
 
@@ -630,7 +630,7 @@ export default function DiscoveryPage() {
             <button
               onClick={goNext}
               className="w-full min-h-[52px] rounded-xl text-base font-semibold text-white flex items-center justify-center gap-2 mt-2"
-              style={{ background: '#0F766E' }}
+              style={{ background: 'var(--accent)' }}
             >
               Next — Design Preferences <ArrowRight size={18} />
             </button>
@@ -639,12 +639,12 @@ export default function DiscoveryPage() {
           <>
             {/* Step 2 Header */}
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: '#F0FDFA' }}>
-                <Palette size={16} style={{ color: '#0F766E' }} />
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'var(--accent-bg)' }}>
+                <Palette size={16} style={{ color: 'var(--accent)' }} />
               </div>
               <div>
-                <p className="text-base font-semibold" style={{ color: '#1A1A1A' }}>Design Preferences</p>
-                <p className="text-xs" style={{ color: '#6B7280' }}>What look are you going for?</p>
+                <p className="text-base font-semibold" style={{ color: 'var(--charcoal)' }}>Design Preferences</p>
+                <p className="text-xs" style={{ color: 'var(--muted)' }}>What look are you going for?</p>
               </div>
             </div>
 
@@ -707,7 +707,7 @@ export default function DiscoveryPage() {
                 onChange={(e) => updatePreference('inspirationNotes', e.target.value)}
                 rows={3}
                 className="w-full min-h-[44px] px-3 py-2 rounded-lg text-sm resize-none"
-                style={{ border: '1px solid #E5E7EB', color: '#1A1A1A' }}
+                style={{ border: '1px solid var(--border)', color: 'var(--charcoal)' }}
               />
             </SectionCard>
 
@@ -716,7 +716,7 @@ export default function DiscoveryPage() {
               <button
                 onClick={goBack}
                 className="flex-1 min-h-[52px] rounded-xl text-base font-semibold flex items-center justify-center gap-2"
-                style={{ background: '#FFFFFF', color: '#374151', border: '1px solid #E5E7EB' }}
+                style={{ background: 'var(--surface)', color: 'var(--mid)', border: '1px solid var(--border)' }}
               >
                 <ArrowLeft size={18} /> Back
               </button>
@@ -725,7 +725,7 @@ export default function DiscoveryPage() {
                 disabled={completeMutation.isPending}
                 className="flex-[2] min-h-[52px] rounded-xl text-base font-semibold text-white flex items-center justify-center gap-2"
                 style={{
-                  background: completeMutation.isPending ? '#9CA3AF' : '#0F766E',
+                  background: completeMutation.isPending ? 'var(--muted)' : 'var(--accent)',
                 }}
               >
                 <Check size={18} /> Complete Discovery

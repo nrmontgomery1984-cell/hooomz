@@ -40,11 +40,11 @@ export function SyncStatusIndicator({
 
   // Determine status color
   const getStatusColor = () => {
-    if (!isOnline) return 'bg-slate-400'; // Offline - gray
+    if (!isOnline) return 'bg-[var(--muted)]'; // Offline - gray
     if (failedCount > 0) return 'bg-coral'; // Failed - coral
     if (isSyncing) return 'bg-amber'; // Syncing - amber
     if (pendingCount > 0) return 'bg-amber'; // Pending - amber
-    return 'bg-teal'; // All good - teal
+    return 'bg-[var(--accent)]'; // All good - accent
   };
 
   // Compact badge view (just a dot with count)
@@ -83,7 +83,7 @@ export function SyncStatusIndicator({
               absolute -top-1 -right-1
               min-w-[18px] h-[18px]
               flex items-center justify-center
-              bg-slate-700 text-white
+              bg-[var(--charcoal)] text-white
               text-[10px] font-medium
               rounded-full px-1
             "
@@ -103,7 +103,7 @@ export function SyncStatusIndicator({
       className={`
         flex items-center gap-2 px-3 py-2
         bg-white rounded-lg shadow-sm
-        ${onPress ? 'cursor-pointer hover:bg-slate-50' : 'cursor-default'}
+        ${onPress ? 'cursor-pointer hover:bg-[var(--surface)]' : 'cursor-default'}
         transition-colors duration-200
         ${className}
       `}
@@ -118,7 +118,7 @@ export function SyncStatusIndicator({
       />
 
       {/* Status text */}
-      <span className="text-sm text-slate-600">
+      <span className="text-sm text-[var(--mid)]">
         {!isOnline ? (
           'Offline'
         ) : isSyncing ? (
@@ -157,7 +157,7 @@ function CloudIcon({
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 20 20"
         fill="currentColor"
-        className="w-4 h-4 text-slate-400"
+        className="w-4 h-4 text-[var(--muted)]"
       >
         <path d="M2.22 2.22a.75.75 0 011.06 0l14.5 14.5a.75.75 0 11-1.06 1.06L2.22 3.28a.75.75 0 010-1.06z" />
         <path d="M4.73 7.85A5 5 0 0112.97 6a4 4 0 012.24 7.28l-1.06-1.06a2.5 2.5 0 00-1.22-4.62 5.002 5.002 0 00-6.36-1.61L4.73 7.85zM7.06 10.94L5.68 9.56A3.5 3.5 0 004 12.5C4 14.43 5.57 16 7.5 16h5.379l-1.5-1.5H7.5a2 2 0 01-2-2c0-.88.57-1.63 1.36-1.9l.2-.16z" />
@@ -189,7 +189,7 @@ function CloudIcon({
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 20 20"
       fill="currentColor"
-      className="w-4 h-4 text-teal"
+      className="w-4 h-4 text-[var(--accent)]"
     >
       <path d="M5.5 16a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.25 4.25 0 1113.25 16H5.5z" />
     </svg>

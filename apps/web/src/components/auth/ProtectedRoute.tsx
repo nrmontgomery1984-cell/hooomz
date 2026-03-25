@@ -81,7 +81,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
       if (fallback) {
         // Reverse lookup: find first path for this module
         const entry = Object.entries(PATH_TO_MODULE).find(([, m]) => m === fallback);
-        router.replace(entry ? entry[0] : '/dashboard');
+        router.replace(entry ? entry[0] : '/');
       } else {
         router.replace('/login');
       }
@@ -101,7 +101,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: '#111010',
+          background: 'var(--dark-nav)',
           zIndex: 9999,
         }}
       >

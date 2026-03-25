@@ -201,7 +201,7 @@ function FilterButton({
         className="
           flex items-center gap-2 px-3 py-2 rounded-full text-sm
           whitespace-nowrap min-h-[44px]
-          bg-slate-100 text-slate-400 cursor-not-allowed
+          bg-[var(--surface)] text-[var(--muted)] cursor-not-allowed
         "
       >
         <span className="text-base" role="img" aria-hidden>
@@ -225,8 +225,8 @@ function FilterButton({
           min-h-[44px]
           ${
             isActive
-              ? 'bg-teal text-white shadow-sm'
-              : 'bg-white text-slate-600 border border-slate-200 hover:border-teal/30'
+              ? 'bg-[var(--accent)] text-white shadow-sm'
+              : 'bg-white text-[var(--mid)] border border-[var(--border)] hover:border-[var(--accent-border)]'
           }
         `}
       >
@@ -268,15 +268,15 @@ function FilterButton({
           >
             {/* Handle bar (mobile only) */}
             <div className="flex justify-center pt-3 pb-2 md:hidden">
-              <div className="w-10 h-1 bg-slate-300 rounded-full" />
+              <div className="w-10 h-1 bg-[var(--border)] rounded-full" />
             </div>
 
             {/* Header */}
-            <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
-              <span className="font-medium text-slate-800">{label}</span>
+            <div className="px-4 py-3 border-b border-[var(--border)] flex items-center justify-between">
+              <span className="font-medium text-[var(--charcoal)]">{label}</span>
               <button
                 onClick={() => setIsOpen(false)}
-                className="text-slate-400 hover:text-slate-600 min-w-[44px] min-h-[44px] flex items-center justify-center"
+                className="text-[var(--muted)] hover:text-[var(--mid)] min-w-[44px] min-h-[44px] flex items-center justify-center"
                 aria-label="Close"
               >
                 ✕
@@ -294,19 +294,19 @@ function FilterButton({
                 transition-colors
                 ${
                   value === null
-                    ? 'bg-teal/10 text-teal font-medium'
-                    : 'text-slate-600 hover:bg-slate-50 active:bg-slate-100'
+                    ? 'bg-[var(--accent-bg)] text-[var(--accent)] font-medium'
+                    : 'text-[var(--mid)] hover:bg-[var(--surface)] active:bg-[var(--surface)]'
                 }
               `}
             >
               <span className="w-6 text-center">
-                {value === null && <span className="text-teal">✓</span>}
+                {value === null && <span className="text-[var(--accent)]">✓</span>}
               </span>
               <span>{placeholder}</span>
             </button>
 
             {/* Divider */}
-            <div className="h-px bg-slate-100" />
+            <div className="h-px bg-[var(--border)]" />
 
             {/* Options */}
             {options.map((option) => (
@@ -321,13 +321,13 @@ function FilterButton({
                   transition-colors
                   ${
                     value === option.code
-                      ? 'bg-teal/10 text-teal font-medium'
-                      : 'text-slate-600 hover:bg-slate-50 active:bg-slate-100'
+                      ? 'bg-[var(--accent-bg)] text-[var(--accent)] font-medium'
+                      : 'text-[var(--mid)] hover:bg-[var(--surface)] active:bg-[var(--surface)]'
                   }
                 `}
               >
                 <span className="w-6 text-center">
-                  {value === option.code && <span className="text-teal">✓</span>}
+                  {value === option.code && <span className="text-[var(--accent)]">✓</span>}
                 </span>
                 <span>{option.label}</span>
               </button>
@@ -392,14 +392,14 @@ export function ThreeAxisChips({
           key={chip.key}
           className="
             inline-flex items-center gap-1.5 px-3 py-1.5
-            bg-teal/10 text-teal text-sm rounded-full
+            bg-[var(--accent-bg)] text-[var(--accent)] text-sm rounded-full
           "
         >
           <span role="img" aria-hidden>{chip.icon}</span>
           <span>{chip.label}</span>
           <button
             onClick={() => onClear(chip.key)}
-            className="ml-1 hover:text-teal/70 transition-colors min-w-[24px] min-h-[24px]"
+            className="ml-1 hover:text-[var(--accent)] transition-colors min-w-[24px] min-h-[24px]"
             aria-label={`Clear ${chip.label} filter`}
           >
             ×
@@ -479,17 +479,17 @@ export function ClickableBreadcrumb({
   if (segments.length === 0) return null;
 
   return (
-    <span className="text-xs text-slate-400 flex items-center gap-1 truncate">
+    <span className="text-xs text-[var(--muted)] flex items-center gap-1 truncate">
       {segments.map((segment, index) => (
         <span key={segment.axis} className="flex items-center">
-          {index > 0 && <span className="mx-1 text-slate-300">›</span>}
+          {index > 0 && <span className="mx-1 text-[var(--border)]">›</span>}
           {interactive && onFilterClick ? (
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onFilterClick(segment.axis, segment.code);
               }}
-              className="hover:text-teal hover:underline transition-colors"
+              className="hover:text-[var(--accent)] hover:underline transition-colors"
               aria-label={`Filter by ${segment.label}`}
             >
               {segment.label}

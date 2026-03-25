@@ -11,10 +11,10 @@ import { useActiveCrew } from '@/lib/crew/ActiveCrewContext';
 import { useNotesForBlock, useAddScheduleNote, useDeleteScheduleNote } from '@/lib/hooks/useScheduleNotes';
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
-  scheduled: { label: 'Scheduled', color: '#6B7280' },
-  in_progress: { label: 'In Progress', color: '#3B82F6' },
-  completed: { label: 'Done', color: '#10B981' },
-  skipped: { label: 'Skipped', color: '#9CA3AF' },
+  scheduled: { label: 'Scheduled', color: 'var(--muted)' },
+  in_progress: { label: 'In Progress', color: 'var(--blue)' },
+  completed: { label: 'Done', color: 'var(--green)' },
+  skipped: { label: 'Skipped', color: 'var(--muted)' },
 };
 
 const AUDIENCE_OPTIONS: { value: NoteAudience; label: string; desc: string }[] = [
@@ -95,18 +95,19 @@ export function TaskDetailSheet({ block, crewMembers, crewMap, onClose }: TaskDe
 
       {/* Sheet */}
       <div
-        className="relative bg-white rounded-t-2xl w-full max-w-lg shadow-xl flex flex-col"
-        style={{ maxHeight: '85vh' }}
+        className="relative rounded-t-2xl w-full max-w-lg shadow-xl flex flex-col"
+        style={{ maxHeight: '85vh', background: 'var(--surface)' }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 flex-shrink-0">
+        <div className="flex items-center justify-between px-4 py-3 border-b flex-shrink-0" style={{ borderColor: 'var(--border)' }}>
           <div className="flex-1 min-w-0 pr-2">
-            <h3 className="text-sm font-semibold text-gray-900 truncate">{block.title}</h3>
-            <p className="text-xs text-gray-500">{format(parseISO(block.date), 'EEE, MMM d')}</p>
+            <h3 className="text-sm font-semibold truncate" style={{ color: 'var(--charcoal)' }}>{block.title}</h3>
+            <p className="text-xs" style={{ color: 'var(--muted)' }}>{format(parseISO(block.date), 'EEE, MMM d')}</p>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 w-11 h-11 flex items-center justify-center text-xl flex-shrink-0"
+            className="w-11 h-11 flex items-center justify-center text-xl flex-shrink-0"
+            style={{ color: 'var(--muted)' }}
           >
             ×
           </button>
@@ -115,11 +116,11 @@ export function TaskDetailSheet({ block, crewMembers, crewMap, onClose }: TaskDe
         {/* Scrollable content */}
         <div className="overflow-y-auto flex-1 pb-8">
           {/* Block detail */}
-          <div className="mx-4 mt-3 p-3 bg-gray-50 rounded-lg space-y-2">
+          <div className="mx-4 mt-3 p-3 rounded-lg space-y-2" style={{ background: 'var(--surface)' }}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: status.color }} />
-                <span className="text-xs font-medium text-gray-700">{assignedName}</span>
+                <span className="text-xs font-medium" style={{ color: 'var(--mid)' }}>{assignedName}</span>
               </div>
               <span
                 className="text-[10px] font-medium px-2 py-0.5 rounded-full text-white"
@@ -129,35 +130,35 @@ export function TaskDetailSheet({ block, crewMembers, crewMap, onClose }: TaskDe
               </span>
             </div>
 
-            <div className="flex items-center gap-3 text-xs text-gray-500">
+            <div className="flex items-center gap-3 text-xs" style={{ color: 'var(--muted)' }}>
               {block.startTime && (
                 <span>{block.startTime}{block.endTime ? ` – ${block.endTime}` : ''}</span>
               )}
               {block.estimatedHours > 0 && <span>{block.estimatedHours}h est</span>}
               {block.actualHours > 0 && (
-                <span className="font-medium" style={{ color: '#0F766E' }}>{block.actualHours}h actual</span>
+                <span className="font-medium" style={{ color: 'var(--accent)' }}>{block.actualHours}h actual</span>
               )}
             </div>
 
             {block.sopCode && (
-              <span className="inline-block text-[10px] font-mono text-gray-400">{block.sopCode}</span>
+              <span className="inline-block text-[10px] font-mono" style={{ color: 'var(--muted)' }}>{block.sopCode}</span>
             )}
           </div>
 
           {/* Notes section */}
           <div className="px-4 mt-4">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-semibold text-gray-700 uppercase tracking-wide">
+              <span className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--mid)' }}>
                 Notes
                 {notes.length > 0 && (
-                  <span className="font-normal text-gray-400 ml-1">({notes.length})</span>
+                  <span className="font-normal ml-1" style={{ color: 'var(--muted)' }}>({notes.length})</span>
                 )}
               </span>
               {authorId && (
                 <button
                   onClick={() => setIsComposing(!isComposing)}
                   className="text-xs font-medium text-white px-3 py-1.5 rounded-lg transition-colors"
-                  style={{ backgroundColor: isComposing ? '#6B7280' : '#0F766E', minHeight: '36px' }}
+                  style={{ backgroundColor: isComposing ? 'var(--muted)' : 'var(--accent)', minHeight: '36px' }}
                 >
                   {isComposing ? 'Cancel' : '+ Add Note'}
                 </button>
@@ -166,14 +167,14 @@ export function TaskDetailSheet({ block, crewMembers, crewMap, onClose }: TaskDe
 
             {/* Note composer */}
             {isComposing && (
-              <div className="border border-gray-200 rounded-lg p-3 mb-3 bg-white space-y-3">
+              <div className="border rounded-lg p-3 mb-3 space-y-3" style={{ borderColor: 'var(--border)', background: 'var(--surface)' }}>
                 <textarea
                   value={noteBody}
                   onChange={(e) => setNoteBody(e.target.value)}
                   placeholder='e.g. "Check subfloor for squeaks before starting"'
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="w-full px-3 py-2 border rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
                   rows={3}
-                  style={{ minHeight: '44px' }}
+                  style={{ minHeight: '44px', borderColor: 'var(--border)' }}
                 />
 
                 {/* Audience selector — 2x2 grid */}
@@ -184,15 +185,21 @@ export function TaskDetailSheet({ block, crewMembers, crewMap, onClose }: TaskDe
                       onClick={() => setAudience(opt.value)}
                       className={`px-3 py-2 rounded-lg border text-left transition-colors ${
                         audience === opt.value
-                          ? 'border-teal-500 bg-teal-50'
-                          : 'border-gray-200 bg-white hover:bg-gray-50'
+                          ? 'border-[var(--accent)] bg-[var(--accent-bg)]'
+                          : ''
                       }`}
-                      style={{ minHeight: '44px' }}
+                      style={{
+                        minHeight: '44px',
+                        ...(audience !== opt.value ? { borderColor: 'var(--border)', background: 'var(--surface)' } : {}),
+                      }}
                     >
-                      <span className={`text-xs font-medium block ${audience === opt.value ? 'text-teal-700' : 'text-gray-700'}`}>
+                      <span
+                        className={`text-xs font-medium block ${audience === opt.value ? 'text-[var(--accent)]' : ''}`}
+                        style={audience !== opt.value ? { color: 'var(--mid)' } : undefined}
+                      >
                         {opt.label}
                       </span>
-                      <span className="text-[10px] text-gray-400">{opt.desc}</span>
+                      <span className="text-[10px]" style={{ color: 'var(--muted)' }}>{opt.desc}</span>
                     </button>
                   ))}
                 </div>
@@ -202,8 +209,8 @@ export function TaskDetailSheet({ block, crewMembers, crewMap, onClose }: TaskDe
                   <select
                     value={targetCrewId}
                     onChange={(e) => setTargetCrewId(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
-                    style={{ minHeight: '44px' }}
+                    className="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+                    style={{ minHeight: '44px', borderColor: 'var(--border)', background: 'var(--surface)' }}
                   >
                     <option value="">Select person...</option>
                     {crewMembers.map((m) => (
@@ -216,7 +223,7 @@ export function TaskDetailSheet({ block, crewMembers, crewMap, onClose }: TaskDe
                   onClick={handleSubmitNote}
                   disabled={!canSubmit}
                   className="w-full py-2.5 text-sm font-medium text-white rounded-lg disabled:opacity-40 transition-colors"
-                  style={{ backgroundColor: '#0F766E', minHeight: '44px' }}
+                  style={{ backgroundColor: 'var(--accent)', minHeight: '44px' }}
                 >
                   {addNote.isPending ? 'Saving...' : 'Save Note'}
                 </button>
@@ -225,9 +232,9 @@ export function TaskDetailSheet({ block, crewMembers, crewMap, onClose }: TaskDe
 
             {/* Notes list */}
             {notesLoading ? (
-              <div className="text-center py-6 text-xs text-gray-400">Loading notes...</div>
+              <div className="text-center py-6 text-xs" style={{ color: 'var(--muted)' }}>Loading notes...</div>
             ) : notes.length === 0 && !isComposing ? (
-              <div className="text-center py-6 text-xs text-gray-400 border border-dashed border-gray-200 rounded-lg">
+              <div className="text-center py-6 text-xs border border-dashed rounded-lg" style={{ color: 'var(--muted)', borderColor: 'var(--border)' }}>
                 No notes yet
               </div>
             ) : (
@@ -262,16 +269,16 @@ function NoteCard({ note, canDelete, onDelete }: { note: ScheduleNote; canDelete
   };
 
   return (
-    <div className="border border-gray-100 rounded-lg p-3 bg-white">
+    <div className="border rounded-lg p-3" style={{ borderColor: 'var(--border)', background: 'var(--surface)' }}>
       <div className="flex items-center justify-between mb-1">
-        <span className="text-xs font-semibold text-gray-800">{note.authorName}</span>
-        <span className="text-[10px] text-gray-400">
+        <span className="text-xs font-semibold" style={{ color: 'var(--charcoal)' }}>{note.authorName}</span>
+        <span className="text-[10px]" style={{ color: 'var(--muted)' }}>
           {format(parseISO(note.createdAt), 'MMM d, h:mmaaa')}
         </span>
       </div>
-      <p className="text-sm text-gray-700 leading-snug whitespace-pre-wrap">{note.body}</p>
+      <p className="text-sm leading-snug whitespace-pre-wrap" style={{ color: 'var(--mid)' }}>{note.body}</p>
       <div className="flex items-center justify-between mt-2">
-        <span className="text-[10px] text-gray-400 bg-gray-50 px-2 py-0.5 rounded-full border border-gray-200">
+        <span className="text-[10px] px-2 py-0.5 rounded-full border" style={{ color: 'var(--muted)', background: 'var(--surface)', borderColor: 'var(--border)' }}>
           {note.audience === 'person' ? `To: ${audienceLabel[note.audience]}` : audienceLabel[note.audience]}
         </span>
         {canDelete && (

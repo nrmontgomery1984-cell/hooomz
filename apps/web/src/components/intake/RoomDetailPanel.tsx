@@ -44,9 +44,9 @@ import { TRADE_CODES } from '@/lib/types/intake.types';
 // =============================================================================
 
 const PRIORITIES = [
-  { value: 'high' as const, label: 'High', color: '#EF4444' },
-  { value: 'medium' as const, label: 'Med', color: '#F59E0B' },
-  { value: 'low' as const, label: 'Low', color: '#9CA3AF' },
+  { value: 'high' as const, label: 'High', color: 'var(--red)' },
+  { value: 'medium' as const, label: 'Med', color: 'var(--yellow)' },
+  { value: 'low' as const, label: 'Low', color: 'var(--muted)' },
 ];
 
 const TRADE_LIST = [
@@ -61,7 +61,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
     <p
       className="text-[11px] font-semibold uppercase tracking-wider mb-2"
-      style={{ color: '#9CA3AF' }}
+      style={{ color: 'var(--muted)' }}
     >
       {children}
     </p>
@@ -87,7 +87,7 @@ function NumberField({
 }) {
   return (
     <div>
-      <label className="block text-xs font-medium mb-1" style={{ color: '#374151' }}>
+      <label className="block text-xs font-medium mb-1" style={{ color: 'var(--mid)' }}>
         {label}
       </label>
       <div className="relative">
@@ -105,7 +105,7 @@ function NumberField({
         {unit && (
           <span
             className="absolute right-3 top-1/2 -translate-y-1/2 text-xs pointer-events-none"
-            style={{ color: '#9CA3AF' }}
+            style={{ color: 'var(--muted)' }}
           >
             {unit}
           </span>
@@ -134,9 +134,9 @@ function TogglePill({
       onClick={onClick}
       className="px-3 min-h-[36px] rounded-lg text-xs font-medium transition-colors"
       style={{
-        background: selected ? '#F0FDFA' : '#F3F4F6',
-        color: selected ? '#0F766E' : '#6B7280',
-        border: selected ? '1.5px solid #0F766E' : '1.5px solid transparent',
+        background: selected ? 'var(--green-bg)' : 'var(--surface-2)',
+        color: selected ? 'var(--accent)' : 'var(--muted)',
+        border: selected ? '1.5px solid var(--accent)' : '1.5px solid transparent',
       }}
     >
       {label}
@@ -201,8 +201,8 @@ function ButtonGroup<T extends string>({
           onClick={() => onChange(opt.value)}
           className="flex-1 min-h-[40px] rounded-lg text-xs font-medium transition-colors"
           style={{
-            background: value === opt.value ? '#0F766E' : '#F3F4F6',
-            color: value === opt.value ? '#FFFFFF' : '#6B7280',
+            background: value === opt.value ? 'var(--accent)' : 'var(--surface-2)',
+            color: value === opt.value ? '#fff' : 'var(--muted)',
           }}
         >
           {opt.label}
@@ -226,7 +226,7 @@ function FlooringForm({
   return (
     <div className="space-y-3">
       <div>
-        <label className="block text-xs font-medium mb-1" style={{ color: '#374151' }}>Type</label>
+        <label className="block text-xs font-medium mb-1" style={{ color: 'var(--mid)' }}>Type</label>
         <select
           value={scope.type}
           onChange={(e) => onChange({ ...scope, type: e.target.value as FlooringScope['type'] })}
@@ -242,7 +242,7 @@ function FlooringForm({
         </select>
       </div>
       <div>
-        <label className="block text-xs font-medium mb-1" style={{ color: '#374151' }}>Condition</label>
+        <label className="block text-xs font-medium mb-1" style={{ color: 'var(--mid)' }}>Condition</label>
         <ButtonGroup
           options={[
             { value: 'new_subfloor' as const, label: 'New Subfloor' },
@@ -254,7 +254,7 @@ function FlooringForm({
         />
       </div>
       <div>
-        <label className="block text-xs font-medium mb-1" style={{ color: '#374151' }}>Scope</label>
+        <label className="block text-xs font-medium mb-1" style={{ color: 'var(--mid)' }}>Scope</label>
         <ButtonGroup
           options={[
             { value: 'full_room' as const, label: 'Full Room' },
@@ -285,7 +285,7 @@ function PaintForm({
   return (
     <div className="space-y-3">
       <div>
-        <label className="block text-xs font-medium mb-1" style={{ color: '#374151' }}>Surfaces</label>
+        <label className="block text-xs font-medium mb-1" style={{ color: 'var(--mid)' }}>Surfaces</label>
         <CheckboxRow
           options={[
             { value: 'walls' as const, label: 'Walls' },
@@ -297,7 +297,7 @@ function PaintForm({
         />
       </div>
       <div>
-        <label className="block text-xs font-medium mb-1" style={{ color: '#374151' }}>Prep Level</label>
+        <label className="block text-xs font-medium mb-1" style={{ color: 'var(--mid)' }}>Prep Level</label>
         <ButtonGroup
           options={[
             { value: 'minimal' as const, label: 'Minimal' },
@@ -309,7 +309,7 @@ function PaintForm({
         />
       </div>
       <div>
-        <label className="block text-xs font-medium mb-1" style={{ color: '#374151' }}>Coats</label>
+        <label className="block text-xs font-medium mb-1" style={{ color: 'var(--mid)' }}>Coats</label>
         <ButtonGroup
           options={[
             { value: 1 as unknown as string, label: '1' },
@@ -334,7 +334,7 @@ function TrimForm({
   return (
     <div className="space-y-3">
       <div>
-        <label className="block text-xs font-medium mb-1" style={{ color: '#374151' }}>Items</label>
+        <label className="block text-xs font-medium mb-1" style={{ color: 'var(--mid)' }}>Items</label>
         <CheckboxRow
           options={[
             { value: 'baseboard' as const, label: 'Baseboard' },
@@ -348,7 +348,7 @@ function TrimForm({
         />
       </div>
       <div>
-        <label className="block text-xs font-medium mb-1" style={{ color: '#374151' }}>Action</label>
+        <label className="block text-xs font-medium mb-1" style={{ color: 'var(--mid)' }}>Action</label>
         <ButtonGroup
           options={[
             { value: 'replace' as const, label: 'Replace' },
@@ -380,7 +380,7 @@ function TileForm({
   return (
     <div className="space-y-3">
       <div>
-        <label className="block text-xs font-medium mb-1" style={{ color: '#374151' }}>Surfaces</label>
+        <label className="block text-xs font-medium mb-1" style={{ color: 'var(--mid)' }}>Surfaces</label>
         <CheckboxRow
           options={[
             { value: 'floor' as const, label: 'Floor' },
@@ -412,7 +412,7 @@ function DrywallForm({
   return (
     <div className="space-y-3">
       <div>
-        <label className="block text-xs font-medium mb-1" style={{ color: '#374151' }}>Extent</label>
+        <label className="block text-xs font-medium mb-1" style={{ color: 'var(--mid)' }}>Extent</label>
         <ButtonGroup
           options={[
             { value: 'patch' as const, label: 'Patch' },
@@ -451,7 +451,7 @@ function TextField({
 }) {
   return (
     <div>
-      <label className="block text-xs font-medium mb-1" style={{ color: '#374151' }}>
+      <label className="block text-xs font-medium mb-1" style={{ color: 'var(--mid)' }}>
         {label}
       </label>
       <input
@@ -479,7 +479,7 @@ function SelectField<T extends string>({
 }) {
   return (
     <div>
-      <label className="block text-xs font-medium mb-1" style={{ color: '#374151' }}>
+      <label className="block text-xs font-medium mb-1" style={{ color: 'var(--mid)' }}>
         {label}
       </label>
       <select
@@ -507,8 +507,8 @@ function FlooringMaterialForm({
   const upd = (partial: Partial<FlooringMaterial>) => onChange({ ...m, ...partial });
 
   return (
-    <div className="space-y-2 mt-2 pt-2" style={{ borderTop: '1px dashed #E5E7EB' }}>
-      <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: '#0F766E' }}>
+    <div className="space-y-2 mt-2 pt-2" style={{ borderTop: '1px dashed var(--border)' }}>
+      <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--accent)' }}>
         Material Selection
       </p>
       <div className="grid grid-cols-2 gap-2">
@@ -526,7 +526,7 @@ function FlooringMaterialForm({
           ]}
         />
         <div>
-          <label className="block text-xs font-medium mb-1" style={{ color: '#374151' }}>Grade</label>
+          <label className="block text-xs font-medium mb-1" style={{ color: 'var(--mid)' }}>Grade</label>
           <ButtonGroup
             options={[
               { value: 'good' as QualityTier, label: 'Good' },
@@ -562,8 +562,8 @@ function PaintMaterialForm({
     onChange({ ...m, colors: { ...m.colors, [key]: v } });
 
   return (
-    <div className="space-y-2 mt-2 pt-2" style={{ borderTop: '1px dashed #E5E7EB' }}>
-      <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: '#0F766E' }}>
+    <div className="space-y-2 mt-2 pt-2" style={{ borderTop: '1px dashed var(--border)' }}>
+      <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--accent)' }}>
         Material Selection
       </p>
       <div className="grid grid-cols-2 gap-2">
@@ -583,7 +583,7 @@ function PaintMaterialForm({
           { value: 'gloss', label: 'Gloss' },
         ]}
       />
-      <p className="text-[10px] font-medium" style={{ color: '#6B7280' }}>Colors</p>
+      <p className="text-[10px] font-medium" style={{ color: 'var(--muted)' }}>Colors</p>
       <div className="grid grid-cols-2 gap-2">
         <TextField label="Walls" value={m.colors.walls} onChange={(v) => updColor('walls', v)} placeholder="SW 7015 Repose Gray" />
         <TextField label="Ceiling" value={m.colors.ceiling} onChange={(v) => updColor('ceiling', v)} placeholder="White" />
@@ -606,8 +606,8 @@ function TrimMaterialForm({
   const upd = (partial: Partial<TrimMaterial>) => onChange({ ...m, ...partial });
 
   return (
-    <div className="space-y-2 mt-2 pt-2" style={{ borderTop: '1px dashed #E5E7EB' }}>
-      <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: '#0F766E' }}>
+    <div className="space-y-2 mt-2 pt-2" style={{ borderTop: '1px dashed var(--border)' }}>
+      <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--accent)' }}>
         Material Selection
       </p>
       <div className="grid grid-cols-2 gap-2">
@@ -640,7 +640,7 @@ function TrimMaterialForm({
       <div className="grid grid-cols-2 gap-2">
         <TextField label="Width" value={m.width} onChange={(v) => upd({ width: v })} placeholder='3-1/4"' />
         <div>
-          <label className="block text-xs font-medium mb-1" style={{ color: '#374151' }}>Finish</label>
+          <label className="block text-xs font-medium mb-1" style={{ color: 'var(--mid)' }}>Finish</label>
           <ButtonGroup
             options={[
               { value: 'paint_grade', label: 'Paint' },
@@ -668,8 +668,8 @@ function TileMaterialForm({
   const upd = (partial: Partial<TileMaterial>) => onChange({ ...m, ...partial });
 
   return (
-    <div className="space-y-2 mt-2 pt-2" style={{ borderTop: '1px dashed #E5E7EB' }}>
-      <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: '#0F766E' }}>
+    <div className="space-y-2 mt-2 pt-2" style={{ borderTop: '1px dashed var(--border)' }}>
+      <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--accent)' }}>
         Material Selection
       </p>
       <div className="grid grid-cols-2 gap-2">
@@ -775,16 +775,16 @@ function FlooringComparisonSection({
   };
 
   return (
-    <div className="mt-3 pt-3" style={{ borderTop: '1px dashed #E5E7EB' }}>
+    <div className="mt-3 pt-3" style={{ borderTop: '1px dashed var(--border)' }}>
       <button
         type="button"
         onClick={() => setExpanded(!expanded)}
         className="flex items-center justify-between w-full mb-2"
       >
-        <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: '#3B82F6' }}>
+        <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--blue)' }}>
           Compare Options ({options.length})
         </span>
-        <span className="text-[10px] font-medium" style={{ color: '#9CA3AF' }}>
+        <span className="text-[10px] font-medium" style={{ color: 'var(--muted)' }}>
           {expanded ? '▾' : '▸'}
         </span>
       </button>
@@ -796,17 +796,17 @@ function FlooringComparisonSection({
             <div
               key={opt.id}
               className="rounded-lg p-2.5"
-              style={{ background: '#FFFFFF', border: '1px solid #E5E7EB' }}
+              style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] font-bold" style={{ color: '#374151' }}>
+                <span className="text-[10px] font-bold" style={{ color: 'var(--mid)' }}>
                   Option {idx + 1}
                 </span>
                 <button
                   type="button"
                   onClick={() => removeOption(opt.id)}
                   className="text-[10px] font-medium"
-                  style={{ color: '#EF4444', background: 'none', border: 'none', cursor: 'pointer' }}
+                  style={{ color: 'var(--red)', background: 'none', border: 'none', cursor: 'pointer' }}
                 >
                   Remove
                 </button>
@@ -815,7 +815,7 @@ function FlooringComparisonSection({
               {/* Type + Grade */}
               <div className="grid grid-cols-2 gap-2 mb-2">
                 <div>
-                  <label className="block text-[10px] font-medium mb-0.5" style={{ color: '#6B7280' }}>Type</label>
+                  <label className="block text-[10px] font-medium mb-0.5" style={{ color: 'var(--muted)' }}>Type</label>
                   <select
                     value={opt.category}
                     onChange={(e) => updateOption(opt.id, { category: e.target.value as FlooringMaterial['category'] })}
@@ -828,7 +828,7 @@ function FlooringComparisonSection({
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-medium mb-0.5" style={{ color: '#6B7280' }}>Grade</label>
+                  <label className="block text-[10px] font-medium mb-0.5" style={{ color: 'var(--muted)' }}>Grade</label>
                   <div className="flex gap-1">
                     {(['good', 'better', 'best'] as QualityTier[]).map((g) => (
                       <button
@@ -837,8 +837,8 @@ function FlooringComparisonSection({
                         onClick={() => updateOption(opt.id, { grade: g })}
                         className="flex-1 min-h-[36px] rounded-lg text-[10px] font-medium"
                         style={{
-                          background: opt.grade === g ? '#0F766E' : '#F3F4F6',
-                          color: opt.grade === g ? '#FFFFFF' : '#6B7280',
+                          background: opt.grade === g ? 'var(--accent)' : 'var(--surface-2)',
+                          color: opt.grade === g ? '#fff' : 'var(--muted)',
                         }}
                       >
                         {g.charAt(0).toUpperCase() + g.slice(1)}
@@ -851,7 +851,7 @@ function FlooringComparisonSection({
               {/* Price + Product */}
               <div className="grid grid-cols-2 gap-2 mb-2">
                 <div>
-                  <label className="block text-[10px] font-medium mb-0.5" style={{ color: '#6B7280' }}>$/sqft</label>
+                  <label className="block text-[10px] font-medium mb-0.5" style={{ color: 'var(--muted)' }}>$/sqft</label>
                   <input
                     type="number"
                     inputMode="decimal"
@@ -864,7 +864,7 @@ function FlooringComparisonSection({
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-medium mb-0.5" style={{ color: '#6B7280' }}>Product</label>
+                  <label className="block text-[10px] font-medium mb-0.5" style={{ color: 'var(--muted)' }}>Product</label>
                   <input
                     type="text"
                     value={opt.productName ?? ''}
@@ -878,14 +878,14 @@ function FlooringComparisonSection({
 
               {/* Total + Select */}
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold" style={{ color: '#374151', fontFamily: 'var(--font-mono, monospace)' }}>
+                <span className="text-xs font-bold" style={{ color: 'var(--mid)', fontFamily: 'var(--font-mono, monospace)' }}>
                   Total: ${(opt.pricePerSqft * roomSqft).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </span>
                 <button
                   type="button"
                   onClick={() => onSelectOption(opt)}
                   className="px-3 min-h-[32px] rounded-lg text-[10px] font-semibold"
-                  style={{ background: '#F0FDFA', color: '#0F766E', border: '1px solid #0F766E' }}
+                  style={{ background: 'var(--green-bg)', color: 'var(--accent)', border: '1px solid var(--accent)' }}
                 >
                   Use This
                 </button>
@@ -895,14 +895,14 @@ function FlooringComparisonSection({
 
           {/* Comparison table (when 2+ options) */}
           {options.length >= 2 && (
-            <div className="rounded-lg overflow-hidden" style={{ border: '1px solid #E5E7EB' }}>
+            <div className="rounded-lg overflow-hidden" style={{ border: '1px solid var(--border)' }}>
               <table style={{ width: '100%', fontSize: 10, borderCollapse: 'collapse' }}>
                 <thead>
-                  <tr style={{ background: '#F9FAFB' }}>
-                    <th style={{ padding: '6px 8px', textAlign: 'left', fontWeight: 600, color: '#6B7280' }}>Type</th>
-                    <th style={{ padding: '6px 8px', textAlign: 'center', fontWeight: 600, color: '#6B7280' }}>Grade</th>
-                    <th style={{ padding: '6px 8px', textAlign: 'right', fontWeight: 600, color: '#6B7280' }}>$/sqft</th>
-                    <th style={{ padding: '6px 8px', textAlign: 'right', fontWeight: 600, color: '#6B7280' }}>Total ({roomSqft} sqft)</th>
+                  <tr style={{ background: 'var(--surface)' }}>
+                    <th style={{ padding: '6px 8px', textAlign: 'left', fontWeight: 600, color: 'var(--muted)' }}>Type</th>
+                    <th style={{ padding: '6px 8px', textAlign: 'center', fontWeight: 600, color: 'var(--muted)' }}>Grade</th>
+                    <th style={{ padding: '6px 8px', textAlign: 'right', fontWeight: 600, color: 'var(--muted)' }}>$/sqft</th>
+                    <th style={{ padding: '6px 8px', textAlign: 'right', fontWeight: 600, color: 'var(--muted)' }}>Total ({roomSqft} sqft)</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -912,18 +912,18 @@ function FlooringComparisonSection({
                     .map((opt) => {
                       const total = opt.pricePerSqft * roomSqft;
                       return (
-                        <tr key={opt.id} style={{ borderTop: '1px solid #E5E7EB' }}>
-                          <td style={{ padding: '6px 8px', color: '#374151' }}>
+                        <tr key={opt.id} style={{ borderTop: '1px solid var(--border)' }}>
+                          <td style={{ padding: '6px 8px', color: 'var(--mid)' }}>
                             {FLOORING_CATEGORY_LABELS[opt.category]}
-                            {opt.productName && <span style={{ color: '#9CA3AF' }}> — {opt.productName}</span>}
+                            {opt.productName && <span style={{ color: 'var(--muted)' }}> — {opt.productName}</span>}
                           </td>
-                          <td style={{ padding: '6px 8px', textAlign: 'center', color: '#374151', textTransform: 'capitalize' }}>
+                          <td style={{ padding: '6px 8px', textAlign: 'center', color: 'var(--mid)', textTransform: 'capitalize' }}>
                             {opt.grade}
                           </td>
-                          <td style={{ padding: '6px 8px', textAlign: 'right', fontFamily: 'var(--font-mono, monospace)', color: '#374151' }}>
+                          <td style={{ padding: '6px 8px', textAlign: 'right', fontFamily: 'var(--font-mono, monospace)', color: 'var(--mid)' }}>
                             ${opt.pricePerSqft.toFixed(2)}
                           </td>
-                          <td style={{ padding: '6px 8px', textAlign: 'right', fontWeight: 700, fontFamily: 'var(--font-mono, monospace)', color: '#374151' }}>
+                          <td style={{ padding: '6px 8px', textAlign: 'right', fontWeight: 700, fontFamily: 'var(--font-mono, monospace)', color: 'var(--mid)' }}>
                             ${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                           </td>
                         </tr>
@@ -940,7 +940,7 @@ function FlooringComparisonSection({
               type="button"
               onClick={addOption}
               className="w-full min-h-[36px] rounded-lg text-xs font-medium"
-              style={{ background: '#EFF6FF', color: '#3B82F6', border: '1px dashed #93C5FD' }}
+              style={{ background: 'var(--blue-bg)', color: 'var(--blue)', border: '1px dashed var(--blue-border)' }}
             >
               + Add Option to Compare
             </button>
@@ -1064,7 +1064,7 @@ function PhotoSection({
             type="button"
             onClick={() => { setViewingPhoto(photo); setEditCaption(photo.caption ?? ''); }}
             className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0"
-            style={{ border: '1px solid #E5E7EB' }}
+            style={{ border: '1px solid var(--border)' }}
           >
             <img src={photo.dataUrl} alt={photo.caption || 'Room photo'} className="w-full h-full object-cover" />
             {photo.trade && (
@@ -1083,7 +1083,7 @@ function PhotoSection({
           type="button"
           onClick={() => fileRef.current?.click()}
           className="w-16 h-16 rounded-lg flex flex-col items-center justify-center flex-shrink-0"
-          style={{ border: '2px dashed #D1D5DB', color: '#9CA3AF' }}
+          style={{ border: '2px dashed var(--border)', color: 'var(--muted)' }}
         >
           <Camera size={18} />
           <span className="text-[9px] mt-0.5">Add</span>
@@ -1102,7 +1102,7 @@ function PhotoSection({
 
       {/* Tag & caption sheet for new photo */}
       {pendingDataUrl && (
-        <div className="mt-3 rounded-xl p-3" style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
+        <div className="mt-3 rounded-xl p-3" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
           <div className="flex gap-3">
             <img
               src={pendingDataUrl}
@@ -1110,7 +1110,7 @@ function PhotoSection({
               className="w-20 h-20 rounded-lg object-cover flex-shrink-0"
             />
             <div className="flex-1 space-y-2">
-              <p className="text-xs font-medium" style={{ color: '#374151' }}>Tag this photo</p>
+              <p className="text-xs font-medium" style={{ color: 'var(--mid)' }}>Tag this photo</p>
               <div className="flex flex-wrap gap-1">
                 {tradeTagOptions.map((opt) => (
                   <button
@@ -1119,9 +1119,9 @@ function PhotoSection({
                     onClick={() => setPendingTag(opt.value)}
                     className="px-2 py-1 rounded text-[10px] font-medium"
                     style={{
-                      background: pendingTag === opt.value ? '#F0FDFA' : '#F3F4F6',
-                      color: pendingTag === opt.value ? '#0F766E' : '#6B7280',
-                      border: pendingTag === opt.value ? '1px solid #0F766E' : '1px solid transparent',
+                      background: pendingTag === opt.value ? 'var(--green-bg)' : 'var(--surface-2)',
+                      color: pendingTag === opt.value ? 'var(--accent)' : 'var(--muted)',
+                      border: pendingTag === opt.value ? '1px solid var(--accent)' : '1px solid transparent',
                     }}
                   >
                     {opt.label}
@@ -1143,7 +1143,7 @@ function PhotoSection({
               type="button"
               onClick={() => setPendingDataUrl(null)}
               className="flex-1 min-h-[40px] rounded-lg text-xs font-medium"
-              style={{ background: '#F3F4F6', color: '#6B7280' }}
+              style={{ background: 'var(--surface-2)', color: 'var(--muted)' }}
             >
               Cancel
             </button>
@@ -1151,7 +1151,7 @@ function PhotoSection({
               type="button"
               onClick={savePendingPhoto}
               className="flex-1 min-h-[40px] rounded-lg text-xs font-medium"
-              style={{ background: '#0F766E', color: '#FFFFFF' }}
+              style={{ background: 'var(--accent)', color: '#fff' }}
             >
               Save Photo
             </button>
@@ -1161,13 +1161,13 @@ function PhotoSection({
 
       {/* Full-size viewer / edit / delete */}
       {viewingPhoto && (
-        <div className="mt-3 rounded-xl p-3" style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
+        <div className="mt-3 rounded-xl p-3" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
           <div className="flex items-start justify-between mb-2">
-            <p className="text-xs font-medium" style={{ color: '#374151' }}>
+            <p className="text-xs font-medium" style={{ color: 'var(--mid)' }}>
               {viewingPhoto.trade ?? 'General'} — {new Date(viewingPhoto.timestamp).toLocaleDateString()}
             </p>
             <button type="button" onClick={() => setViewingPhoto(null)}>
-              <X size={16} style={{ color: '#9CA3AF' }} />
+              <X size={16} style={{ color: 'var(--muted)' }} />
             </button>
           </div>
           <img
@@ -1188,7 +1188,7 @@ function PhotoSection({
               type="button"
               onClick={() => deletePhoto(viewingPhoto.id)}
               className="min-h-[40px] px-4 rounded-lg text-xs font-medium"
-              style={{ background: '#FEF2F2', color: '#EF4444' }}
+              style={{ background: 'var(--red-bg)', color: 'var(--red)' }}
             >
               Delete
             </button>
@@ -1196,7 +1196,7 @@ function PhotoSection({
               type="button"
               onClick={updatePhotoCaption}
               className="flex-1 min-h-[40px] rounded-lg text-xs font-medium"
-              style={{ background: '#0F766E', color: '#FFFFFF' }}
+              style={{ background: 'var(--accent)', color: '#fff' }}
             >
               Save Caption
             </button>
@@ -1316,8 +1316,8 @@ export function RoomDetailPanel({
                 onClick={() => update({ priority: p.value })}
                 className="flex-1 min-h-[40px] rounded-lg text-xs font-medium transition-colors flex items-center justify-center gap-1.5"
                 style={{
-                  background: room.priority === p.value ? `${p.color}15` : '#F3F4F6',
-                  color: room.priority === p.value ? p.color : '#6B7280',
+                  background: room.priority === p.value ? `${p.color}15` : 'var(--surface-2)',
+                  color: room.priority === p.value ? p.color : 'var(--muted)',
                   border: room.priority === p.value ? `1.5px solid ${p.color}` : '1.5px solid transparent',
                 }}
               >
@@ -1391,9 +1391,9 @@ export function RoomDetailPanel({
                   onClick={() => toggleTrade(t.key)}
                   className="px-3 min-h-[40px] rounded-lg text-xs font-medium transition-colors"
                   style={{
-                    background: isEnabled ? '#F0FDFA' : '#F3F4F6',
-                    color: isEnabled ? '#0F766E' : '#6B7280',
-                    border: isEnabled ? '1.5px solid #0F766E' : '1.5px solid transparent',
+                    background: isEnabled ? 'var(--green-bg)' : 'var(--surface-2)',
+                    color: isEnabled ? 'var(--accent)' : 'var(--muted)',
+                    border: isEnabled ? '1.5px solid var(--accent)' : '1.5px solid transparent',
                   }}
                 >
                   {tradeName}
@@ -1407,7 +1407,7 @@ export function RoomDetailPanel({
         {room.trades.flooring?.enabled && (
           <div>
             <SectionLabel>Flooring Details</SectionLabel>
-            <div className="rounded-xl p-3" style={{ background: '#F9FAFB' }}>
+            <div className="rounded-xl p-3" style={{ background: 'var(--surface)' }}>
               <FlooringForm
                 scope={room.trades.flooring}
                 onChange={(s) => onChange({ ...room, trades: { ...room.trades, flooring: s } })}
@@ -1443,7 +1443,7 @@ export function RoomDetailPanel({
         {room.trades.paint?.enabled && (
           <div>
             <SectionLabel>Paint Details</SectionLabel>
-            <div className="rounded-xl p-3" style={{ background: '#F9FAFB' }}>
+            <div className="rounded-xl p-3" style={{ background: 'var(--surface)' }}>
               <PaintForm
                 scope={room.trades.paint}
                 onChange={(s) => onChange({ ...room, trades: { ...room.trades, paint: s } })}
@@ -1459,7 +1459,7 @@ export function RoomDetailPanel({
         {room.trades.trim?.enabled && (
           <div>
             <SectionLabel>Trim Details</SectionLabel>
-            <div className="rounded-xl p-3" style={{ background: '#F9FAFB' }}>
+            <div className="rounded-xl p-3" style={{ background: 'var(--surface)' }}>
               <TrimForm
                 scope={room.trades.trim}
                 onChange={(s) => onChange({ ...room, trades: { ...room.trades, trim: s } })}
@@ -1475,7 +1475,7 @@ export function RoomDetailPanel({
         {room.trades.tile?.enabled && (
           <div>
             <SectionLabel>Tile Details</SectionLabel>
-            <div className="rounded-xl p-3" style={{ background: '#F9FAFB' }}>
+            <div className="rounded-xl p-3" style={{ background: 'var(--surface)' }}>
               <TileForm
                 scope={room.trades.tile}
                 onChange={(s) => onChange({ ...room, trades: { ...room.trades, tile: s } })}
@@ -1491,7 +1491,7 @@ export function RoomDetailPanel({
         {room.trades.drywall?.enabled && (
           <div>
             <SectionLabel>Drywall Details</SectionLabel>
-            <div className="rounded-xl p-3" style={{ background: '#F9FAFB' }}>
+            <div className="rounded-xl p-3" style={{ background: 'var(--surface)' }}>
               <DrywallForm
                 scope={room.trades.drywall}
                 onChange={(s) => onChange({ ...room, trades: { ...room.trades, drywall: s } })}
@@ -1528,7 +1528,7 @@ export function RoomDetailPanel({
           type="button"
           onClick={onDelete}
           className="flex items-center justify-center gap-2 w-full min-h-[44px] rounded-xl text-sm font-medium"
-          style={{ color: '#EF4444', background: '#FEF2F2' }}
+          style={{ color: 'var(--red)', background: 'var(--red-bg)' }}
         >
           <Trash2 size={14} />
           Remove Room

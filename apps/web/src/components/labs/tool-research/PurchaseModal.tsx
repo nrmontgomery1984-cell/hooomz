@@ -4,8 +4,8 @@ import { useState } from 'react';
 import type { ToolResearchItem } from '@hooomz/shared-contracts';
 import { Modal } from '@/components/ui/Modal';
 
-const TEAL = '#2A9D8F';
-const NAVY = '#1B2A4A';
+const TEAL = 'var(--accent)';
+const NAVY = 'var(--charcoal)';
 
 interface PurchaseModalProps {
   isOpen: boolean;
@@ -33,20 +33,20 @@ export function PurchaseModal({ isOpen, onClose, item, onConfirm, isPending }: P
           <div
             style={{
               padding: 12,
-              background: '#F0FDFA',
+              background: 'var(--accent-bg)',
               borderRadius: 8,
               borderLeft: `3px solid ${TEAL}`,
               marginBottom: 16,
             }}
           >
             <div style={{ fontWeight: 700, fontSize: 14, color: NAVY }}>{item.item}</div>
-            <div style={{ fontSize: 12, color: '#666', marginTop: 2 }}>
+            <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>
               {item.category} {item.priority ? `\u2022 ${item.priority}` : ''}
             </div>
           </div>
 
           <label style={{ display: 'block', marginBottom: 12 }}>
-            <span style={{ fontSize: 12, fontWeight: 600, color: '#555', display: 'block', marginBottom: 4 }}>
+            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--muted)', display: 'block', marginBottom: 4 }}>
               Purchase Date
             </span>
             <input
@@ -56,7 +56,7 @@ export function PurchaseModal({ isOpen, onClose, item, onConfirm, isPending }: P
               style={{
                 width: '100%',
                 padding: '8px 12px',
-                border: '1px solid #D1D5DB',
+                border: '1px solid var(--border)',
                 borderRadius: 6,
                 fontSize: 13,
                 minHeight: 44,
@@ -65,7 +65,7 @@ export function PurchaseModal({ isOpen, onClose, item, onConfirm, isPending }: P
           </label>
 
           <label style={{ display: 'block', marginBottom: 12 }}>
-            <span style={{ fontSize: 12, fontWeight: 600, color: '#555', display: 'block', marginBottom: 4 }}>
+            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--muted)', display: 'block', marginBottom: 4 }}>
               Price Paid (CAD)
             </span>
             <input
@@ -77,7 +77,7 @@ export function PurchaseModal({ isOpen, onClose, item, onConfirm, isPending }: P
               style={{
                 width: '100%',
                 padding: '8px 12px',
-                border: '1px solid #D1D5DB',
+                border: '1px solid var(--border)',
                 borderRadius: 6,
                 fontSize: 13,
                 minHeight: 44,
@@ -86,7 +86,7 @@ export function PurchaseModal({ isOpen, onClose, item, onConfirm, isPending }: P
           </label>
 
           <label style={{ display: 'block', marginBottom: 12 }}>
-            <span style={{ fontSize: 12, fontWeight: 600, color: '#555', display: 'block', marginBottom: 4 }}>
+            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--muted)', display: 'block', marginBottom: 4 }}>
               Retailer
             </span>
             <input
@@ -97,7 +97,7 @@ export function PurchaseModal({ isOpen, onClose, item, onConfirm, isPending }: P
               style={{
                 width: '100%',
                 padding: '8px 12px',
-                border: '1px solid #D1D5DB',
+                border: '1px solid var(--border)',
                 borderRadius: 6,
                 fontSize: 13,
                 minHeight: 44,
@@ -112,9 +112,9 @@ export function PurchaseModal({ isOpen, onClose, item, onConfirm, isPending }: P
             onClick={onClose}
             style={{
               padding: '8px 16px',
-              border: '1px solid #D1D5DB',
+              border: '1px solid var(--border)',
               borderRadius: 6,
-              background: 'white',
+              background: 'var(--surface)',
               fontSize: 13,
               cursor: 'pointer',
               minHeight: 44,

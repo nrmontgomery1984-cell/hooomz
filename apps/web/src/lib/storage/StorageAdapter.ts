@@ -169,6 +169,13 @@ export const StoreNames = {
   MATERIAL_RECORDS: 'materialRecords',
   LABS_REVIEWS: 'labsReviews',
   MATERIAL_PRICE_LOG: 'materialPriceLog',
+  // Properties (v34)
+  PROPERTIES: 'properties',
+  // Passports (v35)
+  PASSPORTS: 'passports',
+  PASSPORT_ENTRIES: 'passportEntries',
+  // Risk Register (v36)
+  RISK_ENTRIES: 'riskEntries',
 } as const;
 
 export type StoreName = (typeof StoreNames)[keyof typeof StoreNames];

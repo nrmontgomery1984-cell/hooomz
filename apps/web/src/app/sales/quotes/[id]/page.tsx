@@ -65,12 +65,12 @@ import { useApproveEstimateWithPipeline } from '@/lib/hooks/useApproveWithPipeli
 const COLOR = SECTION_COLORS.sales;
 
 const STATUS_CONFIG: Record<QuoteStatus, { bg: string; text: string; label: string; icon: typeof FileText }> = {
-  draft:    { bg: '#F3F4F6', text: '#6B7280', label: 'Draft',    icon: FileText },
-  sent:     { bg: '#EFF6FF', text: '#3B82F6', label: 'Sent',     icon: Send },
-  viewed:   { bg: '#FFF7ED', text: '#F59E0B', label: 'Viewed',   icon: Eye },
-  accepted: { bg: '#ECFDF5', text: '#10B981', label: 'Accepted', icon: CheckCircle2 },
-  declined: { bg: '#FEF2F2', text: '#EF4444', label: 'Declined', icon: XCircle },
-  expired:  { bg: '#F3F4F6', text: '#9CA3AF', label: 'Expired',  icon: Clock },
+  draft:    { bg: 'var(--surface-2)', text: 'var(--muted)', label: 'Draft',    icon: FileText },
+  sent:     { bg: 'var(--blue-bg)', text: 'var(--blue)', label: 'Sent',     icon: Send },
+  viewed:   { bg: 'var(--yellow-bg)', text: 'var(--yellow)', label: 'Viewed',   icon: Eye },
+  accepted: { bg: 'var(--green-bg)', text: 'var(--green)', label: 'Accepted', icon: CheckCircle2 },
+  declined: { bg: 'var(--red-bg)', text: 'var(--red)', label: 'Declined', icon: XCircle },
+  expired:  { bg: 'var(--surface-2)', text: 'var(--muted)', label: 'Expired',  icon: Clock },
 };
 
 // Trade/category labels for grouping
@@ -401,7 +401,7 @@ export default function QuoteDetailPage() {
   if (!quote) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 12 }}>
-        <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-2)' }}>Quote not found</p>
+        <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--mid)' }}>Quote not found</p>
         <Link href="/sales/quotes" style={{ fontSize: 12, color: COLOR }}>Back to Quotes</Link>
       </div>
     );
@@ -415,13 +415,13 @@ export default function QuoteDetailPage() {
       <div style={{ minHeight: '100vh', paddingBottom: 96, background: 'var(--bg)' }}>
 
         {/* Header */}
-        <div style={{ background: 'var(--surface-1)', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
           <div className="max-w-lg md:max-w-full mx-auto px-4 md:px-6 py-3 md:py-4">
             {/* Back nav */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
               <button
                 onClick={() => router.push('/sales/quotes')}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-3)', display: 'flex', alignItems: 'center', gap: 4, fontSize: 11 }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)', display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontFamily: 'var(--font-mono)' }}
               >
                 <ArrowLeft size={14} /> Quotes
               </button>
@@ -430,10 +430,10 @@ export default function QuoteDetailPage() {
             {/* Title row */}
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
               <div>
-                <h1 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', fontFamily: 'var(--font-cond)', letterSpacing: '0.02em' }}>
+                <h1 style={{ fontSize: 16, fontWeight: 700, color: 'var(--charcoal)', fontFamily: 'var(--font-mono)', letterSpacing: '0.02em' }}>
                   Quote for {customerName}
                 </h1>
-                <p style={{ fontSize: 12, color: 'var(--text-3)', marginTop: 2 }}>
+                <p style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>
                   {project?.name || quote.projectId}
                 </p>
               </div>
@@ -449,10 +449,10 @@ export default function QuoteDetailPage() {
 
             {/* Total */}
             <div style={{ marginTop: 12, display: 'flex', alignItems: 'baseline', gap: 8 }}>
-              <span style={{ fontSize: 28, fontWeight: 800, color: 'var(--text)', fontFamily: 'var(--font-mono, monospace)', letterSpacing: '-0.02em' }}>
+              <span style={{ fontSize: 28, fontWeight: 800, color: 'var(--charcoal)', fontFamily: 'var(--font-mono, monospace)', letterSpacing: '-0.02em' }}>
                 ${quote.totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
-              <span style={{ fontSize: 11, color: 'var(--text-3)' }}>CAD</span>
+              <span style={{ fontSize: 11, color: 'var(--muted)' }}>CAD</span>
             </div>
           </div>
         </div>
@@ -464,15 +464,15 @@ export default function QuoteDetailPage() {
           {/* ================================================================ */}
           <div style={{ marginTop: 16, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {quote.status === 'draft' && (
-              <ActionButton label="Send Quote" icon={Send} color="#3B82F6" loading={sendQuote.isPending} onClick={handleSend} />
+              <ActionButton label="Send Quote" icon={Send} color="var(--blue)" loading={sendQuote.isPending} onClick={handleSend} />
             )}
             {quote.status === 'sent' && (
-              <ActionButton label="Mark Viewed" icon={Eye} color="#F59E0B" loading={markViewed.isPending} onClick={handleMarkViewed} />
+              <ActionButton label="Mark Viewed" icon={Eye} color="var(--yellow)" loading={markViewed.isPending} onClick={handleMarkViewed} />
             )}
             {(quote.status === 'sent' || quote.status === 'viewed') && (
               <>
-                <ActionButton label="Accept" icon={CheckCircle2} color="#10B981" loading={acceptQuote.isPending} onClick={handleAccept} />
-                <ActionButton label="Decline" icon={XCircle} color="#EF4444" loading={declineQuote.isPending} onClick={() => setShowDeclineModal(true)} />
+                <ActionButton label="Accept" icon={CheckCircle2} color="var(--green)" loading={acceptQuote.isPending} onClick={handleAccept} />
+                <ActionButton label="Decline" icon={XCircle} color="var(--red)" loading={declineQuote.isPending} onClick={() => setShowDeclineModal(true)} />
               </>
             )}
           </div>
@@ -481,15 +481,15 @@ export default function QuoteDetailPage() {
           {quote.status === 'accepted' && !isProjectApproved && !approvalResult && (
             <div style={{
               marginTop: 12, padding: 16, borderRadius: 'var(--radius)',
-              background: '#ECFDF5', border: '2px solid #10B981',
+              background: 'var(--green-bg)', border: '2px solid var(--green)',
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                <Rocket size={16} style={{ color: '#059669' }} />
-                <span style={{ fontSize: 13, fontWeight: 700, color: '#059669' }}>
+                <Rocket size={16} style={{ color: 'var(--green)' }} />
+                <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--green)' }}>
                   Quote Accepted — Ready to Start Project
                 </span>
               </div>
-              <p style={{ fontSize: 11, color: '#374151', lineHeight: 1.5, marginBottom: 12 }}>
+              <p style={{ fontSize: 11, color: 'var(--mid)', lineHeight: 1.5, marginBottom: 12 }}>
                 This will advance the project to Approved and generate tasks from line items that have SOP codes assigned.
               </p>
               <button
@@ -498,8 +498,8 @@ export default function QuoteDetailPage() {
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                   width: '100%', minHeight: 44, borderRadius: 'var(--radius)',
-                  fontSize: 13, fontWeight: 700,
-                  background: approving ? '#9CA3AF' : '#059669',
+                  fontSize: 13, fontWeight: 700, fontFamily: 'var(--font-mono)',
+                  background: approving ? 'var(--muted)' : 'var(--green)',
                   color: '#FFFFFF', border: 'none',
                   cursor: approving ? 'not-allowed' : 'pointer',
                 }}
@@ -514,21 +514,21 @@ export default function QuoteDetailPage() {
           {approvalResult && (
             <div style={{
               marginTop: 12, padding: 16, borderRadius: 'var(--radius)',
-              background: '#F0FDF4', border: '1px solid #BBF7D0',
+              background: 'var(--green-bg)', border: '1px solid var(--green-bg)',
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                <CheckCircle2 size={16} style={{ color: '#10B981' }} />
-                <span style={{ fontSize: 13, fontWeight: 700, color: '#059669' }}>
+                <CheckCircle2 size={16} style={{ color: 'var(--green)' }} />
+                <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--green)' }}>
                   Project Approved
                 </span>
               </div>
-              <div style={{ display: 'flex', gap: 16, fontSize: 12, color: '#374151', marginBottom: 12 }}>
+              <div style={{ display: 'flex', gap: 16, fontSize: 12, color: 'var(--mid)', marginBottom: 12 }}>
                 <span><strong>{approvalResult.tasksDeployed}</strong> tasks created</span>
                 <span><strong>{approvalResult.blueprintsCreated}</strong> blueprints</span>
                 <span><strong>{approvalResult.pipelineEligible}</strong> of {approvalResult.totalLineItems} items eligible</span>
               </div>
               {approvalResult.missingSopCodes.length > 0 && (
-                <p style={{ fontSize: 11, color: '#F59E0B', marginBottom: 8 }}>
+                <p style={{ fontSize: 11, color: 'var(--yellow)', marginBottom: 8 }}>
                   {approvalResult.missingSopCodes.length} line items skipped (no SOP codes assigned)
                 </p>
               )}
@@ -538,7 +538,7 @@ export default function QuoteDetailPage() {
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
                   width: '100%', minHeight: 40, borderRadius: 'var(--radius)',
                   fontSize: 12, fontWeight: 600, textDecoration: 'none',
-                  background: 'var(--surface-1)', color: COLOR,
+                  background: 'var(--surface)', color: COLOR,
                   border: `1px solid ${COLOR}`,
                 }}
               >
@@ -551,12 +551,12 @@ export default function QuoteDetailPage() {
           {quote.status === 'accepted' && isProjectApproved && !approvalResult && (
             <div style={{
               marginTop: 12, padding: 14, borderRadius: 'var(--radius)',
-              background: '#F0FDF4', border: '1px solid #BBF7D0',
+              background: 'var(--green-bg)', border: '1px solid var(--green-bg)',
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <CheckCircle2 size={16} style={{ color: '#10B981' }} />
-                <span style={{ fontSize: 12, fontWeight: 600, color: '#059669' }}>Project Started</span>
+                <CheckCircle2 size={16} style={{ color: 'var(--green)' }} />
+                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--green)' }}>Project Started</span>
               </div>
               <Link
                 href={`/projects/${quote.projectId}`}
@@ -574,9 +574,9 @@ export default function QuoteDetailPage() {
           {showDeclineModal && (
             <div style={{
               marginTop: 8, padding: 14, borderRadius: 'var(--radius)',
-              background: 'var(--surface-1)', border: '2px solid #EF444440',
+              background: 'var(--surface)', border: '2px solid rgba(220,38,38,.25)',
             }}>
-              <p style={{ fontSize: 11, fontWeight: 600, color: '#EF4444', marginBottom: 8 }}>Reason for Decline (optional)</p>
+              <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--red)', marginBottom: 8 }}>Reason for Decline (optional)</p>
               <textarea
                 value={declineReason}
                 onChange={(e) => setDeclineReason(e.target.value)}
@@ -586,14 +586,14 @@ export default function QuoteDetailPage() {
                   width: '100%', minHeight: 48, padding: '8px 10px',
                   borderRadius: 'var(--radius)', fontSize: 12,
                   background: 'var(--bg)', border: '1px solid var(--border)',
-                  color: 'var(--text)', outline: 'none', resize: 'vertical',
+                  color: 'var(--charcoal)', outline: 'none', resize: 'vertical',
                 }}
               />
               <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-                <button onClick={() => setShowDeclineModal(false)} style={{ flex: 1, minHeight: 32, borderRadius: 'var(--radius)', fontSize: 11, fontWeight: 600, background: 'var(--bg)', color: 'var(--text-2)', border: '1px solid var(--border)', cursor: 'pointer' }}>
+                <button onClick={() => setShowDeclineModal(false)} style={{ flex: 1, minHeight: 32, borderRadius: 'var(--radius)', fontSize: 11, fontWeight: 600, fontFamily: 'var(--font-mono)', background: 'var(--bg)', color: 'var(--mid)', border: '1px solid var(--border)', cursor: 'pointer' }}>
                   Cancel
                 </button>
-                <button onClick={handleDecline} disabled={declineQuote.isPending} style={{ flex: 1, minHeight: 32, borderRadius: 'var(--radius)', fontSize: 11, fontWeight: 600, background: '#EF4444', color: '#FFFFFF', border: 'none', cursor: 'pointer', opacity: declineQuote.isPending ? 0.5 : 1 }}>
+                <button onClick={handleDecline} disabled={declineQuote.isPending} style={{ flex: 1, minHeight: 32, borderRadius: 'var(--radius)', fontSize: 11, fontWeight: 600, fontFamily: 'var(--font-mono)', background: 'var(--red)', color: '#FFFFFF', border: 'none', cursor: 'pointer', opacity: declineQuote.isPending ? 0.5 : 1 }}>
                   {declineQuote.isPending ? 'Declining...' : 'Confirm Decline'}
                 </button>
               </div>
@@ -614,8 +614,9 @@ export default function QuoteDetailPage() {
                     display: 'flex', alignItems: 'center', gap: 6,
                     minHeight: 36, padding: '0 16px',
                     borderRadius: 'var(--radius)', fontSize: 12, fontWeight: 600,
-                    color: '#0F766E', background: '#FFFFFF',
-                    border: '2px solid #0F766E', cursor: 'pointer',
+                    fontFamily: 'var(--font-mono)',
+                    color: 'var(--accent)', background: 'var(--surface)',
+                    border: '2px solid var(--accent)', cursor: 'pointer',
                   }}
                 >
                   <Download size={14} /> Download Quote
@@ -635,7 +636,8 @@ export default function QuoteDetailPage() {
                       display: 'flex', alignItems: 'center', gap: 6,
                       minHeight: 36, padding: '0 16px',
                       borderRadius: 'var(--radius)', fontSize: 12, fontWeight: 600,
-                      color: 'var(--text-2)', background: 'var(--surface-1)',
+                      fontFamily: 'var(--font-mono)',
+                      color: 'var(--mid)', background: 'var(--surface)',
                       border: '1px solid var(--border)', cursor: 'pointer',
                     }}
                   >
@@ -655,7 +657,8 @@ export default function QuoteDetailPage() {
                   display: 'flex', alignItems: 'center', gap: 6,
                   minHeight: 36, padding: '0 16px',
                   borderRadius: 'var(--radius)', fontSize: 12, fontWeight: 600,
-                  color: 'var(--text-2)', background: 'var(--surface-1)',
+                  fontFamily: 'var(--font-mono)',
+                  color: 'var(--mid)', background: 'var(--surface)',
                   border: '1px solid var(--border)', cursor: 'pointer',
                 }}
               >
@@ -667,7 +670,8 @@ export default function QuoteDetailPage() {
                   display: 'flex', alignItems: 'center', gap: 6,
                   minHeight: 36, padding: '0 16px',
                   borderRadius: 'var(--radius)', fontSize: 12, fontWeight: 600,
-                  color: 'var(--text-2)', background: 'var(--surface-1)',
+                  fontFamily: 'var(--font-mono)',
+                  color: 'var(--mid)', background: 'var(--surface)',
                   border: '1px solid var(--border)', cursor: 'pointer',
                 }}
               >
@@ -681,7 +685,7 @@ export default function QuoteDetailPage() {
           {/* ================================================================ */}
           <div style={{
             marginTop: 20, padding: '12px 14px', borderRadius: 'var(--radius)',
-            background: 'var(--surface-1)', border: '1px solid var(--border)',
+            background: 'var(--surface)', border: '1px solid var(--border)',
           }}>
             <SalesChecklist
               entityType="quote"
@@ -694,25 +698,25 @@ export default function QuoteDetailPage() {
           {/* Estimate Breakdown by Trade */}
           {/* ================================================================ */}
           <div style={{ marginTop: 20 }}>
-            <h2 style={{ fontSize: 11, fontWeight: 700, fontFamily: 'var(--font-cond)', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: 8 }}>
+            <h2 style={{ fontSize: 11, fontWeight: 700, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 8 }}>
               Estimate Breakdown
             </h2>
 
             {loadingItems && (
               <div style={{ padding: 24, textAlign: 'center' }}>
                 <div style={{ width: 24, height: 24, border: '2px solid var(--border)', borderTopColor: COLOR, borderRadius: '50%', animation: 'spin 0.7s linear infinite', margin: '0 auto 8px' }} />
-                <p style={{ fontSize: 11, color: 'var(--text-3)' }}>Loading line items...</p>
+                <p style={{ fontSize: 11, color: 'var(--muted)' }}>Loading line items...</p>
               </div>
             )}
 
             {!loadingItems && lineItems.length === 0 && (
               <div style={{
                 padding: '20px 14px', borderRadius: 'var(--radius)',
-                background: 'var(--surface-1)', border: '1px solid var(--border)',
+                background: 'var(--surface)', border: '1px solid var(--border)',
                 textAlign: 'center',
               }}>
-                <AlertTriangle size={20} style={{ color: '#F59E0B', margin: '0 auto 6px' }} />
-                <p style={{ fontSize: 12, color: 'var(--text-2)' }}>No line items in this estimate</p>
+                <AlertTriangle size={20} style={{ color: 'var(--yellow)', margin: '0 auto 6px' }} />
+                <p style={{ fontSize: 12, color: 'var(--mid)' }}>No line items in this estimate</p>
                 <Link href={`/estimates/${quote.projectId}`} style={{ fontSize: 11, color: COLOR, marginTop: 4, display: 'inline-block' }}>
                   Add line items in Estimate Editor
                 </Link>
@@ -724,16 +728,16 @@ export default function QuoteDetailPage() {
                 {/* Grand totals card */}
                 <div style={{
                   padding: '10px 14px', borderRadius: 'var(--radius)',
-                  background: 'var(--surface-1)', border: '1px solid var(--border)',
+                  background: 'var(--surface)', border: '1px solid var(--border)',
                   display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 }}>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-2)' }}>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--mid)' }}>
                     {lineItems.length} items across {tradeGroups.length} {tradeGroups.length === 1 ? 'trade' : 'trades'}
                   </span>
                   <div style={{ display: 'flex', gap: 12, fontSize: 11 }}>
-                    <span style={{ color: '#3B82F6' }}>Labor ${grandLabor.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
-                    <span style={{ color: '#10B981' }}>Material ${grandMaterial.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
-                    <span style={{ fontWeight: 700, color: 'var(--text)', fontFamily: 'var(--font-mono, monospace)' }}>
+                    <span style={{ color: 'var(--blue)' }}>Labor ${grandLabor.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                    <span style={{ color: 'var(--green)' }}>Material ${grandMaterial.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                    <span style={{ fontWeight: 700, color: 'var(--charcoal)', fontFamily: 'var(--font-mono, monospace)' }}>
                       ${grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </span>
                   </div>
@@ -750,13 +754,13 @@ export default function QuoteDetailPage() {
                       }}>
                         <span style={{
                           fontSize: 9, fontWeight: 700, letterSpacing: '0.14em',
-                          textTransform: 'uppercase', color: 'var(--text-3)',
-                          fontFamily: 'var(--font-cond)',
+                          textTransform: 'uppercase', color: 'var(--muted)',
+                          fontFamily: 'var(--font-mono)',
                         }}>
                           {sg.label}
                         </span>
                         <span style={{
-                          fontSize: 12, fontWeight: 700, color: 'var(--text-2)',
+                          fontSize: 12, fontWeight: 700, color: 'var(--mid)',
                           fontFamily: 'var(--font-mono, monospace)',
                         }}>
                           ${sg.total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -776,7 +780,7 @@ export default function QuoteDetailPage() {
           {/* Delivery Section */}
           {/* ================================================================ */}
           <div style={{ marginTop: 24 }}>
-            <h2 style={{ fontSize: 11, fontWeight: 700, fontFamily: 'var(--font-cond)', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: 8 }}>
+            <h2 style={{ fontSize: 11, fontWeight: 700, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 8 }}>
               Delivery
             </h2>
 
@@ -785,16 +789,16 @@ export default function QuoteDetailPage() {
               {/* Video Link */}
               <div style={{
                 padding: '12px 14px', borderRadius: 'var(--radius)',
-                background: 'var(--surface-1)', border: '1px solid var(--border)',
+                background: 'var(--surface)', border: '1px solid var(--border)',
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: 'var(--text-2)' }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: 'var(--mid)' }}>
                     <Video size={14} style={{ color: COLOR }} /> Video Walkthrough
                   </span>
                   {!editingVideo && (
                     <button
                       onClick={() => { setVideoLinkDraft(quote.videoLink); setEditingVideo(true); }}
-                      style={{ fontSize: 10, color: COLOR, background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}
+                      style={{ fontSize: 10, color: COLOR, background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, fontFamily: 'var(--font-mono)' }}
                     >
                       {quote.videoLink ? 'Edit' : 'Add'}
                     </button>
@@ -811,12 +815,12 @@ export default function QuoteDetailPage() {
                         width: '100%', minHeight: 34, padding: '0 10px',
                         borderRadius: 'var(--radius)', fontSize: 12,
                         background: 'var(--bg)', border: '1px solid var(--border)',
-                        color: 'var(--text)', outline: 'none',
+                        color: 'var(--charcoal)', outline: 'none',
                       }}
                     />
                     <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
-                      <button onClick={() => setEditingVideo(false)} style={{ fontSize: 10, color: 'var(--text-3)', background: 'none', border: 'none', cursor: 'pointer' }}>Cancel</button>
-                      <button onClick={handleSaveVideoLink} disabled={updateQuote.isPending} style={{ fontSize: 10, color: COLOR, fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer' }}>
+                      <button onClick={() => setEditingVideo(false)} style={{ fontSize: 10, color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-mono)' }}>Cancel</button>
+                      <button onClick={handleSaveVideoLink} disabled={updateQuote.isPending} style={{ fontSize: 10, color: COLOR, fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-mono)' }}>
                         {updateQuote.isPending ? 'Saving...' : 'Save'}
                       </button>
                     </div>
@@ -826,23 +830,23 @@ export default function QuoteDetailPage() {
                     {quote.videoLink.length > 50 ? quote.videoLink.slice(0, 47) + '...' : quote.videoLink} <ExternalLink size={10} />
                   </a>
                 ) : (
-                  <p style={{ fontSize: 11, color: 'var(--text-3)' }}>No video link added yet</p>
+                  <p style={{ fontSize: 11, color: 'var(--muted)' }}>No video link added yet</p>
                 )}
               </div>
 
               {/* Deposit Percentage */}
               <div style={{
                 padding: '12px 14px', borderRadius: 'var(--radius)',
-                background: 'var(--surface-1)', border: '1px solid var(--border)',
+                background: 'var(--surface)', border: '1px solid var(--border)',
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: 'var(--text-2)' }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: 'var(--mid)' }}>
                     <Percent size={14} style={{ color: COLOR }} /> Deposit
                   </span>
                   {quote.status === 'draft' && !editingDeposit && (
                     <button
                       onClick={() => { setDepositDraft(quote.depositPercentage ?? 25); setEditingDeposit(true); }}
-                      style={{ fontSize: 10, color: COLOR, background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}
+                      style={{ fontSize: 10, color: COLOR, background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, fontFamily: 'var(--font-mono)' }}
                     >
                       Edit
                     </button>
@@ -861,31 +865,31 @@ export default function QuoteDetailPage() {
                           width: 80, minHeight: 34, padding: '0 10px',
                           borderRadius: 'var(--radius)', fontSize: 13, fontWeight: 600,
                           background: 'var(--bg)', border: '1px solid var(--border)',
-                          color: 'var(--text)', outline: 'none', textAlign: 'right',
+                          color: 'var(--charcoal)', outline: 'none', textAlign: 'right',
                         }}
                       />
-                      <span style={{ fontSize: 12, color: 'var(--text-2)' }}>%</span>
-                      <span style={{ fontSize: 11, color: 'var(--text-3)', marginLeft: 'auto' }}>
+                      <span style={{ fontSize: 12, color: 'var(--mid)' }}>%</span>
+                      <span style={{ fontSize: 11, color: 'var(--muted)', marginLeft: 'auto' }}>
                         = ${(quote.totalAmount * (depositDraft / 100)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </span>
                     </div>
                     <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
-                      <button onClick={() => setEditingDeposit(false)} style={{ fontSize: 10, color: 'var(--text-3)', background: 'none', border: 'none', cursor: 'pointer' }}>Cancel</button>
-                      <button onClick={handleSaveDeposit} disabled={updateQuote.isPending} style={{ fontSize: 10, color: COLOR, fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer' }}>
+                      <button onClick={() => setEditingDeposit(false)} style={{ fontSize: 10, color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-mono)' }}>Cancel</button>
+                      <button onClick={handleSaveDeposit} disabled={updateQuote.isPending} style={{ fontSize: 10, color: COLOR, fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-mono)' }}>
                         {updateQuote.isPending ? 'Saving...' : 'Save'}
                       </button>
                     </div>
                   </div>
                 ) : (
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--charcoal)' }}>
                       {quote.depositPercentage ?? 25}%
                     </span>
-                    <span style={{ fontSize: 11, color: 'var(--text-3)', fontFamily: 'var(--font-mono, monospace)' }}>
+                    <span style={{ fontSize: 11, color: 'var(--muted)', fontFamily: 'var(--font-mono, monospace)' }}>
                       ${(quote.totalAmount * ((quote.depositPercentage ?? 25) / 100)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </span>
                     {quote.status !== 'draft' && (
-                      <span style={{ fontSize: 9, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>locked</span>
+                      <span style={{ fontSize: 9, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>locked</span>
                     )}
                   </div>
                 )}
@@ -894,23 +898,23 @@ export default function QuoteDetailPage() {
               {/* Expiry */}
               <div style={{
                 padding: '12px 14px', borderRadius: 'var(--radius)',
-                background: 'var(--surface-1)', border: '1px solid var(--border)',
+                background: 'var(--surface)', border: '1px solid var(--border)',
               }}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: 'var(--text-2)' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: 'var(--mid)' }}>
                   <Clock size={14} style={{ color: COLOR }} /> Expiry
                 </span>
                 {quote.expiresAt ? (
                   <p style={{
                     fontSize: 13, fontWeight: 600, marginTop: 4,
-                    color: new Date(quote.expiresAt) < new Date() ? '#EF4444' : 'var(--text)',
+                    color: new Date(quote.expiresAt) < new Date() ? 'var(--red)' : 'var(--charcoal)',
                   }}>
                     {new Date(quote.expiresAt).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                     {new Date(quote.expiresAt) < new Date() && (
-                      <span style={{ fontSize: 10, color: '#EF4444', marginLeft: 8, fontWeight: 700, textTransform: 'uppercase' }}>Expired</span>
+                      <span style={{ fontSize: 10, color: 'var(--red)', marginLeft: 8, fontWeight: 700, textTransform: 'uppercase' }}>Expired</span>
                     )}
                   </p>
                 ) : (
-                  <p style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 4 }}>No expiry set</p>
+                  <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4 }}>No expiry set</p>
                 )}
               </div>
 
@@ -918,12 +922,12 @@ export default function QuoteDetailPage() {
               {quote.coverNotes && (
                 <div style={{
                   padding: '12px 14px', borderRadius: 'var(--radius)',
-                  background: 'var(--surface-1)', border: '1px solid var(--border)',
+                  background: 'var(--surface)', border: '1px solid var(--border)',
                 }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: 'var(--text-2)', marginBottom: 6 }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: 'var(--mid)', marginBottom: 6 }}>
                     <FileText size={14} style={{ color: COLOR }} /> Cover Notes
                   </span>
-                  <p style={{ fontSize: 12, color: 'var(--text)', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>
+                  <p style={{ fontSize: 12, color: 'var(--charcoal)', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>
                     {quote.coverNotes}
                   </p>
                 </div>
@@ -933,12 +937,12 @@ export default function QuoteDetailPage() {
               {quote.status === 'declined' && quote.declineReason && (
                 <div style={{
                   padding: '12px 14px', borderRadius: 'var(--radius)',
-                  background: '#FEF2F2', border: '1px solid #FECACA',
+                  background: 'var(--red-bg)', border: '1px solid var(--red-bg)',
                 }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: '#EF4444', marginBottom: 6 }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: 'var(--red)', marginBottom: 6 }}>
                     <XCircle size={14} /> Decline Reason
                   </span>
-                  <p style={{ fontSize: 12, color: '#991B1B', lineHeight: 1.5 }}>
+                  <p style={{ fontSize: 12, color: 'var(--red)', lineHeight: 1.5 }}>
                     {quote.declineReason}
                   </p>
                 </div>
@@ -950,7 +954,7 @@ export default function QuoteDetailPage() {
           {/* Status Timeline */}
           {/* ================================================================ */}
           <div style={{ marginTop: 24, marginBottom: 32 }}>
-            <h2 style={{ fontSize: 11, fontWeight: 700, fontFamily: 'var(--font-cond)', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: 12 }}>
+            <h2 style={{ fontSize: 11, fontWeight: 700, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 12 }}>
               Timeline
             </h2>
 
@@ -958,7 +962,7 @@ export default function QuoteDetailPage() {
               <TimelineStep
                 label="Created"
                 date={quote.createdAt}
-                color="#6B7280"
+                color="var(--muted)"
                 isActive
                 isLast={!quote.sentAt}
               />
@@ -966,7 +970,7 @@ export default function QuoteDetailPage() {
                 <TimelineStep
                   label="Sent"
                   date={quote.sentAt}
-                  color="#3B82F6"
+                  color="var(--blue)"
                   isActive
                   isLast={!quote.viewedAt && !quote.respondedAt}
                 />
@@ -975,7 +979,7 @@ export default function QuoteDetailPage() {
                 <TimelineStep
                   label="Viewed"
                   date={quote.viewedAt}
-                  color="#F59E0B"
+                  color="var(--yellow)"
                   isActive
                   isLast={!quote.respondedAt}
                 />
@@ -984,7 +988,7 @@ export default function QuoteDetailPage() {
                 <TimelineStep
                   label={quote.status === 'accepted' ? 'Accepted' : 'Declined'}
                   date={quote.respondedAt}
-                  color={quote.status === 'accepted' ? '#10B981' : '#EF4444'}
+                  color={quote.status === 'accepted' ? 'var(--green)' : 'var(--red)'}
                   isActive
                   isLast
                 />
@@ -1014,6 +1018,7 @@ function ActionButton({
         display: 'flex', alignItems: 'center', gap: 6,
         minHeight: 36, padding: '0 16px',
         borderRadius: 'var(--radius)', fontSize: 12, fontWeight: 600,
+        fontFamily: 'var(--font-mono)',
         background: color, color: '#FFFFFF', border: 'none',
         cursor: loading ? 'default' : 'pointer', opacity: loading ? 0.5 : 1,
       }}
@@ -1029,7 +1034,7 @@ function TradeGroupCard({ group }: { group: TradeGroup }) {
 
   return (
     <div style={{
-      borderRadius: 'var(--radius)', background: 'var(--surface-1)',
+      borderRadius: 'var(--radius)', background: 'var(--surface)',
       border: '1px solid var(--border)', overflow: 'hidden',
     }}>
       {/* Header */}
@@ -1039,27 +1044,27 @@ function TradeGroupCard({ group }: { group: TradeGroup }) {
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           width: '100%', padding: '10px 14px',
           background: 'none', border: 'none', cursor: 'pointer',
-          textAlign: 'left',
+          textAlign: 'left', fontFamily: 'var(--font-mono)',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Hammer size={14} style={{ color: 'var(--text-3)' }} />
-          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)' }}>
+          <Hammer size={14} style={{ color: 'var(--muted)' }} />
+          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--charcoal)' }}>
             {group.label}
           </span>
-          <span style={{ fontSize: 10, color: 'var(--text-3)' }}>
+          <span style={{ fontSize: 10, color: 'var(--muted)' }}>
             {group.items.length} {group.items.length === 1 ? 'item' : 'items'}
           </span>
         </div>
-        <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)', fontFamily: 'var(--font-mono, monospace)' }}>
+        <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--charcoal)', fontFamily: 'var(--font-mono, monospace)' }}>
           ${group.total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </span>
       </button>
 
       {/* Labor/material split bar */}
       <div style={{ height: 3, display: 'flex', marginTop: -2 }}>
-        <div style={{ width: `${pct}%`, background: '#3B82F6', borderRadius: '0 0 0 2px' }} />
-        <div style={{ flex: 1, background: '#10B981', borderRadius: '0 0 2px 0' }} />
+        <div style={{ width: `${pct}%`, background: 'var(--blue)', borderRadius: '0 0 0 2px' }} />
+        <div style={{ flex: 1, background: 'var(--green)', borderRadius: '0 0 2px 0' }} />
       </div>
 
       {/* Expanded: item list */}
@@ -1067,7 +1072,7 @@ function TradeGroupCard({ group }: { group: TradeGroup }) {
         <div style={{ padding: '0 14px 10px', borderTop: '1px solid var(--border)' }}>
           <table style={{ width: '100%', fontSize: 11, borderCollapse: 'collapse', marginTop: 8 }}>
             <thead>
-              <tr style={{ color: 'var(--text-3)', fontWeight: 600, textAlign: 'left' }}>
+              <tr style={{ color: 'var(--muted)', fontWeight: 600, textAlign: 'left' }}>
                 <th style={{ padding: '4px 0' }}>Description</th>
                 <th style={{ padding: '4px 8px', textAlign: 'right' }}>Qty</th>
                 <th style={{ padding: '4px 8px', textAlign: 'right' }}>Rate</th>
@@ -1077,30 +1082,30 @@ function TradeGroupCard({ group }: { group: TradeGroup }) {
             <tbody>
               {group.items.map((item) => (
                 <tr key={item.id} style={{ borderTop: '1px solid var(--border)' }}>
-                  <td style={{ padding: '6px 0', color: 'var(--text)' }}>
+                  <td style={{ padding: '6px 0', color: 'var(--charcoal)' }}>
                     {item.description}
                     <span style={{
                       marginLeft: 6, fontSize: 9, fontWeight: 600,
-                      color: item.isLabor ? '#3B82F6' : '#10B981',
+                      color: item.isLabor ? 'var(--blue)' : 'var(--green)',
                       textTransform: 'uppercase',
                     }}>
                       {item.isLabor ? 'L' : 'M'}
                     </span>
                   </td>
-                  <td style={{ padding: '6px 8px', textAlign: 'right', color: 'var(--text-2)', whiteSpace: 'nowrap' }}>
+                  <td style={{ padding: '6px 8px', textAlign: 'right', color: 'var(--mid)', whiteSpace: 'nowrap' }}>
                     {item.quantity} {item.unit}
                   </td>
-                  <td style={{ padding: '6px 8px', textAlign: 'right', color: 'var(--text-2)', fontFamily: 'var(--font-mono, monospace)' }}>
+                  <td style={{ padding: '6px 8px', textAlign: 'right', color: 'var(--mid)', fontFamily: 'var(--font-mono, monospace)' }}>
                     ${item.unitCost.toFixed(2)}
                   </td>
-                  <td style={{ padding: '6px 0', textAlign: 'right', fontWeight: 600, color: 'var(--text)', fontFamily: 'var(--font-mono, monospace)' }}>
+                  <td style={{ padding: '6px 0', textAlign: 'right', fontWeight: 600, color: 'var(--charcoal)', fontFamily: 'var(--font-mono, monospace)' }}>
                     ${item.totalCost.toFixed(2)}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6, paddingTop: 6, borderTop: '1px solid var(--border)', fontSize: 10, color: 'var(--text-3)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6, paddingTop: 6, borderTop: '1px solid var(--border)', fontSize: 10, color: 'var(--muted)' }}>
             <span>Labor: ${group.laborTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             <span>Material: ${group.materialTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
           </div>
@@ -1132,10 +1137,10 @@ function TimelineStep({
       }} />
       {/* Content */}
       <div style={{ paddingBottom: isLast ? 0 : 16 }}>
-        <p style={{ fontSize: 12, fontWeight: 600, color: isActive ? 'var(--text)' : 'var(--text-3)' }}>
+        <p style={{ fontSize: 12, fontWeight: 600, color: isActive ? 'var(--charcoal)' : 'var(--muted)' }}>
           {label}
         </p>
-        <p style={{ fontSize: 10, color: 'var(--text-3)', marginTop: 1 }}>
+        <p style={{ fontSize: 10, color: 'var(--muted)', marginTop: 1 }}>
           {new Date(date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}
           {' '}
           {new Date(date).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}

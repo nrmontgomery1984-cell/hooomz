@@ -67,6 +67,10 @@ export const ProjectSchema = z.object({
   metadata: MetadataSchema,
   // Job pipeline stage (11-stage: Lead → … → Turnover + Complete)
   jobStage: JobStageSchema.optional(),
+  // Property linkage (optional — will be required once intake flow is updated)
+  property_id: z.string().optional(),
+  // DESIGN funnel stage (D/E/S/I/G/N) — derived from jobStage for sales pipeline
+  design_stage: z.enum(['D', 'E', 'S', 'I', 'G', 'N']).optional(),
   // Integration fields (Build 1.5 — all optional for backward compatibility)
   integrationProjectType: z.enum(['standard', 'callback']).optional(),
   linkedProjectId: z.string().nullable().optional(),
@@ -92,6 +96,7 @@ export const CustomerSchema = z.object({
   tags: z.array(z.string()).default([]),
   notes: z.string().max(2000).optional(),
   preferredContactMethod: ContactMethodSchema,
+  property_ids: z.array(z.string()).optional(),
   metadata: MetadataSchema,
 });
 

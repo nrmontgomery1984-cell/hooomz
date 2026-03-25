@@ -156,10 +156,10 @@ export function ActivityFeed({
   if (isError) {
     return (
       <div className={`py-8 text-center ${className}`}>
-        <p className="text-slate-500 mb-3">Failed to load activity</p>
+        <p className="text-[var(--muted)] mb-3">Failed to load activity</p>
         <button
           onClick={() => refetch()}
-          className="text-teal font-medium min-h-[44px] px-4"
+          className="text-[var(--accent)] font-medium min-h-[44px] px-4"
         >
           Try again
         </button>
@@ -178,7 +178,7 @@ export function ActivityFeed({
 
       {/* Refresh indicator */}
       {isRefreshing && (
-        <div className="text-center py-2 text-sm text-slate-400">
+        <div className="text-center py-2 text-sm text-[var(--muted)]">
           Refreshing...
         </div>
       )}
@@ -211,9 +211,9 @@ export function ActivityFeed({
             onClick={() => fetchNextPage()}
             disabled={isFetchingNextPage}
             className="
-              w-full py-3 text-sm font-medium text-teal
+              w-full py-3 text-sm font-medium text-[var(--accent)]
               min-h-[44px] rounded-lg
-              hover:bg-teal/5 transition-colors
+              hover:bg-[var(--accent-bg)] transition-colors
               disabled:opacity-50 disabled:cursor-not-allowed
             "
           >
@@ -229,9 +229,9 @@ export function ActivityFeed({
             onClick={handleRefresh}
             disabled={isRefreshing}
             className="
-              text-sm text-slate-400
+              text-sm text-[var(--muted)]
               min-h-[44px] px-4
-              hover:text-slate-600 transition-colors
+              hover:text-[var(--mid)] transition-colors
             "
           >
             {isRefreshing ? 'Refreshing...' : 'Pull to refresh'}
@@ -257,9 +257,9 @@ function EmptyState({ filter }: { filter: FilterOption }) {
 
   return (
     <div className="py-12 text-center">
-      <p className="text-slate-400 text-sm">{messages[filter]}</p>
+      <p className="text-[var(--muted)] text-sm">{messages[filter]}</p>
       {filter !== 'all' && (
-        <p className="text-slate-300 text-xs mt-1">
+        <p className="text-[var(--border)] text-xs mt-1">
           Try selecting &ldquo;All&rdquo; to see all activity
         </p>
       )}
@@ -289,7 +289,7 @@ export function SimpleActivityFeed({
 
   if (displayEvents.length === 0) {
     return (
-      <p className="text-slate-400 text-sm text-center py-4">No recent activity</p>
+      <p className="text-[var(--muted)] text-sm text-center py-4">No recent activity</p>
     );
   }
 

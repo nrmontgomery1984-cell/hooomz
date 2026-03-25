@@ -32,23 +32,23 @@ const KNOWLEDGE_TYPE_COLORS: Record<string, string> = {
   material: 'bg-purple-100 text-purple-800',
   technique: 'bg-green-100 text-green-800',
   action: 'bg-amber-100 text-amber-800',
-  procedure: 'bg-teal-100 text-teal-800',
+  procedure: 'bg-[var(--accent-bg)] text-[var(--accent)]',
   timing: 'bg-orange-100 text-orange-800',
   combination: 'bg-indigo-100 text-indigo-800',
-  tool_method: 'bg-gray-100 text-gray-800',
+  tool_method: 'bg-[var(--surface)] text-[var(--charcoal)]',
   environmental_rule: 'bg-emerald-100 text-emerald-800',
   specification: 'bg-rose-100 text-rose-800',
 };
 
 export function ObservationCard({ observation, onClick, className = '' }: ObservationCardProps) {
   const typeLabel = KNOWLEDGE_TYPE_LABELS[observation.knowledgeType] || observation.knowledgeType;
-  const typeColor = KNOWLEDGE_TYPE_COLORS[observation.knowledgeType] || 'bg-gray-100 text-gray-800';
+  const typeColor = KNOWLEDGE_TYPE_COLORS[observation.knowledgeType] || 'bg-[var(--surface)] text-[var(--charcoal)]';
   const timestamp = new Date(observation.metadata.createdAt).toLocaleDateString();
   const captureLabel = observation.captureMethod === 'automatic' ? 'Auto' : observation.captureMethod === 'callback' ? 'Callback' : 'Manual';
 
   return (
     <div
-      className={`bg-white rounded-xl border border-gray-200 p-4 shadow-sm ${onClick ? 'cursor-pointer hover:shadow-md transition-shadow' : ''} ${className}`}
+      className={`bg-white rounded-xl border border-[var(--border)] p-4 shadow-sm ${onClick ? 'cursor-pointer hover:shadow-md transition-shadow' : ''} ${className}`}
       onClick={onClick}
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}
@@ -57,16 +57,16 @@ export function ObservationCard({ observation, onClick, className = '' }: Observ
         <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${typeColor}`}>
           {typeLabel}
         </span>
-        <span className="text-xs text-gray-400">{timestamp}</span>
+        <span className="text-xs text-[var(--muted)]">{timestamp}</span>
       </div>
 
       {observation.notes && (
-        <p className="text-sm text-gray-700 mb-3 line-clamp-2">{observation.notes}</p>
+        <p className="text-sm text-[var(--mid)] mb-3 line-clamp-2">{observation.notes}</p>
       )}
 
-      <div className="flex items-center gap-3 text-xs text-gray-500">
+      <div className="flex items-center gap-3 text-xs text-[var(--muted)]">
         <span className="inline-flex items-center gap-1">
-          <span className="w-1.5 h-1.5 rounded-full bg-gray-400" />
+          <span className="w-1.5 h-1.5 rounded-full bg-[var(--muted)]" />
           {captureLabel}
         </span>
 

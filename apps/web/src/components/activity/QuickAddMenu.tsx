@@ -654,9 +654,10 @@ export function QuickAddMenu({
           shadow-lg hover:shadow-xl
           flex items-center justify-center
           transition-all duration-200
-          ${menuState !== 'closed' ? 'rotate-45 bg-slate-600' : 'hover:brightness-110'}
+          ${menuState !== 'closed' ? 'rotate-45' : 'hover:brightness-110'}
           ${className}
         `}
+        style={menuState !== 'closed' ? { background: 'var(--mid)' } : undefined}
         aria-label={menuState === 'closed' ? 'Quick add activity' : 'Close menu'}
         aria-expanded={menuState !== 'closed'}
       >
@@ -676,21 +677,22 @@ export function QuickAddMenu({
             ref={sheetRef}
             className="
               absolute bottom-0 left-0 right-0
-              bg-white rounded-t-3xl shadow-xl
+              rounded-t-3xl shadow-xl
               animate-in slide-in-from-bottom duration-300
               max-h-[85vh] overflow-y-auto
             "
+            style={{ background: 'var(--surface)' }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Handle Bar */}
-            <div className="flex justify-center py-3 sticky top-0 bg-white rounded-t-3xl z-10">
-              <div className="w-10 h-1 bg-slate-300 rounded-full" />
+            <div className="flex justify-center py-3 sticky top-0 rounded-t-3xl z-10" style={{ background: 'var(--surface)' }}>
+              <div className="w-10 h-1 rounded-full" style={{ background: 'var(--border-s)' }} />
             </div>
 
             {menuState === 'sheet' && (
               <div className="px-4 pb-8">
                 {/* Header */}
-                <h2 className="text-lg font-semibold text-slate-800 mb-4">Quick Add</h2>
+                <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--charcoal)' }}>Quick Add</h2>
 
                 {/* FREQUENT Actions - 8 buttons in 2 rows */}
                 <div className="grid grid-cols-4 gap-3 mb-4">
@@ -709,10 +711,11 @@ export function QuickAddMenu({
                   className="
                     w-full py-3 mb-4
                     flex items-center justify-center gap-2
-                    text-sm font-medium text-slate-500
-                    border border-slate-200 rounded-xl
-                    hover:bg-slate-50 transition-colors
+                    text-sm font-medium
+                    border rounded-xl
+                    transition-colors
                   "
+                  style={{ color: 'var(--muted)', borderColor: 'var(--border)' }}
                 >
                   <span>{showMoreActions ? 'Less' : 'More Actions'}</span>
                   <span className={`transition-transform ${showMoreActions ? 'rotate-180' : ''}`}>
@@ -741,14 +744,15 @@ export function QuickAddMenu({
                 <div className="flex items-center gap-3 mb-4">
                   <button
                     onClick={() => setMenuState('sheet')}
-                    className="p-2 -ml-2 text-slate-400 hover:text-slate-600 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                    className="p-2 -ml-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                    style={{ color: 'var(--muted)' }}
                     aria-label="Back to menu"
                   >
                     ←
                   </button>
                   <div>
-                    <h2 className="text-lg font-semibold text-slate-800">{config.title}</h2>
-                    <p className="text-sm text-slate-500">{config.subtitle}</p>
+                    <h2 className="text-lg font-semibold" style={{ color: 'var(--charcoal)' }}>{config.title}</h2>
+                    <p className="text-sm" style={{ color: 'var(--muted)' }}>{config.subtitle}</p>
                   </div>
                 </div>
 
@@ -765,7 +769,7 @@ export function QuickAddMenu({
                         />
                       ) : (
                         <>
-                          <label className="block text-sm font-medium text-slate-600 mb-1">
+                          <label className="block text-sm font-medium mb-1" style={{ color: 'var(--mid)' }}>
                             {field.label}
                             {field.required && <span className="text-coral ml-1">*</span>}
                           </label>
@@ -777,11 +781,11 @@ export function QuickAddMenu({
                               rows={3}
                               className="
                                 w-full px-4 py-3
-                                border border-slate-200 rounded-xl
-                                text-slate-700 placeholder:text-slate-400
-                                focus:outline-none focus:ring-2 focus:ring-teal focus:border-transparent
+                                border rounded-xl
+                                focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent
                                 resize-none
                               "
+                              style={{ color: 'var(--mid)', borderColor: 'var(--border)' }}
                             />
                           ) : field.type === 'select' ? (
                             <select
@@ -789,10 +793,10 @@ export function QuickAddMenu({
                               onChange={(e) => handleFieldChange(field.key, e.target.value)}
                               className="
                                 w-full min-h-[48px] px-4 py-3
-                                border border-slate-200 rounded-xl
-                                text-slate-700
-                                focus:outline-none focus:ring-2 focus:ring-teal focus:border-transparent
+                                border rounded-xl
+                                focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent
                               "
+                              style={{ color: 'var(--mid)', borderColor: 'var(--border)' }}
                             >
                               <option value="">Select...</option>
                               {field.options?.map((opt) => (
@@ -806,10 +810,10 @@ export function QuickAddMenu({
                               onChange={(e) => handleFieldChange(field.key, e.target.value)}
                               className="
                                 w-full min-h-[48px] px-4 py-3
-                                border border-slate-200 rounded-xl
-                                text-slate-700
-                                focus:outline-none focus:ring-2 focus:ring-teal focus:border-transparent
+                                border rounded-xl
+                                focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent
                               "
+                              style={{ color: 'var(--mid)', borderColor: 'var(--border)' }}
                             />
                           ) : field.type === 'time' ? (
                             <input
@@ -818,10 +822,10 @@ export function QuickAddMenu({
                               onChange={(e) => handleFieldChange(field.key, e.target.value)}
                               className="
                                 w-full min-h-[48px] px-4 py-3
-                                border border-slate-200 rounded-xl
-                                text-slate-700
-                                focus:outline-none focus:ring-2 focus:ring-teal focus:border-transparent
+                                border rounded-xl
+                                focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent
                               "
+                              style={{ color: 'var(--mid)', borderColor: 'var(--border)' }}
                             />
                           ) : (
                             <input
@@ -831,10 +835,10 @@ export function QuickAddMenu({
                               placeholder={field.placeholder}
                               className="
                                 w-full min-h-[48px] px-4 py-3
-                                border border-slate-200 rounded-xl
-                                text-slate-700 placeholder:text-slate-400
-                                focus:outline-none focus:ring-2 focus:ring-teal focus:border-transparent
+                                border rounded-xl
+                                focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent
                               "
+                              style={{ color: 'var(--mid)', borderColor: 'var(--border)' }}
                             />
                           )}
                         </>
@@ -850,12 +854,12 @@ export function QuickAddMenu({
                     disabled={isSubmitting}
                     className="
                       flex-1 min-h-[48px]
-                      border border-slate-200 rounded-xl
-                      text-slate-600 font-medium
-                      hover:bg-slate-50 active:bg-slate-100
+                      border rounded-xl
+                      font-medium
                       transition-colors
                       disabled:opacity-50
                     "
+                    style={{ color: 'var(--mid)', borderColor: 'var(--border)' }}
                   >
                     Cancel
                   </button>
@@ -864,9 +868,9 @@ export function QuickAddMenu({
                     disabled={isSubmitting}
                     className="
                       flex-1 min-h-[48px]
-                      bg-teal text-white rounded-xl
+                      bg-[var(--accent)] text-white rounded-xl
                       font-medium
-                      hover:bg-teal-600 active:bg-teal-700
+                      hover:bg-[var(--accent)] active:bg-[var(--accent)]
                       transition-colors
                       disabled:opacity-50
                       flex items-center justify-center gap-2
@@ -908,12 +912,12 @@ function QuickAddButton({ action, onClick }: QuickAddButtonProps) {
         flex flex-col items-center justify-center
         min-h-[80px] min-w-[48px] p-2
         rounded-2xl
-        bg-slate-50 hover:bg-slate-100 active:bg-slate-200
         transition-colors
       "
+      style={{ background: 'var(--surface)' }}
     >
       <span className="text-2xl mb-1">{action.icon}</span>
-      <span className="text-xs font-medium text-slate-600 text-center leading-tight">{action.label}</span>
+      <span className="text-xs font-medium text-center leading-tight" style={{ color: 'var(--mid)' }}>{action.label}</span>
     </button>
   );
 }
@@ -942,9 +946,10 @@ function ToggleField({ field, actionId, value, onChange }: ToggleFieldProps) {
           type="checkbox"
           checked={value === 'true'}
           onChange={(e) => onChange(e.target.checked ? 'true' : '')}
-          className="w-5 h-5 rounded border-slate-300 text-teal focus:ring-teal"
+          className="w-5 h-5 rounded text-[var(--accent)] focus:ring-[var(--accent)]"
+          style={{ borderColor: 'var(--border-s)' }}
         />
-        <span className="text-sm font-medium text-slate-700">{field.label}</span>
+        <span className="text-sm font-medium" style={{ color: 'var(--mid)' }}>{field.label}</span>
       </label>
     );
   }
@@ -964,10 +969,11 @@ function ToggleField({ field, actionId, value, onChange }: ToggleFieldProps) {
             flex-1 min-h-[48px] rounded-xl font-medium
             transition-colors
             ${value === opt.value
-              ? 'bg-teal text-white'
-              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              ? 'bg-[var(--accent)] text-white'
+              : ''
             }
           `}
+          style={value === opt.value ? undefined : { background: 'var(--surface-2)', color: 'var(--mid)' }}
         >
           {opt.label}
         </button>

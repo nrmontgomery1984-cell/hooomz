@@ -10,7 +10,7 @@ import { useServicesContext } from '../services/ServicesContext';
 import { useLocalBusinessHealth, useLocalRecentActivity, useIntakeDrafts } from './useLocalData';
 import { useLeadPipeline } from './useLeadData';
 import { useOverBudgetTasks, useTrainingRecords, useActiveCrewMembers } from './useCrewData';
-import type { TaskBudget, TrainingRecord, ChangeOrder, CrewMember, JobStage } from '@hooomz/shared-contracts';
+import type { TaskBudget, TrainingRecord, ChangeOrder, CrewMember, JobStage, DesignStage } from '@hooomz/shared-contracts';
 
 // ============================================================================
 // Types
@@ -21,6 +21,7 @@ export interface ActiveProjectSummary {
   name: string;
   status: string;
   jobStage?: JobStage;
+  design_stage?: DesignStage;
   healthScore: number;
   taskCount: number;
   completedCount: number;
@@ -40,6 +41,7 @@ export interface DashboardData {
 
   // Projects
   activeProjects: ActiveProjectSummary[];
+  allProjects: Array<{ id: string; status: string; jobStage?: JobStage; design_stage?: DesignStage }>;
 
   // Needs attention
   overBudgetTasks: TaskBudget[];
@@ -123,6 +125,7 @@ export function useDashboardData(): DashboardData {
       name: p.name,
       status: p.status,
       jobStage: p.jobStage,
+      design_stage: p.design_stage as DesignStage | undefined,
       healthScore: p.health_score ?? 0,
       taskCount: p.taskCount,
       completedCount: p.completedCount,
@@ -163,6 +166,12 @@ export function useDashboardData(): DashboardData {
     blockedTaskCount: 0, // TODO: would need per-task status tracking
 
     activeProjects,
+    allProjects: health.projects.map((p) => ({
+      id: p.id,
+      status: p.status,
+      jobStage: p.jobStage,
+      design_stage: p.design_stage as DesignStage | undefined,
+    })),
 
     overBudgetTasks: overBudgetRaw,
     readyForReview,

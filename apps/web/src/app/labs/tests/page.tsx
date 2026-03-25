@@ -33,7 +33,7 @@ export default function LabsTestsPage() {
       <div style={{ minHeight: '100vh', paddingBottom: 96, background: 'var(--bg)' }}>
         <div className="max-w-lg mx-auto px-4 py-12 text-center">
           <div className="w-8 h-8 border-3 rounded-full animate-spin mx-auto mb-3" style={{ borderColor: 'var(--border)', borderTopColor: 'var(--blue)' }} />
-          <p className="text-sm" style={{ color: 'var(--text-3)' }}>Loading test pipeline...</p>
+          <p className="text-sm" style={{ color: 'var(--muted)' }}>Loading test pipeline...</p>
         </div>
       </div>
     );
@@ -54,14 +54,14 @@ export default function LabsTestsPage() {
   return (
     <div style={{ minHeight: '100vh', paddingBottom: 96, background: 'var(--bg)' }}>
       {/* Header */}
-      <div style={{ background: 'var(--surface-1)', borderBottom: '1px solid var(--border)' }}>
+      <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex items-center gap-2 mb-1">
             <Link href="/labs" className="text-sm hover:underline" style={{ color: LABS_COLOR }}>Labs</Link>
-            <span className="text-xs" style={{ color: 'var(--text-3)' }}>/</span>
+            <span className="text-xs" style={{ color: 'var(--muted)' }}>/</span>
           </div>
-          <h1 className="text-xl font-bold" style={{ color: 'var(--text)' }}>Test Pipeline</h1>
-          <p className="text-xs mt-0.5" style={{ color: 'var(--text-3)' }}>{totalTests} test{totalTests !== 1 ? 's' : ''} across PDCA stages</p>
+          <h1 className="text-xl font-bold" style={{ color: 'var(--charcoal)' }}>Test Pipeline</h1>
+          <p className="text-xs mt-0.5" style={{ color: 'var(--muted)' }}>{totalTests} test{totalTests !== 1 ? 's' : ''} across PDCA stages</p>
         </div>
 
         {/* Category filter tabs */}
@@ -77,7 +77,7 @@ export default function LabsTestsPage() {
                   padding: '8px 14px', minHeight: 40,
                   background: 'none', border: 'none', cursor: 'pointer',
                   borderBottom: active ? `2px solid ${LABS_COLOR}` : '2px solid transparent',
-                  color: active ? LABS_COLOR : 'var(--text-3)',
+                  color: active ? LABS_COLOR : 'var(--muted)',
                   fontSize: 12, fontWeight: active ? 700 : 500,
                   whiteSpace: 'nowrap', flexShrink: 0,
                   transition: 'color 150ms',
@@ -92,8 +92,8 @@ export default function LabsTestsPage() {
 
       <div className="max-w-4xl mx-auto px-4 mt-4 space-y-4">
         {totalTests === 0 ? (
-          <div style={{ background: 'var(--surface-1)', borderRadius: 'var(--radius)', border: '1px solid var(--border)', padding: 32, textAlign: 'center', boxShadow: 'var(--shadow-card)' }}>
-            <p className="text-sm" style={{ color: 'var(--text-3)' }}>No tests yet.</p>
+          <div style={{ background: 'var(--surface)', borderRadius: 'var(--radius)', border: '1px solid var(--border)', padding: 32, textAlign: 'center', boxShadow: 'var(--shadow-card)' }}>
+            <p className="text-sm" style={{ color: 'var(--muted)' }}>No tests yet.</p>
             <Link href="/labs/seed" className="text-sm hover:underline mt-2 inline-block" style={{ color: LABS_COLOR }}>
               Seed data
             </Link>

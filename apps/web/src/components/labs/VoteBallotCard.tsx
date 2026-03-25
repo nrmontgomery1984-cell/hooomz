@@ -14,10 +14,10 @@ interface VoteBallotCardProps {
   className?: string;
 }
 
-const STATUS_STYLES: Record<string, string> = {
-  draft: 'bg-gray-100 text-gray-600',
-  active: 'bg-green-100 text-green-700',
-  closed: 'bg-red-100 text-red-600',
+const STATUS_STYLES: Record<string, React.CSSProperties> = {
+  draft: { background: 'var(--surface-2)', color: 'var(--mid)' },
+  active: { background: '#dcfce7', color: '#15803d' },
+  closed: { background: '#fee2e2', color: 'var(--red)' },
 };
 
 function getBarWidth(option: BallotOption, totalVotes: number): string {
@@ -26,7 +26,7 @@ function getBarWidth(option: BallotOption, totalVotes: number): string {
 }
 
 export function VoteBallotCard({ ballot, hasVoted, onVote, className = '' }: VoteBallotCardProps) {
-  const statusStyle = STATUS_STYLES[ballot.status] || 'bg-gray-100 text-gray-600';
+  const statusStyle = STATUS_STYLES[ballot.status] || { background: 'var(--surface-2)', color: 'var(--mid)' };
   const isActive = ballot.status === 'active';
   const canVote = isActive && !hasVoted && !!onVote;
 
@@ -36,18 +36,24 @@ export function VoteBallotCard({ ballot, hasVoted, onVote, className = '' }: Vot
     ballot.status === 'closed' && option.voteCount === maxVotes && maxVotes > 0;
 
   return (
-    <div className={`bg-white rounded-xl border border-gray-200 p-5 shadow-sm ${className}`}>
+    <div
+      className={`rounded-xl border p-5 shadow-sm ${className}`}
+      style={{ background: 'var(--surface)', borderColor: 'var(--border)' }}
+    >
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-base font-semibold text-gray-900">Week {ballot.id}</h3>
-          <p className="text-xs text-gray-500">
+          <h3 className="text-base font-semibold" style={{ color: 'var(--charcoal)' }}>Week {ballot.id}</h3>
+          <p className="text-xs" style={{ color: 'var(--muted)' }}>
             {ballot.weekStart} — {ballot.weekEnd}
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-400">{ballot.totalVotes} vote{ballot.totalVotes !== 1 ? 's' : ''}</span>
-          <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${statusStyle}`}>
+          <span className="text-xs" style={{ color: 'var(--muted)' }}>{ballot.totalVotes} vote{ballot.totalVotes !== 1 ? 's' : ''}</span>
+          <span
+            className="inline-flex px-2 py-0.5 text-xs font-medium rounded-full"
+            style={statusStyle}
+          >
             {ballot.status}
           </span>
         </div>
@@ -60,19 +66,26 @@ export function VoteBallotCard({ ballot, hasVoted, onVote, className = '' }: Vot
           return (
             <div
               key={option.testId}
-              className={`rounded-lg border p-3 ${winner ? 'border-teal-300 bg-teal-50' : 'border-gray-100 bg-gray-50'}`}
+              className="rounded-lg border p-3"
+              style={winner
+                ? { borderColor: '#5eead4', background: '#f0fdfa' }
+                : { borderColor: 'var(--border)', background: 'var(--surface)' }
+              }
             >
               <div className="flex items-start justify-between mb-1">
                 <div className="flex-1 min-w-0">
-                  <h4 className={`text-sm font-medium ${winner ? 'text-teal-800' : 'text-gray-800'}`}>
+                  <h4
+                    className="text-sm font-medium"
+                    style={{ color: winner ? '#115e59' : 'var(--charcoal)' }}
+                  >
                     {option.title}
-                    {winner && <span className="ml-1.5 text-xs text-teal-600">Winner</span>}
+                    {winner && <span className="ml-1.5 text-xs text-[var(--accent)]">Winner</span>}
                   </h4>
-                  <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{option.description}</p>
+                  <p className="text-xs mt-0.5 line-clamp-2" style={{ color: 'var(--muted)' }}>{option.description}</p>
                 </div>
                 {canVote && (
                   <button
-                    className="ml-3 px-3 py-1.5 text-xs font-medium rounded-lg bg-teal-700 text-white hover:bg-teal-800 transition-colors flex-shrink-0"
+                    className="ml-3 px-3 py-1.5 text-xs font-medium rounded-lg bg-[var(--accent)] text-white hover:bg-[var(--accent)] transition-colors flex-shrink-0"
                     onClick={() => onVote(option.testId)}
                   >
                     Vote
@@ -84,13 +97,16 @@ export function VoteBallotCard({ ballot, hasVoted, onVote, className = '' }: Vot
               {ballot.totalVotes > 0 && (
                 <div className="mt-2">
                   <div className="flex items-center gap-2">
-                    <div className="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                    <div
+                      className="flex-1 h-1.5 rounded-full overflow-hidden"
+                      style={{ background: 'var(--surface-3)' }}
+                    >
                       <div
-                        className={`h-full rounded-full transition-all ${winner ? 'bg-teal-600' : 'bg-gray-400'}`}
-                        style={{ width: getBarWidth(option, ballot.totalVotes) }}
+                        className={`h-full rounded-full transition-all ${winner ? 'bg-[var(--accent)]' : ''}`}
+                        style={{ width: getBarWidth(option, ballot.totalVotes), ...(!winner ? { background: 'var(--muted)' } : {}) }}
                       />
                     </div>
-                    <span className="text-xs text-gray-500 tabular-nums w-12 text-right">
+                    <span className="text-xs tabular-nums w-12 text-right" style={{ color: 'var(--muted)' }}>
                       {option.voteCount} ({ballot.totalVotes > 0 ? Math.round((option.voteCount / ballot.totalVotes) * 100) : 0}%)
                     </span>
                   </div>
@@ -103,7 +119,7 @@ export function VoteBallotCard({ ballot, hasVoted, onVote, className = '' }: Vot
 
       {/* Vote state message */}
       {isActive && hasVoted && (
-        <p className="text-xs text-gray-500 mt-3 text-center">You&apos;ve already voted on this ballot.</p>
+        <p className="text-xs mt-3 text-center" style={{ color: 'var(--muted)' }}>You&apos;ve already voted on this ballot.</p>
       )}
     </div>
   );

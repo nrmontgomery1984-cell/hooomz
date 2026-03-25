@@ -37,12 +37,36 @@ export type ChangeOrderInitiatorType =
   | 'site_condition'
   | 'sub_trade';
 
+/** Aliases for UI display — maps to initiatorType values */
+export type COInitiatedBy = 'customer' | 'contractor' | 'vendor' | 'zero_cost';
+
+/** Maps UI initiator labels to integration initiatorType values */
+export const CO_INITIATED_BY_MAP: Record<COInitiatedBy, ChangeOrderInitiatorType> = {
+  customer: 'client_request',
+  contractor: 'contractor_recommendation',
+  vendor: 'sub_trade',
+  zero_cost: 'site_condition',
+};
+
+/** Reverse map: initiatorType → display label */
+export const CO_INITIATOR_LABEL: Record<ChangeOrderInitiatorType, string> = {
+  client_request: 'Customer',
+  contractor_recommendation: 'Contractor',
+  sub_trade: 'Vendor',
+  site_condition: 'Zero Cost',
+};
+
 export type ChangeOrderStatus =
   | 'draft'
   | 'pending_approval'
   | 'approved'
   | 'declined'
   | 'cancelled';
+
+/** Alias used in the spec — maps to existing status values */
+export type COStatus = ChangeOrderStatus | 'rejected' | 'void';
+
+export type COLineItemAction = 'add' | 'remove' | 'modify';
 
 export interface ChangeOrder {
   id: string;
@@ -60,6 +84,18 @@ export interface ChangeOrder {
   declinedReason: string | null;
   createdBy: string;
   metadata: Metadata;
+
+  // Extended fields (v2 — all optional for backward compatibility)
+  org_id?: string;
+  property_id?: string;
+  estimate_id?: string;
+  original_total?: number;
+  delta_total?: number;
+  revised_total?: number;
+  client_name?: string;
+  client_email?: string;
+  approval_method?: 'signature' | 'email' | 'verbal';
+  approval_note?: string;
 }
 
 export interface ChangeOrderLineItem {
@@ -75,6 +111,12 @@ export interface ChangeOrderLineItem {
   generatesTaskTemplates: boolean;
   taskTemplateIds: string[];
   metadata: Metadata;
+
+  // Extended fields (v2 — all optional for backward compatibility)
+  action?: COLineItemAction;
+  quantity?: number;
+  unit?: string;
+  unit_price?: number;
 }
 
 // ============================================================================
@@ -421,18 +463,39 @@ export interface DeployedTask {
 // ============================================================================
 
 export type CrewTier = 'learner' | 'proven' | 'lead' | 'master';
+export type CrewRole = 'owner' | 'operator' | 'installer';
+
+export interface CrewCertification {
+  name: string;           // e.g. "First Aid", "Working at Heights", "WHMIS"
+  issuedBy?: string;      // issuing body
+  issuedAt?: string;      // ISO date
+  expiresAt?: string;     // ISO date — null = no expiry
+  status: 'active' | 'expired' | 'pending';
+}
+
+export interface EmergencyContact {
+  name: string;
+  relationship: string;
+  phone: string;
+}
 
 export interface CrewMember {
   id: string;
   name: string;
   role: string;
+  authRole: CrewRole;
   tier: CrewTier;
+  supabaseUserId?: string;
+  email?: string;
+  phone?: string;
+  emergencyContact?: EmergencyContact;
   tradeSpecialties: string[];
   wageRate: number;
   chargedRate: number;
   isActive: boolean;
   startDate: string;
   certifications: string[];
+  structuredCertifications?: CrewCertification[];
   metadata: Metadata;
 }
 

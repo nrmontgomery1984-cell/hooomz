@@ -68,8 +68,8 @@ import type { ActivityEvent } from '@/lib/repositories/activity.repository';
 // ── Temperature → left border accent colours ──
 const TEMP_BORDER: Record<string, string> = {
   hot:  '#c2410c',
-  warm: '#d97706',
-  cool: '#3b82f6',
+  warm: 'var(--yellow)',
+  cool: 'var(--blue)',
 };
 
 // ── Design tokens — Hooomz Digital Brand & Design System v1.0 ──
@@ -77,13 +77,13 @@ const FIG = "'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-seri
 const MONO = "'DM Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', ui-monospace, monospace";
 
 // Surfaces
-const BG = '#F0EDE8';                       // --bg: warm linen
-const CARD = '#FAF8F5';                     // --surface: card bg
+const BG = 'var(--bg)';                       // --bg: warm linen
+const CARD = 'var(--surface)';                     // --surface: card bg
 const SURFACE2 = '#E8E4DE';                 // --surface-2: tab bars, deeper surface
 
 // Text
-const INK = '#1A1714';                      // --charcoal: primary text
-const INK2 = '#5C5349';                     // --mid: body text
+const INK = 'var(--charcoal)';                      // --charcoal: primary text
+const INK2 = 'var(--mid)';                     // --mid: body text
 const INK3 = '#9A8E84';                     // --muted: labels, secondary
 const FAINT = '#D4CEC7';                    // --faint: decorative lines
 
@@ -128,13 +128,13 @@ const STAGE_LABELS: Record<LeadStage, string> = {
 };
 
 const STAGE_COLORS: Record<LeadStage, string> = {
-  new: '#8B5CF6',
-  contacted: '#F59E0B',
-  discovery: '#3B82F6',
+  new: 'var(--violet)',
+  contacted: 'var(--yellow)',
+  discovery: 'var(--blue)',
   site_visit: '#6366F1',
-  quote_sent: '#0F766E',
-  won: '#10B981',
-  lost: '#9CA3AF',
+  quote_sent: 'var(--accent)',
+  won: 'var(--green)',
+  lost: 'var(--muted)',
 };
 
 
@@ -277,15 +277,23 @@ export default function LeadPipelinePage() {
     });
   };
 
-  const filteredLeads =
+  const filteredLeads = useMemo(() =>
     stageFilter === 'all'
       ? pipeline.leads
-      : pipeline.leads.filter((l) => l.stage === stageFilter);
+      : pipeline.leads.filter((l) => l.stage === stageFilter),
+    [pipeline.leads, stageFilter]
+  );
 
-  const grouped = STAGE_ORDER.map((stage) => ({
-    stage,
-    leads: filteredLeads.filter((l) => l.stage === stage),
-  })).filter((g) => g.leads.length > 0);
+  const grouped = useMemo(() =>
+    STAGE_ORDER.map((stage) => ({
+      stage,
+      leads: filteredLeads.filter((l) => l.stage === stage),
+    })).filter((g) => g.leads.length > 0),
+    [filteredLeads]
+  );
+
+  const hotCount = useMemo(() => pipeline.leads.filter((l) => l.temperature === 'hot' && l.stage !== 'won' && l.stage !== 'lost').length, [pipeline.leads]);
+  const warmCount = useMemo(() => pipeline.leads.filter((l) => l.temperature === 'warm' && l.stage !== 'won' && l.stage !== 'lost').length, [pipeline.leads]);
 
   if (pipeline.isLoading) {
     return (
@@ -297,9 +305,6 @@ export default function LeadPipelinePage() {
       </div>
     );
   }
-
-  const hotCount = pipeline.leads.filter((l) => l.temperature === 'hot' && l.stage !== 'won' && l.stage !== 'lost').length;
-  const warmCount = pipeline.leads.filter((l) => l.temperature === 'warm' && l.stage !== 'won' && l.stage !== 'lost').length;
 
   return (
     <PageErrorBoundary>
@@ -736,9 +741,9 @@ function LeadCard({ lead, defaultExpanded = false }: { lead: LeadRecord; default
     <div
       style={{
         padding: '14px 16px',
-        background: '#ffffff',
-        border: '1px solid #ddd9d3',
-        borderLeft: `3px solid ${TEMP_BORDER[temperature] || '#3b82f6'}`,
+        background: 'var(--surface)',
+        border: '1px solid var(--border)',
+        borderLeft: `3px solid ${TEMP_BORDER[temperature] || 'var(--blue)'}`,
         borderRadius: 2,
         opacity: stage === 'lost' ? 0.6 : 1,
       }}
@@ -753,7 +758,7 @@ function LeadCard({ lead, defaultExpanded = false }: { lead: LeadRecord; default
               {fullName}
             </span>
             {lead.isOverdueFollowUp && (
-              <span style={{ fontFamily: MONO, fontSize: 7, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase' as const, padding: '2px 7px', borderRadius: 3, background: 'rgba(220,38,38,.08)', color: '#DC2626', border: '1px solid rgba(220,38,38,.2)', flexShrink: 0 }}>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 7, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase' as const, padding: '2px 7px', borderRadius: 3, background: 'var(--red-bg)', color: 'var(--red)', border: '1px solid rgba(220,38,38,.2)', flexShrink: 0 }}>
                 Overdue
               </span>
             )}
@@ -771,7 +776,7 @@ function LeadCard({ lead, defaultExpanded = false }: { lead: LeadRecord; default
         {/* Row 2: Scope tags + metadata — clean, monochrome */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
           {displayScopes.map((scope) => (
-            <span key={scope} style={{ fontFamily: MONO, fontSize: 7, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase' as const, padding: '2px 7px', borderRadius: 3, background: ACCENT_BG, color: ACCENT, border: `1px solid ${ACCENT_BORDER}` }}>
+            <span key={scope} style={{ fontFamily: 'var(--font-mono)', fontSize: 7, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase' as const, padding: '2px 7px', borderRadius: 3, background: ACCENT_BG, color: ACCENT, border: `1px solid ${ACCENT_BORDER}` }}>
               {SCOPE_LABELS[scope] || scope}
             </span>
           ))}
@@ -789,7 +794,7 @@ function LeadCard({ lead, defaultExpanded = false }: { lead: LeadRecord; default
             </span>
           )}
           {sourceLabel && (
-            <span style={{ fontFamily: MONO, fontSize: 7, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase' as const, padding: '2px 7px', borderRadius: 3, background: ACCENT_BG, color: ACCENT, border: `1px solid ${ACCENT_BORDER}` }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 7, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase' as const, padding: '2px 7px', borderRadius: 3, background: ACCENT_BG, color: ACCENT, border: `1px solid ${ACCENT_BORDER}` }}>
               {sourceLabel}
             </span>
           )}
@@ -1009,7 +1014,7 @@ function LeadCard({ lead, defaultExpanded = false }: { lead: LeadRecord; default
 
       {/* Expanded detail panel — READ MODE */}
       {expanded && !editing && (
-        <div style={{ marginTop: 12, padding: 12, background: '#F0EDE8', borderTop: '1px solid #ddd9d3', display: 'flex', flexDirection: 'column' as const, gap: 12 }}>
+        <div style={{ marginTop: 12, padding: 12, background: 'var(--bg)', borderTop: '1px solid var(--border)', display: 'flex', flexDirection: 'column' as const, gap: 12 }}>
           {/* Contact */}
           <DetailSection title="Contact">
             {customer.phone && <DetailRow label="Phone" value={customer.phone} />}
@@ -1138,26 +1143,26 @@ function LeadCard({ lead, defaultExpanded = false }: { lead: LeadRecord; default
                 ))}
 
                 {/* Total row */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 10px 8px', borderTop: '1px solid #ddd9d3' }}>
-                  <p style={{ fontFamily: MONO, fontSize: 11, fontWeight: 700, color: '#111010', margin: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 10px 8px', borderTop: '1px solid var(--border)' }}>
+                  <p style={{ fontFamily: MONO, fontSize: 11, fontWeight: 700, color: 'var(--dark-nav)', margin: 0 }}>
                     Estimated Total
                   </p>
-                  <p style={{ fontFamily: FIG, fontSize: 15, fontWeight: 700, color: '#111010', margin: 0 }}>
+                  <p style={{ fontFamily: FIG, fontSize: 15, fontWeight: 700, color: 'var(--dark-nav)', margin: 0 }}>
                     ${breakdown.totalMid.toLocaleString()}
                   </p>
                 </div>
               </div>
 
               {/* Range bar */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontFamily: MONO, fontSize: 10, color: '#888', marginBottom: 4 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontFamily: MONO, fontSize: 10, color: 'var(--muted)', marginBottom: 4 }}>
                 <span>${breakdown.low.toLocaleString()}</span>
-                <span style={{ fontWeight: 500, color: '#888' }}>
+                <span style={{ fontWeight: 500, color: 'var(--muted)' }}>
                   Range ({breakdown.totalSqft.toLocaleString()} sqft, {breakdown.roomCount} rm{breakdown.roomCount !== 1 ? 's' : ''})
                 </span>
                 <span>${breakdown.high.toLocaleString()}</span>
               </div>
-              <div style={{ height: 4, borderRadius: 2, overflow: 'hidden', background: '#ddd9d3' }}>
-                <div style={{ height: '100%', borderRadius: 2, background: '#111010', width: '100%' }} />
+              <div style={{ height: 4, borderRadius: 2, overflow: 'hidden', background: 'var(--border)' }}>
+                <div style={{ height: '100%', borderRadius: 2, background: 'var(--dark-nav)', width: '100%' }} />
               </div>
             </div>
           )}
@@ -1187,14 +1192,14 @@ function LeadCard({ lead, defaultExpanded = false }: { lead: LeadRecord; default
                   value={stage}
                   onChange={(e) => handleStageChange(e.target.value)}
                   disabled={updateStage.isPending || passLead.isPending}
-                  style={{ minHeight: 30, padding: '4px 24px 4px 8px', borderRadius: 2, fontFamily: MONO, fontSize: 10, fontWeight: 500, letterSpacing: '1px', textTransform: 'uppercase' as const, appearance: 'none' as const, cursor: 'pointer', background: 'transparent', color: '#111010', border: '1px solid #ddd9d3', opacity: (updateStage.isPending || passLead.isPending) ? 0.6 : 1 }}
+                  style={{ minHeight: 30, padding: '4px 24px 4px 8px', borderRadius: 2, fontFamily: MONO, fontSize: 10, fontWeight: 500, letterSpacing: '1px', textTransform: 'uppercase' as const, appearance: 'none' as const, cursor: 'pointer', background: 'transparent', color: 'var(--dark-nav)', border: '1px solid var(--border)', opacity: (updateStage.isPending || passLead.isPending) ? 0.6 : 1 }}
                 >
                   {(['new', 'contacted', 'lost'] as LeadStage[]).map((s) => (
                     <option key={s} value={s}>{STAGE_LABELS[s]}</option>
                   ))}
                 </select>
               ) : (
-                <span style={{ minHeight: 30, padding: '4px 10px', borderRadius: 2, fontFamily: MONO, fontSize: 10, fontWeight: 500, letterSpacing: '1px', textTransform: 'uppercase' as const, display: 'inline-flex', alignItems: 'center', background: 'transparent', color: '#111010', border: '1px solid #ddd9d3' }}>
+                <span style={{ minHeight: 30, padding: '4px 10px', borderRadius: 2, fontFamily: MONO, fontSize: 10, fontWeight: 500, letterSpacing: '1px', textTransform: 'uppercase' as const, display: 'inline-flex', alignItems: 'center', background: 'transparent', color: 'var(--dark-nav)', border: '1px solid var(--border)' }}>
                   {STAGE_LABELS[stage]}
                 </span>
               )}
@@ -1205,7 +1210,7 @@ function LeadCard({ lead, defaultExpanded = false }: { lead: LeadRecord; default
                   {lead.followUpDate && !showFollowUpPicker && (
                     <button
                       onClick={() => { setShowFollowUpPicker(true); setFollowUpInput(lead.followUpDate || ''); }}
-                      style={{ fontFamily: MONO, fontSize: 10, fontWeight: 500, padding: '4px 8px', borderRadius: RADIUS_SM, border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 3, background: lead.isOverdueFollowUp ? '#FEF2F2' : BG, color: lead.isOverdueFollowUp ? '#EF4444' : INK3 }}
+                      style={{ fontFamily: MONO, fontSize: 10, fontWeight: 500, padding: '4px 8px', borderRadius: RADIUS_SM, border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 3, background: lead.isOverdueFollowUp ? 'var(--red-bg)' : BG, color: lead.isOverdueFollowUp ? 'var(--red)' : INK3 }}
                     >
                       <Clock size={10} />
                       {lead.followUpDate}
@@ -1238,7 +1243,7 @@ function LeadCard({ lead, defaultExpanded = false }: { lead: LeadRecord; default
                 Set
               </button>
               {lead.followUpDate && (
-                <button onClick={handleClearFollowUp} disabled={setFollowUp.isPending} style={{ ...actionBtn, background: '#FEF2F2', color: '#EF4444', border: '1px solid #FECACA' }}>
+                <button onClick={handleClearFollowUp} disabled={setFollowUp.isPending} style={{ ...actionBtn, background: 'var(--red-bg)', color: 'var(--red)', border: '1px solid var(--red-bg)' }}>
                   Clear
                 </button>
               )}
@@ -1353,15 +1358,15 @@ function LeadCard({ lead, defaultExpanded = false }: { lead: LeadRecord; default
 
       {/* Delete confirmation */}
       {showDeleteConfirm && (
-        <div style={{ marginTop: 8, borderRadius: RADIUS, padding: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#FEF2F2', border: '1px solid #FECACA' }}>
-          <p style={{ fontFamily: FIG, fontSize: 11, fontWeight: 500, color: '#991B1B', margin: 0 }}>
+        <div style={{ marginTop: 8, borderRadius: RADIUS, padding: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--red-bg)', border: '1px solid var(--red-bg)' }}>
+          <p style={{ fontFamily: FIG, fontSize: 11, fontWeight: 500, color: 'var(--red)', margin: 0 }}>
             Delete {fullName}?{linkedProject ? ' Project will also be removed.' : ''}
           </p>
           <div style={{ display: 'flex', gap: 6, flexShrink: 0, marginLeft: 8 }}>
             <button onClick={() => setShowDeleteConfirm(false)} style={{ ...actionBtn, background: CARD }}>
               Cancel
             </button>
-            <button onClick={handleDelete} disabled={deleteLead.isPending} style={{ ...actionBtn, background: '#EF4444', color: '#fff', border: '1px solid #EF4444' }}>
+            <button onClick={handleDelete} disabled={deleteLead.isPending} style={{ ...actionBtn, background: 'var(--red)', color: '#fff', border: '1px solid var(--red)' }}>
               {deleteLead.isPending ? '...' : 'Delete'}
             </button>
           </div>
@@ -1395,11 +1400,11 @@ const NOTE_EVENT_ICON_MAP: Record<string, typeof Phone> = {
 };
 
 const OUTCOME_COLORS: Record<string, { bg: string; text: string }> = {
-  positive: { bg: '#ECFDF5', text: '#10B981' },
-  neutral: { bg: '#F3F4F6', text: '#6B7280' },
-  needs_follow_up: { bg: '#FFFBEB', text: '#F59E0B' },
-  no_answer: { bg: '#F3F4F6', text: '#9CA3AF' },
-  declined: { bg: '#FEF2F2', text: '#EF4444' },
+  positive: { bg: 'var(--green-bg)', text: 'var(--green)' },
+  neutral: { bg: 'var(--surface-2)', text: 'var(--muted)' },
+  needs_follow_up: { bg: 'var(--yellow-bg)', text: 'var(--yellow)' },
+  no_answer: { bg: 'var(--surface-2)', text: 'var(--muted)' },
+  declined: { bg: 'var(--red-bg)', text: 'var(--red)' },
 };
 
 function LeadActivitySection({
@@ -1619,10 +1624,10 @@ function DetailSection({ title, children }: { title: string; children: ReactNode
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
     <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8 }}>
-      <span style={{ fontFamily: MONO, fontSize: 11, fontWeight: 400, color: '#888' }}>
+      <span style={{ fontFamily: MONO, fontSize: 11, fontWeight: 400, color: 'var(--muted)' }}>
         {label}
       </span>
-      <span style={{ fontFamily: FIG, fontSize: 13, fontWeight: 400, textAlign: 'right' as const, color: '#111010' }}>
+      <span style={{ fontFamily: FIG, fontSize: 13, fontWeight: 400, textAlign: 'right' as const, color: 'var(--dark-nav)' }}>
         {value}
       </span>
     </div>

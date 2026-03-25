@@ -169,10 +169,10 @@ export function HomeownerActivityFeed({
   if (isError) {
     return (
       <div className={`py-8 text-center ${className}`}>
-        <p className="text-slate-500 mb-3">Unable to load updates</p>
+        <p className="text-[var(--muted)] mb-3">Unable to load updates</p>
         <button
           onClick={() => refetch()}
-          className="text-teal font-medium min-h-[44px] px-4"
+          className="text-[var(--accent)] font-medium min-h-[44px] px-4"
         >
           Try again
         </button>
@@ -193,7 +193,7 @@ export function HomeownerActivityFeed({
 
       {/* Refresh indicator */}
       {isRefreshing && (
-        <div className="text-center py-2 text-sm text-slate-400">
+        <div className="text-center py-2 text-sm text-[var(--muted)]">
           Refreshing...
         </div>
       )}
@@ -224,9 +224,9 @@ export function HomeownerActivityFeed({
             onClick={() => fetchNextPage()}
             disabled={isFetchingNextPage}
             className="
-              w-full py-3 text-sm font-medium text-teal
+              w-full py-3 text-sm font-medium text-[var(--accent)]
               min-h-[44px] rounded-xl
-              bg-teal/5 hover:bg-teal/10 transition-colors
+              bg-[var(--accent-bg)] hover:bg-[var(--accent-bg)] transition-colors
               disabled:opacity-50 disabled:cursor-not-allowed
             "
           >
@@ -242,9 +242,9 @@ export function HomeownerActivityFeed({
             onClick={handleRefresh}
             disabled={isRefreshing}
             className="
-              text-sm text-slate-400
+              text-sm text-[var(--muted)]
               min-h-[44px] px-4
-              hover:text-slate-600 transition-colors
+              hover:text-[var(--mid)] transition-colors
             "
           >
             {isRefreshing ? 'Refreshing...' : 'Tap to refresh'}
@@ -288,8 +288,8 @@ function HomeownerEmptyState({ filter }: { filter: HomeownerFilterOption }) {
         {filter === 'photos' && '📷'}
         {filter === 'payments' && '💳'}
       </div>
-      <p className="text-slate-600 font-medium mb-1">{title}</p>
-      <p className="text-slate-400 text-sm">{subtitle}</p>
+      <p className="text-[var(--mid)] font-medium mb-1">{title}</p>
+      <p className="text-[var(--muted)] text-sm">{subtitle}</p>
     </div>
   );
 }
@@ -313,7 +313,7 @@ export function SimpleHomeownerActivityFeed({
 
   if (displayEvents.length === 0) {
     return (
-      <p className="text-slate-400 text-sm text-center py-4">
+      <p className="text-[var(--muted)] text-sm text-center py-4">
         No updates yet
       </p>
     );

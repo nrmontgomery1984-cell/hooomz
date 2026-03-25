@@ -61,7 +61,7 @@ export function SOPSheetContent({ sopId, onOpenKnowledge }: SOPSheetContentProps
   if (!sop) {
     return (
       <div className="py-8 text-center">
-        <p className="text-sm" style={{ color: '#9CA3AF' }}>SOP not found: {sopId}</p>
+        <p className="text-sm" style={{ color: 'var(--muted)' }}>SOP not found: {sopId}</p>
       </div>
     );
   }
@@ -72,15 +72,15 @@ export function SOPSheetContent({ sopId, onOpenKnowledge }: SOPSheetContentProps
       <div>
         <div className="flex items-center gap-2 mb-1">
           <span className="text-[11px] font-medium px-2 py-0.5 rounded-full"
-            style={{ background: '#F0FDFA', color: '#0F766E' }}
+            style={{ background: 'var(--green-bg)', color: 'var(--accent)' }}
           >
             {sop.code}
           </span>
           {sop.isFromDatabase && (
-            <Database size={12} style={{ color: '#9CA3AF' }} />
+            <Database size={12} style={{ color: 'var(--muted)' }} />
           )}
         </div>
-        <h3 className="text-base font-semibold" style={{ color: '#111827' }}>
+        <h3 className="text-base font-semibold" style={{ color: 'var(--charcoal)' }}>
           {sop.title}
         </h3>
       </div>
@@ -88,17 +88,17 @@ export function SOPSheetContent({ sopId, onOpenKnowledge }: SOPSheetContentProps
       {/* Stop conditions */}
       {sop.stopConditions.length > 0 && (
         <div className="space-y-2">
-          <p className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: '#EF4444' }}>
+          <p className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: 'var(--red)' }}>
             Stop Conditions
           </p>
           {sop.stopConditions.map((condition, i) => (
             <div
               key={i}
               className="rounded-lg p-3 flex items-start gap-2"
-              style={{ background: '#FEF2F2', borderLeft: '3px solid #EF4444' }}
+              style={{ background: 'var(--red-bg)', borderLeft: '3px solid var(--red)' }}
             >
-              <AlertTriangle size={14} style={{ color: '#EF4444', flexShrink: 0, marginTop: 1 }} />
-              <span className="text-xs leading-relaxed" style={{ color: '#991B1B' }}>{condition}</span>
+              <AlertTriangle size={14} style={{ color: 'var(--red)', flexShrink: 0, marginTop: 1 }} />
+              <span className="text-xs leading-relaxed" style={{ color: 'var(--red)' }}>{condition}</span>
             </div>
           ))}
         </div>
@@ -106,7 +106,7 @@ export function SOPSheetContent({ sopId, onOpenKnowledge }: SOPSheetContentProps
 
       {/* Steps */}
       <div>
-        <p className="text-[11px] font-semibold uppercase tracking-wide mb-2" style={{ color: '#6B7280' }}>
+        <p className="text-[11px] font-semibold uppercase tracking-wide mb-2" style={{ color: 'var(--muted)' }}>
           Steps
         </p>
         <div className="space-y-0">
@@ -114,15 +114,15 @@ export function SOPSheetContent({ sopId, onOpenKnowledge }: SOPSheetContentProps
             <div
               key={step.order}
               className="flex items-start gap-3 py-2.5"
-              style={{ borderBottom: '1px solid #F3F4F6' }}
+              style={{ borderBottom: '1px solid var(--surface-2)' }}
             >
               <span
                 className="text-xs font-semibold flex-shrink-0 w-5 text-right mt-0.5"
-                style={{ color: '#9CA3AF' }}
+                style={{ color: 'var(--muted)' }}
               >
                 {step.order}.
               </span>
-              <span className="text-xs leading-relaxed" style={{ color: '#374151' }}>
+              <span className="text-xs leading-relaxed" style={{ color: 'var(--mid)' }}>
                 {step.action}
               </span>
             </div>
@@ -133,7 +133,7 @@ export function SOPSheetContent({ sopId, onOpenKnowledge }: SOPSheetContentProps
       {/* Lab evidence */}
       {sop.criticalStandards.length > 0 && (
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-wide mb-2" style={{ color: '#6B7280' }}>
+          <p className="text-[11px] font-semibold uppercase tracking-wide mb-2" style={{ color: 'var(--muted)' }}>
             Lab Evidence
           </p>
           <div className="space-y-2">
@@ -146,25 +146,25 @@ export function SOPSheetContent({ sopId, onOpenKnowledge }: SOPSheetContentProps
                   onClick={() => isLabTest && onOpenKnowledge?.(cs.source)}
                   className="w-full text-left rounded-lg p-3 flex items-start gap-2.5 transition-colors"
                   style={{
-                    background: isLabTest ? '#FAF5FF' : '#F9FAFB',
-                    border: isLabTest ? '1px solid #E9D5FF' : '1px solid #F3F4F6',
+                    background: isLabTest ? 'var(--violet-bg)' : 'var(--surface)',
+                    border: isLabTest ? '1px solid var(--violet-bg)' : '1px solid var(--surface-2)',
                     cursor: isLabTest && onOpenKnowledge ? 'pointer' : 'default',
                   }}
                 >
                   <span
                     className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full flex-shrink-0 mt-0.5"
                     style={{
-                      background: isLabTest ? '#7C3AED' : '#E5E7EB',
-                      color: isLabTest ? '#FFFFFF' : '#6B7280',
+                      background: isLabTest ? 'var(--violet)' : 'var(--border)',
+                      color: isLabTest ? '#fff' : 'var(--muted)',
                     }}
                   >
                     {isLabTest ? cs.source : 'SOP'}
                   </span>
-                  <span className="text-xs leading-relaxed flex-1" style={{ color: '#374151' }}>
+                  <span className="text-xs leading-relaxed flex-1" style={{ color: 'var(--mid)' }}>
                     {cs.standard}
                   </span>
                   {isLabTest && onOpenKnowledge && (
-                    <FlaskConical size={12} className="flex-shrink-0 mt-0.5" style={{ color: '#7C3AED' }} />
+                    <FlaskConical size={12} className="flex-shrink-0 mt-0.5" style={{ color: 'var(--violet)' }} />
                   )}
                 </button>
               );
@@ -178,7 +178,7 @@ export function SOPSheetContent({ sopId, onOpenKnowledge }: SOPSheetContentProps
         <Link
           href={`/labs/sops/${sop.detailId}`}
           className="inline-flex items-center gap-1 text-xs font-medium hover:underline"
-          style={{ color: '#0F766E' }}
+          style={{ color: 'var(--accent)' }}
         >
           Open full SOP page <ExternalLink size={12} />
         </Link>

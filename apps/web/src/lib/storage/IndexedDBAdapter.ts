@@ -7,7 +7,7 @@ import type { StorageAdapter } from './StorageAdapter';
 import { StoreNames } from './StorageAdapter';
 
 const DB_NAME = 'hooomz_db';
-const DB_VERSION = 33; // v33: Catalogue — costItems, materialRecords, labsReviews, materialPriceLog
+const DB_VERSION = 36; // v36: Risk Register
 
 export class IndexedDBAdapter implements StorageAdapter {
   private db: IDBDatabase | null = null;
@@ -161,6 +161,45 @@ export class IndexedDBAdapter implements StorageAdapter {
           }
         }
 
+        // v34 migration: create properties store with indexes
+        if (oldVersion < 34 && !db.objectStoreNames.contains('properties')) {
+          const propertyStore = db.createObjectStore('properties', {
+            keyPath: 'id',
+          });
+          propertyStore.createIndex('org_id', 'org_id', { unique: false });
+          propertyStore.createIndex('customer_id', 'customer_id', { unique: false });
+          propertyStore.createIndex('created_at', 'created_at', { unique: false });
+        }
+
+        // v35: Passports + passport entries
+        if (oldVersion < 35 && !db.objectStoreNames.contains('passports')) {
+          const passportStore = db.createObjectStore('passports', {
+            keyPath: 'id',
+          });
+          passportStore.createIndex('org_id', 'org_id', { unique: false });
+          passportStore.createIndex('property_id', 'property_id', { unique: true });
+        }
+
+        if (oldVersion < 35 && !db.objectStoreNames.contains('passportEntries')) {
+          const entryStore = db.createObjectStore('passportEntries', {
+            keyPath: 'id',
+          });
+          entryStore.createIndex('org_id', 'org_id', { unique: false });
+          entryStore.createIndex('passport_id', 'passport_id', { unique: false });
+          entryStore.createIndex('project_id', 'project_id', { unique: true });
+          entryStore.createIndex('property_id', 'property_id', { unique: false });
+        }
+
+        // v36: Risk Register
+        if (oldVersion < 36 && !db.objectStoreNames.contains('riskEntries')) {
+          const riskStore = db.createObjectStore('riskEntries', { keyPath: 'id' });
+          riskStore.createIndex('by_trade', 'trade', { unique: false });
+          riskStore.createIndex('by_severity', 'severity', { unique: false });
+          riskStore.createIndex('by_status', 'status', { unique: false });
+          riskStore.createIndex('by_linked_sop', 'linkedSopId', { unique: false });
+          riskStore.createIndex('by_source', 'source', { unique: false });
+        }
+
         // Build 3b migration: fix timeEntries indexes (crewMemberId → team_member_id)
         if (oldVersion < 9 && db.objectStoreNames.contains(StoreNames.TIME_ENTRIES)) {
           const teStore = tx.objectStore(StoreNames.TIME_ENTRIES);
@@ -304,6 +343,13 @@ export class IndexedDBAdapter implements StorageAdapter {
       [StoreNames.MATERIAL_RECORDS]: ['category', 'tier', 'division', 'labs_status', 'supplier'],
       [StoreNames.LABS_REVIEWS]: ['material_id', 'reviewer_id'],
       [StoreNames.MATERIAL_PRICE_LOG]: ['material_id', 'recorded_at'],
+      // Properties (v34)
+      [StoreNames.PROPERTIES]: ['org_id', 'customer_id', 'created_at'],
+      // Passports (v35)
+      [StoreNames.PASSPORTS]: ['org_id', 'property_id'],
+      [StoreNames.PASSPORT_ENTRIES]: ['org_id', 'passport_id', 'project_id', 'property_id'],
+      // Risk Register (v36)
+      [StoreNames.RISK_ENTRIES]: ['trade', 'severity', 'status', 'linkedSopId', 'source'],
     };
 
     const storeIndexes = indexes[storeName] || [];

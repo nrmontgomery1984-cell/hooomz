@@ -15,12 +15,12 @@ export interface ScriptPhaseInfo {
 }
 
 export const SCRIPT_PHASES: Record<ScriptPhase, ScriptPhaseInfo> = {
-  shield:   { label: 'Shield',   color: '#10B981', icon: 'Shield',         order: 1, description: 'Safety & protection' },
-  clear:    { label: 'Clear',    color: '#EF4444', icon: 'Trash2',         order: 2, description: 'Demo & removal' },
-  ready:    { label: 'Ready',    color: '#F97316', icon: 'Wrench',         order: 3, description: 'Prep & prime' },
-  install:  { label: 'Install',  color: '#3B82F6', icon: 'Hammer',         order: 4, description: 'Core work' },
-  punch:    { label: 'Punch',    color: '#8B5CF6', icon: 'ClipboardCheck', order: 5, description: 'Quality check' },
-  turnover: { label: 'Turnover', color: '#0F766E', icon: 'UserCheck',      order: 6, description: 'Handoff & cleanup' },
+  shield:   { label: 'Shield',   color: 'var(--green)', icon: 'Shield',         order: 1, description: 'Safety & protection' },
+  clear:    { label: 'Clear',    color: 'var(--red)', icon: 'Trash2',         order: 2, description: 'Demo & removal' },
+  ready:    { label: 'Ready',    color: 'var(--yellow)', icon: 'Wrench',         order: 3, description: 'Prep & prime' },
+  install:  { label: 'Install',  color: 'var(--blue)', icon: 'Hammer',         order: 4, description: 'Core work' },
+  punch:    { label: 'Punch',    color: 'var(--violet)', icon: 'ClipboardCheck', order: 5, description: 'Quality check' },
+  turnover: { label: 'Turnover', color: 'var(--accent)', icon: 'UserCheck',      order: 6, description: 'Handoff & cleanup' },
 };
 
 /** Ordered list of SCRIPT phases */

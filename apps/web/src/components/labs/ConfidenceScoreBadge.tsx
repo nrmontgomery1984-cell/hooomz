@@ -16,7 +16,7 @@ interface ConfidenceScoreBadgeProps {
 
 function getScoreColor(score: number): string {
   if (score >= 90) return 'bg-green-100 text-green-800 border-green-200';
-  if (score >= 70) return 'bg-teal-100 text-teal-800 border-teal-200';
+  if (score >= 70) return 'bg-[var(--accent-bg)] text-[var(--accent)] border-[var(--accent-border)]';
   if (score >= 50) return 'bg-amber-100 text-amber-800 border-amber-200';
   if (score >= 30) return 'bg-orange-100 text-orange-800 border-orange-200';
   return 'bg-red-100 text-red-800 border-red-200';

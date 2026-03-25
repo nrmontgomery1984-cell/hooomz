@@ -118,10 +118,10 @@ export default function VariancePage() {
             onClick={() => setSelectedQ(i)}
             style={{
               padding: '6px 14px', fontSize: 12, fontWeight: selectedQ === i ? 600 : 500,
-              borderRadius: 6, border: '1px solid var(--border, #E5E7EB)',
-              background: selectedQ === i ? 'var(--blue, #3B82F6)' : 'var(--surface-1, #FFFFFF)',
-              color: selectedQ === i ? 'white' : 'var(--text-2, #6B7280)',
-              cursor: 'pointer', fontFamily: 'var(--font-sans)',
+              borderRadius: 6, border: '1px solid var(--border)',
+              background: selectedQ === i ? 'var(--blue)' : 'var(--surface)',
+              color: selectedQ === i ? 'white' : 'var(--mid)',
+              cursor: 'pointer', fontFamily: 'var(--font-body)',
             }}
           >
             {qDef.label}
@@ -131,11 +131,11 @@ export default function VariancePage() {
 
       {/* Variance table */}
       <div style={{
-        background: 'var(--surface-1, #FFFFFF)', borderRadius: 12, border: '1px solid var(--border, #E5E7EB)',
+        background: 'var(--surface)', borderRadius: 12, border: '1px solid var(--border)',
         overflow: 'hidden',
       }}>
-        <div style={{ padding: '14px 16px', borderBottom: '1px solid var(--border, #E5E7EB)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-3, #9CA3AF)' }}>
+        <div style={{ padding: '14px 16px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--muted)' }}>
             Forecast vs Actual — {q.label}
           </div>
           <button
@@ -144,9 +144,9 @@ export default function VariancePage() {
             style={{
               display: 'flex', alignItems: 'center', gap: 6,
               padding: '6px 12px', fontSize: 12, fontWeight: 600, borderRadius: 6,
-              border: 'none', background: 'var(--blue, #3B82F6)', color: 'white',
+              border: 'none', background: 'var(--blue)', color: 'white',
               cursor: !config || !actuals ? 'not-allowed' : 'pointer',
-              opacity: !config || !actuals ? 0.5 : 1, fontFamily: 'var(--font-sans)',
+              opacity: !config || !actuals ? 0.5 : 1, fontFamily: 'var(--font-body)',
             }}
           >
             <Camera size={14} />
@@ -155,14 +155,14 @@ export default function VariancePage() {
         </div>
 
         <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, fontFamily: 'var(--font-sans)' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, fontFamily: 'var(--font-body)' }}>
             <thead>
-              <tr style={{ borderBottom: '1px solid var(--border, #E5E7EB)' }}>
-                <th style={{ padding: '8px 12px', textAlign: 'left', fontWeight: 600, color: 'var(--text-2, #6B7280)', fontSize: 11 }}>Metric</th>
-                <th style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 600, color: 'var(--text-2, #6B7280)', fontSize: 11 }}>Forecast</th>
-                <th style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 600, color: 'var(--text-2, #6B7280)', fontSize: 11 }}>Actual</th>
-                <th style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 600, color: 'var(--text-2, #6B7280)', fontSize: 11 }}>Variance</th>
-                <th style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 600, color: 'var(--text-2, #6B7280)', fontSize: 11 }}>%</th>
+              <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                <th style={{ padding: '8px 12px', textAlign: 'left', fontWeight: 600, color: 'var(--mid)', fontSize: 11 }}>Metric</th>
+                <th style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 600, color: 'var(--mid)', fontSize: 11 }}>Forecast</th>
+                <th style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 600, color: 'var(--mid)', fontSize: 11 }}>Actual</th>
+                <th style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 600, color: 'var(--mid)', fontSize: 11 }}>Variance</th>
+                <th style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 600, color: 'var(--mid)', fontSize: 11 }}>%</th>
               </tr>
             </thead>
             <tbody>
@@ -194,29 +194,29 @@ export default function VariancePage() {
       {/* Snapshot history */}
       {periodSnapshots.length > 0 && (
         <div style={{
-          background: 'var(--surface-1, #FFFFFF)', borderRadius: 12, border: '1px solid var(--border, #E5E7EB)',
+          background: 'var(--surface)', borderRadius: 12, border: '1px solid var(--border)',
           overflow: 'hidden',
         }}>
-          <div style={{ padding: '14px 16px', borderBottom: '1px solid var(--border, #E5E7EB)' }}>
-            <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-3, #9CA3AF)' }}>
+          <div style={{ padding: '14px 16px', borderBottom: '1px solid var(--border)' }}>
+            <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--muted)' }}>
               Snapshot History — {q.label}
             </div>
           </div>
           <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12, fontFamily: 'var(--font-sans)' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12, fontFamily: 'var(--font-body)' }}>
               <thead>
-                <tr style={{ borderBottom: '1px solid var(--border, #E5E7EB)' }}>
-                  <th style={{ padding: '8px 12px', textAlign: 'left', fontWeight: 600, color: 'var(--text-2, #6B7280)', fontSize: 11 }}>Date</th>
-                  <th style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 600, color: 'var(--text-2, #6B7280)', fontSize: 11 }}>Forecast Rev</th>
-                  <th style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 600, color: 'var(--text-2, #6B7280)', fontSize: 11 }}>Actual Rev</th>
-                  <th style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 600, color: 'var(--text-2, #6B7280)', fontSize: 11 }}>Rev Var %</th>
-                  <th style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 600, color: 'var(--text-2, #6B7280)', fontSize: 11 }}>Profit Var %</th>
+                <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                  <th style={{ padding: '8px 12px', textAlign: 'left', fontWeight: 600, color: 'var(--mid)', fontSize: 11 }}>Date</th>
+                  <th style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 600, color: 'var(--mid)', fontSize: 11 }}>Forecast Rev</th>
+                  <th style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 600, color: 'var(--mid)', fontSize: 11 }}>Actual Rev</th>
+                  <th style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 600, color: 'var(--mid)', fontSize: 11 }}>Rev Var %</th>
+                  <th style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 600, color: 'var(--mid)', fontSize: 11 }}>Profit Var %</th>
                 </tr>
               </thead>
               <tbody>
                 {periodSnapshots.sort((a, b) => b.snapshotDate.localeCompare(a.snapshotDate)).map((snap) => (
-                  <tr key={snap.id} style={{ borderBottom: '1px solid var(--border, #E5E7EB)' }}>
-                    <td style={{ padding: '8px 12px', color: 'var(--text, #111827)' }}>
+                  <tr key={snap.id} style={{ borderBottom: '1px solid var(--border)' }}>
+                    <td style={{ padding: '8px 12px', color: 'var(--charcoal)' }}>
                       {new Date(snap.snapshotDate).toLocaleDateString('en-CA')}
                     </td>
                     <td style={{ padding: '8px 12px', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{fmt(snap.forecastRevenue)}</td>
@@ -246,16 +246,16 @@ function VarianceRow({ label, forecast, actual, loading }: {
   const variancePct = hasActual && forecast > 0 ? (variance / forecast) * 100 : 0;
 
   return (
-    <tr style={{ borderBottom: '1px solid var(--border, #E5E7EB)' }}>
-      <td style={{ padding: '10px 12px', fontWeight: 600, color: 'var(--text, #111827)' }}>{label}</td>
+    <tr style={{ borderBottom: '1px solid var(--border)' }}>
+      <td style={{ padding: '10px 12px', fontWeight: 600, color: 'var(--charcoal)' }}>{label}</td>
       <td style={{ padding: '10px 12px', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{fmt(forecast)}</td>
       <td style={{ padding: '10px 12px', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
         {loading ? '...' : hasActual ? fmt(actual) : '—'}
       </td>
-      <td style={{ padding: '10px 12px', textAlign: 'right', fontVariantNumeric: 'tabular-nums', color: hasActual ? varianceColor(variancePct) : 'var(--text-3, #9CA3AF)' }}>
+      <td style={{ padding: '10px 12px', textAlign: 'right', fontVariantNumeric: 'tabular-nums', color: hasActual ? varianceColor(variancePct) : 'var(--muted)' }}>
         {hasActual ? fmtVar(variance) : '—'}
       </td>
-      <td style={{ padding: '10px 12px', textAlign: 'right', fontVariantNumeric: 'tabular-nums', color: hasActual ? varianceColor(variancePct) : 'var(--text-3, #9CA3AF)' }}>
+      <td style={{ padding: '10px 12px', textAlign: 'right', fontVariantNumeric: 'tabular-nums', color: hasActual ? varianceColor(variancePct) : 'var(--muted)' }}>
         {hasActual ? fmtPct(variancePct) : '—'}
       </td>
     </tr>
@@ -263,7 +263,7 @@ function VarianceRow({ label, forecast, actual, loading }: {
 }
 
 function varianceColor(pct: number): string {
-  if (pct > 5) return '#10B981';
-  if (pct < -5) return '#EF4444';
-  return '#6B7280';
+  if (pct > 5) return 'var(--green)';
+  if (pct < -5) return 'var(--red)';
+  return 'var(--muted)';
 }

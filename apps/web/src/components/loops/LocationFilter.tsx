@@ -37,12 +37,12 @@ export function LocationFilter({ projectId, selectedIterationId, onSelect }: Loc
 
   return (
     <div className="flex items-center gap-2">
-      <MapPin size={14} style={{ color: '#6B7280' }} />
+      <MapPin size={14} style={{ color: 'var(--muted)' }} />
       <select
         value={selectedIterationId || ''}
         onChange={(e) => onSelect(e.target.value || null)}
         className="text-sm px-2 py-1.5 rounded-lg appearance-none"
-        style={{ border: '1px solid #E5E7EB', background: '#FFFFFF', outline: 'none', color: '#374151' }}
+        style={{ border: '1px solid var(--border)', background: 'var(--surface)', outline: 'none', color: 'var(--mid)' }}
       >
         <option value="">All locations</option>
         {options.map((opt) => (

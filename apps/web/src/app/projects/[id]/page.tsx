@@ -474,13 +474,13 @@ export default function ProjectDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#F3F4F6' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--surface-2)' }}>
         <div className="text-center">
           <div
             className="w-12 h-12 border-4 rounded-full animate-spin mx-auto mb-4"
-            style={{ borderColor: '#E5E7EB', borderTopColor: '#0F766E' }}
+            style={{ borderColor: 'var(--border)', borderTopColor: 'var(--accent)' }}
           />
-          <p style={{ color: '#6B7280' }}>Loading project...</p>
+          <p style={{ color: 'var(--muted)' }}>Loading project...</p>
         </div>
       </div>
     );
@@ -488,13 +488,13 @@ export default function ProjectDetailPage() {
 
   if (!project) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#F3F4F6' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--surface-2)' }}>
         <div className="text-center">
-          <p className="text-lg font-medium mb-2" style={{ color: '#111827' }}>Project not found</p>
+          <p className="text-lg font-medium mb-2" style={{ color: 'var(--charcoal)' }}>Project not found</p>
           <button
             onClick={() => router.push('/')}
             className="text-sm font-medium min-h-[44px]"
-            style={{ color: '#0F766E' }}
+            style={{ color: 'var(--accent)' }}
           >
             Back to Home
           </button>
@@ -517,7 +517,7 @@ export default function ProjectDetailPage() {
         <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}>
           <div style={{ textAlign: 'center' }}>
             <div style={{ width: 32, height: 32, border: '2px solid var(--border)', borderTopColor: 'var(--blue)', borderRadius: '50%', animation: 'spin 0.7s linear infinite', margin: '0 auto 10px' }} />
-            <p style={{ fontSize: 12, color: 'var(--text-3)' }}>Loading project…</p>
+            <p style={{ fontSize: 12, color: 'var(--muted)' }}>Loading project…</p>
           </div>
         </div>
       )}
@@ -526,7 +526,7 @@ export default function ProjectDetailPage() {
       {!isLoading && !project && (
         <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}>
           <div style={{ textAlign: 'center' }}>
-            <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>Project not found</p>
+            <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--charcoal)', marginBottom: 8 }}>Project not found</p>
             <button onClick={() => router.push('/')} style={{ fontSize: 12, color: 'var(--blue)', background: 'none', border: 'none', cursor: 'pointer', minHeight: 44 }}>
               Back to Home
             </button>
@@ -548,30 +548,30 @@ export default function ProjectDetailPage() {
           <div style={{ height: isMobile ? 'auto' : '100vh', minHeight: isMobile ? '100vh' : undefined, display: 'flex', flexDirection: 'column', overflow: isMobile ? 'auto' : 'hidden', background: 'var(--bg)' }}>
 
             {/* ── Header ── */}
-            <div style={{ background: 'var(--surface-1)', borderBottom: '1px solid var(--border)', flexShrink: 0, zIndex: 20 }}>
+            <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)', flexShrink: 0, zIndex: 20 }}>
               {/* Top row: back, name, status, actions */}
               <div style={{ height: isMobile ? 52 : 64, display: 'flex', alignItems: 'center', gap: isMobile ? 8 : 12, padding: isMobile ? '0 12px' : '0 18px' }}>
                 {/* Back */}
-                <button onClick={() => router.push('/')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: 'var(--text-3)', display: 'flex', alignItems: 'center', minHeight: 44 }}>
+                <button onClick={() => router.push('/')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: 'var(--muted)', display: 'flex', alignItems: 'center', minHeight: 44 }}>
                   <ChevronLeft size={16} strokeWidth={2} />
                 </button>
 
                 {/* Name + address (address hidden on mobile) */}
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontFamily: 'var(--font-cond)', fontSize: isMobile ? 16 : 20, fontWeight: 700, color: 'var(--text)', lineHeight: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: isMobile ? 16 : 20, fontWeight: 700, color: 'var(--charcoal)', lineHeight: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {project.name}
                   </div>
                   {!isMobile && (
                     <div style={{ display: 'flex', gap: 12, marginTop: 3 }}>
-                      {addressDisplay && <span style={{ fontSize: 11, color: 'var(--text-2)' }}><MapPin size={10} strokeWidth={1.5} style={{ display: 'inline', marginRight: 2 }} />{addressDisplay}</span>}
-                      {customer && <span style={{ fontSize: 11, color: 'var(--text-2)' }}>{customer.firstName} {customer.lastName}</span>}
-                      {project.dates.startDate && <span style={{ fontSize: 11, color: 'var(--text-2)' }}>{project.dates.startDate}{project.dates.estimatedEndDate ? ` → ${project.dates.estimatedEndDate}` : ''}</span>}
+                      {addressDisplay && <span style={{ fontSize: 11, color: 'var(--mid)' }}><MapPin size={10} strokeWidth={1.5} style={{ display: 'inline', marginRight: 2 }} />{addressDisplay}</span>}
+                      {customer && <span style={{ fontSize: 11, color: 'var(--mid)' }}>{customer.firstName} {customer.lastName}</span>}
+                      {project.dates.startDate && <span style={{ fontSize: 11, color: 'var(--mid)' }}>{project.dates.startDate}{project.dates.estimatedEndDate ? ` → ${project.dates.estimatedEndDate}` : ''}</span>}
                     </div>
                   )}
                 </div>
 
                 {/* Status pill */}
-                <div style={{ background: 'var(--blue-dim)', color: 'var(--blue)', border: '1px solid rgba(37,99,235,0.2)', borderRadius: 'var(--radius)', fontFamily: 'var(--font-cond)', fontSize: 10, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '3px 8px', flexShrink: 0 }}>
+                <div style={{ background: 'var(--blue-bg)', color: 'var(--blue)', border: '1px solid rgba(37,99,235,0.2)', borderRadius: 'var(--radius)', fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '3px 8px', flexShrink: 0 }}>
                   {project.status}
                 </div>
 
@@ -585,19 +585,19 @@ export default function ProjectDetailPage() {
                 )}
 
                 {/* Rooms */}
-                <Link href={`/production/jobs/${projectId}/rooms`} style={{ background: 'none', border: '1px solid var(--border)', borderRadius: 'var(--radius)', cursor: 'pointer', padding: '0 8px', color: 'var(--text-2)', display: 'flex', alignItems: 'center', gap: 4, minHeight: 32, textDecoration: 'none' }} title="Rooms & Materials">
+                <Link href={`/production/jobs/${projectId}/rooms`} style={{ background: 'none', border: '1px solid var(--border)', borderRadius: 'var(--radius)', cursor: 'pointer', padding: '0 8px', color: 'var(--mid)', display: 'flex', alignItems: 'center', gap: 4, minHeight: 32, textDecoration: 'none' }} title="Rooms & Materials">
                   <Layers size={12} strokeWidth={2} />
-                  {!isMobile && <span style={{ fontFamily: 'var(--font-cond)', fontSize: 10, fontWeight: 600, letterSpacing: '0.04em' }}>ROOMS</span>}
+                  {!isMobile && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600, letterSpacing: '0.04em' }}>ROOMS</span>}
                 </Link>
 
                 {/* Add Task */}
-                <button onClick={() => setShowAddTask(true)} style={{ background: 'none', border: '1px solid var(--teal)', borderRadius: 'var(--radius)', cursor: 'pointer', padding: '0 8px', color: 'var(--teal)', display: 'flex', alignItems: 'center', gap: 4, minHeight: 32 }} title="Add task">
+                <button onClick={() => setShowAddTask(true)} style={{ background: 'none', border: '1px solid var(--accent)', borderRadius: 'var(--radius)', cursor: 'pointer', padding: '0 8px', color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: 4, minHeight: 32 }} title="Add task">
                   <Plus size={12} strokeWidth={2} />
-                  {!isMobile && <span style={{ fontFamily: 'var(--font-cond)', fontSize: 10, fontWeight: 600, letterSpacing: '0.04em' }}>TASK</span>}
+                  {!isMobile && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600, letterSpacing: '0.04em' }}>TASK</span>}
                 </button>
 
                 {/* Delete */}
-                <button onClick={() => setShowDeleteConfirm(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: 'var(--text-3)', display: 'flex', alignItems: 'center', minHeight: 44 }} title="Delete project">
+                <button onClick={() => setShowDeleteConfirm(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: 'var(--muted)', display: 'flex', alignItems: 'center', minHeight: 44 }} title="Delete project">
                   <Trash2 size={14} strokeWidth={1.5} />
                 </button>
               </div>
@@ -641,8 +641,8 @@ export default function ProjectDetailPage() {
                       onClick={() => setMobileSection(tab)}
                       style={{
                         flex: 1,
-                        fontFamily: 'var(--font-cond)', fontSize: 12, fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase',
-                        color: mobileSection === tab ? 'var(--blue)' : 'var(--text-3)',
+                        fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase',
+                        color: mobileSection === tab ? 'var(--blue)' : 'var(--muted)',
                         background: 'none', border: 'none',
                         borderBottom: mobileSection === tab ? '2px solid var(--blue)' : '2px solid transparent',
                         padding: '10px 0', cursor: 'pointer',
@@ -664,7 +664,7 @@ export default function ProjectDetailPage() {
                           <button
                             key={mode}
                             onClick={() => setGroupMode(mode)}
-                            style={{ fontFamily: 'var(--font-cond)', fontSize: 11, fontWeight: 600, letterSpacing: '0.04em', color: isActive ? 'var(--blue)' : 'var(--text-3)', background: 'none', border: 'none', borderBottom: isActive ? '2px solid var(--blue)' : '2px solid transparent', padding: '8px 10px', cursor: 'pointer', transition: 'color 0.15s' }}
+                            style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 600, letterSpacing: '0.04em', color: isActive ? 'var(--blue)' : 'var(--muted)', background: 'none', border: 'none', borderBottom: isActive ? '2px solid var(--blue)' : '2px solid transparent', padding: '8px 10px', cursor: 'pointer', transition: 'color 0.15s' }}
                           >
                             {label}
                           </button>
@@ -697,13 +697,13 @@ export default function ProjectDetailPage() {
                     })}
                     {totalTasks === 0 && (
                       <div style={{ textAlign: 'center', padding: '32px 16px' }}>
-                        <p style={{ fontSize: 12, color: 'var(--text-3)', marginBottom: 4 }}>No tasks yet</p>
-                        <p style={{ fontSize: 11, color: 'var(--text-3)' }}>Use Quick Add (+) to add tasks</p>
+                        <p style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 4 }}>No tasks yet</p>
+                        <p style={{ fontSize: 11, color: 'var(--muted)' }}>Use Quick Add (+) to add tasks</p>
                       </div>
                     )}
                     {totalTasks > 0 && filteredTasks.length === 0 && (
                       <div style={{ textAlign: 'center', padding: '32px 16px' }}>
-                        <p style={{ fontSize: 12, color: 'var(--text-3)', marginBottom: 8 }}>No tasks match filters</p>
+                        <p style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 8 }}>No tasks match filters</p>
                         <button onClick={() => setFilters({ tradeCode: null, stageCode: null, room: null })} style={{ fontSize: 11, color: 'var(--blue)', background: 'none', border: 'none', cursor: 'pointer' }}>Clear filters</button>
                       </div>
                     )}
@@ -739,13 +739,13 @@ export default function ProjectDetailPage() {
                     {/* Activity */}
                     <div style={{ padding: 14, borderBottom: '1px solid var(--border)' }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-                        <span style={{ fontFamily: 'var(--font-cond)', fontSize: 9, fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--text-3)' }}>Activity Log</span>
-                        <Link href={`/activity?project=${projectId}`} style={{ fontFamily: 'var(--font-cond)', fontSize: 8, fontWeight: 600, color: 'var(--blue)', display: 'flex', alignItems: 'center', gap: 2, textDecoration: 'none' }}>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--muted)' }}>Activity Log</span>
+                        <Link href={`/activity?project=${projectId}`} style={{ fontFamily: 'var(--font-mono)', fontSize: 8, fontWeight: 600, color: 'var(--blue)', display: 'flex', alignItems: 'center', gap: 2, textDecoration: 'none' }}>
                           View All <ArrowRight size={8} />
                         </Link>
                       </div>
                       {(!activityData || activityData.events.length === 0) ? (
-                        <p style={{ fontSize: 11, color: 'var(--text-3)', textAlign: 'center', padding: '16px 0' }}>No activity yet</p>
+                        <p style={{ fontSize: 11, color: 'var(--muted)', textAlign: 'center', padding: '16px 0' }}>No activity yet</p>
                       ) : (
                         <SimpleActivityFeed events={activityData.events as any} maxItems={10} />
                       )}
@@ -769,7 +769,7 @@ export default function ProjectDetailPage() {
                         <button
                           key={mode}
                           onClick={() => setGroupMode(mode)}
-                          style={{ fontFamily: 'var(--font-cond)', fontSize: 11, fontWeight: 600, letterSpacing: '0.04em', color: isActive ? 'var(--blue)' : 'var(--text-3)', background: 'none', border: 'none', borderBottom: isActive ? '2px solid var(--blue)' : '2px solid transparent', padding: '8px 10px', cursor: 'pointer', transition: 'color 0.15s' }}
+                          style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 600, letterSpacing: '0.04em', color: isActive ? 'var(--blue)' : 'var(--muted)', background: 'none', border: 'none', borderBottom: isActive ? '2px solid var(--blue)' : '2px solid transparent', padding: '8px 10px', cursor: 'pointer', transition: 'color 0.15s' }}
                         >
                           {label}
                         </button>
@@ -821,13 +821,13 @@ export default function ProjectDetailPage() {
 
                   {totalTasks === 0 && (
                     <div style={{ textAlign: 'center', padding: '32px 16px' }}>
-                      <p style={{ fontSize: 12, color: 'var(--text-3)', marginBottom: 4 }}>No tasks yet</p>
-                      <p style={{ fontSize: 11, color: 'var(--text-3)' }}>Use Quick Add (+) to add tasks</p>
+                      <p style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 4 }}>No tasks yet</p>
+                      <p style={{ fontSize: 11, color: 'var(--muted)' }}>Use Quick Add (+) to add tasks</p>
                     </div>
                   )}
                   {totalTasks > 0 && filteredTasks.length === 0 && (
                     <div style={{ textAlign: 'center', padding: '32px 16px' }}>
-                      <p style={{ fontSize: 12, color: 'var(--text-3)', marginBottom: 8 }}>No tasks match filters</p>
+                      <p style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 8 }}>No tasks match filters</p>
                       <button onClick={() => setFilters({ tradeCode: null, stageCode: null, room: null })} style={{ fontSize: 11, color: 'var(--blue)', background: 'none', border: 'none', cursor: 'pointer' }}>
                         Clear filters
                       </button>
@@ -857,13 +857,13 @@ export default function ProjectDetailPage() {
                   {/* Activity */}
                   <div style={{ padding: 14, borderBottom: '1px solid var(--border)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-                      <span style={{ fontFamily: 'var(--font-cond)', fontSize: 9, fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--text-3)' }}>Activity Log</span>
-                      <Link href={`/activity?project=${projectId}`} style={{ fontFamily: 'var(--font-cond)', fontSize: 8, fontWeight: 600, color: 'var(--blue)', display: 'flex', alignItems: 'center', gap: 2, textDecoration: 'none' }}>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--muted)' }}>Activity Log</span>
+                      <Link href={`/activity?project=${projectId}`} style={{ fontFamily: 'var(--font-mono)', fontSize: 8, fontWeight: 600, color: 'var(--blue)', display: 'flex', alignItems: 'center', gap: 2, textDecoration: 'none' }}>
                         View All <ArrowRight size={8} />
                       </Link>
                     </div>
                     {(!activityData || activityData.events.length === 0) ? (
-                      <p style={{ fontSize: 11, color: 'var(--text-3)', textAlign: 'center', padding: '16px 0' }}>No activity yet</p>
+                      <p style={{ fontSize: 11, color: 'var(--muted)', textAlign: 'center', padding: '16px 0' }}>No activity yet</p>
                     ) : (
                       <SimpleActivityFeed events={activityData.events as any} maxItems={10} />
                     )}
@@ -898,13 +898,13 @@ export default function ProjectDetailPage() {
             {/* ── Delete confirmation ── */}
             {showDeleteConfirm && (
               <div style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.5)' }}>
-                <div style={{ background: 'var(--surface-1)', borderRadius: 8, padding: 20, maxWidth: 360, width: '90%', boxShadow: 'var(--shadow-panel)' }}>
-                  <h3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>Delete project?</h3>
-                  <p style={{ fontSize: 12, color: 'var(--text-2)', marginBottom: 16 }}>
+                <div style={{ background: 'var(--surface)', borderRadius: 8, padding: 20, maxWidth: 360, width: '90%', boxShadow: 'var(--shadow-panel)' }}>
+                  <h3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--charcoal)', marginBottom: 6 }}>Delete project?</h3>
+                  <p style={{ fontSize: 12, color: 'var(--mid)', marginBottom: 16 }}>
                     This will permanently delete <strong>{project.name}</strong> and all its tasks, line items, and activity. This cannot be undone.
                   </p>
                   <div style={{ display: 'flex', gap: 8 }}>
-                    <button onClick={() => setShowDeleteConfirm(false)} style={{ flex: 1, minHeight: 40, borderRadius: 4, fontSize: 12, fontWeight: 500, background: 'var(--surface-3)', color: 'var(--text)', border: 'none', cursor: 'pointer' }}>Cancel</button>
+                    <button onClick={() => setShowDeleteConfirm(false)} style={{ flex: 1, minHeight: 40, borderRadius: 4, fontSize: 12, fontWeight: 500, background: 'var(--surface-3)', color: 'var(--charcoal)', border: 'none', cursor: 'pointer' }}>Cancel</button>
                     <button
                       onClick={async () => { await deleteProject.mutateAsync(projectId); router.push('/'); }}
                       disabled={deleteProject.isPending}
@@ -979,14 +979,14 @@ export default function ProjectDetailPage() {
                   onClick={() => setSelectedTask(null)}
                 >
                   <div
-                    style={{ background: 'var(--surface-1)', borderRadius: 12, width: '100%', maxWidth: 480, maxHeight: '85vh', overflowY: 'auto', boxShadow: 'var(--shadow-panel)', position: 'relative' }}
+                    style={{ background: 'var(--surface)', borderRadius: 12, width: '100%', maxWidth: 480, maxHeight: '85vh', overflowY: 'auto', boxShadow: 'var(--shadow-panel)', position: 'relative' }}
                     onClick={(e) => e.stopPropagation()}
                   >
                     <button
                       onClick={() => setSelectedTask(null)}
                       style={{ position: 'absolute', top: 8, right: 8, zIndex: 1, background: 'var(--surface-3)', border: 'none', borderRadius: 6, width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
                     >
-                      <X size={14} style={{ color: 'var(--text-2)' }} />
+                      <X size={14} style={{ color: 'var(--mid)' }} />
                     </button>
                     <TaskCard
                       task={liveTask}
@@ -1006,6 +1006,7 @@ export default function ProjectDetailPage() {
                       onOpenKnowledge={handleOpenKnowledge}
                       onToggleLabsFlag={handleToggleLabsFlag}
                       onOpenLabsCapture={handleOpenLabsCapture}
+                      jobStage={effectiveStage}
                     />
                   </div>
                 </div>
@@ -1028,11 +1029,11 @@ function MobileCollapsible({ title, defaultOpen = false, children }: { title: st
         onClick={() => setOpen(!open)}
         style={{
           width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '10px 14px', background: 'var(--surface-1)', border: 'none', cursor: 'pointer',
+          padding: '10px 14px', background: 'var(--surface)', border: 'none', cursor: 'pointer',
         }}
       >
-        <span style={{ fontFamily: 'var(--font-cond)', fontSize: 11, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-2)' }}>{title}</span>
-        {open ? <ChevronUp size={14} color="var(--text-3)" /> : <ChevronDown size={14} color="var(--text-3)" />}
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--mid)' }}>{title}</span>
+        {open ? <ChevronUp size={14} color="var(--muted)" /> : <ChevronDown size={14} color="var(--muted)" />}
       </button>
       {open && children}
     </div>
@@ -1042,13 +1043,13 @@ function MobileCollapsible({ title, defaultOpen = false, children }: { title: st
 // ── Header budget item sub-component ──
 function HeaderBudgetItem({ label, value, total, pct, forceGreen }: { label: string; value: string; total: string; pct: number; forceGreen?: boolean }) {
   const barColor = forceGreen ? 'var(--green)' : pct > 100 ? 'var(--red)' : pct > 80 ? 'var(--amber)' : 'var(--green)';
-  const valueColor = forceGreen ? 'var(--green)' : pct > 100 ? 'var(--red)' : pct > 80 ? 'var(--amber)' : 'var(--text-2)';
+  const valueColor = forceGreen ? 'var(--green)' : pct > 100 ? 'var(--red)' : pct > 80 ? 'var(--amber)' : 'var(--mid)';
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2, minWidth: 72 }}>
-      <span style={{ fontFamily: 'var(--font-cond)', fontSize: 9, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-3)', lineHeight: 1 }}>{label}</span>
+      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--muted)', lineHeight: 1 }}>{label}</span>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 2 }}>
         <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 500, color: valueColor, lineHeight: 1 }}>{value}</span>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-2)', lineHeight: 1 }}>/ {total}</span>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--mid)', lineHeight: 1 }}>/ {total}</span>
       </div>
       <div style={{ width: 90, height: 3, background: 'var(--border)', borderRadius: 1, overflow: 'hidden' }}>
         <div style={{ width: `${Math.min(pct, 100)}%`, height: '100%', background: barColor, borderRadius: 1, transition: 'width 0.3s' }} />

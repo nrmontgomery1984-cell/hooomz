@@ -95,7 +95,7 @@ export function getTradeIcon(code: string): string {
 }
 
 export function getStageColor(code: string): string {
-  return STAGE_CODES[code as keyof typeof STAGE_CODES]?.color || '#9CA3AF';
+  return STAGE_CODES[code as keyof typeof STAGE_CODES]?.color || 'var(--muted)';
 }
 
 export function getLocationIcon(label: string): string {

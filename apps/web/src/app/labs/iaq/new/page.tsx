@@ -166,12 +166,12 @@ export default function IAQNewReportPage() {
       <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
 
         {/* Header */}
-        <div style={{ background: 'var(--surface-1)', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
           <div style={{ padding: '16px 32px' }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-3)', letterSpacing: '0.08em', marginBottom: 4 }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--muted)', letterSpacing: '0.08em', marginBottom: 4 }}>
               Labs › IAQ Reports › New Report
             </div>
-            <h1 style={{ fontSize: 20, fontWeight: 700, fontFamily: 'var(--font-display)', textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--text-1)', margin: 0 }}>
+            <h1 style={{ fontSize: 20, fontWeight: 700, fontFamily: 'var(--font-display)', textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--charcoal)', margin: 0 }}>
               Generate IAQ Report
             </h1>
           </div>
@@ -250,8 +250,8 @@ export default function IAQNewReportPage() {
                 padding: '12px 32px',
                 borderRadius: 6,
                 border: 'none',
-                background: isValid && !submitting ? 'var(--clay)' : 'var(--border)',
-                color: isValid && !submitting ? '#fff' : 'var(--text-3)',
+                background: isValid && !submitting ? 'var(--accent)' : 'var(--border)',
+                color: isValid && !submitting ? '#fff' : 'var(--muted)',
                 fontFamily: 'var(--font-display)',
                 fontSize: 13,
                 fontWeight: 700,
@@ -307,7 +307,7 @@ export default function IAQNewReportPage() {
 function SectionHeader({ title }: { title: string }) {
   return (
     <div style={{ marginBottom: 8 }}>
-      <span style={{ fontFamily: 'var(--font-cond)', fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-3)' }}>
+      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)' }}>
         {title}
       </span>
     </div>
@@ -318,7 +318,7 @@ function FormSection({ title, children }: { title: string; children: React.React
   return (
     <div style={{ marginBottom: 24 }}>
       <SectionHeader title={title} />
-      <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 6, padding: 16 }}>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 6, padding: 16 }}>
         {children}
       </div>
     </div>
@@ -328,7 +328,7 @@ function FormSection({ title, children }: { title: string; children: React.React
 function FormField({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
   return (
     <div style={{ marginBottom: 12 }}>
-      <label style={{ display: 'block', fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-3)', marginBottom: 4 }}>
+      <label style={{ display: 'block', fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--muted)', marginBottom: 4 }}>
         {label}{required && <span style={{ color: 'var(--red)' }}> *</span>}
       </label>
       {children}
@@ -349,7 +349,7 @@ function TextInput({ value, onChange, placeholder }: { value: string; onChange: 
         borderRadius: 4,
         border: '1px solid var(--border)',
         background: 'var(--bg)',
-        color: 'var(--text-1)',
+        color: 'var(--charcoal)',
         fontFamily: 'var(--font-body)',
         fontSize: 12,
         outline: 'none',
@@ -371,7 +371,7 @@ function DateInput({ value, onChange }: { value: string; onChange: (v: string) =
         borderRadius: 4,
         border: '1px solid var(--border)',
         background: 'var(--bg)',
-        color: 'var(--text-1)',
+        color: 'var(--charcoal)',
         fontFamily: 'var(--font-mono)',
         fontSize: 11,
         outline: 'none',
@@ -388,9 +388,9 @@ function ToggleButton({ active, onClick, label }: { active: boolean; onClick: ()
       style={{
         padding: '6px 12px',
         borderRadius: 4,
-        border: `1px solid ${active ? 'var(--clay)' : 'var(--border)'}`,
-        background: active ? 'var(--clay)' : 'var(--surface-1)',
-        color: active ? '#fff' : 'var(--text-2)',
+        border: `1px solid ${active ? 'var(--accent)' : 'var(--border)'}`,
+        background: active ? 'var(--accent)' : 'var(--surface)',
+        color: active ? '#fff' : 'var(--mid)',
         fontFamily: 'var(--font-mono)',
         fontSize: 9,
         fontWeight: 500,
@@ -431,13 +431,13 @@ function FileDropZone({ onFileChange, fileName, rowCount, error }: {
         <input type="file" accept=".csv" onChange={onFileChange} style={{ display: 'none' }} />
         {fileName ? (
           <>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-1)', fontWeight: 500 }}>{fileName}</span>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--charcoal)', fontWeight: 500 }}>{fileName}</span>
             {rowCount !== undefined && (
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-3)', marginTop: 4 }}>{rowCount} readings detected</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--muted)', marginTop: 4 }}>{rowCount} readings detected</span>
             )}
           </>
         ) : (
-          <span style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'var(--text-3)' }}>
+          <span style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'var(--muted)' }}>
             Drop AirGradient CSV export here or click to browse
           </span>
         )}
@@ -452,8 +452,8 @@ function FileDropZone({ onFileChange, fileName, rowCount, error }: {
 function PreviewRow({ label, value }: { label: string; value: string }) {
   return (
     <div style={{ marginBottom: 6 }}>
-      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</div>
-      <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'var(--text-1)', marginTop: 1 }}>{value}</div>
+      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</div>
+      <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'var(--charcoal)', marginTop: 1 }}>{value}</div>
     </div>
   );
 }

@@ -77,19 +77,19 @@ export function ExperimentCreateModal({ isOpen, onClose }: ExperimentCreateModal
     >
       <div
         className="rounded-2xl p-6 max-w-sm w-full"
-        style={{ background: '#FFFFFF' }}
+        style={{ background: 'var(--surface)' }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
-          <h3 className="text-lg font-semibold" style={{ color: '#111827' }}>
+          <h3 className="text-lg font-semibold" style={{ color: 'var(--charcoal)' }}>
             New Experiment
           </h3>
           <button
             onClick={resetAndClose}
             className="min-h-[44px] min-w-[44px] flex items-center justify-center"
           >
-            <X size={20} style={{ color: '#9CA3AF' }} />
+            <X size={20} style={{ color: 'var(--muted)' }} />
           </button>
         </div>
 
@@ -97,7 +97,7 @@ export function ExperimentCreateModal({ isOpen, onClose }: ExperimentCreateModal
         <div className="space-y-4">
           {/* Title */}
           <div>
-            <label className="text-xs font-medium mb-1 block" style={{ color: '#6B7280' }}>
+            <label className="text-xs font-medium mb-1 block" style={{ color: 'var(--muted)' }}>
               Name *
             </label>
             <input
@@ -106,14 +106,14 @@ export function ExperimentCreateModal({ isOpen, onClose }: ExperimentCreateModal
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. LVP adhesive comparison"
               className="w-full rounded-xl px-4 py-3 text-sm"
-              style={{ background: '#F9FAFB', color: '#111827', border: '1px solid #E5E7EB' }}
+              style={{ background: 'var(--surface)', color: 'var(--charcoal)', border: '1px solid var(--border)' }}
               autoFocus
             />
           </div>
 
           {/* Hypothesis */}
           <div>
-            <label className="text-xs font-medium mb-1 block" style={{ color: '#6B7280' }}>
+            <label className="text-xs font-medium mb-1 block" style={{ color: 'var(--muted)' }}>
               Hypothesis (optional)
             </label>
             <textarea
@@ -122,20 +122,20 @@ export function ExperimentCreateModal({ isOpen, onClose }: ExperimentCreateModal
               placeholder="What do you expect to find?"
               rows={2}
               className="w-full rounded-xl px-4 py-3 text-sm resize-none"
-              style={{ background: '#F9FAFB', color: '#111827', border: '1px solid #E5E7EB' }}
+              style={{ background: 'var(--surface)', color: 'var(--charcoal)', border: '1px solid var(--border)' }}
             />
           </div>
 
           {/* Knowledge Type */}
           <div>
-            <label className="text-xs font-medium mb-1 block" style={{ color: '#6B7280' }}>
+            <label className="text-xs font-medium mb-1 block" style={{ color: 'var(--muted)' }}>
               Category
             </label>
             <select
               value={knowledgeType}
               onChange={(e) => setKnowledgeType(e.target.value as KnowledgeType)}
               className="w-full rounded-xl px-4 py-3 text-sm"
-              style={{ background: '#F9FAFB', color: '#111827', border: '1px solid #E5E7EB' }}
+              style={{ background: 'var(--surface)', color: 'var(--charcoal)', border: '1px solid var(--border)' }}
             >
               {KNOWLEDGE_TYPE_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -145,7 +145,7 @@ export function ExperimentCreateModal({ isOpen, onClose }: ExperimentCreateModal
 
           {/* Sample Size */}
           <div>
-            <label className="text-xs font-medium mb-1 block" style={{ color: '#6B7280' }}>
+            <label className="text-xs font-medium mb-1 block" style={{ color: 'var(--muted)' }}>
               Required samples
             </label>
             <input
@@ -154,7 +154,7 @@ export function ExperimentCreateModal({ isOpen, onClose }: ExperimentCreateModal
               onChange={(e) => setSampleSize(Math.max(1, parseInt(e.target.value) || 1))}
               min={1}
               className="w-full rounded-xl px-4 py-3 text-sm"
-              style={{ background: '#F9FAFB', color: '#111827', border: '1px solid #E5E7EB' }}
+              style={{ background: 'var(--surface)', color: 'var(--charcoal)', border: '1px solid var(--border)' }}
             />
           </div>
         </div>
@@ -164,7 +164,7 @@ export function ExperimentCreateModal({ isOpen, onClose }: ExperimentCreateModal
           <button
             onClick={resetAndClose}
             className="flex-1 min-h-[48px] rounded-xl text-sm font-medium"
-            style={{ background: '#F3F4F6', color: '#6B7280' }}
+            style={{ background: 'var(--surface-2)', color: 'var(--muted)' }}
           >
             Cancel
           </button>
@@ -172,7 +172,7 @@ export function ExperimentCreateModal({ isOpen, onClose }: ExperimentCreateModal
             onClick={handleSave}
             disabled={!title.trim() || createExperiment.isPending}
             className="flex-1 min-h-[48px] rounded-xl text-sm font-medium text-white disabled:opacity-50"
-            style={{ background: '#0F766E' }}
+            style={{ background: 'var(--accent)' }}
           >
             {createExperiment.isPending ? 'Creating...' : 'Create'}
           </button>

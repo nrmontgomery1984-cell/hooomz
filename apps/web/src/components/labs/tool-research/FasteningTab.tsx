@@ -9,9 +9,9 @@ import { InlineEditCell } from './InlineEditCell';
 import { PurchaseModal } from './PurchaseModal';
 import { ContentStatusBadge } from './ContentStatusBadge';
 
-const TEAL = '#2A9D8F';
-const CORAL = '#E76F51';
-const LIGHT_BG = '#F5F7FA';
+const TEAL = 'var(--accent)';
+const CORAL = '#E76F51'; /* tool-research category — no canonical equivalent */
+const LIGHT_BG = 'var(--surface-2)';
 const LIGHT_TEAL = '#E6F5F3';
 const LIGHT_GOLD = '#FDF6E3';
 
@@ -26,7 +26,7 @@ export function FasteningTab({ items }: FasteningTabProps) {
   const [purchaseItem, setPurchaseItem] = useState<ToolResearchItem | null>(null);
 
   const purchasedRowStyle = (row: ToolResearchItem) =>
-    row.purchased ? { background: '#E8F5E9' } : undefined;
+    row.purchased ? { background: 'var(--green-bg)' } : undefined;
 
   return (
     <>
@@ -131,7 +131,7 @@ export function FasteningTab({ items }: FasteningTabProps) {
               nowrap: true,
               render: (_: unknown, row: ToolResearchItem) =>
                 row.purchased ? (
-                  <span style={{ color: '#2E7D32', fontSize: 11, fontWeight: 600 }}>Purchased</span>
+                  <span style={{ color: 'var(--green)', fontSize: 11, fontWeight: 600 }}>Purchased</span>
                 ) : (
                   <button
                     onClick={(e) => { e.stopPropagation(); setPurchaseItem(row); }}
@@ -139,7 +139,7 @@ export function FasteningTab({ items }: FasteningTabProps) {
                       padding: '4px 10px',
                       border: `1px solid ${TEAL}`,
                       borderRadius: 6,
-                      background: 'white',
+                      background: 'var(--surface)',
                       color: TEAL,
                       fontSize: 11,
                       fontWeight: 600,

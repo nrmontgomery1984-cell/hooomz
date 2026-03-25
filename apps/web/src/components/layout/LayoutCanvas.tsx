@@ -140,7 +140,7 @@ export function LayoutCanvas({ roomPolygon, layoutResult, height = 320 }: Props)
       style={{
         width: '100%',
         height,
-        background: 'var(--surface-1)',
+        background: 'var(--surface)',
         border: '1px solid var(--border)',
         borderRadius: 12,
         overflow: 'hidden',

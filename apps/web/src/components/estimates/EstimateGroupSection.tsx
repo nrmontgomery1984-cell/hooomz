@@ -36,7 +36,7 @@ export function EstimateGroupSection({
   return (
     <div
       className="rounded-2xl overflow-hidden"
-      style={{ background: '#FFFFFF', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}
+      style={{ background: 'var(--surface)', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}
     >
       <button
         onClick={onToggleCollapse}
@@ -48,7 +48,7 @@ export function EstimateGroupSection({
           strokeWidth={1.5}
           className="flex-shrink-0 transition-transform duration-200"
           style={{
-            color: '#9CA3AF',
+            color: 'var(--muted)',
             transform: isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
           }}
         />
@@ -61,19 +61,19 @@ export function EstimateGroupSection({
         )}
 
         <div className="flex-1 min-w-0">
-          <span className="text-sm font-semibold" style={{ color: '#111827' }}>
+          <span className="text-sm font-semibold" style={{ color: 'var(--charcoal)' }}>
             {icon} {label}
           </span>
         </div>
 
         <span
           className="text-[10px] font-medium px-1.5 py-0.5 rounded-full flex-shrink-0"
-          style={{ background: '#F3F4F6', color: '#6B7280' }}
+          style={{ background: 'var(--surface-2)', color: 'var(--muted)' }}
         >
           {itemCount}
         </span>
 
-        <span className="text-xs font-medium flex-shrink-0" style={{ color: '#9CA3AF' }}>
+        <span className="text-xs font-medium flex-shrink-0" style={{ color: 'var(--muted)' }}>
           {subtotalLabel || `$${subtotal.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`}
         </span>
       </button>

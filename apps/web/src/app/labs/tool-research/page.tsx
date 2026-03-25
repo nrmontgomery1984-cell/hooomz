@@ -23,7 +23,7 @@ import {
 } from '@/components/labs/tool-research';
 
 const NAVY = '#1B2A4A';
-const TEAL = '#2A9D8F';
+const TEAL = 'var(--accent)';
 const GOLD = '#E9C46A';
 const CORAL = '#E76F51';
 
@@ -88,15 +88,15 @@ export default function ToolResearchPage() {
   const currentExport = exportDataMap[tab];
 
   return (
-    <div className="min-h-screen pb-24" style={{ background: '#F3F4F6' }}>
+    <div className="min-h-screen pb-24" style={{ background: 'var(--surface-2)' }}>
       {/* Header */}
-      <div style={{ background: '#FFFFFF', borderBottom: '1px solid #E5E7EB' }}>
+      <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '16px 20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 4 }}>
             <Link
               href="/labs"
               style={{
-                color: '#0F766E',
+                color: 'var(--accent)',
                 fontSize: 13,
                 textDecoration: 'none',
                 fontWeight: 500,
@@ -104,8 +104,8 @@ export default function ToolResearchPage() {
             >
               Labs
             </Link>
-            <span style={{ color: '#9CA3AF', fontSize: 13 }}>/</span>
-            <span style={{ color: '#111827', fontSize: 13, fontWeight: 600 }}>
+            <span style={{ color: 'var(--muted)', fontSize: 13 }}>/</span>
+            <span style={{ color: 'var(--charcoal)', fontSize: 13, fontWeight: 600 }}>
               Tool Research
             </span>
           </div>
@@ -115,14 +115,14 @@ export default function ToolResearchPage() {
                 style={{
                   fontSize: 24,
                   fontWeight: 700,
-                  color: '#111827',
+                  color: 'var(--charcoal)',
                   margin: '8px 0 4px',
-                  fontFamily: 'Inter, system-ui, sans-serif',
+                  fontFamily: 'var(--font-body)',
                 }}
               >
                 Tool Purchase Research
               </h1>
-              <p style={{ fontSize: 13, color: '#6B7280', margin: 0 }}>
+              <p style={{ fontSize: 13, color: 'var(--muted)', margin: 0 }}>
                 EXP-002 through EXP-009 — Independent testing, evidence-based construction
               </p>
             </div>
@@ -140,8 +140,8 @@ export default function ToolResearchPage() {
       {/* Tab Bar */}
       <div
         style={{
-          background: 'white',
-          borderBottom: '2px solid #EEE',
+          background: 'var(--surface)',
+          borderBottom: '2px solid var(--border)',
           padding: '0 12px',
           overflowX: 'auto',
           whiteSpace: 'nowrap',
@@ -164,7 +164,7 @@ export default function ToolResearchPage() {
                 borderBottom:
                   tab === t.id ? `3px solid ${t.color}` : '3px solid transparent',
                 minHeight: 44,
-                fontFamily: 'Inter, system-ui, sans-serif',
+                fontFamily: 'var(--font-body)',
               }}
             >
               {t.label}
@@ -180,7 +180,7 @@ export default function ToolResearchPage() {
             style={{
               textAlign: 'center',
               padding: 40,
-              color: '#6B7280',
+              color: 'var(--muted)',
               fontSize: 14,
             }}
           >

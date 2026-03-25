@@ -73,7 +73,7 @@ export function ScriptPipeline({
       style={{
         display: 'flex',
         alignItems: 'center',
-        background: 'var(--surface-1)',
+        background: 'var(--surface)',
         borderBottom: '1px solid var(--border)',
         padding: '0 18px',
         height: 48,
@@ -84,12 +84,12 @@ export function ScriptPipeline({
       {/* "SCRIPT" label */}
       <span
         style={{
-          fontFamily: 'var(--font-cond)',
+          fontFamily: 'var(--font-mono)',
           fontSize: 9,
           fontWeight: 600,
           letterSpacing: '0.15em',
           textTransform: 'uppercase',
-          color: 'var(--text-3)',
+          color: 'var(--muted)',
           marginRight: 16,
           flexShrink: 0,
         }}
@@ -129,14 +129,14 @@ export function ScriptPipeline({
                 {/* Stage info */}
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                   <span style={{
-                    fontFamily: 'var(--font-cond)', fontSize: 10, fontWeight: 600, color, lineHeight: 1.1, whiteSpace: 'nowrap',
+                    fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600, color, lineHeight: 1.1, whiteSpace: 'nowrap',
                     borderBottom: isCurrent ? `2px solid ${color}` : 'none',
                     paddingBottom: isCurrent ? 1 : 0,
                   }}>
                     {stage.label}
                   </span>
                   {stage.total > 0 && (
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--text-3)', lineHeight: 1 }}>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--muted)', lineHeight: 1 }}>
                       {stage.completed}/{stage.total}
                     </span>
                   )}
@@ -168,10 +168,10 @@ export function ScriptPipeline({
           maxWidth: 200,
         }}
       >
-        <MiniStat value={blockerCount}  label="Block"     color={blockerCount  > 0 ? 'var(--red)'   : 'var(--text-2)'} />
-        <MiniStat value={decisionCount} label="Dec."      color={decisionCount > 0 ? 'var(--amber)' : 'var(--text-2)'} />
-        <MiniStat value={roomCount}     label="Rooms"     color="var(--text-2)" />
-        <MiniStat value={onSiteCount}   label="Site"      color="var(--text-2)" />
+        <MiniStat value={blockerCount}  label="Block"     color={blockerCount  > 0 ? 'var(--red)'   : 'var(--mid)'} />
+        <MiniStat value={decisionCount} label="Dec."      color={decisionCount > 0 ? 'var(--amber)' : 'var(--mid)'} />
+        <MiniStat value={roomCount}     label="Rooms"     color="var(--mid)" />
+        <MiniStat value={onSiteCount}   label="Site"      color="var(--mid)" />
       </div>
     </div>
   );
@@ -183,7 +183,7 @@ function MiniStat({ value, label, color }: { value: number; label: string; color
       <span style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 500, color, lineHeight: 1 }}>
         {value}
       </span>
-      <span style={{ fontFamily: 'var(--font-cond)', fontSize: 8, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-3)', lineHeight: 1 }}>
+      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--muted)', lineHeight: 1 }}>
         {label}
       </span>
     </div>

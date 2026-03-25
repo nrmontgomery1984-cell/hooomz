@@ -60,7 +60,7 @@ function SectionHeader({ children }: { children: React.ReactNode }) {
   return (
     <div style={{
       fontSize: 9, fontWeight: 700, letterSpacing: '0.14em',
-      textTransform: 'uppercase', color: 'var(--text-3)',
+      textTransform: 'uppercase', color: 'var(--muted)',
       marginBottom: 10, marginTop: 20,
     }}>
       {children}
@@ -76,7 +76,7 @@ function InlineInput({
 }) {
   return (
     <div style={{ flex: 1 }}>
-      <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: 4 }}>
+      <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 4 }}>
         {label}
       </div>
       <div style={{ position: 'relative' }}>
@@ -91,12 +91,12 @@ function InlineInput({
           }}
           style={{
             width: '100%', padding: '8px 26px 8px 10px',
-            background: 'var(--surface-1)', border: '1px solid var(--border)',
-            borderRadius: 8, color: 'var(--text)', fontSize: 14,
+            background: 'var(--surface)', border: '1px solid var(--border)',
+            borderRadius: 8, color: 'var(--charcoal)', fontSize: 14,
             fontWeight: 600, boxSizing: 'border-box', outline: 'none',
           }}
         />
-        <span style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', fontSize: 11, color: 'var(--text-3)', pointerEvents: 'none' }}>
+        <span style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', fontSize: 11, color: 'var(--muted)', pointerEvents: 'none' }}>
           {unit}
         </span>
       </div>
@@ -117,12 +117,12 @@ function OpeningCard({
 
   return (
     <div style={{
-      background: 'var(--surface-1)', border: '1px solid var(--border)',
+      background: 'var(--surface)', border: '1px solid var(--border)',
       borderRadius: 10, padding: '12px 14px', marginBottom: 8,
     }}>
       {/* Kind toggle + label + remove */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-        <KindIcon size={15} style={{ color: opening.kind === 'door' ? '#1E3A8A' : '#0F766E', flexShrink: 0 }} />
+        <KindIcon size={15} style={{ color: opening.kind === 'door' ? 'var(--blue)' : 'var(--accent)', flexShrink: 0 }} />
         <input
           type="text"
           value={opening.label}
@@ -130,7 +130,7 @@ function OpeningCard({
           placeholder="Label (e.g. Front Door)"
           style={{
             flex: 1, border: 'none', background: 'transparent',
-            color: 'var(--text)', fontSize: 13, fontWeight: 600, outline: 'none',
+            color: 'var(--charcoal)', fontSize: 13, fontWeight: 600, outline: 'none',
           }}
         />
         {/* Kind toggle */}
@@ -143,15 +143,15 @@ function OpeningCard({
           })}
           style={{
             fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 99,
-            border: '1px solid var(--border)', background: 'var(--surface-1)',
-            color: 'var(--text-3)', cursor: 'pointer',
+            border: '1px solid var(--border)', background: 'var(--surface)',
+            color: 'var(--muted)', cursor: 'pointer',
           }}
         >
           {opening.kind === 'door' ? '↔ Window' : '↔ Door'}
         </button>
         <button
           onClick={onRemove}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#EF4444', padding: 2, display: 'flex' }}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--red)', padding: 2, display: 'flex' }}
         >
           <Trash2 size={14} />
         </button>
@@ -175,12 +175,12 @@ function OpeningCard({
       {opening.kind === 'window' && (
         <div style={{ display: 'flex', gap: 16, marginTop: 10 }}>
           {(['has_stool', 'has_apron'] as const).map((key) => (
-            <label key={key} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--text-2)', cursor: 'pointer' }}>
+            <label key={key} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--mid)', cursor: 'pointer' }}>
               <input
                 type="checkbox"
                 checked={opening[key]}
                 onChange={(e) => onChange({ ...opening, [key]: e.target.checked })}
-                style={{ accentColor: '#1E3A8A', width: 14, height: 14 }}
+                style={{ accentColor: 'var(--blue)', width: 14, height: 14 }}
               />
               {key === 'has_stool' ? 'Sill' : 'Apron'}
             </label>
@@ -311,16 +311,16 @@ export default function TrimPage() {
   // ── Loading states ─────────────────────────────────────────────────────────
   if (roomLoading) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)', color: 'var(--text-3)', fontSize: 14 }}>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)', color: 'var(--muted)', fontSize: 14 }}>
         Loading room…
       </div>
     );
   }
   if (!room) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)', color: 'var(--text-3)', fontSize: 14 }}>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)', color: 'var(--muted)', fontSize: 14 }}>
         Room not found.
-        <button onClick={() => router.back()} style={{ marginLeft: 8, background: 'none', border: 'none', color: '#3B82F6', cursor: 'pointer', fontSize: 14 }}>
+        <button onClick={() => router.back()} style={{ marginLeft: 8, background: 'none', border: 'none', color: 'var(--blue)', cursor: 'pointer', fontSize: 14 }}>
           Go back
         </button>
       </div>
@@ -328,19 +328,19 @@ export default function TrimPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)', paddingBottom: 64 }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--charcoal)', paddingBottom: 64 }}>
 
       {/* Header */}
-      <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 12, background: 'var(--surface-1)' }}>
+      <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 12, background: 'var(--surface)' }}>
         <button
           onClick={() => router.back()}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-3)', display: 'flex', alignItems: 'center', padding: 4, borderRadius: 6 }}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)', display: 'flex', alignItems: 'center', padding: 4, borderRadius: 6 }}
           aria-label="Back"
         >
           <ArrowLeft size={20} />
         </button>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 11, color: 'var(--text-3)', fontWeight: 500, letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 2 }}>
+          <div style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 500, letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 2 }}>
             {room.name} / Trim
           </div>
           <h1 style={{ fontSize: 17, fontWeight: 700, margin: 0 }}>Trim Cut List</h1>
@@ -350,7 +350,7 @@ export default function TrimPage() {
           disabled={saveMutation.isPending || !result}
           style={{
             display: 'flex', alignItems: 'center', gap: 6,
-            padding: '8px 14px', background: '#1E3A8A', color: '#fff',
+            padding: '8px 14px', background: 'var(--blue)', color: '#fff',
             border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 600,
             cursor: saveMutation.isPending || !result ? 'not-allowed' : 'pointer',
             opacity: saveMutation.isPending || !result ? 0.6 : 1, flexShrink: 0,
@@ -383,7 +383,7 @@ export default function TrimPage() {
 
         {/* Reveal gauge selector */}
         <div style={{ marginBottom: 12 }}>
-          <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: 6 }}>
+          <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 6 }}>
             Reveal
           </div>
           <div style={{ display: 'flex', gap: 6, marginBottom: 6 }}>
@@ -401,8 +401,8 @@ export default function TrimPage() {
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
                     padding: '7px 10px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer',
                     border: `2px solid ${isActive ? g.color : 'var(--border)'}`,
-                    background: isActive ? `${g.color}26` : 'var(--surface-1)',
-                    color: isActive ? g.color : 'var(--text-3)',
+                    background: isActive ? `${g.color}26` : 'var(--surface)',
+                    color: isActive ? g.color : 'var(--muted)',
                   }}
                 >
                   <span style={{
@@ -415,10 +415,10 @@ export default function TrimPage() {
             })}
           </div>
           <div style={{
-            padding: '6px 10px', background: 'var(--surface-1)', border: '1px solid var(--border)',
-            borderRadius: 8, fontSize: 11, color: 'var(--text-3)',
+            padding: '6px 10px', background: 'var(--surface)', border: '1px solid var(--border)',
+            borderRadius: 8, fontSize: 11, color: 'var(--muted)',
           }}>
-            Reveal: <span style={{ fontWeight: 700, color: 'var(--text)' }}>{inToMm(revealIn).toFixed(1)} mm</span>
+            Reveal: <span style={{ fontWeight: 700, color: 'var(--charcoal)' }}>{inToMm(revealIn).toFixed(1)} mm</span>
             <span style={{ marginLeft: 6 }}>({revealIn}&quot;)</span>
           </div>
         </div>
@@ -431,9 +431,9 @@ export default function TrimPage() {
               onClick={() => setJoint(j)}
               style={{
                 padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer',
-                border: `2px solid ${joint === j ? '#1E3A8A' : 'var(--border)'}`,
-                background: joint === j ? 'rgba(30,58,138,0.1)' : 'var(--surface-1)',
-                color: joint === j ? '#1E3A8A' : 'var(--text-3)',
+                border: `2px solid ${joint === j ? 'var(--blue)' : 'var(--border)'}`,
+                background: joint === j ? 'var(--blue-bg)' : 'var(--surface)',
+                color: joint === j ? 'var(--blue)' : 'var(--muted)',
               }}
             >
               {j === 'miter' ? 'Miter Joint' : 'Butt Joint'}
@@ -449,9 +449,9 @@ export default function TrimPage() {
               onClick={() => setWastePct(w)}
               style={{
                 padding: '5px 12px', borderRadius: 8, fontSize: 11, fontWeight: 600, cursor: 'pointer',
-                border: `2px solid ${wastePct === w ? '#1E3A8A' : 'var(--border)'}`,
-                background: wastePct === w ? 'rgba(30,58,138,0.1)' : 'var(--surface-1)',
-                color: wastePct === w ? '#1E3A8A' : 'var(--text-3)',
+                border: `2px solid ${wastePct === w ? 'var(--blue)' : 'var(--border)'}`,
+                background: wastePct === w ? 'var(--blue-bg)' : 'var(--surface)',
+                color: wastePct === w ? 'var(--blue)' : 'var(--muted)',
               }}
             >
               {(w * 100).toFixed(0)}% waste
@@ -461,9 +461,9 @@ export default function TrimPage() {
 
         {/* Room perimeter */}
         {perimeter_mm > 0 && (
-          <div style={{ marginTop: 10, padding: '8px 12px', background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 8 }}>
-            <span style={{ fontSize: 11, color: 'var(--text-3)' }}>Room perimeter (from scan): </span>
-            <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text)' }}>{mmToLf(perimeter_mm).toFixed(1)} lf</span>
+          <div style={{ marginTop: 10, padding: '8px 12px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8 }}>
+            <span style={{ fontSize: 11, color: 'var(--muted)' }}>Room perimeter (from scan): </span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--charcoal)' }}>{mmToLf(perimeter_mm).toFixed(1)} lf</span>
           </div>
         )}
 
@@ -485,7 +485,7 @@ export default function TrimPage() {
             style={{
               flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
               padding: '9px 0', borderRadius: 8, border: '1.5px dashed var(--border)',
-              background: 'transparent', color: 'var(--text-3)', fontSize: 12, fontWeight: 600, cursor: 'pointer',
+              background: 'transparent', color: 'var(--muted)', fontSize: 12, fontWeight: 600, cursor: 'pointer',
             }}
           >
             <Plus size={13} /> Add Door
@@ -495,7 +495,7 @@ export default function TrimPage() {
             style={{
               flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
               padding: '9px 0', borderRadius: 8, border: '1.5px dashed var(--border)',
-              background: 'transparent', color: 'var(--text-3)', fontSize: 12, fontWeight: 600, cursor: 'pointer',
+              background: 'transparent', color: 'var(--muted)', fontSize: 12, fontWeight: 600, cursor: 'pointer',
             }}
           >
             <Plus size={13} /> Add Window
@@ -506,7 +506,7 @@ export default function TrimPage() {
         {result && (
           <>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 20 }}>
-              <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-3)' }}>
+              <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)' }}>
                 Cut List
               </div>
               <DownloadTrimCutListPDF
@@ -532,14 +532,14 @@ export default function TrimPage() {
                   key={label}
                   style={{
                     flex: '1 1 80px', padding: '10px 14px',
-                    background: 'var(--surface-1)', border: `1px solid ${accent ? '#1E3A8A' : 'var(--border)'}`,
+                    background: 'var(--surface)', border: `1px solid ${accent ? 'var(--blue)' : 'var(--border)'}`,
                     borderRadius: 10,
                   }}
                 >
-                  <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: 3 }}>
+                  <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 3 }}>
                     {label}
                   </div>
-                  <div style={{ fontSize: 15, fontWeight: 700, color: accent ? '#1E3A8A' : 'var(--text)' }}>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: accent ? 'var(--blue)' : 'var(--charcoal)' }}>
                     {value}
                   </div>
                 </div>
@@ -547,7 +547,7 @@ export default function TrimPage() {
             </div>
 
             {/* Piece-by-piece table — grouped by opening, then by category */}
-            <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 10, overflow: 'hidden' }}>
+            <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10, overflow: 'hidden' }}>
               {(() => {
                 // Build opening groups preserving insertion order
                 const groups = new Map<string, typeof result.pieces>();
@@ -574,7 +574,7 @@ export default function TrimPage() {
                         background: 'var(--bg)',
                         borderTop: gi > 0 ? '1px solid var(--border)' : 'none',
                         fontSize: 10, fontWeight: 700, letterSpacing: '0.08em',
-                        textTransform: 'uppercase', color: 'var(--text-2)',
+                        textTransform: 'uppercase', color: 'var(--mid)',
                       }}>
                         {groupLabel}
                       </div>
@@ -586,7 +586,7 @@ export default function TrimPage() {
                             padding: '4px 14px',
                             borderTop: '1px solid var(--border)',
                             fontSize: 9, fontWeight: 700, letterSpacing: '0.12em',
-                            textTransform: 'uppercase', color: 'var(--text-3)',
+                            textTransform: 'uppercase', color: 'var(--muted)',
                             background: 'transparent',
                           }}>
                             {CATEGORY_LABELS[cat]}
@@ -601,18 +601,18 @@ export default function TrimPage() {
                               }}
                             >
                               <div style={{ minWidth: 0 }}>
-                                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)' }}>
+                                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--charcoal)' }}>
                                   {piece.qty > 1 ? `${piece.qty}× ` : ''}{piece.label}
                                 </span>
                                 {piece.note && (
-                                  <span style={{ fontSize: 10, color: 'var(--text-3)', marginLeft: 6 }}>
+                                  <span style={{ fontSize: 10, color: 'var(--muted)', marginLeft: 6 }}>
                                     — {piece.note}
                                   </span>
                                 )}
                               </div>
                               <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0, marginLeft: 12 }}>
                                 <span style={{ width: 6, height: 6, borderRadius: '50%', background: activeGauge.color }} />
-                                <span style={{ fontSize: 13, fontWeight: 700, color: '#1E3A8A', fontVariantNumeric: 'tabular-nums' }}>
+                                <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--blue)', fontVariantNumeric: 'tabular-nums' }}>
                                   {cat === 'baseboard'
                                     ? `${mmToLf(piece.length_mm).toFixed(1)} lf`
                                     : fmtPiece(piece.length_mm)}
@@ -632,7 +632,7 @@ export default function TrimPage() {
 
         {/* Save feedback */}
         {saveMutation.isSuccess && !saveMutation.isPending && (
-          <div style={{ marginTop: 16, padding: '10px 14px', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.4)', borderRadius: 8, fontSize: 13, color: '#10B981', fontWeight: 600 }}>
+          <div style={{ marginTop: 16, padding: '10px 14px', background: 'var(--green-bg)', border: '1px solid rgba(16,185,129,0.4)', borderRadius: 8, fontSize: 13, color: 'var(--green)', fontWeight: 600 }}>
             Cut list saved
           </div>
         )}

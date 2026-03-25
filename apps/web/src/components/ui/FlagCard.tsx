@@ -13,7 +13,7 @@ const FLAG_COLORS: Record<FlagType, { border: string; bg: string; text: string }
   blocked:       { border: 'var(--red)',   bg: 'var(--red-dim)',   text: 'var(--red)'   },
   over_budget:   { border: 'var(--red)',   bg: 'var(--red-dim)',   text: 'var(--red)'   },
   overdue:       { border: 'var(--amber)', bg: 'var(--amber-dim)', text: 'var(--amber)' },
-  pending_co:    { border: 'var(--blue)',  bg: 'var(--blue-dim)',  text: 'var(--blue)'  },
+  pending_co:    { border: 'var(--blue)',  bg: 'var(--blue-bg)',  text: 'var(--blue)'  },
   training_gap:  { border: 'var(--amber)', bg: 'var(--amber-dim)', text: 'var(--amber)' },
 };
 
@@ -47,7 +47,7 @@ export function FlagCard({ type, label, detail, icon: Icon }: FlagCardProps) {
       <div style={{ minWidth: 0 }}>
         <span
           style={{
-            fontFamily: 'var(--font-cond)',
+            fontFamily: 'var(--font-mono)',
             fontSize: 9,
             fontWeight: 700,
             letterSpacing: '0.1em',
@@ -62,7 +62,7 @@ export function FlagCard({ type, label, detail, icon: Icon }: FlagCardProps) {
         <span
           style={{
             fontSize: 11,
-            color: 'var(--text-2)',
+            color: 'var(--mid)',
             display: 'block',
             overflow: 'hidden',
             textOverflow: 'ellipsis',

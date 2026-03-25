@@ -36,21 +36,21 @@ export default function DeployLoopedBlueprintsPage() {
   const hasStructure = treeData && treeData.tree.length > 0;
 
   return (
-    <div className="min-h-screen pb-24" style={{ background: '#F3F4F6' }}>
+    <div className="min-h-screen pb-24" style={{ background: 'var(--surface-2)' }}>
       {/* Header */}
-      <div style={{ background: '#FFFFFF', borderBottom: '1px solid #E5E7EB' }}>
+      <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
         <div className="max-w-lg mx-auto px-4 py-4">
           <div className="flex items-center gap-2 mb-1">
-            <Link href="/labs" className="text-sm hover:underline" style={{ color: '#0F766E' }}>Labs</Link>
-            <span className="text-xs text-gray-400">/</span>
-            <Link href="/labs/structure" className="text-sm hover:underline" style={{ color: '#0F766E' }}>Structure</Link>
-            <span className="text-xs text-gray-400">/</span>
+            <Link href="/labs" className="text-sm hover:underline" style={{ color: 'var(--accent)' }}>Labs</Link>
+            <span className="text-xs text-[var(--muted)]">/</span>
+            <Link href="/labs/structure" className="text-sm hover:underline" style={{ color: 'var(--accent)' }}>Structure</Link>
+            <span className="text-xs text-[var(--muted)]">/</span>
           </div>
           <div className="flex items-center gap-2">
-            <Rocket size={20} style={{ color: '#0F766E' }} />
-            <h1 className="text-xl font-bold" style={{ color: '#111827' }}>Deploy to Locations</h1>
+            <Rocket size={20} style={{ color: 'var(--accent)' }} />
+            <h1 className="text-xl font-bold" style={{ color: 'var(--charcoal)' }}>Deploy to Locations</h1>
           </div>
-          <p className="text-xs mt-1" style={{ color: '#9CA3AF' }}>
+          <p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>
             Assign looped blueprints to specific rooms
           </p>
         </div>
@@ -59,33 +59,33 @@ export default function DeployLoopedBlueprintsPage() {
       <div className="max-w-lg mx-auto px-4 mt-4 space-y-3">
         {isLoading ? (
           <div className="text-center py-8">
-            <div className="w-8 h-8 border-3 rounded-full animate-spin mx-auto mb-3" style={{ borderColor: '#E5E7EB', borderTopColor: '#0F766E' }} />
-            <p className="text-sm text-gray-400">Loading blueprints...</p>
+            <div className="w-8 h-8 border-3 rounded-full animate-spin mx-auto mb-3" style={{ borderColor: 'var(--border)', borderTopColor: 'var(--accent)' }} />
+            <p className="text-sm text-[var(--muted)]">Loading blueprints...</p>
           </div>
         ) : !hasStructure ? (
-          <div className="bg-white rounded-xl p-6 text-center" style={{ border: '1px solid #E5E7EB' }}>
-            <AlertCircle size={32} className="mx-auto mb-3" style={{ color: '#F59E0B' }} />
-            <p className="text-sm font-medium mb-2" style={{ color: '#111827' }}>No building structure defined</p>
-            <Link href="/labs/structure" className="text-xs hover:underline" style={{ color: '#0F766E' }}>
+          <div className="bg-white rounded-xl p-6 text-center" style={{ border: '1px solid var(--border)' }}>
+            <AlertCircle size={32} className="mx-auto mb-3" style={{ color: 'var(--yellow)' }} />
+            <p className="text-sm font-medium mb-2" style={{ color: 'var(--charcoal)' }}>No building structure defined</p>
+            <Link href="/labs/structure" className="text-xs hover:underline" style={{ color: 'var(--accent)' }}>
               Define floors and rooms first
             </Link>
           </div>
         ) : loopedBlueprints.length === 0 ? (
-          <div className="bg-white rounded-xl p-6 text-center" style={{ border: '1px solid #E5E7EB' }}>
-            <Check size={32} className="mx-auto mb-3" style={{ color: '#10B981' }} />
-            <p className="text-sm font-medium" style={{ color: '#111827' }}>All blueprints deployed</p>
-            <p className="text-xs mt-1" style={{ color: '#9CA3AF' }}>
+          <div className="bg-white rounded-xl p-6 text-center" style={{ border: '1px solid var(--border)' }}>
+            <Check size={32} className="mx-auto mb-3" style={{ color: 'var(--green)' }} />
+            <p className="text-sm font-medium" style={{ color: 'var(--charcoal)' }}>All blueprints deployed</p>
+            <p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>
               No pending looped blueprints to deploy
             </p>
           </div>
         ) : (
           <>
-            <div className="bg-white rounded-xl p-4" style={{ border: '1px solid #E5E7EB' }}>
+            <div className="bg-white rounded-xl p-4" style={{ border: '1px solid var(--border)' }}>
               <div className="text-center">
-                <div className="text-lg font-bold" style={{ color: '#111827' }}>
+                <div className="text-lg font-bold" style={{ color: 'var(--charcoal)' }}>
                   {loopedBlueprints.length}
                 </div>
-                <div className="text-xs" style={{ color: '#6B7280' }}>
+                <div className="text-xs" style={{ color: 'var(--muted)' }}>
                   Pending looped blueprint{loopedBlueprints.length !== 1 ? 's' : ''}
                 </div>
               </div>
@@ -155,19 +155,19 @@ function BlueprintDeployCard({
   }
 
   return (
-    <div className="bg-white rounded-xl p-4" style={{ border: '1px solid #E5E7EB' }}>
+    <div className="bg-white rounded-xl p-4" style={{ border: '1px solid var(--border)' }}>
       <div className="flex items-start gap-3 mb-3">
         <div
           className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-          style={{ background: '#F0FDFA' }}
+          style={{ background: 'var(--green-bg)' }}
         >
-          <MapPin size={14} style={{ color: '#0F766E' }} />
+          <MapPin size={14} style={{ color: 'var(--accent)' }} />
         </div>
         <div className="flex-1 min-w-0">
-          <div className="text-sm font-semibold truncate" style={{ color: '#111827' }}>
+          <div className="text-sm font-semibold truncate" style={{ color: 'var(--charcoal)' }}>
             {blueprint.name}
           </div>
-          <div className="text-[10px]" style={{ color: '#9CA3AF' }}>
+          <div className="text-[10px]" style={{ color: 'var(--muted)' }}>
             {blueprint.sopCode} · {blueprint.estimatedHoursPerUnit}h/unit × {blueprint.totalUnits} units
             {blueprint.loopContextLabel && (
               <span> · Loop: {blueprint.loopContextLabel}</span>
@@ -179,14 +179,14 @@ function BlueprintDeployCard({
       {/* Skill level selector */}
       {config && (
         <div className="mb-3">
-          <label className="text-xs font-medium block mb-1" style={{ color: '#6B7280' }}>
+          <label className="text-xs font-medium block mb-1" style={{ color: 'var(--muted)' }}>
             Minimum skill level:
           </label>
           <select
             value={skillLevel}
             onChange={(e) => setSkillLevel(Number(e.target.value))}
             className="w-full text-sm px-3 py-2 rounded-lg appearance-none"
-            style={{ border: '1px solid #D1D5DB', background: '#FFFFFF', outline: 'none' }}
+            style={{ border: '1px solid var(--border)', background: 'var(--surface)', outline: 'none' }}
           >
             {config.skillLevels.map((sl) => (
               <option key={sl.level} value={sl.level}>
@@ -199,30 +199,30 @@ function BlueprintDeployCard({
 
       {/* Estimate preview */}
       {preview && (
-        <div className="mb-3 rounded-lg p-3" style={{ background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
-          <div className="text-[10px] font-medium mb-2" style={{ color: '#6B7280' }}>
+        <div className="mb-3 rounded-lg p-3" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+          <div className="text-[10px] font-medium mb-2" style={{ color: 'var(--muted)' }}>
             Estimate Preview
           </div>
           <div className="space-y-1">
             <div className="flex justify-between text-xs">
-              <span style={{ color: '#6B7280' }}>Sell Budget</span>
-              <span className="font-medium" style={{ color: '#111827' }}>
+              <span style={{ color: 'var(--muted)' }}>Sell Budget</span>
+              <span className="font-medium" style={{ color: 'var(--charcoal)' }}>
                 ${preview.sellBudget.toLocaleString('en-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
             </div>
             <div className="flex justify-between text-xs">
-              <span style={{ color: '#6B7280' }}>
+              <span style={{ color: 'var(--muted)' }}>
                 Cost Budget <span className="text-[10px]">({Math.round(preview.marginApplied * 100)}% margin)</span>
               </span>
-              <span className="font-medium" style={{ color: '#111827' }}>
+              <span className="font-medium" style={{ color: 'var(--charcoal)' }}>
                 ${preview.costBudget.toLocaleString('en-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
             </div>
             <div className="flex justify-between text-xs">
-              <span style={{ color: '#6B7280' }}>
+              <span style={{ color: 'var(--muted)' }}>
                 Budgeted Hours <span className="text-[10px]">({config?.skillLevels.find((s) => s.level === preview.optimalSkillLevel)?.label ?? `L${preview.optimalSkillLevel}`} · ${preview.optimalCostRate}/hr)</span>
               </span>
-              <span className="font-medium" style={{ color: '#111827' }}>
+              <span className="font-medium" style={{ color: 'var(--charcoal)' }}>
                 {preview.budgetedHours.toFixed(1)}h
               </span>
             </div>
@@ -232,7 +232,7 @@ function BlueprintDeployCard({
 
       {/* Location selector */}
       <div className="mb-3">
-        <label className="text-xs font-medium block mb-1" style={{ color: '#6B7280' }}>
+        <label className="text-xs font-medium block mb-1" style={{ color: 'var(--muted)' }}>
           Deploy to location:
         </label>
         <select
@@ -243,7 +243,7 @@ function BlueprintDeployCard({
             setSelectedLabel(option?.label || '');
           }}
           className="w-full text-sm px-3 py-2 rounded-lg appearance-none"
-          style={{ border: '1px solid #D1D5DB', background: '#FFFFFF', outline: 'none' }}
+          style={{ border: '1px solid var(--border)', background: 'var(--surface)', outline: 'none' }}
         >
           <option value="">Select a room...</option>
           {roomOptions.map((opt) => (
@@ -262,7 +262,7 @@ function BlueprintDeployCard({
         disabled={!selectedIterationId || isDeploying}
         className="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-opacity"
         style={{
-          background: selectedIterationId ? '#0F766E' : '#D1D5DB',
+          background: selectedIterationId ? 'var(--accent)' : 'var(--border)',
           minHeight: '44px',
           opacity: isDeploying ? 0.7 : 1,
         }}

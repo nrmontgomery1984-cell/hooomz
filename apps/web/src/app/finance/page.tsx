@@ -42,7 +42,7 @@ export default function FinanceDashboard() {
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}>
         <div style={{ textAlign: 'center' }}>
           <div style={{ width: 32, height: 32, border: '2px solid var(--border)', borderTopColor: FINANCE_COLOR, borderRadius: '50%', animation: 'spin 0.7s linear infinite', margin: '0 auto 8px' }} />
-          <p style={{ fontSize: 11, color: 'var(--text-3)' }}>Loading...</p>
+          <p style={{ fontSize: 11, color: 'var(--muted)' }}>Loading...</p>
         </div>
       </div>
     );
@@ -58,15 +58,15 @@ export default function FinanceDashboard() {
       <div style={{ minHeight: '100vh', paddingBottom: 96, background: 'var(--bg)' }}>
 
         {/* Header */}
-        <div style={{ background: 'var(--surface-1)', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
           <div className="max-w-lg md:max-w-full mx-auto px-4 md:px-6 py-3 md:py-4">
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <div style={{ width: 8, height: 8, borderRadius: '50%', background: FINANCE_COLOR }} />
-              <h1 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', fontFamily: 'var(--font-cond)', letterSpacing: '0.02em' }}>
+              <h1 style={{ fontSize: 16, fontWeight: 700, color: 'var(--charcoal)', fontFamily: 'var(--font-mono)', letterSpacing: '0.02em' }}>
                 Finance Dashboard
               </h1>
             </div>
-            <p style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 2 }}>Revenue, forecasting, and cost tracking</p>
+            <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>Revenue, forecasting, and cost tracking</p>
           </div>
         </div>
 
@@ -99,11 +99,11 @@ export default function FinanceDashboard() {
               {/* Revenue Forecast */}
               <div>
                 <SectionHeader title="Revenue Forecast (3-Year)" />
-                <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 16, boxShadow: 'var(--shadow-card)' }}>
+                <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 16, boxShadow: 'var(--shadow-card)' }}>
                   {years.length === 0 ? (
                     <div style={{ textAlign: 'center', padding: 16 }}>
-                      <BarChart3 size={20} style={{ color: 'var(--text-3)', margin: '0 auto 8px' }} />
-                      <p style={{ fontSize: 12, color: 'var(--text-3)' }}>No forecast data configured</p>
+                      <BarChart3 size={20} style={{ color: 'var(--muted)', margin: '0 auto 8px' }} />
+                      <p style={{ fontSize: 12, color: 'var(--muted)' }}>No forecast data configured</p>
                       <Link
                         href="/forecast"
                         style={{ display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 8, fontSize: 11, fontWeight: 600, color: FINANCE_COLOR, textDecoration: 'none' }}
@@ -116,8 +116,8 @@ export default function FinanceDashboard() {
                       {years.map((yr, i) => (
                         <div key={i}>
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-                            <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-2)' }}>{yr.label}</span>
-                            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-3)' }}>
+                            <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--mid)' }}>{yr.label}</span>
+                            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--muted)' }}>
                               ${(yr.grossRevenue / 1000).toFixed(0)}k rev · {yr.grossMarginPct.toFixed(0)}% margin
                             </span>
                           </div>
@@ -156,12 +156,12 @@ export default function FinanceDashboard() {
               {/* Revenue by Division */}
               <div>
                 <SectionHeader title="Revenue by Division" />
-                <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 16, boxShadow: 'var(--shadow-card)' }}>
+                <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 16, boxShadow: 'var(--shadow-card)' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                     {DIVISIONS.map((div) => (
                       <div key={div.key} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text)' }}>{div.name}</span>
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 700, color: 'var(--text-3)' }}>
+                        <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--charcoal)' }}>{div.name}</span>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 700, color: 'var(--muted)' }}>
                           —
                         </span>
                         {/* TODO: wire to actual division revenue data */}
@@ -175,12 +175,12 @@ export default function FinanceDashboard() {
             {/* Labour Performance */}
             <div>
               <SectionHeader title="Labour Performance" />
-              <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 16, boxShadow: 'var(--shadow-card)' }}>
+              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 16, boxShadow: 'var(--shadow-card)' }}>
                 {!labourVariance || (labourVariance.totalSellBudget === 0 && labourVariance.tasksWithoutEstimate.length === 0) ? (
                   <div style={{ textAlign: 'center', padding: 16 }}>
-                    <Users size={20} style={{ color: 'var(--text-3)', margin: '0 auto 8px' }} />
-                    <p style={{ fontSize: 12, color: 'var(--text-3)' }}>No labour estimates applied yet</p>
-                    <p style={{ fontSize: 10, color: 'var(--text-3)', marginTop: 4 }}>
+                    <Users size={20} style={{ color: 'var(--muted)', margin: '0 auto 8px' }} />
+                    <p style={{ fontSize: 12, color: 'var(--muted)' }}>No labour estimates applied yet</p>
+                    <p style={{ fontSize: 10, color: 'var(--muted)', marginTop: 4 }}>
                       Apply estimates to deployed tasks to see performance data
                     </p>
                   </div>
@@ -189,14 +189,14 @@ export default function FinanceDashboard() {
                     {/* Budget summary */}
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                       <div>
-                        <span style={{ fontSize: 10, color: 'var(--text-3)', display: 'block' }}>Total Sell Budget</span>
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 16, fontWeight: 700, color: 'var(--text)' }}>
+                        <span style={{ fontSize: 10, color: 'var(--muted)', display: 'block' }}>Total Sell Budget</span>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 16, fontWeight: 700, color: 'var(--charcoal)' }}>
                           ${labourVariance.totalSellBudget.toLocaleString('en-CA', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                         </span>
                       </div>
                       <div>
-                        <span style={{ fontSize: 10, color: 'var(--text-3)', display: 'block' }}>Total Cost Budget</span>
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 16, fontWeight: 700, color: 'var(--text)' }}>
+                        <span style={{ fontSize: 10, color: 'var(--muted)', display: 'block' }}>Total Cost Budget</span>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 16, fontWeight: 700, color: 'var(--charcoal)' }}>
                           ${labourVariance.totalCostBudget.toLocaleString('en-CA', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                         </span>
                       </div>
@@ -205,7 +205,7 @@ export default function FinanceDashboard() {
                     {/* Efficiency + actuals */}
                     <div style={{ borderTop: '1px solid var(--border)', paddingTop: 10 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                        <span style={{ fontSize: 11, color: 'var(--text-2)' }}>
+                        <span style={{ fontSize: 11, color: 'var(--mid)' }}>
                           Budgeted: {labourVariance.totalBudgetedHours.toFixed(1)}h
                         </span>
                         {labourVariance.overallEfficiency !== null && (
@@ -222,7 +222,7 @@ export default function FinanceDashboard() {
                         )}
                       </div>
                       {labourVariance.totalActualCost !== null && (
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text-3)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--muted)' }}>
                           <span>Actual cost: ${labourVariance.totalActualCost.toLocaleString('en-CA', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                           {labourVariance.totalActualHours !== null && (
                             <span>Actual hours: {labourVariance.totalActualHours.toFixed(1)}h</span>
@@ -234,10 +234,10 @@ export default function FinanceDashboard() {
                     {/* Crew breakdown */}
                     {labourVariance.varianceByCrewMember.length > 0 && (
                       <div style={{ borderTop: '1px solid var(--border)', paddingTop: 10 }}>
-                        <span style={{ fontSize: 10, color: 'var(--text-3)', display: 'block', marginBottom: 6 }}>By Crew Member</span>
+                        <span style={{ fontSize: 10, color: 'var(--muted)', display: 'block', marginBottom: 6 }}>By Crew Member</span>
                         {labourVariance.varianceByCrewMember.map((cv) => (
                           <div key={cv.crewMemberId} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-                            <span style={{ fontSize: 11, color: 'var(--text-2)' }}>
+                            <span style={{ fontSize: 11, color: 'var(--mid)' }}>
                               {cv.crewMemberName} ({cv.taskCount} task{cv.taskCount !== 1 ? 's' : ''})
                             </span>
                             <span
@@ -280,9 +280,9 @@ export default function FinanceDashboard() {
               {crewProjectId ? (
                 <ExpenseListPanel projectId={crewProjectId} />
               ) : (
-                <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 24, textAlign: 'center', boxShadow: 'var(--shadow-card)' }}>
-                  <DollarSign size={20} style={{ color: 'var(--text-3)', margin: '0 auto 8px' }} />
-                  <p style={{ fontSize: 12, color: 'var(--text-3)' }}>Select a crew session to see project expenses</p>
+                <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 24, textAlign: 'center', boxShadow: 'var(--shadow-card)' }}>
+                  <DollarSign size={20} style={{ color: 'var(--muted)', margin: '0 auto 8px' }} />
+                  <p style={{ fontSize: 12, color: 'var(--muted)' }}>Select a crew session to see project expenses</p>
                 </div>
               )}
             </div>
@@ -291,12 +291,12 @@ export default function FinanceDashboard() {
             <div>
               <SectionHeader title="Overdue Invoices" />
               {aging.overdue.length === 0 ? (
-                <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 24, textAlign: 'center', boxShadow: 'var(--shadow-card)' }}>
-                  <DollarSign size={20} style={{ color: 'var(--text-3)', margin: '0 auto 8px' }} />
-                  <p style={{ fontSize: 12, color: 'var(--text-3)' }}>No overdue invoices</p>
+                <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 24, textAlign: 'center', boxShadow: 'var(--shadow-card)' }}>
+                  <DollarSign size={20} style={{ color: 'var(--muted)', margin: '0 auto 8px' }} />
+                  <p style={{ fontSize: 12, color: 'var(--muted)' }}>No overdue invoices</p>
                 </div>
               ) : (
-                <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
+                <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
                   {aging.overdue.map((inv) => (
                     <Link
                       key={inv.id}
@@ -312,11 +312,11 @@ export default function FinanceDashboard() {
                         color: 'inherit',
                       }}
                     >
-                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-2)' }}>{inv.invoiceNumber}</span>
-                      <span style={{ fontFamily: 'var(--font-cond)', fontSize: 8, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#DC2626', background: '#FEE2E2', padding: '1px 5px', borderRadius: 3 }}>OVERDUE</span>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--mid)' }}>{inv.invoiceNumber}</span>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--red)', background: 'var(--red-bg)', padding: '1px 5px', borderRadius: 3 }}>OVERDUE</span>
                       <span style={{ flex: 1 }} />
-                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 600, color: '#DC2626' }}>${inv.balanceDue.toFixed(0)}</span>
-                      <ChevronRight size={12} color="var(--text-3)" />
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 600, color: 'var(--red)' }}>${inv.balanceDue.toFixed(0)}</span>
+                      <ChevronRight size={12} color="var(--muted)" />
                     </Link>
                   ))}
                 </div>
@@ -336,7 +336,7 @@ export default function FinanceDashboard() {
 function SectionHeader({ title }: { title: string }) {
   return (
     <div style={{ marginBottom: 8 }}>
-      <span style={{ fontFamily: 'var(--font-cond)', fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-3)' }}>
+      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)' }}>
         {title}
       </span>
     </div>
@@ -353,17 +353,17 @@ function StatCard({ icon, label, value, color }: {
     <div style={{
       padding: '12px 14px',
       borderRadius: 'var(--radius)',
-      background: 'var(--surface-1)',
+      background: 'var(--surface)',
       border: '1px solid var(--border)',
       boxShadow: 'var(--shadow-card)',
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
         <div style={{ color }}>{icon}</div>
-        <span style={{ fontFamily: 'var(--font-cond)', fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-3)' }}>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--muted)' }}>
           {label}
         </span>
       </div>
-      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 22, fontWeight: 700, color: 'var(--text)' }}>
+      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 22, fontWeight: 700, color: 'var(--charcoal)' }}>
         {value}
       </span>
     </div>

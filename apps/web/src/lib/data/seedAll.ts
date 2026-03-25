@@ -104,6 +104,7 @@ export async function seedAllLabsData(
     await services.crew.createWithId('crew_nathan', {
       name: 'Nathan Montgomery',
       role: 'Owner / Supervisor',
+      authRole: 'owner',
       tier: 'master',
       tradeSpecialties: ['Flooring', 'Finish Carpentry', 'Paint', 'Drywall'],
       wageRate: 45,
@@ -117,6 +118,7 @@ export async function seedAllLabsData(
     await services.crew.createWithId('crew_nishant', {
       name: 'Nishant',
       role: 'Flooring Specialist',
+      authRole: 'installer',
       tier: 'learner',
       tradeSpecialties: ['Flooring'],
       wageRate: 28,

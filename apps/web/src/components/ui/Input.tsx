@@ -48,7 +48,7 @@ export function Input({
 
   const stateStyles = error
     ? 'border-red-300 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500'
-    : 'border-gray-300 focus:border-primary-500 focus:ring-primary-500';
+    : 'border-[var(--border)] focus:border-primary-500 focus:ring-primary-500';
 
   const widthStyles = fullWidth ? 'w-full' : '';
 
@@ -57,7 +57,7 @@ export function Input({
       {label && (
         <label
           htmlFor={inputId}
-          className="block text-sm font-semibold text-gray-700 mb-2"
+          className="block text-sm font-semibold text-[var(--mid)] mb-2"
         >
           {label}
           {props.required && <span className="text-red-600 ml-1">*</span>}
@@ -75,7 +75,7 @@ export function Input({
       )}
 
       {!error && helperText && (
-        <p className="mt-2 text-sm text-gray-500">{helperText}</p>
+        <p className="mt-2 text-sm text-[var(--muted)]">{helperText}</p>
       )}
     </div>
   );

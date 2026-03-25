@@ -28,12 +28,12 @@ export function ActivityDayHeader({ label, isSticky = true }: ActivityDayHeaderP
     >
       <span
         style={{
-          fontFamily: 'var(--font-cond)',
+          fontFamily: 'var(--font-mono)',
           fontSize: 9,
           fontWeight: 700,
           letterSpacing: '0.12em',
           textTransform: 'uppercase',
-          color: isSpecial ? 'var(--blue)' : 'var(--text-3)',
+          color: isSpecial ? 'var(--blue)' : 'var(--muted)',
         }}
       >
         {label}

@@ -9,7 +9,7 @@ import { InlineEditCell } from './InlineEditCell';
 import { PurchaseModal } from './PurchaseModal';
 import { ContentStatusBadge } from './ContentStatusBadge';
 
-const TEAL = '#2A9D8F';
+const TEAL = 'var(--accent)';
 const LIGHT_TEAL = '#E6F5F3';
 
 interface MeasuringTabProps {
@@ -23,7 +23,7 @@ export function MeasuringTab({ items }: MeasuringTabProps) {
   const [purchaseItem, setPurchaseItem] = useState<ToolResearchItem | null>(null);
 
   const purchasedRowStyle = (row: ToolResearchItem) =>
-    row.purchased ? { background: '#E8F5E9' } : undefined;
+    row.purchased ? { background: 'var(--green-bg)' } : undefined;
 
   return (
     <>
@@ -78,7 +78,7 @@ export function MeasuringTab({ items }: MeasuringTabProps) {
               nowrap: true,
               render: (_: unknown, row: ToolResearchItem) =>
                 row.purchased ? (
-                  <span style={{ color: '#2E7D32', fontSize: 11, fontWeight: 600 }}>Purchased</span>
+                  <span style={{ color: 'var(--green)', fontSize: 11, fontWeight: 600 }}>Purchased</span>
                 ) : (
                   <button
                     onClick={(e) => { e.stopPropagation(); setPurchaseItem(row); }}
@@ -86,7 +86,7 @@ export function MeasuringTab({ items }: MeasuringTabProps) {
                       padding: '4px 10px',
                       border: `1px solid ${TEAL}`,
                       borderRadius: 6,
-                      background: 'white',
+                      background: 'var(--surface)',
                       color: TEAL,
                       fontSize: 11,
                       fontWeight: 600,

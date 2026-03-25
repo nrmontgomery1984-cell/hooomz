@@ -3,13 +3,13 @@
 import type { ContentPipelineStatus } from '@hooomz/shared-contracts';
 
 const PIPELINE_STYLES: Record<ContentPipelineStatus, { bg: string; color: string; label: string }> = {
-  planned: { bg: '#E5E7EB', color: '#6B7280', label: 'Planned' },
-  filmed: { bg: '#DBEAFE', color: '#1D4ED8', label: 'Filmed' },
+  planned: { bg: 'var(--border)', color: 'var(--muted)', label: 'Planned' },
+  filmed: { bg: '#DBEAFE', color: 'var(--blue)', label: 'Filmed' },
   edited: { bg: '#FEF3C7', color: '#B45309', label: 'Edited' },
   published: { bg: '#D1FAE5', color: '#059669', label: 'Published' },
 };
 
-const TEAL = '#2A9D8F';
+const TEAL = 'var(--accent)';
 
 interface ContentStatusBadgeProps {
   status?: ContentPipelineStatus;
@@ -23,10 +23,10 @@ export function ContentStatusBadge({ status, onAdvance }: ContentStatusBadgeProp
         onClick={(e) => { e.stopPropagation(); onAdvance(); }}
         style={{
           padding: '2px 6px',
-          border: '1px dashed #D1D5DB',
+          border: '1px dashed var(--border)',
           borderRadius: 10,
           background: 'transparent',
-          color: '#9CA3AF',
+          color: 'var(--muted)',
           fontSize: 10,
           cursor: 'pointer',
           minHeight: 24,

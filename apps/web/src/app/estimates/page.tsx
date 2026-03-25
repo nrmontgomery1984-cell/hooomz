@@ -18,13 +18,13 @@ import { useLocalProjects } from '@/lib/hooks/useLocalData';
 import { useServicesContext } from '@/lib/services/ServicesContext';
 
 const STATUS_COLORS: Record<string, string> = {
-  lead: '#8B5CF6',
-  quoted: '#3B82F6',
-  approved: '#F59E0B',
-  'in-progress': '#0F766E',
-  complete: '#10B981',
-  'on-hold': '#EF4444',
-  cancelled: '#9CA3AF',
+  lead: 'var(--muted)',
+  quoted: 'var(--accent)',
+  approved: 'var(--amber)',
+  'in-progress': 'var(--blue)',
+  complete: 'var(--green)',
+  'on-hold': 'var(--red)',
+  cancelled: 'var(--muted)',
 };
 
 interface ProjectEstimateSummary {
@@ -103,16 +103,16 @@ export default function EstimatesPage() {
 
   return (
     <PageErrorBoundary>
-    <div className="min-h-screen pb-24" style={{ background: '#F3F4F6' }}>
+    <div className="min-h-screen pb-24" style={{ background: 'var(--surface)' }}>
       {/* Header */}
-      <div style={{ background: '#FFFFFF', borderBottom: '1px solid #E5E7EB' }}>
+      <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
         <div className="max-w-lg md:max-w-4xl mx-auto px-4 md:px-8 py-3 md:py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-lg md:text-xl font-bold" style={{ color: '#111827' }}>
+              <h1 className="text-lg md:text-xl font-bold" style={{ color: 'var(--charcoal)' }}>
                 Estimates
               </h1>
-              <p className="text-[11px] mt-0.5" style={{ color: '#9CA3AF' }}>
+              <p className="text-[11px] mt-0.5" style={{ color: 'var(--muted)' }}>
                 {summaries.length} estimate{summaries.length !== 1 ? 's' : ''}
                 {grandTotal > 0 && ` \u00B7 $${grandTotal.toLocaleString()} total`}
               </p>
@@ -121,7 +121,7 @@ export default function EstimatesPage() {
               <button
                 onClick={() => router.push('/estimates/select-project')}
                 className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white rounded-xl"
-                style={{ background: '#0F766E', minHeight: '44px' }}
+                style={{ background: 'var(--accent)', minHeight: '44px' }}
               >
                 <Plus size={14} />
                 New Estimate
@@ -133,14 +133,14 @@ export default function EstimatesPage() {
           {summaries.length > 0 && (
             <div className="flex gap-3 mt-3">
               <div className="flex items-center gap-1.5">
-                <div className="w-2 h-2 rounded-full" style={{ background: '#3B82F6' }} />
-                <span className="text-[11px]" style={{ color: '#6B7280' }}>
+                <div className="w-2 h-2 rounded-full" style={{ background: 'var(--charcoal)' }} />
+                <span className="text-[11px]" style={{ color: 'var(--mid)' }}>
                   Labor ${grandLabor.toLocaleString()}
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
-                <div className="w-2 h-2 rounded-full" style={{ background: '#F59E0B' }} />
-                <span className="text-[11px]" style={{ color: '#6B7280' }}>
+                <div className="w-2 h-2 rounded-full" style={{ background: 'var(--muted)' }} />
+                <span className="text-[11px]" style={{ color: 'var(--mid)' }}>
                   Materials ${grandMaterial.toLocaleString()}
                 </span>
               </div>
@@ -154,29 +154,29 @@ export default function EstimatesPage() {
           <div className="text-center py-10">
             <div
               className="w-8 h-8 border-2 rounded-full animate-spin mx-auto mb-2"
-              style={{ borderColor: '#E5E7EB', borderTopColor: '#0F766E' }}
+              style={{ borderColor: 'var(--border)', borderTopColor: 'var(--accent)' }}
             />
-            <p className="text-xs" style={{ color: '#9CA3AF' }}>Loading estimates...</p>
+            <p className="text-xs" style={{ color: 'var(--muted)' }}>Loading estimates...</p>
           </div>
         ) : summaries.length === 0 && projects.length === 0 ? (
           <div className="text-center py-10">
-            <FileText size={28} className="mx-auto mb-2" style={{ color: '#D1D5DB' }} />
-            <p className="text-sm font-medium mb-0.5" style={{ color: '#111827' }}>No estimates yet</p>
-            <p className="text-xs mb-4" style={{ color: '#9CA3AF' }}>
+            <FileText size={28} className="mx-auto mb-2" style={{ color: 'var(--faint)' }} />
+            <p className="text-sm font-medium mb-0.5" style={{ color: 'var(--charcoal)' }}>No estimates yet</p>
+            <p className="text-xs mb-4" style={{ color: 'var(--muted)' }}>
               Create a project first, then add line items
             </p>
           </div>
         ) : summaries.length === 0 ? (
           <div className="text-center py-10">
-            <FileText size={28} className="mx-auto mb-2" style={{ color: '#D1D5DB' }} />
-            <p className="text-sm font-medium mb-0.5" style={{ color: '#111827' }}>No estimates yet</p>
-            <p className="text-xs mb-4" style={{ color: '#9CA3AF' }}>
+            <FileText size={28} className="mx-auto mb-2" style={{ color: 'var(--faint)' }} />
+            <p className="text-sm font-medium mb-0.5" style={{ color: 'var(--charcoal)' }}>No estimates yet</p>
+            <p className="text-xs mb-4" style={{ color: 'var(--muted)' }}>
               Select a project and add line items to build an estimate
             </p>
             <button
               onClick={() => router.push('/estimates/select-project')}
               className="min-h-[44px] px-5 text-xs font-medium text-white rounded-xl"
-              style={{ background: '#0F766E' }}
+              style={{ background: 'var(--accent)' }}
             >
               Start an Estimate
             </button>
@@ -184,7 +184,7 @@ export default function EstimatesPage() {
         ) : (
           <>
             {summaries.map((summary) => {
-              const statusColor = STATUS_COLORS[summary.projectStatus] || '#9CA3AF';
+              const statusColor = STATUS_COLORS[summary.projectStatus] || 'var(--muted)';
               const laborPct = summary.total > 0 ? (summary.laborTotal / summary.total) * 100 : 0;
 
               return (
@@ -192,7 +192,7 @@ export default function EstimatesPage() {
                   <div
                     className="rounded-xl p-3 md:p-4 transition-all duration-150 hover:shadow-md hover:-translate-y-px"
                     style={{
-                      background: '#FFFFFF',
+                      background: 'var(--surface)',
                       boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
                       borderLeft: `3px solid ${statusColor}`,
                     }}
@@ -200,7 +200,7 @@ export default function EstimatesPage() {
                     {/* Name + status + chevron */}
                     <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center gap-2 min-w-0">
-                        <span className="text-[13px] font-semibold truncate" style={{ color: '#111827' }}>
+                        <span className="text-[13px] font-semibold truncate" style={{ color: 'var(--charcoal)' }}>
                           {summary.projectName}
                         </span>
                         <span
@@ -210,15 +210,15 @@ export default function EstimatesPage() {
                           {summary.projectStatus.replace(/-/g, ' ')}
                         </span>
                       </div>
-                      <ChevronRight size={14} style={{ color: '#D1D5DB' }} />
+                      <ChevronRight size={14} style={{ color: 'var(--faint)' }} />
                     </div>
 
                     {/* Line item count + total */}
                     <div className="flex items-baseline justify-between mb-2">
-                      <span className="text-[11px]" style={{ color: '#6B7280' }}>
+                      <span className="text-[11px]" style={{ color: 'var(--mid)' }}>
                         {summary.itemCount} line item{summary.itemCount !== 1 ? 's' : ''}
                       </span>
-                      <span className="text-lg font-bold" style={{ color: '#111827' }}>
+                      <span className="text-lg font-bold" style={{ color: 'var(--charcoal)' }}>
                         ${summary.total.toLocaleString()}
                       </span>
                     </div>
@@ -226,19 +226,19 @@ export default function EstimatesPage() {
                     {/* Labor/Material split bar */}
                     <div className="flex rounded-full overflow-hidden h-1.5 mb-1">
                       {summary.laborTotal > 0 && (
-                        <div style={{ width: `${laborPct}%`, background: '#3B82F6', minWidth: '4px' }} />
+                        <div style={{ width: `${laborPct}%`, background: 'var(--charcoal)', minWidth: '4px' }} />
                       )}
                       {summary.materialTotal > 0 && (
-                        <div style={{ width: `${100 - laborPct}%`, background: '#F59E0B', minWidth: '4px' }} />
+                        <div style={{ width: `${100 - laborPct}%`, background: 'var(--muted)', minWidth: '4px' }} />
                       )}
                     </div>
 
                     {/* Labor/Material amounts */}
                     <div className="flex justify-between">
-                      <span className="text-[10px]" style={{ color: '#3B82F6' }}>
+                      <span className="text-[10px]" style={{ color: 'var(--charcoal)' }}>
                         Labor ${summary.laborTotal.toLocaleString()}
                       </span>
-                      <span className="text-[10px]" style={{ color: '#F59E0B' }}>
+                      <span className="text-[10px]" style={{ color: 'var(--muted)' }}>
                         Materials ${summary.materialTotal.toLocaleString()}
                       </span>
                     </div>
@@ -250,30 +250,32 @@ export default function EstimatesPage() {
             {/* Projects without estimates */}
             {projects.length > summaries.length && (
               <div className="mt-4">
-                <h2 className="text-[11px] font-semibold uppercase tracking-wider mb-2" style={{ color: '#6B7280' }}>
+                <h2 className="text-[11px] font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--mid)' }}>
                   Projects without estimates
                 </h2>
-                <div className="rounded-xl overflow-hidden" style={{ background: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid #E5E7EB' }}>
+                <div className="rounded-xl overflow-hidden" style={{ background: 'var(--surface)', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border)' }}>
                   {projects
                     .filter((p) => !summaries.some((s) => s.projectId === p.id))
                     .map((p, i, arr) => (
                       <Link key={p.id} href={`/estimates/${p.id}`}>
                         <div
-                          className="flex items-center justify-between px-3 py-2.5 min-h-[44px] hover:bg-gray-50 transition-colors"
-                          style={{ borderBottom: i < arr.length - 1 ? '1px solid #F3F4F6' : 'none' }}
+                          className="flex items-center justify-between px-3 py-2.5 min-h-[44px] transition-colors"
+                          style={{ borderBottom: i < arr.length - 1 ? '1px solid var(--surface)' : 'none' }}
+                          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--surface)'; }}
+                          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; }}
                         >
                           <div className="flex items-center gap-2">
-                            <span className="text-xs font-medium" style={{ color: '#111827' }}>
+                            <span className="text-xs font-medium" style={{ color: 'var(--charcoal)' }}>
                               {p.name || p.id}
                             </span>
                             <span
                               className="text-[9px] font-medium px-1.5 py-0.5 rounded-full capitalize"
-                              style={{ background: '#F3F4F6', color: '#6B7280' }}
+                              style={{ background: 'var(--surface)', color: 'var(--mid)' }}
                             >
                               {(p.status || 'unknown').replace(/-/g, ' ')}
                             </span>
                           </div>
-                          <span className="text-[11px] font-medium" style={{ color: '#0F766E' }}>
+                          <span className="text-[11px] font-medium" style={{ color: 'var(--accent)' }}>
                             Add items
                           </span>
                         </div>

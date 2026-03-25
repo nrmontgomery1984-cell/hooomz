@@ -5,75 +5,59 @@ module.exports = {
     extend: {
       colors: {
         // ================================================================
-        // Hooomz Design System — Monochrome + Teal Accent
-        // 90% mono, 10% accent. Teal = interaction. Status = information.
+        // Hooomz Design System — Monochrome + Warm Grey Accent
+        // 90% mono, 10% accent. Accent = interaction. Status = information.
+        // globals.css is the source of truth. These fallbacks must match it.
         // ================================================================
 
-        // Brand / Text — references var(--theme-*) via CSS
-        primary: 'var(--theme-primary, #111827)',
-        secondary: 'var(--theme-secondary, #6B7280)',
-        muted: 'var(--theme-muted, #9CA3AF)',
-        'text-body': 'var(--theme-text-body, #374151)',
+        // Brand / Text
+        primary: 'var(--theme-primary, #1A1714)',
+        secondary: 'var(--theme-secondary, #5C5349)',
+        muted: 'var(--theme-muted, #9A8E84)',
+        'text-body': 'var(--theme-text-body, #5C5349)',
 
-        // Accent — deep teal for INTERACTION only
+        // Accent — warm grey for INTERACTION only
         accent: {
-          DEFAULT: 'var(--theme-accent, #2A7A7A)',
-          dark: 'var(--theme-accent-dark, #1E5E5E)',
-          light: 'var(--theme-accent-light, #E8F4F4)',
+          DEFAULT: 'var(--theme-accent, #6B6560)',
+          dark: 'var(--theme-accent-dark, #5C5349)',
+          light: 'var(--theme-accent-light, rgba(107,101,96,.09))',
         },
 
         // Status colors — semantic, for INFORMATION only
-        'status-green': 'var(--theme-status-green, #22C55E)',
-        'status-blue': 'var(--theme-status-blue, #3B82F6)',
-        'status-amber': 'var(--theme-status-amber, #F59E0B)',
-        'status-red': 'var(--theme-status-red, #EF4444)',
-        'status-gray': 'var(--theme-status-gray, #9CA3AF)',
+        'status-green': 'var(--theme-status-green, #16A34A)',
+        'status-blue': 'var(--theme-status-blue, #4A7FA5)',
+        'status-amber': 'var(--theme-status-amber, #D97706)',
+        'status-red': 'var(--theme-status-red, #DC2626)',
+        'status-gray': 'var(--theme-status-gray, #9A8E84)',
 
         // Surface
-        background: 'var(--theme-background, #F3F4F6)',
-        surface: 'var(--theme-surface, #FFFFFF)',
-        border: 'var(--theme-border, #E5E7EB)',
-
-        // Neutrals
-        slate: {
-          50: '#f8fafc',
-          100: '#f1f5f9',
-          200: '#e2e8f0',
-          300: '#cbd5e1',
-          400: '#94a3b8',
-          500: '#64748b',
-          600: '#475569',
-          700: '#334155',
-          800: '#1e293b',
-          900: '#0f172a',
-        },
+        background: 'var(--theme-background, #F0EDE8)',
+        surface: 'var(--theme-surface, #FAF8F5)',
+        border: 'var(--theme-border, #E0DCD7)',
 
         // ================================================================
-        // LEGACY ALIASES — map old class names to new system
-        // bg-cream -> white, text-coral -> teal accent, etc.
-        // These keep existing components working during migration.
+        // LEGACY ALIASES — kept for 42 existing usages across 12 files.
+        // Migrate to canonical names, then remove.
         // ================================================================
-        cream: 'var(--theme-background, #F3F4F6)',
-        coral: 'var(--theme-accent, #2A7A7A)',
-        teal: 'var(--theme-accent, #2A7A7A)',
-        healthy: 'var(--theme-status-green, #22C55E)',
-        progress: 'var(--theme-status-blue, #3B82F6)',
-        attention: 'var(--theme-status-amber, #F59E0B)',
-        blocked: 'var(--theme-status-red, #EF4444)',
-        complete: 'var(--theme-status-green, #22C55E)',
-        verified: 'var(--theme-status-green, #22C55E)',
-        limited: 'var(--theme-status-amber, #F59E0B)',
-        estimate: 'var(--theme-status-red, #EF4444)',
+        cream: 'var(--theme-background, #F0EDE8)',
+        coral: 'var(--theme-accent, #6B6560)',
+        healthy: 'var(--theme-status-green, #16A34A)',
+        progress: 'var(--theme-status-blue, #4A7FA5)',
+        attention: 'var(--theme-status-amber, #D97706)',
+        blocked: 'var(--theme-status-red, #DC2626)',
+        complete: 'var(--theme-status-green, #16A34A)',
+        verified: 'var(--theme-status-green, #16A34A)',
+        limited: 'var(--theme-status-amber, #D97706)',
+        estimate: 'var(--theme-status-red, #DC2626)',
       },
 
       fontFamily: {
-        sans: ['IBM Plex Sans', 'system-ui', 'sans-serif'],
-        mono: ['IBM Plex Mono', 'JetBrains Mono', 'monospace'],
-        cond: ['Barlow Condensed', 'system-ui', 'sans-serif'],
+        sans: ['Figtree', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+        mono: ['DM Mono', 'SF Mono', 'ui-monospace', 'monospace'],
       },
 
       borderRadius: {
-        DEFAULT: 'var(--theme-radius, 12px)',
+        DEFAULT: 'var(--theme-radius, 10px)',
       },
 
       boxShadow: {

@@ -34,16 +34,16 @@ const STATUS_COLORS: Record<MetricStatus, string> = {
 };
 
 const PHASE_COLORS: Record<string, string> = {
-  Baseline: 'var(--text-3)',
-  Installation: 'var(--o-yellow)',
+  Baseline: 'var(--muted)',
+  Installation: 'var(--amber)',
   Settlement: 'var(--amber)',
-  Clearance: 'var(--o-green)',
+  Clearance: 'var(--green)',
 };
 
 function scoreBandColor(score: number): string {
-  if (score >= 80) return 'var(--o-green)';
+  if (score >= 80) return 'var(--green)';
   if (score >= 60) return 'var(--amber)';
-  return 'var(--o-red)';
+  return 'var(--red)';
 }
 
 function scoreBandGradient(score: number): string {
@@ -75,7 +75,7 @@ export default function IAQReportPage() {
   if (isLoading) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Loading...</div>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Loading...</div>
       </div>
     );
   }
@@ -93,26 +93,26 @@ export default function IAQReportPage() {
       <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
 
         {/* Topbar */}
-        <div style={{ background: 'var(--surface-1)', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
           <div style={{ padding: '16px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-3)', letterSpacing: '0.08em', marginBottom: 4 }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--muted)', letterSpacing: '0.08em', marginBottom: 4 }}>
                 Labs › IAQ Reports › {report.clientName} · {report.projectName}
               </div>
-              <h1 style={{ fontSize: 18, fontWeight: 700, fontFamily: 'var(--font-display)', textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--text-1)', margin: 0 }}>
+              <h1 style={{ fontSize: 18, fontWeight: 700, fontFamily: 'var(--font-display)', textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--charcoal)', margin: 0 }}>
                 IAQ Report
               </h1>
             </div>
             <div className="topbar-actions" style={{ display: 'flex', gap: 8 }}>
               <button
                 onClick={() => window.print()}
-                style={{ padding: '6px 14px', borderRadius: 4, border: '1px solid var(--border)', background: 'var(--surface-1)', color: 'var(--text-2)', fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.06em', cursor: 'pointer', minHeight: 32 }}
+                style={{ padding: '6px 14px', borderRadius: 4, border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--mid)', fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.06em', cursor: 'pointer', minHeight: 32 }}
               >
                 Print / Export PDF
               </button>
               <button
                 onClick={() => showToast({ message: 'Shareable link — coming soon', variant: 'info' })}
-                style={{ padding: '6px 14px', borderRadius: 4, border: 'none', background: 'var(--clay)', color: '#fff', fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.06em', cursor: 'pointer', minHeight: 32 }}
+                style={{ padding: '6px 14px', borderRadius: 4, border: 'none', background: 'var(--accent)', color: '#fff', fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.06em', cursor: 'pointer', minHeight: 32 }}
               >
                 Send to Client
               </button>
@@ -159,7 +159,7 @@ export default function IAQReportPage() {
         </div>
 
         {/* Tab Bar */}
-        <div className="tab-bar" style={{ background: 'var(--surface-1)', borderBottom: '1px solid var(--border)', padding: '0 32px', display: 'flex', gap: 0 }}>
+        <div className="tab-bar" style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)', padding: '0 32px', display: 'flex', gap: 0 }}>
           {TABS.map(t => (
             <button
               key={t.key}
@@ -173,8 +173,8 @@ export default function IAQReportPage() {
                 letterSpacing: '0.08em',
                 background: 'none',
                 border: 'none',
-                borderBottom: activeTab === t.key ? '2px solid var(--clay)' : '2px solid transparent',
-                color: activeTab === t.key ? 'var(--clay)' : 'var(--text-3)',
+                borderBottom: activeTab === t.key ? '2px solid var(--accent)' : '2px solid transparent',
+                color: activeTab === t.key ? 'var(--accent)' : 'var(--muted)',
                 cursor: 'pointer',
               }}
             >
@@ -196,7 +196,7 @@ export default function IAQReportPage() {
           </div>
 
           {/* Right Panel */}
-          <div className="hidden lg:block" style={{ width: 280, minWidth: 280, flexShrink: 0, borderLeft: '1px solid var(--border)', background: 'var(--surface-1)', padding: '24px 20px', overflowY: 'auto' }}>
+          <div className="hidden lg:block" style={{ width: 280, minWidth: 280, flexShrink: 0, borderLeft: '1px solid var(--border)', background: 'var(--surface)', padding: '24px 20px', overflowY: 'auto' }}>
             {activeTab === 'overview' && <OverviewRightPanel report={report} />}
             {activeTab === 'air-quality' && <AirQualityRightPanel report={report} />}
             {activeTab === 'savings' && <SavingsRightPanel />}
@@ -215,7 +215,7 @@ export default function IAQReportPage() {
 function SectionHeader({ title }: { title: string }) {
   return (
     <div style={{ marginBottom: 8 }}>
-      <span style={{ fontFamily: 'var(--font-cond)', fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-3)' }}>
+      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)' }}>
         {title}
       </span>
     </div>
@@ -251,14 +251,14 @@ function OverviewTab({ report, monitoringDays, totalReadings }: { report: IAQRep
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>
         <KPICard topColor={scoreBandColor(report.healthScore)} value={String(report.healthScore)} label="Home Health Score" sub={report.healthRating} />
         <KPICard topColor={scoreBandColor(report.healthScore)} value={report.healthRating} label="IAQ Rating" sub={`Based on 5 metrics monitored`} valueFont="var(--font-display)" valueSize={14} />
-        <KPICard topColor="var(--clay)" value={String(monitoringDays)} label="Monitoring Period" sub={`${report.monitoringStart} → ${report.monitoringEnd}`} />
+        <KPICard topColor="var(--accent)" value={String(monitoringDays)} label="Monitoring Period" sub={`${report.monitoringStart} → ${report.monitoringEnd}`} />
         <KPICard topColor="var(--blue)" value={String(totalReadings)} label="Days Monitored" sub="AirGradient ONE" />
       </div>
 
       {/* 14-day Line Chart */}
       <div style={{ marginBottom: 24 }}>
         <SectionHeader title="Air Quality Timeline" />
-        <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 6, padding: '16px 20px' }}>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 6, padding: '16px 20px' }}>
           <TimelineChart
             dailySummaries={report.dailySummaries}
             outdoorSummaries={report.outdoorDailySummaries}
@@ -266,9 +266,9 @@ function OverviewTab({ report, monitoringDays, totalReadings }: { report: IAQRep
           />
           {/* Legend */}
           <div style={{ display: 'flex', gap: 16, marginTop: 12, justifyContent: 'center' }}>
-            <LegendDot color="var(--clay)" label="VOC Index" />
+            <LegendDot color="var(--accent)" label="VOC Index" />
             <LegendDot color="var(--blue)" label="PM2.5" />
-            {report.outdoorDailySummaries && <LegendDot color="var(--text-3)" label="Outdoor PM2.5" dashed />}
+            {report.outdoorDailySummaries && <LegendDot color="var(--muted)" label="Outdoor PM2.5" dashed />}
           </div>
         </div>
       </div>
@@ -280,14 +280,14 @@ function KPICard({ topColor, value, label, sub, valueFont, valueSize }: {
   topColor: string; value: string; label: string; sub?: string; valueFont?: string; valueSize?: number;
 }) {
   return (
-    <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 6, overflow: 'hidden' }}>
+    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 6, overflow: 'hidden' }}>
       <div style={{ height: 3, background: topColor }} />
       <div style={{ padding: '14px 16px' }}>
         <div style={{ fontFamily: valueFont || 'var(--font-mono)', fontSize: valueSize || 28, fontWeight: 700, color: topColor, lineHeight: 1, marginBottom: 4, textTransform: valueFont ? 'uppercase' : 'none' }}>
           {value}
         </div>
-        {sub && <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--text-3)', marginBottom: 2 }}>{sub}</div>}
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-3)' }}>{label}</div>
+        {sub && <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--muted)', marginBottom: 2 }}>{sub}</div>}
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--muted)' }}>{label}</div>
       </div>
     </div>
   );
@@ -297,7 +297,7 @@ function LegendDot({ color, label, dashed }: { color: string; label: string; das
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
       <div style={{ width: 12, height: 2, background: color, borderRadius: 1, ...(dashed ? { backgroundImage: `repeating-linear-gradient(90deg, ${color} 0, ${color} 3px, transparent 3px, transparent 6px)`, background: 'none' } : {}) }} />
-      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--text-3)' }}>{label}</span>
+      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--muted)' }}>{label}</span>
     </div>
   );
 }
@@ -312,7 +312,7 @@ function TimelineChart({ dailySummaries, outdoorSummaries, phases }: {
   phases: IAQPhase[];
 }) {
   if (dailySummaries.length === 0) {
-    return <p style={{ fontSize: 12, color: 'var(--text-3)', textAlign: 'center', padding: '40px 0' }}>No data to chart</p>;
+    return <p style={{ fontSize: 12, color: 'var(--muted)', textAlign: 'center', padding: '40px 0' }}>No data to chart</p>;
   }
 
   const w = 600;
@@ -360,8 +360,8 @@ function TimelineChart({ dailySummaries, outdoorSummaries, phases }: {
         if (x2 <= x1) return null;
         return (
           <g key={i}>
-            <rect x={x1} y={padT} width={x2 - x1} height={chartH} fill={PHASE_COLORS[phase.label] || 'var(--text-3)'} opacity={0.08} />
-            <text x={(x1 + x2) / 2} y={padT - 4} textAnchor="middle" fontSize={7} fontFamily="var(--font-display)" fill="var(--text-3)" style={{ textTransform: 'uppercase' }}>
+            <rect x={x1} y={padT} width={x2 - x1} height={chartH} fill={PHASE_COLORS[phase.label] || 'var(--muted)'} opacity={0.08} />
+            <text x={(x1 + x2) / 2} y={padT - 4} textAnchor="middle" fontSize={7} fontFamily="var(--font-display)" fill="var(--muted)" style={{ textTransform: 'uppercase' }}>
               {phase.label}
             </text>
           </g>
@@ -375,7 +375,7 @@ function TimelineChart({ dailySummaries, outdoorSummaries, phases }: {
         return (
           <g key={i}>
             <line x1={padL} y1={y} x2={padL + chartW} y2={y} stroke="var(--border)" strokeWidth={0.5} />
-            <text x={padL - 4} y={y + 3} textAnchor="end" fontSize={7} fontFamily="var(--font-mono)" fill="var(--text-3)">{val}</text>
+            <text x={padL - 4} y={y + 3} textAnchor="end" fontSize={7} fontFamily="var(--font-mono)" fill="var(--muted)">{val}</text>
           </g>
         );
       })}
@@ -386,7 +386,7 @@ function TimelineChart({ dailySummaries, outdoorSummaries, phases }: {
         const x = toX(i);
         const label = new Date(d.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         return (
-          <text key={i} x={x} y={h - 4} textAnchor="middle" fontSize={7} fontFamily="var(--font-mono)" fill="var(--text-3)">
+          <text key={i} x={x} y={h - 4} textAnchor="middle" fontSize={7} fontFamily="var(--font-mono)" fill="var(--muted)">
             {label}
           </text>
         );
@@ -394,11 +394,11 @@ function TimelineChart({ dailySummaries, outdoorSummaries, phases }: {
 
       {/* Outdoor PM2.5 (dashed) */}
       {outdoorPm25 && outdoorPm25.length > 0 && (
-        <path d={line(outdoorPm25)} fill="none" stroke="var(--text-3)" strokeWidth={1} strokeDasharray="4 3" />
+        <path d={line(outdoorPm25)} fill="none" stroke="var(--muted)" strokeWidth={1} strokeDasharray="4 3" />
       )}
 
       {/* VOC line */}
-      <path d={line(vocData)} fill="none" stroke="var(--clay)" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
+      <path d={line(vocData)} fill="none" stroke="var(--accent)" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
 
       {/* PM2.5 line */}
       <path d={line(pm25Data)} fill="none" stroke="var(--blue)" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
@@ -422,7 +422,7 @@ function OverviewRightPanel({ report }: { report: IAQReport }) {
           return (
             <div key={key} style={{ marginBottom: 10 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 3 }}>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-2)' }}>{key === 'pm25' ? 'PM2.5' : key.toUpperCase()}</span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--mid)' }}>{key === 'pm25' ? 'PM2.5' : key.toUpperCase()}</span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 600, color: STATUS_COLORS[metric.status] }}>{metric.clearancePct.toFixed(0)}%</span>
                   <StatusPill status={metric.status} />
@@ -439,12 +439,12 @@ function OverviewRightPanel({ report }: { report: IAQReport }) {
       <div>
         <SectionHeader title="Phase Timeline" />
         {report.phases.map((phase, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', borderLeft: `3px solid ${PHASE_COLORS[phase.label] || 'var(--text-3)'}`, paddingLeft: 10, marginBottom: 4 }}>
+          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', borderLeft: `3px solid ${PHASE_COLORS[phase.label] || 'var(--muted)'}`, paddingLeft: 10, marginBottom: 4 }}>
             <div style={{ flex: 1 }}>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 500, color: 'var(--text-2)' }}>{phase.label}</div>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--text-3)' }}>{phase.startDate} → {phase.endDate}</div>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 500, color: 'var(--mid)' }}>{phase.label}</div>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--muted)' }}>{phase.startDate} → {phase.endDate}</div>
             </div>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-3)' }}>{daysBetween(phase.startDate, phase.endDate)}d</span>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--muted)' }}>{daysBetween(phase.startDate, phase.endDate)}d</span>
           </div>
         ))}
       </div>
@@ -474,17 +474,17 @@ function AirQualityTab({ report }: { report: IAQReport }) {
           const isTemp = key === 'temperature';
           const improved = m.clearancePct > 0;
           return (
-            <div key={key} style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 6, overflow: 'hidden' }}>
-              <div style={{ height: 3, background: isTemp ? 'var(--text-3)' : STATUS_COLORS[m.status] }} />
+            <div key={key} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 6, overflow: 'hidden' }}>
+              <div style={{ height: 3, background: isTemp ? 'var(--muted)' : STATUS_COLORS[m.status] }} />
               <div style={{ padding: '14px 16px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-2)' }}>{label}</span>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--mid)' }}>{label}</span>
                   {!isTemp && <StatusPill status={m.status} />}
                 </div>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 28, fontWeight: 700, color: isTemp ? 'var(--text-1)' : STATUS_COLORS[m.status], lineHeight: 1, marginBottom: 4 }}>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 28, fontWeight: 700, color: isTemp ? 'var(--charcoal)' : STATUS_COLORS[m.status], lineHeight: 1, marginBottom: 4 }}>
                   {m.current}{unit}
                 </div>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-3)', marginBottom: 8 }}>Target: {target}</div>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--muted)', marginBottom: 8 }}>Target: {target}</div>
 
                 {!isTemp && (
                   <div style={{ height: 4, borderRadius: 2, background: 'var(--surface-2, var(--border))', marginBottom: 12 }}>
@@ -494,19 +494,19 @@ function AirQualityTab({ report }: { report: IAQReport }) {
 
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <div style={{ textAlign: 'center' }}>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Before</div>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 600, color: 'var(--text-2)' }}>{m.baseline}</div>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 7, color: 'var(--text-3)' }}>baseline</div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Before</div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 600, color: 'var(--mid)' }}>{m.baseline}</div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 7, color: 'var(--muted)' }}>baseline</div>
                   </div>
                   <div style={{ textAlign: 'center' }}>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Peak</div>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 600, color: 'var(--text-2)' }}>{m.peak}</div>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 7, color: 'var(--text-3)' }}>{m.peakDay}</div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Peak</div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 600, color: 'var(--mid)' }}>{m.peak}</div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 7, color: 'var(--muted)' }}>{m.peakDay}</div>
                   </div>
                   <div style={{ textAlign: 'center' }}>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Now</div>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 600, color: 'var(--text-2)' }}>{m.current}</div>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 7, color: 'var(--text-3)' }}>current</div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Now</div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 600, color: 'var(--mid)' }}>{m.current}</div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 7, color: 'var(--muted)' }}>current</div>
                   </div>
                 </div>
 
@@ -534,15 +534,15 @@ function AirQualityRightPanel({ report }: { report: IAQReport }) {
         <SectionHeader title="Key Findings" />
         {warnings.length === 0 ? (
           <div style={{ borderLeft: '3px solid var(--green)', padding: '10px 12px', background: 'var(--bg)', borderRadius: 4 }}>
-            <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'var(--text-2)' }}>All metrics within Health Canada guidelines.</span>
+            <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'var(--mid)' }}>All metrics within Health Canada guidelines.</span>
           </div>
         ) : (
           warnings.map(key => {
             const m = report[key];
             return (
               <div key={key} style={{ borderLeft: `3px solid ${STATUS_COLORS[m.status]}`, padding: '10px 12px', background: 'var(--bg)', borderRadius: 4, marginBottom: 8 }}>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--text-3)', marginBottom: 4 }}>{key === 'pm25' ? 'PM2.5' : key.toUpperCase()}</div>
-                <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'var(--text-2)', lineHeight: 1.5 }}>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--muted)', marginBottom: 4 }}>{key === 'pm25' ? 'PM2.5' : key.toUpperCase()}</div>
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'var(--mid)', lineHeight: 1.5 }}>
                   Peak {m.peak} on {m.peakDay}. Current {m.current} — {Math.abs(m.clearancePct).toFixed(0)}% {m.clearancePct > 0 ? 'below' : 'above'} baseline.
                 </div>
               </div>
@@ -555,12 +555,12 @@ function AirQualityRightPanel({ report }: { report: IAQReport }) {
         <SectionHeader title="Monitoring Equipment" />
         <div style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 6, padding: 12 }}>
           <div style={{ marginBottom: 8 }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Indoor unit</div>
-            <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'var(--text-1)' }}>AirGradient ONE · {report.indoorSerial || '—'}</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Indoor unit</div>
+            <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'var(--charcoal)' }}>AirGradient ONE · {report.indoorSerial || '—'}</div>
           </div>
           <div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Outdoor unit</div>
-            <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'var(--text-1)' }}>{report.outdoorSerial ? `AirGradient Open Air · ${report.outdoorSerial}` : '—'}</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Outdoor unit</div>
+            <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'var(--charcoal)' }}>{report.outdoorSerial ? `AirGradient Open Air · ${report.outdoorSerial}` : '—'}</div>
           </div>
         </div>
       </div>
@@ -581,21 +581,21 @@ function MaintenanceTab() {
         <SectionHeader title="Maintenance Ledger" />
         <button
           onClick={() => showToast({ message: 'Job linking — coming in next build', variant: 'info' })}
-          style={{ padding: '6px 12px', borderRadius: 4, border: '1px solid var(--border)', background: 'var(--surface-1)', color: 'var(--text-2)', fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.06em', cursor: 'pointer', minHeight: 32 }}
+          style={{ padding: '6px 12px', borderRadius: 4, border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--mid)', fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.06em', cursor: 'pointer', minHeight: 32 }}
         >
           Link Job
         </button>
       </div>
-      <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 6, overflow: 'hidden' }}>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 6, overflow: 'hidden' }}>
         {/* Header */}
         <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr 100px 120px 1fr', gap: 8, padding: '8px 14px', background: 'var(--surface-2, var(--border))' }}>
           {['Date', 'Task', 'Area', 'Outcome', 'Notes'].map(h => (
-            <span key={h} style={{ fontFamily: 'var(--font-mono)', fontSize: 7.5, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-3)' }}>{h}</span>
+            <span key={h} style={{ fontFamily: 'var(--font-mono)', fontSize: 7.5, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--muted)' }}>{h}</span>
           ))}
         </div>
         {/* Empty state */}
         <div style={{ padding: '32px 16px', textAlign: 'center' }}>
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'var(--text-3)', lineHeight: 1.6 }}>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'var(--muted)', lineHeight: 1.6 }}>
             No maintenance records linked to this report yet.<br />
             Records will be populated from the linked job in<br />
             Hooomz OS once job-to-report linking is built.
@@ -626,7 +626,7 @@ function SavingsTab({ report }: { report: IAQReport }) {
   return (
     <div>
       {/* Hero */}
-      <div style={{ background: 'var(--clay)', borderRadius: 6, padding: '24px 28px', marginBottom: 24, color: '#fff' }}>
+      <div style={{ background: 'var(--accent)', borderRadius: 6, padding: '24px 28px', marginBottom: 24, color: '#fff' }}>
         <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, opacity: 0.8, marginBottom: 4 }}>Estimated value delivered this project</div>
         <div style={{ fontFamily: 'var(--font-mono)', fontSize: 32, fontWeight: 700, lineHeight: 1 }}>{formatCurrency(total)}</div>
         <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, opacity: 0.65, marginTop: 6 }}>Cost avoidance + health outcome value · Hooomz Labs estimate</div>
@@ -637,13 +637,13 @@ function SavingsTab({ report }: { report: IAQReport }) {
         <div>
           <SectionHeader title="Cost Avoidance" />
           {savingsItems.map((item, i) => (
-            <div key={i} style={{ borderLeft: '3px solid var(--o-green)', padding: '12px 14px', background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 6, marginBottom: 8 }}>
+            <div key={i} style={{ borderLeft: '3px solid var(--green)', padding: '12px 14px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 6, marginBottom: 8 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-1)', marginBottom: 4 }}>{item.label}</div>
-                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'var(--text-3)', lineHeight: 1.4 }}>{item.desc}</div>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--charcoal)', marginBottom: 4 }}>{item.label}</div>
+                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'var(--muted)', lineHeight: 1.4 }}>{item.desc}</div>
                 </div>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 16, fontWeight: 700, color: 'var(--o-green)', flexShrink: 0, marginLeft: 12 }}>{formatCurrency(item.value)}</span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 16, fontWeight: 700, color: 'var(--green)', flexShrink: 0, marginLeft: 12 }}>{formatCurrency(item.value)}</span>
               </div>
             </div>
           ))}
@@ -651,9 +651,9 @@ function SavingsTab({ report }: { report: IAQReport }) {
         <div>
           <SectionHeader title="Health Improvements" />
           {healthItems.map((item, i) => (
-            <div key={i} style={{ borderLeft: '3px solid var(--blue)', padding: '12px 14px', background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 6, marginBottom: 8 }}>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-1)', marginBottom: 4 }}>{item.label}</div>
-              <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'var(--text-3)', lineHeight: 1.4 }}>{item.desc}</div>
+            <div key={i} style={{ borderLeft: '3px solid var(--blue)', padding: '12px 14px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 6, marginBottom: 8 }}>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--charcoal)', marginBottom: 4 }}>{item.label}</div>
+              <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'var(--muted)', lineHeight: 1.4 }}>{item.desc}</div>
             </div>
           ))}
         </div>
@@ -677,21 +677,21 @@ function SavingsRightPanel() {
         <div style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 6, padding: 12 }}>
           {savingsItems.map((item, i) => (
             <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0', borderBottom: i < savingsItems.length - 1 ? '1px solid var(--border)' : 'none', marginBottom: i < savingsItems.length - 1 ? 4 : 0 }}>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-2)' }}>{item.label}</span>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-2)' }}>{formatCurrency(item.value)}</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--mid)' }}>{item.label}</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--mid)' }}>{formatCurrency(item.value)}</span>
             </div>
           ))}
           <div style={{ borderTop: '1px solid var(--border)', marginTop: 6, paddingTop: 6, display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600, color: 'var(--text-1)' }}>Total</span>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 16, fontWeight: 700, color: 'var(--clay)' }}>{formatCurrency(total)}</span>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600, color: 'var(--charcoal)' }}>Total</span>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 16, fontWeight: 700, color: 'var(--accent)' }}>{formatCurrency(total)}</span>
           </div>
         </div>
       </div>
 
       <div>
         <SectionHeader title="Labs Citation" />
-        <div style={{ border: '1px solid var(--clay)', borderRadius: 6, padding: 12 }}>
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'var(--text-3)', lineHeight: 1.6 }}>
+        <div style={{ border: '1px solid var(--accent)', borderRadius: 6, padding: 12 }}>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'var(--muted)', lineHeight: 1.6 }}>
             Cost avoidance estimates based on Hooomz Labs reference data and regional contractor remediation averages for Greater Moncton, NB. Individual results may vary.
           </p>
         </div>
@@ -761,7 +761,7 @@ function buildRecommendations(report: IAQReport): Recommendation[] {
 }
 
 const COLOUR_MAP: Record<string, string> = {
-  clay: 'var(--clay)',
+  clay: 'var(--accent)',
   blue: 'var(--blue)',
   amber: 'var(--amber)',
 };
@@ -773,11 +773,11 @@ function RecommendationsTab({ report }: { report: IAQReport }) {
     <div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {recs.map((rec, i) => (
-          <div key={i} style={{ borderLeft: `3px solid ${COLOUR_MAP[rec.colour] || 'var(--clay)'}`, padding: '14px 16px', background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 6 }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 7.5, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--text-3)', marginBottom: 6 }}>{rec.tag}</div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-1)', marginBottom: 6 }}>{rec.title}</div>
-            <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'var(--text-2)', lineHeight: 1.5, marginBottom: 8 }}>{rec.why}</div>
-            <a href="#" style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--clay)', textDecoration: 'none' }}>View in Labs →</a>
+          <div key={i} style={{ borderLeft: `3px solid ${COLOUR_MAP[rec.colour] || 'var(--accent)'}`, padding: '14px 16px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 6 }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 7.5, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--muted)', marginBottom: 6 }}>{rec.tag}</div>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', color: 'var(--charcoal)', marginBottom: 6 }}>{rec.title}</div>
+            <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'var(--mid)', lineHeight: 1.5, marginBottom: 8 }}>{rec.why}</div>
+            <a href="#" style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--accent)', textDecoration: 'none' }}>View in Labs →</a>
           </div>
         ))}
       </div>
@@ -792,8 +792,8 @@ function RecommendationsRightPanel({ report }: { report: IAQReport }) {
     <div>
       <div style={{ marginBottom: 24 }}>
         <SectionHeader title="Hooomz Labs" />
-        <div style={{ border: '1px solid var(--clay)', borderRadius: 6, padding: 12 }}>
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'var(--text-3)', lineHeight: 1.6 }}>
+        <div style={{ border: '1px solid var(--accent)', borderRadius: 6, padding: 12 }}>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'var(--muted)', lineHeight: 1.6 }}>
             Labs tests and validates materials, techniques, and protocols in real renovation conditions. Every recommendation in this report is backed by documented test data.
           </p>
         </div>
@@ -802,11 +802,11 @@ function RecommendationsRightPanel({ report }: { report: IAQReport }) {
       <div>
         <SectionHeader title="Active Tests Linked" />
         <div style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 6, padding: 12, textAlign: 'center' }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 20, fontWeight: 700, color: 'var(--clay)', lineHeight: 1 }}>{recs.length}</div>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-3)', marginTop: 4 }}>test protocols relevant to this project</div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 20, fontWeight: 700, color: 'var(--accent)', lineHeight: 1 }}>{recs.length}</div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--muted)', marginTop: 4 }}>test protocols relevant to this project</div>
           <div style={{ marginTop: 8 }}>
             {recs.map((r, i) => (
-              <div key={i} style={{ fontFamily: 'var(--font-mono)', fontSize: 7, color: 'var(--text-3)', marginTop: 2 }}>{r.tag}</div>
+              <div key={i} style={{ fontFamily: 'var(--font-mono)', fontSize: 7, color: 'var(--muted)', marginTop: 2 }}>{r.tag}</div>
             ))}
           </div>
         </div>

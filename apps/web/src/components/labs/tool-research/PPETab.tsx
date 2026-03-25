@@ -9,8 +9,8 @@ import { InlineEditCell } from './InlineEditCell';
 import { PurchaseModal } from './PurchaseModal';
 import { ContentStatusBadge } from './ContentStatusBadge';
 
-const TEAL = '#2A9D8F';
-const CORAL = '#E76F51';
+const TEAL = 'var(--accent)';
+const CORAL = '#E76F51'; /* tool-research category — no canonical equivalent */
 
 interface PPETabProps {
   items: ToolResearchItem[];
@@ -23,7 +23,7 @@ export function PPETab({ items }: PPETabProps) {
   const [purchaseItem, setPurchaseItem] = useState<ToolResearchItem | null>(null);
 
   const purchasedRowStyle = (row: ToolResearchItem) =>
-    row.purchased ? { background: '#E8F5E9' } : undefined;
+    row.purchased ? { background: 'var(--green-bg)' } : undefined;
 
   return (
     <>
@@ -32,7 +32,7 @@ export function PPETab({ items }: PPETabProps) {
         accent="Fit first. Price last (5% weight)."
         color={CORAL}
       >
-        <p style={{ fontSize: 12, color: '#666', margin: '0 0 12px' }}>
+        <p style={{ fontSize: 12, color: 'var(--muted)', margin: '0 0 12px' }}>
           Add <strong>Mark&apos;s Work Wearhouse</strong> as a PPE-specific stop. Go at end of day
           (feet swollen), wear work socks, walk 10+ min. Dakota (Mark&apos;s house brand) is the NB
           budget benchmark for winter boots.
@@ -83,7 +83,7 @@ export function PPETab({ items }: PPETabProps) {
               nowrap: true,
               render: (_: unknown, row: ToolResearchItem) =>
                 row.purchased ? (
-                  <span style={{ color: '#2E7D32', fontSize: 11, fontWeight: 600 }}>Purchased</span>
+                  <span style={{ color: 'var(--green)', fontSize: 11, fontWeight: 600 }}>Purchased</span>
                 ) : (
                   <button
                     onClick={(e) => { e.stopPropagation(); setPurchaseItem(row); }}
@@ -91,7 +91,7 @@ export function PPETab({ items }: PPETabProps) {
                       padding: '4px 10px',
                       border: `1px solid ${TEAL}`,
                       borderRadius: 6,
-                      background: 'white',
+                      background: 'var(--surface)',
                       color: TEAL,
                       fontSize: 11,
                       fontWeight: 600,

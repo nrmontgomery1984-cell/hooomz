@@ -21,10 +21,10 @@ const TRADE_META: Record<ProductTrade, { label: string; Icon: LucideIcon }> = {
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  pending: '#F59E0B',
-  confirmed: '#10B981',
-  ordered: '#3B82F6',
-  delivered: '#6B7280',
+  pending: 'var(--yellow)',
+  confirmed: 'var(--green)',
+  ordered: 'var(--blue)',
+  delivered: 'var(--muted)',
 };
 
 interface TradeSelectionPanelProps {
@@ -47,12 +47,12 @@ export function TradeSelectionPanel({
   const { Icon } = meta;
 
   const hasSelection = !!existingSelection;
-  const statusColor = existingSelection ? (STATUS_COLORS[existingSelection.status] ?? '#9CA3AF') : undefined;
+  const statusColor = existingSelection ? (STATUS_COLORS[existingSelection.status] ?? 'var(--muted)') : undefined;
 
   return (
     <div
       style={{
-        background: 'var(--surface-1)',
+        background: 'var(--surface)',
         border: `1px solid ${hasSelection && existingSelection.status === 'confirmed' ? 'rgba(16,185,129,0.4)' : 'var(--border)'}`,
         borderRadius: 12,
         overflow: 'hidden',
@@ -72,12 +72,12 @@ export function TradeSelectionPanel({
           gap: 12,
         }}
       >
-        <Icon size={18} color="var(--text-3)" />
+        <Icon size={18} color="var(--muted)" />
 
         <div style={{ flex: 1, textAlign: 'left' }}>
           <div style={{ fontSize: 14, fontWeight: 700 }}>{meta.label}</div>
           {hasSelection && (
-            <div style={{ fontSize: 12, color: 'var(--text-3)', marginTop: 2 }}>
+            <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>
               {existingSelection.productName}{' '}
               <span style={{ fontWeight: 600 }}>
                 · ${existingSelection.totalPrice.toFixed(0)}
@@ -103,12 +103,12 @@ export function TradeSelectionPanel({
               {existingSelection.status}
             </span>
           ) : (
-            <span style={{ fontSize: 12, color: 'var(--text-3)' }}>Not selected</span>
+            <span style={{ fontSize: 12, color: 'var(--muted)' }}>Not selected</span>
           )}
           {isExpanded ? (
-            <ChevronUp size={16} color="var(--text-3)" />
+            <ChevronUp size={16} color="var(--muted)" />
           ) : (
-            <ChevronDown size={16} color="var(--text-3)" />
+            <ChevronDown size={16} color="var(--muted)" />
           )}
         </div>
       </button>

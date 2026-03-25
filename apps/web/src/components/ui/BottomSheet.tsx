@@ -52,7 +52,7 @@ export function BottomSheet({ isOpen, onClose, title, children }: BottomSheetPro
       <div
         className="w-full max-w-lg animate-slide-up"
         style={{
-          background: '#FFFFFF',
+          background: 'var(--surface)',
           borderRadius: '16px 16px 0 0',
           maxHeight: '85vh',
           minHeight: '40vh',
@@ -69,14 +69,14 @@ export function BottomSheet({ isOpen, onClose, title, children }: BottomSheetPro
         <div className="flex justify-center pt-3 pb-1">
           <div
             className="rounded-full"
-            style={{ width: 36, height: 4, background: '#D1D5DB' }}
+            style={{ width: 36, height: 4, background: 'var(--border)' }}
           />
         </div>
 
         {/* Header */}
         <div className="flex items-center justify-between px-4 pb-3">
           {title && (
-            <h2 className="text-sm font-semibold" style={{ color: '#111827' }}>
+            <h2 className="text-sm font-semibold" style={{ color: 'var(--charcoal)' }}>
               {title}
             </h2>
           )}
@@ -85,12 +85,12 @@ export function BottomSheet({ isOpen, onClose, title, children }: BottomSheetPro
             className="min-h-[44px] min-w-[44px] flex items-center justify-center -mr-2"
             aria-label="Close"
           >
-            <X size={20} style={{ color: '#9CA3AF' }} strokeWidth={1.5} />
+            <X size={20} style={{ color: 'var(--muted)' }} strokeWidth={1.5} />
           </button>
         </div>
 
         {/* Divider */}
-        <div style={{ height: 1, background: '#E5E7EB' }} />
+        <div style={{ height: 1, background: 'var(--border)' }} />
 
         {/* Scrollable content */}
         <div className="flex-1 overflow-y-auto px-4 py-4">

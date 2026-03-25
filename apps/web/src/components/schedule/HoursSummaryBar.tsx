@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * HoursSummaryBar — Horizontal bar: scheduled (gray) vs actual (teal)
+ * HoursSummaryBar — Horizontal bar: scheduled (gray) vs actual (accent)
  */
 
 interface HoursSummaryBarProps {
@@ -17,37 +17,37 @@ export function HoursSummaryBar({ scheduled, actual, budgeted }: HoursSummaryBar
 
   return (
     <div className="px-1">
-      <div className="flex items-center gap-3 text-[10px] text-gray-500 mb-1">
+      <div className="flex items-center gap-3 text-[10px] text-[var(--muted)] mb-1">
         <span className="flex items-center gap-1">
-          <span className="w-2 h-2 rounded-sm bg-gray-300" />
+          <span className="w-2 h-2 rounded-sm bg-[var(--border)]" />
           {scheduled}h scheduled
         </span>
         <span className="flex items-center gap-1">
-          <span className="w-2 h-2 rounded-sm" style={{ backgroundColor: '#0F766E' }} />
+          <span className="w-2 h-2 rounded-sm" style={{ backgroundColor: 'var(--accent)' }} />
           {actual}h actual
         </span>
         {budgeted !== undefined && (
           <span className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-sm border border-gray-400" />
+            <span className="w-2 h-2 rounded-sm border border-[var(--muted)]" />
             {budgeted}h budget
           </span>
         )}
       </div>
-      <div className="relative h-2 bg-gray-100 rounded-full overflow-hidden">
+      <div className="relative h-2 bg-[var(--surface)] rounded-full overflow-hidden">
         {/* Scheduled bar */}
         <div
-          className="absolute inset-y-0 left-0 bg-gray-300 rounded-full"
+          className="absolute inset-y-0 left-0 bg-[var(--border)] rounded-full"
           style={{ width: `${scheduledPct}%` }}
         />
         {/* Actual bar (overlays scheduled) */}
         <div
           className="absolute inset-y-0 left-0 rounded-full"
-          style={{ width: `${actualPct}%`, backgroundColor: '#0F766E' }}
+          style={{ width: `${actualPct}%`, backgroundColor: 'var(--accent)' }}
         />
         {/* Budget marker */}
         {budgeted !== undefined && budgeted > 0 && (
           <div
-            className="absolute inset-y-0 w-0.5 bg-gray-500"
+            className="absolute inset-y-0 w-0.5 bg-[var(--muted)]"
             style={{ left: `${(budgeted / maxHours) * 100}%` }}
           />
         )}

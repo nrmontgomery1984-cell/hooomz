@@ -1,6 +1,6 @@
 'use client';
 
-const NAVY = '#1B2A4A';
+const NAVY = 'var(--charcoal)';
 
 interface ExportButtonsProps {
   data: readonly object[];
@@ -45,7 +45,7 @@ export function ExportButtons({ data, columns, filename = 'tool-research' }: Exp
           padding: '6px 12px',
           border: `1px solid ${NAVY}`,
           borderRadius: 6,
-          background: 'white',
+          background: 'var(--surface)',
           color: NAVY,
           fontSize: 12,
           fontWeight: 600,
@@ -69,7 +69,7 @@ export function ExportButtons({ data, columns, filename = 'tool-research' }: Exp
           padding: '6px 12px',
           border: `1px solid ${NAVY}`,
           borderRadius: 6,
-          background: 'white',
+          background: 'var(--surface)',
           color: NAVY,
           fontSize: 12,
           fontWeight: 600,

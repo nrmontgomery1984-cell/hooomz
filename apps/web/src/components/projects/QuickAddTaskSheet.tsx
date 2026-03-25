@@ -87,7 +87,7 @@ export function QuickAddTaskSheet({ projectId, isOpen, onClose }: QuickAddTaskSh
 
         {/* Title */}
         <label>
-          <span style={{ fontFamily: 'var(--font-cond)', fontSize: 10, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B7280', display: 'block', marginBottom: 4 }}>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--muted)', display: 'block', marginBottom: 4 }}>
             Task Title
           </span>
           <input
@@ -99,19 +99,19 @@ export function QuickAddTaskSheet({ projectId, isOpen, onClose }: QuickAddTaskSh
             autoFocus
             style={{
               width: '100%', minHeight: 44, padding: '0 12px',
-              fontFamily: 'var(--font)', fontSize: 13, color: '#111827',
-              background: '#F9FAFB', border: '1px solid #E5E7EB', borderRadius: 8,
+              fontFamily: 'var(--font)', fontSize: 13, color: 'var(--charcoal)',
+              background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8,
               outline: 'none',
             }}
           />
           {error && (
-            <span style={{ fontSize: 11, color: '#EF4444', marginTop: 4, display: 'block' }}>{error}</span>
+            <span style={{ fontSize: 11, color: 'var(--red)', marginTop: 4, display: 'block' }}>{error}</span>
           )}
         </label>
 
         {/* Room */}
         <label>
-          <span style={{ fontFamily: 'var(--font-cond)', fontSize: 10, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B7280', display: 'block', marginBottom: 4 }}>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--muted)', display: 'block', marginBottom: 4 }}>
             Room
           </span>
           <select
@@ -119,8 +119,8 @@ export function QuickAddTaskSheet({ projectId, isOpen, onClose }: QuickAddTaskSh
             onChange={(e) => setRoom(e.target.value)}
             style={{
               width: '100%', minHeight: 44, padding: '0 12px',
-              fontFamily: 'var(--font)', fontSize: 13, color: '#111827',
-              background: '#F9FAFB', border: '1px solid #E5E7EB', borderRadius: 8,
+              fontFamily: 'var(--font)', fontSize: 13, color: 'var(--charcoal)',
+              background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8,
               outline: 'none', appearance: 'auto',
             }}
           >
@@ -133,7 +133,7 @@ export function QuickAddTaskSheet({ projectId, isOpen, onClose }: QuickAddTaskSh
         {/* Stage + Trade row */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
           <label>
-            <span style={{ fontFamily: 'var(--font-cond)', fontSize: 10, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B7280', display: 'block', marginBottom: 4 }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--muted)', display: 'block', marginBottom: 4 }}>
               Stage
             </span>
             <select
@@ -141,8 +141,8 @@ export function QuickAddTaskSheet({ projectId, isOpen, onClose }: QuickAddTaskSh
               onChange={(e) => setStageName(e.target.value)}
               style={{
                 width: '100%', minHeight: 44, padding: '0 12px',
-                fontFamily: 'var(--font)', fontSize: 13, color: '#111827',
-                background: '#F9FAFB', border: '1px solid #E5E7EB', borderRadius: 8,
+                fontFamily: 'var(--font)', fontSize: 13, color: 'var(--charcoal)',
+                background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8,
                 outline: 'none', appearance: 'auto',
               }}
             >
@@ -153,7 +153,7 @@ export function QuickAddTaskSheet({ projectId, isOpen, onClose }: QuickAddTaskSh
           </label>
 
           <label>
-            <span style={{ fontFamily: 'var(--font-cond)', fontSize: 10, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B7280', display: 'block', marginBottom: 4 }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--muted)', display: 'block', marginBottom: 4 }}>
               Trade
             </span>
             <select
@@ -161,8 +161,8 @@ export function QuickAddTaskSheet({ projectId, isOpen, onClose }: QuickAddTaskSh
               onChange={(e) => setTradeName(e.target.value)}
               style={{
                 width: '100%', minHeight: 44, padding: '0 12px',
-                fontFamily: 'var(--font)', fontSize: 13, color: '#111827',
-                background: '#F9FAFB', border: '1px solid #E5E7EB', borderRadius: 8,
+                fontFamily: 'var(--font)', fontSize: 13, color: 'var(--charcoal)',
+                background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8,
                 outline: 'none', appearance: 'auto',
               }}
             >
@@ -175,7 +175,7 @@ export function QuickAddTaskSheet({ projectId, isOpen, onClose }: QuickAddTaskSh
 
         {/* Preview */}
         {preview && (
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#9CA3AF', padding: '6px 10px', background: '#F9FAFB', borderRadius: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--muted)', padding: '6px 10px', background: 'var(--surface)', borderRadius: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {preview}
           </div>
         )}
@@ -186,8 +186,8 @@ export function QuickAddTaskSheet({ projectId, isOpen, onClose }: QuickAddTaskSh
           disabled={createTask.isPending}
           style={{
             width: '100%', minHeight: 44,
-            fontFamily: 'var(--font-cond)', fontSize: 13, fontWeight: 600, letterSpacing: '0.04em',
-            color: '#FFFFFF', background: '#0F766E', borderRadius: 8,
+            fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 600, letterSpacing: '0.04em',
+            color: '#fff', background: 'var(--accent)', borderRadius: 8,
             border: 'none', cursor: createTask.isPending ? 'not-allowed' : 'pointer',
             opacity: createTask.isPending ? 0.6 : 1,
           }}

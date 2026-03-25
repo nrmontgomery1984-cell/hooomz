@@ -12,18 +12,18 @@ import type { CatalogProduct, ProductTier } from '@/lib/types/catalogProduct.typ
 const TIER_META: Record<ProductTier, { label: string; accent: string; bg: string }> = {
   good: {
     label: 'Good',
-    accent: '#6B7280',
+    accent: 'var(--muted)',
     bg: 'rgba(107,114,128,0.06)',
   },
   better: {
     label: 'Better',
-    accent: '#3B82F6',
-    bg: 'rgba(59,130,246,0.07)',
+    accent: 'var(--blue)',
+    bg: 'var(--blue-bg)',
   },
   best: {
     label: 'Best',
-    accent: '#F59E0B',
-    bg: 'rgba(245,158,11,0.08)',
+    accent: 'var(--yellow)',
+    bg: 'var(--yellow-bg)',
   },
 };
 
@@ -50,7 +50,7 @@ export function TierComparisonCard({
     return (
       <div
         style={{
-          background: 'var(--surface-1)',
+          background: 'var(--surface)',
           border: '1px solid var(--border)',
           borderRadius: 12,
           padding: 16,
@@ -58,7 +58,7 @@ export function TierComparisonCard({
           alignItems: 'center',
           justifyContent: 'center',
           minHeight: 140,
-          color: 'var(--text-3)',
+          color: 'var(--muted)',
           fontSize: 13,
         }}
       >
@@ -76,7 +76,7 @@ export function TierComparisonCard({
         display: 'block',
         width: '100%',
         boxSizing: 'border-box',
-        background: isSelected ? meta.bg : 'var(--surface-1)',
+        background: isSelected ? meta.bg : 'var(--surface)',
         border: `2px solid ${isSelected ? meta.accent : 'var(--border)'}`,
         borderRadius: 12,
         padding: 16,
@@ -117,12 +117,12 @@ export function TierComparisonCard({
       </div>
 
       {/* Product name */}
-      <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)', marginBottom: 4, lineHeight: 1.3 }}>
+      <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--charcoal)', marginBottom: 4, lineHeight: 1.3 }}>
         {product.name}
       </div>
 
       {/* Description */}
-      <div style={{ fontSize: 11, color: 'var(--text-3)', marginBottom: 10, lineHeight: 1.4 }}>
+      <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 10, lineHeight: 1.4 }}>
         {product.description}
       </div>
 
@@ -132,7 +132,7 @@ export function TierComparisonCard({
           {Object.entries(product.specs)
             .slice(0, 2)
             .map(([key, value]) => (
-              <div key={key} style={{ fontSize: 11, color: 'var(--text-3)', lineHeight: 1.5 }}>
+              <div key={key} style={{ fontSize: 11, color: 'var(--muted)', lineHeight: 1.5 }}>
                 <span style={{ textTransform: 'capitalize' }}>
                   {key.replace(/([A-Z])/g, ' $1')}:
                 </span>{' '}
@@ -152,14 +152,14 @@ export function TierComparisonCard({
           alignItems: 'baseline',
         }}
       >
-        <span style={{ fontSize: 11, color: 'var(--text-3)' }}>
+        <span style={{ fontSize: 11, color: 'var(--muted)' }}>
           ${product.unitPrice.toFixed(2)}/{product.unit}
         </span>
         <div style={{ textAlign: 'right' }}>
-          <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--text)' }}>
+          <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--charcoal)' }}>
             ${totalPrice.toFixed(0)}
           </div>
-          <div style={{ fontSize: 10, color: 'var(--text-3)' }}>incl. waste</div>
+          <div style={{ fontSize: 10, color: 'var(--muted)' }}>incl. waste</div>
         </div>
       </div>
     </button>

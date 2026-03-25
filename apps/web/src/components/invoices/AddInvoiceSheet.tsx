@@ -73,12 +73,12 @@ export function AddInvoiceSheet({ projectId, customerId, isOpen, onClose }: AddI
   };
 
   const labelStyle = {
-    fontFamily: 'var(--font-cond)',
+    fontFamily: 'var(--font-mono)',
     fontSize: 10,
     fontWeight: 600,
     letterSpacing: '0.08em',
     textTransform: 'uppercase' as const,
-    color: '#6B7280',
+    color: 'var(--muted)',
     display: 'block',
     marginBottom: 4,
   };
@@ -89,9 +89,9 @@ export function AddInvoiceSheet({ projectId, customerId, isOpen, onClose }: AddI
     padding: '0 12px',
     fontFamily: 'var(--font)',
     fontSize: 13,
-    color: '#111827',
-    background: '#F9FAFB',
-    border: '1px solid #E5E7EB',
+    color: 'var(--charcoal)',
+    background: 'var(--surface)',
+    border: '1px solid var(--border)',
     borderRadius: 8,
     outline: 'none',
   };
@@ -153,7 +153,7 @@ export function AddInvoiceSheet({ projectId, customerId, isOpen, onClose }: AddI
         </label>
 
         {error && (
-          <span style={{ fontSize: 11, color: '#EF4444' }}>{error}</span>
+          <span style={{ fontSize: 11, color: 'var(--red)' }}>{error}</span>
         )}
 
         <button
@@ -162,12 +162,12 @@ export function AddInvoiceSheet({ projectId, customerId, isOpen, onClose }: AddI
           style={{
             width: '100%',
             minHeight: 44,
-            fontFamily: 'var(--font-cond)',
+            fontFamily: 'var(--font-mono)',
             fontSize: 13,
             fontWeight: 600,
             letterSpacing: '0.04em',
-            color: '#FFFFFF',
-            background: '#0F766E',
+            color: '#fff',
+            background: 'var(--accent)',
             borderRadius: 8,
             border: 'none',
             cursor: createInvoice.isPending ? 'not-allowed' : 'pointer',

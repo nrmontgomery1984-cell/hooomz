@@ -32,27 +32,22 @@ const COLOR = SECTION_COLORS.standards;
 const STATUS_STYLES: Record<TrainingGuideStatus, { bg: string; text: string }> = {
   active: { bg: 'var(--green-dim)', text: 'var(--green)' },
   draft: { bg: 'var(--amber-dim)', text: 'var(--amber)' },
-  archived: { bg: 'var(--surface-3)', text: 'var(--text-3)' },
+  archived: { bg: 'var(--surface-3)', text: 'var(--muted)' },
 };
 
 const TRADE_STYLES: Record<string, { bg: string; text: string }> = {
-  Flooring: { bg: '#FEF3C7', text: '#92400E' },
-  Painting: { bg: '#DBEAFE', text: '#1E40AF' },
-  'Finish Carpentry': { bg: '#FFEDD5', text: '#9A3412' },
-  Doors: { bg: '#E0E7FF', text: '#3730A3' },
-  Drywall: { bg: '#F3F4F6', text: '#374151' },
-  Tile: { bg: '#CCFBF1', text: '#115E59' },
+  default: { bg: 'var(--accent-bg)', text: 'var(--accent)' },
 };
 
 const CATEGORY_LABELS: Record<CriticalStandardCategory, { label: string; color: string }> = {
-  specification: { label: 'Spec', color: '#3B82F6' },
-  technique: { label: 'Technique', color: '#8B5CF6' },
-  'stop-condition': { label: 'STOP', color: '#EF4444' },
-  quality: { label: 'Quality', color: '#10B981' },
-  documentation: { label: 'Docs', color: '#6B7280' },
-  'material-science': { label: 'Material', color: '#F59E0B' },
+  specification: { label: 'Spec', color: 'var(--blue)' },
+  technique: { label: 'Technique', color: 'var(--violet)' },
+  'stop-condition': { label: 'STOP', color: 'var(--red)' },
+  quality: { label: 'Quality', color: 'var(--green)' },
+  documentation: { label: 'Docs', color: 'var(--muted)' },
+  'material-science': { label: 'Material', color: 'var(--yellow)' },
   'building-science': { label: 'Building', color: '#0EA5E9' },
-  climate: { label: 'Climate', color: '#14B8A6' },
+  climate: { label: 'Climate', color: 'var(--accent)' },
 };
 
 // ============================================================================
@@ -68,8 +63,8 @@ function StatPill({ label, value }: { label: string; value: string | number }) {
       padding: '8px 16px',
       minWidth: 72,
     }}>
-      <span style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)' }}>{value}</span>
-      <span style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 2 }}>{label}</span>
+      <span style={{ fontSize: 18, fontWeight: 700, color: 'var(--charcoal)' }}>{value}</span>
+      <span style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>{label}</span>
     </div>
   );
 }
@@ -84,12 +79,12 @@ function CriticalStandardsSection({ standards }: { standards: CriticalStandard[]
   return (
     <div style={{ marginTop: 12 }}>
       <div style={{
-        fontFamily: 'var(--font-cond)',
+        fontFamily: 'var(--font-mono)',
         fontSize: 10,
         fontWeight: 700,
         letterSpacing: '0.12em',
         textTransform: 'uppercase',
-        color: 'var(--text-3)',
+        color: 'var(--muted)',
         marginBottom: 6,
       }}>
         Critical Standards
@@ -105,7 +100,7 @@ function CriticalStandardsSection({ standards }: { standards: CriticalStandard[]
                 gap: 8,
                 alignItems: 'flex-start',
                 padding: '6px 8px',
-                background: cs.category === 'stop-condition' ? 'rgba(239,68,68,0.06)' : 'var(--surface-2)',
+                background: cs.category === 'stop-condition' ? 'var(--red-bg)' : 'var(--surface-2)',
                 borderRadius: 8,
                 borderLeft: `3px solid ${cat.color}`,
               }}
@@ -113,13 +108,13 @@ function CriticalStandardsSection({ standards }: { standards: CriticalStandard[]
               <span style={{
                 fontFamily: 'var(--font-mono)',
                 fontSize: 11,
-                color: 'var(--text-3)',
+                color: 'var(--muted)',
                 whiteSpace: 'nowrap',
                 marginTop: 1,
               }}>
                 {cs.code}
               </span>
-              <span style={{ fontSize: 13, color: 'var(--text)', lineHeight: 1.4, flex: 1 }}>
+              <span style={{ fontSize: 13, color: 'var(--charcoal)', lineHeight: 1.4, flex: 1 }}>
                 {cs.description}
               </span>
               <span style={{
@@ -147,11 +142,11 @@ function CriticalStandardsSection({ standards }: { standards: CriticalStandard[]
 // ============================================================================
 
 const CALLOUT_STYLES: Record<string, { bg: string; border: string; icon: typeof Info }> = {
-  info: { bg: 'var(--surface-2)', border: '#3B82F6', icon: Info },
-  warning: { bg: 'rgba(245,158,11,0.06)', border: '#F59E0B', icon: AlertTriangle },
-  critical: { bg: 'rgba(239,68,68,0.06)', border: '#EF4444', icon: OctagonAlert },
-  tip: { bg: 'rgba(16,185,129,0.06)', border: '#10B981', icon: Lightbulb },
-  labs: { bg: 'rgba(124,58,237,0.06)', border: '#7C3AED', icon: FlaskConical },
+  info: { bg: 'var(--surface-2)', border: 'var(--blue)', icon: Info },
+  warning: { bg: 'var(--yellow-bg)', border: 'var(--yellow)', icon: AlertTriangle },
+  critical: { bg: 'var(--red-bg)', border: 'var(--red)', icon: OctagonAlert },
+  tip: { bg: 'var(--green-bg)', border: 'var(--green)', icon: Lightbulb },
+  labs: { bg: 'rgba(124,58,237,0.06)', border: 'var(--violet)', icon: FlaskConical },
 };
 
 // ============================================================================
@@ -165,9 +160,9 @@ function ContentTableView({ table }: { table: ContentTable }) {
         <div style={{
           fontSize: 11,
           fontWeight: 600,
-          color: 'var(--text-3)',
+          color: 'var(--muted)',
           marginBottom: 4,
-          fontFamily: 'var(--font-cond)',
+          fontFamily: 'var(--font-mono)',
           letterSpacing: '0.04em',
         }}>
           {table.caption}
@@ -180,7 +175,7 @@ function ContentTableView({ table }: { table: ContentTable }) {
               <th key={i} style={{
                 textAlign: 'left',
                 padding: '4px 8px',
-                color: 'var(--text-3)',
+                color: 'var(--muted)',
                 fontWeight: 600,
                 fontSize: 11,
               }}>
@@ -195,7 +190,7 @@ function ContentTableView({ table }: { table: ContentTable }) {
               {row.map((cell, j) => (
                 <td key={j} style={{
                   padding: '6px 8px',
-                  color: j === 0 ? 'var(--text)' : 'var(--text-2)',
+                  color: j === 0 ? 'var(--charcoal)' : 'var(--mid)',
                   fontWeight: j === 0 ? 500 : 400,
                 }}>
                   {cell}
@@ -230,11 +225,11 @@ function CalloutBox({ callout }: { callout: Callout }) {
       <Icon size={14} style={{ color: style.border, flexShrink: 0, marginTop: 2 }} />
       <div style={{ flex: 1 }}>
         {callout.title && (
-          <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)', marginBottom: 2 }}>
+          <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--charcoal)', marginBottom: 2 }}>
             {callout.title}
           </div>
         )}
-        <div style={{ fontSize: 13, color: 'var(--text-2)', lineHeight: 1.5 }}>
+        <div style={{ fontSize: 13, color: 'var(--mid)', lineHeight: 1.5 }}>
           {callout.content}
         </div>
       </div>
@@ -249,11 +244,11 @@ function CalloutBox({ callout }: { callout: Callout }) {
 function SubSectionView({ sub }: { sub: SubSection }) {
   return (
     <div style={{ marginTop: 8 }}>
-      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>
+      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--charcoal)', marginBottom: 4 }}>
         {sub.title}
       </div>
       {sub.body && (
-        <p style={{ fontSize: 13, color: 'var(--text-2)', lineHeight: 1.6, margin: '0 0 4px' }}>
+        <p style={{ fontSize: 13, color: 'var(--mid)', lineHeight: 1.6, margin: '0 0 4px' }}>
           {sub.body}
         </p>
       )}
@@ -273,9 +268,9 @@ function ContentSectionView({ section }: { section: ContentSection }) {
 
   return (
     <div style={{ padding: '8px 10px', background: 'var(--surface-2)', borderRadius: 8 }}>
-      <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>{section.title}</div>
+      <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--charcoal)' }}>{section.title}</div>
       {section.body && (
-        <p style={{ fontSize: 13, color: 'var(--text-2)', lineHeight: 1.6, margin: '6px 0 0' }}>
+        <p style={{ fontSize: 13, color: 'var(--mid)', lineHeight: 1.6, margin: '6px 0 0' }}>
           {section.body}
         </p>
       )}
@@ -296,8 +291,8 @@ function ContentSectionView({ section }: { section: ContentSection }) {
               fontSize: 11,
               padding: '1px 6px',
               borderRadius: 4,
-              background: 'var(--surface-1)',
-              color: 'var(--text-2)',
+              background: 'var(--surface)',
+              color: 'var(--mid)',
               border: '1px solid var(--border)',
             }}>
               {sub}
@@ -333,7 +328,7 @@ function ProcedureItem({ procedure }: { procedure: Procedure }) {
           alignItems: 'center',
           gap: 8,
           padding: '8px 10px',
-          background: 'var(--surface-1)',
+          background: 'var(--surface)',
           border: 'none',
           cursor: 'pointer',
           textAlign: 'left',
@@ -342,16 +337,16 @@ function ProcedureItem({ procedure }: { procedure: Procedure }) {
         <ChevronDown
           size={14}
           style={{
-            color: 'var(--text-3)',
+            color: 'var(--muted)',
             transform: expanded ? 'rotate(0deg)' : 'rotate(-90deg)',
             transition: 'transform 150ms ease',
             flexShrink: 0,
           }}
         />
-        <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', flex: 1 }}>
+        <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--charcoal)', flex: 1 }}>
           {procedure.title}
         </span>
-        <span style={{ fontSize: 11, color: 'var(--text-3)' }}>
+        <span style={{ fontSize: 11, color: 'var(--muted)' }}>
           {itemCount} {itemCount === 1 ? 'item' : 'items'}
         </span>
       </button>
@@ -362,10 +357,10 @@ function ProcedureItem({ procedure }: { procedure: Procedure }) {
         transition: 'grid-template-rows 200ms ease',
       }}>
         <div style={{ overflow: 'hidden' }}>
-          <div style={{ padding: '8px 12px 12px', background: 'var(--surface-1)' }}>
+          <div style={{ padding: '8px 12px 12px', background: 'var(--surface)' }}>
             {/* Body — introductory prose */}
             {procedure.body && (
-              <p style={{ fontSize: 13, color: 'var(--text-2)', lineHeight: 1.6, margin: '0 0 8px' }}>
+              <p style={{ fontSize: 13, color: 'var(--mid)', lineHeight: 1.6, margin: '0 0 8px' }}>
                 {procedure.body}
               </p>
             )}
@@ -373,7 +368,7 @@ function ProcedureItem({ procedure }: { procedure: Procedure }) {
             {hasSteps && (
               <ol style={{ margin: 0, paddingLeft: 20, display: 'flex', flexDirection: 'column', gap: 4 }}>
                 {procedure.steps!.map((step, i) => (
-                  <li key={i} style={{ fontSize: 13, color: 'var(--text)', lineHeight: 1.5 }}>{step}</li>
+                  <li key={i} style={{ fontSize: 13, color: 'var(--charcoal)', lineHeight: 1.5 }}>{step}</li>
                 ))}
               </ol>
             )}
@@ -384,17 +379,17 @@ function ProcedureItem({ procedure }: { procedure: Procedure }) {
                 <table style={{ width: '100%', fontSize: 12, borderCollapse: 'collapse' }}>
                   <thead>
                     <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                      <th style={{ textAlign: 'left', padding: '4px 8px', color: 'var(--text-3)', fontWeight: 600, fontSize: 11 }}>Checkpoint</th>
-                      <th style={{ textAlign: 'left', padding: '4px 8px', color: '#10B981', fontWeight: 600, fontSize: 11 }}>Acceptable</th>
-                      <th style={{ textAlign: 'left', padding: '4px 8px', color: '#EF4444', fontWeight: 600, fontSize: 11 }}>Unacceptable</th>
+                      <th style={{ textAlign: 'left', padding: '4px 8px', color: 'var(--muted)', fontWeight: 600, fontSize: 11 }}>Checkpoint</th>
+                      <th style={{ textAlign: 'left', padding: '4px 8px', color: 'var(--green)', fontWeight: 600, fontSize: 11 }}>Acceptable</th>
+                      <th style={{ textAlign: 'left', padding: '4px 8px', color: 'var(--red)', fontWeight: 600, fontSize: 11 }}>Unacceptable</th>
                     </tr>
                   </thead>
                   <tbody>
                     {procedure.checkpoints!.map((cp, i) => (
                       <tr key={i} style={{ borderBottom: '1px solid var(--border)' }}>
-                        <td style={{ padding: '6px 8px', color: 'var(--text)', fontWeight: 500 }}>{cp.checkpoint}</td>
-                        <td style={{ padding: '6px 8px', color: 'var(--text-2)' }}>{cp.acceptable}</td>
-                        <td style={{ padding: '6px 8px', color: 'var(--text-2)' }}>{cp.unacceptable}</td>
+                        <td style={{ padding: '6px 8px', color: 'var(--charcoal)', fontWeight: 500 }}>{cp.checkpoint}</td>
+                        <td style={{ padding: '6px 8px', color: 'var(--mid)' }}>{cp.acceptable}</td>
+                        <td style={{ padding: '6px 8px', color: 'var(--mid)' }}>{cp.unacceptable}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -408,15 +403,15 @@ function ProcedureItem({ procedure }: { procedure: Procedure }) {
                 <table style={{ width: '100%', fontSize: 12, borderCollapse: 'collapse' }}>
                   <thead>
                     <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                      <th style={{ textAlign: 'left', padding: '4px 8px', color: 'var(--text-3)', fontWeight: 600, fontSize: 11 }}>Test</th>
-                      <th style={{ textAlign: 'left', padding: '4px 8px', color: 'var(--text-3)', fontWeight: 600, fontSize: 11 }}>Method</th>
+                      <th style={{ textAlign: 'left', padding: '4px 8px', color: 'var(--muted)', fontWeight: 600, fontSize: 11 }}>Test</th>
+                      <th style={{ textAlign: 'left', padding: '4px 8px', color: 'var(--muted)', fontWeight: 600, fontSize: 11 }}>Method</th>
                     </tr>
                   </thead>
                   <tbody>
                     {procedure.tests!.map((t, i) => (
                       <tr key={i} style={{ borderBottom: '1px solid var(--border)' }}>
-                        <td style={{ padding: '6px 8px', color: 'var(--text)', fontWeight: 500 }}>{t.test}</td>
-                        <td style={{ padding: '6px 8px', color: 'var(--text-2)' }}>{t.method}</td>
+                        <td style={{ padding: '6px 8px', color: 'var(--charcoal)', fontWeight: 500 }}>{t.test}</td>
+                        <td style={{ padding: '6px 8px', color: 'var(--mid)' }}>{t.method}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -428,7 +423,7 @@ function ProcedureItem({ procedure }: { procedure: Procedure }) {
             {hasChecks && (
               <ul style={{ margin: 0, paddingLeft: 20, display: 'flex', flexDirection: 'column', gap: 3, marginTop: (hasSteps || hasCheckpoints || hasTests) ? 10 : 0 }}>
                 {procedure.checks!.map((check, i) => (
-                  <li key={i} style={{ fontSize: 13, color: 'var(--text)', lineHeight: 1.4 }}>{check}</li>
+                  <li key={i} style={{ fontSize: 13, color: 'var(--charcoal)', lineHeight: 1.4 }}>{check}</li>
                 ))}
               </ul>
             )}
@@ -468,7 +463,7 @@ function ModuleCard({ mod, sopMap }: { mod: TrainingModule; sopMap: Record<strin
       border: '1px solid var(--border)',
       borderRadius: 12,
       overflow: 'hidden',
-      background: 'var(--surface-1)',
+      background: 'var(--surface)',
     }}>
       {/* Header — always visible */}
       <button
@@ -488,7 +483,7 @@ function ModuleCard({ mod, sopMap }: { mod: TrainingModule; sopMap: Record<strin
         <ChevronDown
           size={16}
           style={{
-            color: 'var(--text-3)',
+            color: 'var(--muted)',
             transform: expanded ? 'rotate(0deg)' : 'rotate(-90deg)',
             transition: 'transform 150ms ease',
             flexShrink: 0,
@@ -503,7 +498,7 @@ function ModuleCard({ mod, sopMap }: { mod: TrainingModule; sopMap: Record<strin
         }}>
           M{String(mod.order).padStart(2, '0')}
         </span>
-        <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', flex: 1 }}>
+        <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--charcoal)', flex: 1 }}>
           {mod.title}
         </span>
       </button>
@@ -545,18 +540,18 @@ function ModuleCard({ mod, sopMap }: { mod: TrainingModule; sopMap: Record<strin
                 padding: '1px 6px',
                 borderRadius: 4,
                 background: 'var(--surface-2)',
-                color: 'var(--text-2)',
+                color: 'var(--mid)',
               }}
             >
               {code}
             </span>
           );
         })}
-        <span style={{ fontSize: 11, color: 'var(--text-3)' }}>
+        <span style={{ fontSize: 11, color: 'var(--muted)' }}>
           {mod.learningObjectives.length} objectives
         </span>
         {mod.criticalStandards.length > 0 && (
-          <span style={{ fontSize: 11, color: 'var(--text-3)' }}>
+          <span style={{ fontSize: 11, color: 'var(--muted)' }}>
             {mod.criticalStandards.length} standards
           </span>
         )}
@@ -573,7 +568,7 @@ function ModuleCard({ mod, sopMap }: { mod: TrainingModule; sopMap: Record<strin
 
             {/* Introduction */}
             {mod.content.introduction && (
-              <p style={{ fontSize: 13, color: 'var(--text-2)', lineHeight: 1.6, margin: '12px 0 0' }}>
+              <p style={{ fontSize: 13, color: 'var(--mid)', lineHeight: 1.6, margin: '12px 0 0' }}>
                 {mod.content.introduction}
               </p>
             )}
@@ -588,19 +583,19 @@ function ModuleCard({ mod, sopMap }: { mod: TrainingModule; sopMap: Record<strin
             {/* Learning Objectives */}
             <div style={{ marginTop: 12 }}>
               <div style={{
-                fontFamily: 'var(--font-cond)',
+                fontFamily: 'var(--font-mono)',
                 fontSize: 10,
                 fontWeight: 700,
                 letterSpacing: '0.12em',
                 textTransform: 'uppercase',
-                color: 'var(--text-3)',
+                color: 'var(--muted)',
                 marginBottom: 6,
               }}>
                 Learning Objectives
               </div>
               <ul style={{ margin: 0, paddingLeft: 18, display: 'flex', flexDirection: 'column', gap: 3 }}>
                 {mod.learningObjectives.map((obj, i) => (
-                  <li key={i} style={{ fontSize: 13, color: 'var(--text)', lineHeight: 1.4 }}>{obj}</li>
+                  <li key={i} style={{ fontSize: 13, color: 'var(--charcoal)', lineHeight: 1.4 }}>{obj}</li>
                 ))}
               </ul>
             </div>
@@ -612,12 +607,12 @@ function ModuleCard({ mod, sopMap }: { mod: TrainingModule; sopMap: Record<strin
             {hasSections && (
               <div style={{ marginTop: 12 }}>
                 <div style={{
-                  fontFamily: 'var(--font-cond)',
+                  fontFamily: 'var(--font-mono)',
                   fontSize: 10,
                   fontWeight: 700,
                   letterSpacing: '0.12em',
                   textTransform: 'uppercase',
-                  color: 'var(--text-3)',
+                  color: 'var(--muted)',
                   marginBottom: 6,
                 }}>
                   Content Sections
@@ -634,12 +629,12 @@ function ModuleCard({ mod, sopMap }: { mod: TrainingModule; sopMap: Record<strin
             {hasProcedures && (
               <div style={{ marginTop: 12 }}>
                 <div style={{
-                  fontFamily: 'var(--font-cond)',
+                  fontFamily: 'var(--font-mono)',
                   fontSize: 10,
                   fontWeight: 700,
                   letterSpacing: '0.12em',
                   textTransform: 'uppercase',
-                  color: 'var(--text-3)',
+                  color: 'var(--muted)',
                   marginBottom: 6,
                 }}>
                   Procedures
@@ -656,12 +651,12 @@ function ModuleCard({ mod, sopMap }: { mod: TrainingModule; sopMap: Record<strin
             {mod.labsReferences.length > 0 && (
               <div style={{ marginTop: 12 }}>
                 <div style={{
-                  fontFamily: 'var(--font-cond)',
+                  fontFamily: 'var(--font-mono)',
                   fontSize: 10,
                   fontWeight: 700,
                   letterSpacing: '0.12em',
                   textTransform: 'uppercase',
-                  color: 'var(--text-3)',
+                  color: 'var(--muted)',
                   marginBottom: 6,
                 }}>
                   Labs References
@@ -675,9 +670,9 @@ function ModuleCard({ mod, sopMap }: { mod: TrainingModule; sopMap: Record<strin
                         fontSize: 11,
                         padding: '2px 8px',
                         borderRadius: 6,
-                        background: '#F5F3FF',
-                        color: '#7C3AED',
-                        border: '1px solid #EDE9FE',
+                        background: 'var(--violet-bg)',
+                        color: 'var(--violet)',
+                        border: '1px solid var(--violet-bg)',
                       }}
                     >
                       {ref}
@@ -714,7 +709,7 @@ export default function TrainingGuideDetailPage() {
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}>
         <div style={{ textAlign: 'center' }}>
           <div style={{ width: 32, height: 32, border: '2px solid var(--border)', borderTopColor: COLOR, borderRadius: '50%', animation: 'spin 0.7s linear infinite', margin: '0 auto 8px' }} />
-          <p style={{ fontSize: 11, color: 'var(--text-3)' }}>Loading...</p>
+          <p style={{ fontSize: 11, color: 'var(--muted)' }}>Loading...</p>
         </div>
       </div>
     );
@@ -724,9 +719,9 @@ export default function TrainingGuideDetailPage() {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}>
         <div style={{ textAlign: 'center', maxWidth: 320 }}>
-          <AlertTriangle size={32} style={{ margin: '0 auto 12px', color: 'var(--text-3)' }} />
-          <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-2)' }}>Training Guide Not Found</p>
-          <p style={{ fontSize: 13, color: 'var(--text-3)', marginTop: 4 }}>
+          <AlertTriangle size={32} style={{ margin: '0 auto 12px', color: 'var(--muted)' }} />
+          <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--mid)' }}>Training Guide Not Found</p>
+          <p style={{ fontSize: 13, color: 'var(--muted)', marginTop: 4 }}>
             The requested training guide could not be found.
           </p>
           <button
@@ -738,8 +733,8 @@ export default function TrainingGuideDetailPage() {
               fontWeight: 600,
               borderRadius: 8,
               border: '1px solid var(--border)',
-              background: 'var(--surface-1)',
-              color: 'var(--text)',
+              background: 'var(--surface)',
+              color: 'var(--charcoal)',
               cursor: 'pointer',
             }}
           >
@@ -751,7 +746,7 @@ export default function TrainingGuideDetailPage() {
   }
 
   const status = STATUS_STYLES[guide.status];
-  const trade = TRADE_STYLES[guide.trade] ?? { bg: '#F3F4F6', text: '#374151' };
+  const trade = TRADE_STYLES[guide.trade] ?? TRADE_STYLES.default;
   const sortedModules = [...guide.modules].sort((a, b) => a.order - b.order);
 
   const stats = {
@@ -766,7 +761,7 @@ export default function TrainingGuideDetailPage() {
       <div style={{ minHeight: '100vh', paddingBottom: 96, background: 'var(--bg)' }}>
 
         {/* Header */}
-        <div style={{ background: 'var(--surface-1)', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
           <div className="max-w-lg md:max-w-full mx-auto px-4 md:px-6 py-3 md:py-4">
 
             {/* Back button */}
@@ -777,7 +772,7 @@ export default function TrainingGuideDetailPage() {
                 alignItems: 'center',
                 gap: 4,
                 fontSize: 13,
-                color: 'var(--text-3)',
+                color: 'var(--muted)',
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
@@ -791,10 +786,10 @@ export default function TrainingGuideDetailPage() {
 
             {/* Title row */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 600, color: 'var(--text-2)' }}>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 600, color: 'var(--mid)' }}>
                 {guide.code}
               </span>
-              <span style={{ fontSize: 12, color: 'var(--text-3)' }}>v{guide.version}</span>
+              <span style={{ fontSize: 12, color: 'var(--muted)' }}>v{guide.version}</span>
               <span style={{
                 fontSize: 11,
                 fontWeight: 600,
@@ -807,7 +802,7 @@ export default function TrainingGuideDetailPage() {
               </span>
             </div>
 
-            <h1 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)', marginTop: 4 }}>
+            <h1 style={{ fontSize: 18, fontWeight: 700, color: 'var(--charcoal)', marginTop: 4 }}>
               {guide.title}
             </h1>
 
@@ -823,7 +818,7 @@ export default function TrainingGuideDetailPage() {
                 {guide.trade}
               </span>
               {guide.effectiveDate && (
-                <span style={{ fontSize: 12, color: 'var(--text-3)' }}>
+                <span style={{ fontSize: 12, color: 'var(--muted)' }}>
                   Effective: {guide.effectiveDate}
                 </span>
               )}

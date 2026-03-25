@@ -15,15 +15,15 @@ import type { Room } from '@/lib/types/roomScan.types';
 // ─── Color helpers ────────────────────────────────────────────────────────────
 
 const STATUS_FILL: Record<string, string> = {
-  pending: 'rgba(59,130,246,0.12)',    // blue tint
-  measured: 'rgba(245,158,11,0.15)',   // amber tint
-  complete: 'rgba(16,185,129,0.15)',   // green tint
+  pending: 'var(--blue-bg)',    // blue tint
+  measured: 'var(--yellow-bg)',   // amber tint
+  complete: 'var(--green-bg)',   // green tint
 };
 
 const STATUS_STROKE: Record<string, string> = {
-  pending: '#3B82F6',
-  measured: '#F59E0B',
-  complete: '#10B981',
+  pending: 'var(--blue)',
+  measured: 'var(--yellow)',
+  complete: 'var(--green)',
 };
 
 // ─── Geometry helpers ────────────────────────────────────────────────────────
@@ -90,18 +90,18 @@ function ScaleBar({ scale, padding }: { scale: number; padding: number }) {
         y1={0}
         x2={barPixels}
         y2={0}
-        stroke="var(--text, #111)"
+        stroke="var(--charcoal)"
         strokeWidth={2}
         strokeLinecap="round"
       />
-      <line x1={0} y1={-4} x2={0} y2={4} stroke="var(--text, #111)" strokeWidth={2} />
-      <line x1={barPixels} y1={-4} x2={barPixels} y2={4} stroke="var(--text, #111)" strokeWidth={2} />
+      <line x1={0} y1={-4} x2={0} y2={4} stroke="var(--charcoal)" strokeWidth={2} />
+      <line x1={barPixels} y1={-4} x2={barPixels} y2={4} stroke="var(--charcoal)" strokeWidth={2} />
       <text
         x={barPixels / 2}
         y={-8}
         textAnchor="middle"
         fontSize={10}
-        fill="var(--text-3, #6B7280)"
+        fill="var(--muted)"
         fontFamily="inherit"
       >
         1 m
@@ -235,10 +235,10 @@ export function FloorPlanCanvas({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'var(--surface-1, #F9FAFB)',
+          background: 'var(--surface)',
           borderRadius: 12,
-          border: '1px solid var(--border, #E5E7EB)',
-          color: 'var(--text-3, #9CA3AF)',
+          border: '1px solid var(--border)',
+          color: 'var(--muted)',
           fontSize: 14,
         }}
       >
@@ -254,9 +254,9 @@ export function FloorPlanCanvas({
       height={height}
       style={{
         display: 'block',
-        background: 'var(--surface-1, #F9FAFB)',
+        background: 'var(--surface)',
         borderRadius: 12,
-        border: '1px solid var(--border, #E5E7EB)',
+        border: '1px solid var(--border)',
         cursor: 'default',
         touchAction: 'none',
         userSelect: 'none',
@@ -284,7 +284,7 @@ export function FloorPlanCanvas({
               <polygon
                 points={pts}
                 fill={fill}
-                stroke={isSelected ? '#1E40AF' : stroke}
+                stroke={isSelected ? 'var(--blue)' : stroke}
                 strokeWidth={isSelected ? 2.5 : 1.5}
                 strokeLinejoin="round"
               />
@@ -296,7 +296,7 @@ export function FloorPlanCanvas({
                   textAnchor="middle"
                   dominantBaseline="middle"
                   fontSize={Math.max(9, Math.min(13, scale * 80))}
-                  fill="var(--text, #111827)"
+                  fill="var(--charcoal)"
                   fontFamily="inherit"
                   fontWeight={isSelected ? 700 : 400}
                   pointerEvents="none"
@@ -311,7 +311,7 @@ export function FloorPlanCanvas({
                   textAnchor="middle"
                   dominantBaseline="middle"
                   fontSize={Math.max(8, Math.min(11, scale * 65))}
-                  fill="var(--text-3, #6B7280)"
+                  fill="var(--muted)"
                   fontFamily="inherit"
                   pointerEvents="none"
                 >

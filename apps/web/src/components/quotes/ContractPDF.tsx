@@ -46,7 +46,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 // Styles
 // ============================================================================
 
-const TEAL = '#0F766E';
+const ACCENT = '#6B6560';
 
 const styles = StyleSheet.create({
   page: {
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 20,
     borderBottomWidth: 2,
-    borderBottomColor: TEAL,
+    borderBottomColor: ACCENT,
     paddingBottom: 12,
   },
   title: {
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
   docType: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: TEAL,
+    color: ACCENT,
     textAlign: 'right' as const,
   },
   dateText: {
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 1,
     color: '#FFFFFF',
-    backgroundColor: TEAL,
+    backgroundColor: ACCENT,
     padding: '4px 8px',
     marginTop: 16,
     marginBottom: 8,
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
   categoryLabel: {
     fontSize: 9,
     fontWeight: 'bold',
-    color: TEAL,
+    color: ACCENT,
     marginTop: 6,
     marginBottom: 2,
   },
@@ -406,10 +406,10 @@ export function DownloadContractPDF({
               gap: 6,
               fontSize: 12,
               fontWeight: 600,
-              color: '#0F766E',
+              color: '#6B6560',
               background: '#FFFFFF',
               borderRadius: 'var(--radius, 12px)',
-              border: '2px solid #0F766E',
+              border: '2px solid #6B6560',
               cursor: loading ? 'not-allowed' : 'pointer',
               padding: '0 16px',
               opacity: loading ? 0.6 : 1,

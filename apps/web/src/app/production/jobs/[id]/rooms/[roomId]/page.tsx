@@ -26,9 +26,9 @@ function mmToLf(mm: number): string {
 }
 
 const STATUS_OPTIONS: { value: RoomStatus; label: string; color: string }[] = [
-  { value: 'pending', label: 'Pending', color: '#3B82F6' },
-  { value: 'measured', label: 'Measured', color: '#F59E0B' },
-  { value: 'complete', label: 'Complete', color: '#10B981' },
+  { value: 'pending', label: 'Pending', color: 'var(--blue)' },
+  { value: 'measured', label: 'Measured', color: 'var(--yellow)' },
+  { value: 'complete', label: 'Complete', color: 'var(--green)' },
 ];
 
 const OPENING_ICONS: Record<OpeningType, LucideIcon> = {
@@ -46,7 +46,7 @@ function SectionHeader({ children }: { children: React.ReactNode }) {
         fontWeight: 700,
         letterSpacing: '0.14em',
         textTransform: 'uppercase',
-        color: 'var(--text-3)',
+        color: 'var(--muted)',
         marginBottom: 10,
         marginTop: 20,
       }}
@@ -95,7 +95,7 @@ function RoomDetailContent({ room, jobId }: { room: Room; jobId: string }) {
   const windows = room.openings.filter((o) => o.type === 'window');
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--charcoal)' }}>
       {/* Header */}
       <div
         style={{
@@ -104,7 +104,7 @@ function RoomDetailContent({ room, jobId }: { room: Room; jobId: string }) {
           display: 'flex',
           alignItems: 'center',
           gap: 12,
-          background: 'var(--surface-1)',
+          background: 'var(--surface)',
         }}
       >
         <button
@@ -113,7 +113,7 @@ function RoomDetailContent({ room, jobId }: { room: Room; jobId: string }) {
             background: 'none',
             border: 'none',
             cursor: 'pointer',
-            color: 'var(--text-3)',
+            color: 'var(--muted)',
             display: 'flex',
             alignItems: 'center',
             padding: 4,
@@ -127,7 +127,7 @@ function RoomDetailContent({ room, jobId }: { room: Room; jobId: string }) {
           <div
             style={{
               fontSize: 11,
-              color: 'var(--text-3)',
+              color: 'var(--muted)',
               fontWeight: 500,
               letterSpacing: '0.04em',
               textTransform: 'uppercase',
@@ -146,8 +146,8 @@ function RoomDetailContent({ room, jobId }: { room: Room; jobId: string }) {
             alignItems: 'center',
             gap: 6,
             padding: '8px 14px',
-            background: 'var(--surface-1)',
-            color: '#1E3A8A',
+            background: 'var(--surface)',
+            color: 'var(--blue)',
             border: '1px solid #1E3A8A',
             borderRadius: 8,
             fontSize: 13,
@@ -167,8 +167,8 @@ function RoomDetailContent({ room, jobId }: { room: Room; jobId: string }) {
             alignItems: 'center',
             gap: 6,
             padding: '8px 14px',
-            background: 'var(--surface-1)',
-            color: '#1E3A8A',
+            background: 'var(--surface)',
+            color: 'var(--blue)',
             border: '1px solid #1E3A8A',
             borderRadius: 8,
             fontSize: 13,
@@ -188,7 +188,7 @@ function RoomDetailContent({ room, jobId }: { room: Room; jobId: string }) {
             alignItems: 'center',
             gap: 6,
             padding: '8px 14px',
-            background: '#1E3A8A',
+            background: 'var(--blue)',
             color: '#fff',
             borderRadius: 8,
             fontSize: 13,
@@ -207,8 +207,8 @@ function RoomDetailContent({ room, jobId }: { room: Room; jobId: string }) {
             disabled={updateRoom.isPending}
             style={{
               padding: '8px 16px',
-              background: 'var(--surface-1)',
-              color: 'var(--text)',
+              background: 'var(--surface)',
+              color: 'var(--charcoal)',
               border: '1px solid var(--border)',
               borderRadius: 8,
               fontSize: 13,
@@ -240,7 +240,7 @@ function RoomDetailContent({ room, jobId }: { room: Room; jobId: string }) {
             <div
               key={label}
               style={{
-                background: 'var(--surface-1)',
+                background: 'var(--surface)',
                 border: '1px solid var(--border)',
                 borderRadius: 10,
                 padding: '10px 14px',
@@ -250,7 +250,7 @@ function RoomDetailContent({ room, jobId }: { room: Room; jobId: string }) {
               <div
                 style={{
                   fontSize: 9,
-                  color: 'var(--text-3)',
+                  color: 'var(--muted)',
                   fontWeight: 700,
                   textTransform: 'uppercase',
                   letterSpacing: '0.1em',
@@ -275,8 +275,8 @@ function RoomDetailContent({ room, jobId }: { room: Room; jobId: string }) {
                 padding: '8px 16px',
                 borderRadius: 999,
                 border: `2px solid ${status === opt.value ? opt.color : 'var(--border)'}`,
-                background: status === opt.value ? `${opt.color}18` : 'var(--surface-1)',
-                color: status === opt.value ? opt.color : 'var(--text-3)',
+                background: status === opt.value ? `${opt.color}18` : 'var(--surface)',
+                color: status === opt.value ? opt.color : 'var(--muted)',
                 fontSize: 13,
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -289,7 +289,7 @@ function RoomDetailContent({ room, jobId }: { room: Room; jobId: string }) {
 
         {/* Casing sides */}
         <SectionHeader>Casing Sides</SectionHeader>
-        <div style={{ fontSize: 12, color: 'var(--text-3)', marginBottom: 10 }}>
+        <div style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 10 }}>
           How many sides of the opening are being cased?
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
@@ -301,9 +301,9 @@ function RoomDetailContent({ room, jobId }: { room: Room; jobId: string }) {
                 width: 44,
                 height: 44,
                 borderRadius: 8,
-                border: `2px solid ${casingSides === n ? '#1E3A8A' : 'var(--border)'}`,
-                background: casingSides === n ? 'rgba(30,58,138,0.1)' : 'var(--surface-1)',
-                color: casingSides === n ? '#1E3A8A' : 'var(--text-3)',
+                border: `2px solid ${casingSides === n ? 'var(--blue)' : 'var(--border)'}`,
+                background: casingSides === n ? 'var(--blue-bg)' : 'var(--surface)',
+                color: casingSides === n ? 'var(--blue)' : 'var(--muted)',
                 fontSize: 16,
                 fontWeight: 700,
                 cursor: 'pointer',
@@ -320,7 +320,7 @@ function RoomDetailContent({ room, jobId }: { room: Room; jobId: string }) {
             <SectionHeader>Openings</SectionHeader>
             <div
               style={{
-                background: 'var(--surface-1)',
+                background: 'var(--surface)',
                 border: '1px solid var(--border)',
                 borderRadius: 12,
                 overflow: 'hidden',
@@ -339,18 +339,18 @@ function RoomDetailContent({ room, jobId }: { room: Room; jobId: string }) {
                       gap: 12,
                     }}
                   >
-                    <Icon size={18} color="var(--text-3)" />
+                    <Icon size={18} color="var(--muted)" />
                     <div style={{ flex: 1 }}>
                       <div style={{ fontSize: 13, fontWeight: 600, textTransform: 'capitalize' }}>
                         {opening.label ?? opening.type}
                       </div>
-                      <div style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 1 }}>
+                      <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 1 }}>
                         {mmToFractionalInches(opening.width_mm)} wide
                         {' · '}
                         {mmToFractionalInches(opening.height_mm)} tall
                       </div>
                     </div>
-                    <div style={{ fontSize: 11, color: 'var(--text-3)', textAlign: 'right' }}>
+                    <div style={{ fontSize: 11, color: 'var(--muted)', textAlign: 'right' }}>
                       Wall {opening.wallIndex + 1}
                     </div>
                   </div>
@@ -378,10 +378,10 @@ function RoomDetailContent({ room, jobId }: { room: Room; jobId: string }) {
           style={{
             width: '100%',
             padding: '10px 12px',
-            background: 'var(--surface-1)',
+            background: 'var(--surface)',
             border: '1px solid var(--border)',
             borderRadius: 10,
-            color: 'var(--text)',
+            color: 'var(--charcoal)',
             fontSize: 14,
             resize: 'vertical',
             fontFamily: 'inherit',
@@ -408,7 +408,7 @@ export default function RoomDetailPage() {
           alignItems: 'center',
           justifyContent: 'center',
           background: 'var(--bg)',
-          color: 'var(--text-3)',
+          color: 'var(--muted)',
           fontSize: 14,
         }}
       >
@@ -426,7 +426,7 @@ export default function RoomDetailPage() {
           alignItems: 'center',
           justifyContent: 'center',
           background: 'var(--bg)',
-          color: 'var(--text-3)',
+          color: 'var(--muted)',
           fontSize: 14,
         }}
       >
@@ -437,7 +437,7 @@ export default function RoomDetailPage() {
             marginLeft: 8,
             background: 'none',
             border: 'none',
-            color: '#3B82F6',
+            color: 'var(--blue)',
             cursor: 'pointer',
             fontSize: 14,
           }}

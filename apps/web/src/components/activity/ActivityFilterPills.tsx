@@ -6,7 +6,7 @@
  * Horizontal scrolling filter pills for the activity feed.
  * Follows Hooomz UI spec:
  * - 44px minimum touch targets (work gloves)
- * - Teal active state, white inactive
+ * - Accent active state, white inactive
  * - Light, warm aesthetic
  */
 
@@ -82,8 +82,8 @@ export function ActivityFilterPills({
               min-h-[44px] min-w-[44px]
               ${
                 isActive
-                  ? 'bg-teal text-white shadow-sm'
-                  : 'bg-white text-slate-600 border border-slate-200 hover:border-teal/30'
+                  ? 'bg-[var(--accent)] text-white shadow-sm'
+                  : 'bg-white text-[var(--mid)] border border-[var(--border)] hover:border-[var(--accent-border)]'
               }
             `}
           >

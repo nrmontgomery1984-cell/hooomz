@@ -35,7 +35,7 @@ export function TierSelector({ roomId, trade, projectId, jobId }: TierSelectorPr
             key={t}
             style={{
               height: 160,
-              background: 'var(--surface-1)',
+              background: 'var(--surface)',
               border: '1px solid var(--border)',
               borderRadius: 12,
               animation: 'pulse 1.5s infinite',

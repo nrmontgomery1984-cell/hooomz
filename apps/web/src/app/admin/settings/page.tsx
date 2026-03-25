@@ -28,15 +28,15 @@ export default function SettingsPage() {
       <div style={{ minHeight: '100vh', paddingBottom: 96, background: 'var(--bg)' }}>
 
         {/* Header */}
-        <div style={{ background: 'var(--surface-1)', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
           <div className="max-w-lg md:max-w-full mx-auto px-4 md:px-6 py-3 md:py-4">
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <div style={{ width: 8, height: 8, borderRadius: '50%', background: ADMIN_COLOR }} />
-              <h1 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', fontFamily: 'var(--font-cond)', letterSpacing: '0.02em' }}>
+              <h1 style={{ fontSize: 16, fontWeight: 700, color: 'var(--charcoal)', fontFamily: 'var(--font-mono)', letterSpacing: '0.02em' }}>
                 Settings
               </h1>
             </div>
-            <p style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 2 }}>App configuration and preferences</p>
+            <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>App configuration and preferences</p>
           </div>
         </div>
 
@@ -45,28 +45,28 @@ export default function SettingsPage() {
           {/* Theme */}
           <div style={{ marginTop: 16 }}>
             <SectionHeader title="Appearance" />
-            <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
+            <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
               <button
                 onClick={toggleDark}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 12,
                   width: '100%', padding: '14px 16px',
                   background: 'none', border: 'none', cursor: 'pointer',
-                  minHeight: 48,
+                  minHeight: 48, fontFamily: 'var(--font-mono)',
                 }}
               >
-                {isDark ? <Moon size={18} style={{ color: 'var(--text-2)' }} /> : <Sun size={18} style={{ color: 'var(--text-2)' }} />}
+                {isDark ? <Moon size={18} style={{ color: 'var(--mid)' }} /> : <Sun size={18} style={{ color: 'var(--mid)' }} />}
                 <div style={{ flex: 1, textAlign: 'left' }}>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>Theme</span>
-                  <p style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 1 }}>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--charcoal)' }}>Theme</span>
+                  <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 1 }}>
                     Currently: {isDark ? 'Dark Mode' : 'Light Mode'}
                   </p>
                 </div>
                 <div style={{
                   padding: '4px 10px', borderRadius: 4,
                   fontSize: 11, fontWeight: 600,
-                  background: 'var(--blue-dim)', color: 'var(--blue)',
-                  fontFamily: 'var(--font-cond)', letterSpacing: '0.04em',
+                  background: 'var(--blue-bg)', color: 'var(--blue)',
+                  fontFamily: 'var(--font-mono)', letterSpacing: '0.04em',
                 }}>
                   Toggle
                 </div>
@@ -77,7 +77,7 @@ export default function SettingsPage() {
           {/* View Mode */}
           <div style={{ marginTop: 16 }}>
             <SectionHeader title="View Mode" />
-            <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
+            <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
               {VIEW_MODES.map((mode, i) => (
                 <button
                   key={mode}
@@ -88,13 +88,13 @@ export default function SettingsPage() {
                     background: viewMode === mode ? `${ADMIN_COLOR}10` : 'none',
                     border: 'none', cursor: 'pointer',
                     borderBottom: i < VIEW_MODES.length - 1 ? '1px solid var(--border)' : 'none',
-                    minHeight: 44,
+                    minHeight: 44, fontFamily: 'var(--font-mono)',
                   }}
                 >
-                  <Monitor size={16} style={{ color: viewMode === mode ? ADMIN_COLOR : 'var(--text-3)' }} />
+                  <Monitor size={16} style={{ color: viewMode === mode ? ADMIN_COLOR : 'var(--muted)' }} />
                   <span style={{
                     fontSize: 13, fontWeight: viewMode === mode ? 600 : 500,
-                    color: viewMode === mode ? 'var(--text)' : 'var(--text-2)',
+                    color: viewMode === mode ? 'var(--charcoal)' : 'var(--mid)',
                     flex: 1, textAlign: 'left',
                   }}>
                     {VIEW_MODE_LABELS[mode]}
@@ -108,7 +108,7 @@ export default function SettingsPage() {
                 </button>
               ))}
             </div>
-            <p style={{ fontSize: 10, color: 'var(--text-3)', marginTop: 6, padding: '0 4px' }}>
+            <p style={{ fontSize: 10, color: 'var(--muted)', marginTop: 6, padding: '0 4px' }}>
               View mode controls which sections and features are visible. This is a development tool — not production auth.
             </p>
           </div>
@@ -122,10 +122,10 @@ export default function SettingsPage() {
           {/* App Info */}
           <div style={{ marginTop: 16 }}>
             <SectionHeader title="About" />
-            <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 16, boxShadow: 'var(--shadow-card)' }}>
+            <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 16, boxShadow: 'var(--shadow-card)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                <Settings size={14} style={{ color: 'var(--text-3)' }} />
-                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>Hooomz OS</span>
+                <Settings size={14} style={{ color: 'var(--muted)' }} />
+                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--charcoal)' }}>Hooomz OS</span>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 <InfoRow label="Version" value="Pre-release" />
@@ -143,7 +143,7 @@ export default function SettingsPage() {
 function SectionHeader({ title }: { title: string }) {
   return (
     <div style={{ marginBottom: 8 }}>
-      <span style={{ fontFamily: 'var(--font-cond)', fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-3)' }}>
+      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)' }}>
         {title}
       </span>
     </div>
@@ -165,8 +165,8 @@ function SkillRateSection() {
     return (
       <div style={{ marginTop: 16 }}>
         <SectionHeader title="Skill Rates & Margins" />
-        <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 16, boxShadow: 'var(--shadow-card)', textAlign: 'center' }}>
-          <p style={{ fontSize: 11, color: 'var(--text-3)' }}>Loading config...</p>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 16, boxShadow: 'var(--shadow-card)', textAlign: 'center' }}>
+          <p style={{ fontSize: 11, color: 'var(--muted)' }}>Loading config...</p>
         </div>
       </div>
     );
@@ -194,14 +194,14 @@ function SkillRateSection() {
   return (
     <div style={{ marginTop: 16 }}>
       <SectionHeader title="Skill Rates & Margins" />
-      <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
 
         {/* Default margin */}
         <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div>
-              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>Default Margin</span>
-              <p style={{ fontSize: 10, color: 'var(--text-3)', marginTop: 1 }}>Applied when no project/trade override exists</p>
+              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--charcoal)' }}>Default Margin</span>
+              <p style={{ fontSize: 10, color: 'var(--muted)', marginTop: 1 }}>Applied when no project/trade override exists</p>
             </div>
             {editingMargin ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -209,12 +209,12 @@ function SkillRateSection() {
                   type="number"
                   value={marginInput}
                   onChange={(e) => setMarginInput(e.target.value)}
-                  style={{ width: 60, padding: '4px 8px', fontSize: 13, fontFamily: 'var(--font-mono)', border: '1px solid var(--border)', borderRadius: 4, background: 'var(--surface-1)', color: 'var(--text)', textAlign: 'right' }}
+                  style={{ width: 60, padding: '4px 8px', fontSize: 13, fontFamily: 'var(--font-mono)', border: '1px solid var(--border)', borderRadius: 4, background: 'var(--surface)', color: 'var(--charcoal)', textAlign: 'right' }}
                   autoFocus
                   onKeyDown={(e) => { if (e.key === 'Enter') handleMarginSave(); if (e.key === 'Escape') setEditingMargin(false); }}
                 />
-                <span style={{ fontSize: 13, color: 'var(--text-2)' }}>%</span>
-                <button onClick={handleMarginSave} style={{ padding: '4px 10px', fontSize: 11, fontWeight: 600, background: 'var(--text)', color: 'var(--surface-1)', border: 'none', borderRadius: 4, cursor: 'pointer' }}>Save</button>
+                <span style={{ fontSize: 13, color: 'var(--mid)' }}>%</span>
+                <button onClick={handleMarginSave} style={{ padding: '4px 10px', fontSize: 11, fontWeight: 600, fontFamily: 'var(--font-mono)', background: 'var(--charcoal)', color: 'var(--surface)', border: 'none', borderRadius: 4, cursor: 'pointer' }}>Save</button>
               </div>
             ) : (
               <button
@@ -230,8 +230,8 @@ function SkillRateSection() {
         {/* Skill levels table */}
         <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-            <DollarSign size={14} style={{ color: 'var(--text-3)' }} />
-            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>Skill Levels</span>
+            <DollarSign size={14} style={{ color: 'var(--muted)' }} />
+            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--charcoal)' }}>Skill Levels</span>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
             {config.skillLevels.map((sl, i) => (
@@ -244,24 +244,24 @@ function SkillRateSection() {
                 }}
               >
                 <div style={{ flex: 1 }}>
-                  <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text)' }}>
+                  <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--charcoal)' }}>
                     L{sl.level} — {sl.label}
                   </span>
-                  <p style={{ fontSize: 10, color: 'var(--text-3)', marginTop: 1 }}>{sl.description}</p>
+                  <p style={{ fontSize: 10, color: 'var(--muted)', marginTop: 1 }}>{sl.description}</p>
                 </div>
                 {editingLevel === sl.level ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <span style={{ fontSize: 12, color: 'var(--text-2)' }}>$</span>
+                    <span style={{ fontSize: 12, color: 'var(--mid)' }}>$</span>
                     <input
                       type="number"
                       value={rateInput}
                       onChange={(e) => setRateInput(e.target.value)}
-                      style={{ width: 56, padding: '4px 6px', fontSize: 12, fontFamily: 'var(--font-mono)', border: '1px solid var(--border)', borderRadius: 4, background: 'var(--surface-1)', color: 'var(--text)', textAlign: 'right' }}
+                      style={{ width: 56, padding: '4px 6px', fontSize: 12, fontFamily: 'var(--font-mono)', border: '1px solid var(--border)', borderRadius: 4, background: 'var(--surface)', color: 'var(--charcoal)', textAlign: 'right' }}
                       autoFocus
                       onKeyDown={(e) => { if (e.key === 'Enter') handleRateSave(sl.level); if (e.key === 'Escape') setEditingLevel(null); }}
                     />
-                    <span style={{ fontSize: 10, color: 'var(--text-3)' }}>/hr</span>
-                    <button onClick={() => handleRateSave(sl.level)} style={{ padding: '3px 8px', fontSize: 10, fontWeight: 600, background: 'var(--text)', color: 'var(--surface-1)', border: 'none', borderRadius: 4, cursor: 'pointer' }}>OK</button>
+                    <span style={{ fontSize: 10, color: 'var(--muted)' }}>/hr</span>
+                    <button onClick={() => handleRateSave(sl.level)} style={{ padding: '3px 8px', fontSize: 10, fontWeight: 600, fontFamily: 'var(--font-mono)', background: 'var(--charcoal)', color: 'var(--surface)', border: 'none', borderRadius: 4, cursor: 'pointer' }}>OK</button>
                   </div>
                 ) : (
                   <button
@@ -285,8 +285,8 @@ function SkillRateSection() {
               style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
                 width: '100%', padding: '10px 16px', minHeight: 44,
-                fontSize: 12, fontWeight: 600,
-                background: 'var(--surface-3)', color: 'var(--text-2)',
+                fontSize: 12, fontWeight: 600, fontFamily: 'var(--font-mono)',
+                background: 'var(--surface-3)', color: 'var(--mid)',
                 border: 'none', borderRadius: 'var(--radius)', cursor: 'pointer',
                 opacity: recalculate.isPending ? 0.6 : 1,
               }}
@@ -297,7 +297,7 @@ function SkillRateSection() {
           </div>
         )}
       </div>
-      <p style={{ fontSize: 10, color: 'var(--text-3)', marginTop: 6, padding: '0 4px' }}>
+      <p style={{ fontSize: 10, color: 'var(--muted)', marginTop: 6, padding: '0 4px' }}>
         Cost rates are what you pay crew at each skill level. Margin is applied on top of cost to determine sell price.
       </p>
     </div>
@@ -379,8 +379,8 @@ function RolePermissionsSection() {
     return (
       <div style={{ marginTop: 16 }}>
         <SectionHeader title="Role Permissions" />
-        <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 16, boxShadow: 'var(--shadow-card)', textAlign: 'center' }}>
-          <p style={{ fontSize: 11, color: 'var(--text-3)' }}>Loading permissions...</p>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 16, boxShadow: 'var(--shadow-card)', textAlign: 'center' }}>
+          <p style={{ fontSize: 11, color: 'var(--muted)' }}>Loading permissions...</p>
         </div>
       </div>
     );
@@ -402,10 +402,10 @@ function RolePermissionsSection() {
               padding: '8px 14px',
               fontSize: 11,
               fontWeight: selectedRole === role ? 700 : 500,
-              fontFamily: 'var(--font-cond)',
+              fontFamily: 'var(--font-mono)',
               textTransform: 'uppercase',
               letterSpacing: '0.06em',
-              color: selectedRole === role ? ADMIN_COLOR : 'var(--text-3)',
+              color: selectedRole === role ? ADMIN_COLOR : 'var(--muted)',
               background: 'none',
               border: 'none',
               borderBottom: selectedRole === role ? `2px solid ${ADMIN_COLOR}` : '2px solid transparent',
@@ -419,18 +419,18 @@ function RolePermissionsSection() {
       </div>
 
       {/* Permissions grid */}
-      <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderTop: 'none', borderRadius: '0 0 var(--radius) var(--radius)', overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderTop: 'none', borderRadius: '0 0 var(--radius) var(--radius)', overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
         {/* Column headers */}
         <div style={{
           display: 'grid', gridTemplateColumns: '1fr 60px 60px 60px',
           padding: '8px 16px',
           borderBottom: '1px solid var(--border)',
-          background: 'var(--surface-2, var(--surface-1))',
+          background: 'var(--surface-2, var(--surface))',
         }}>
-          <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-3)', fontFamily: 'var(--font-cond)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Module</span>
-          <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-3)', fontFamily: 'var(--font-cond)', textTransform: 'uppercase', letterSpacing: '0.08em', textAlign: 'center' }}>View</span>
-          <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-3)', fontFamily: 'var(--font-cond)', textTransform: 'uppercase', letterSpacing: '0.08em', textAlign: 'center' }}>Edit</span>
-          <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-3)', fontFamily: 'var(--font-cond)', textTransform: 'uppercase', letterSpacing: '0.08em', textAlign: 'center' }}>Delete</span>
+          <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--muted)', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Module</span>
+          <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--muted)', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', letterSpacing: '0.08em', textAlign: 'center' }}>View</span>
+          <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--muted)', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', letterSpacing: '0.08em', textAlign: 'center' }}>Edit</span>
+          <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--muted)', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', letterSpacing: '0.08em', textAlign: 'center' }}>Delete</span>
         </div>
 
         {MODULES.map((mod, i) => {
@@ -445,7 +445,7 @@ function RolePermissionsSection() {
                 borderBottom: i < MODULES.length - 1 ? '1px solid var(--border)' : 'none',
               }}
             >
-              <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>
+              <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--charcoal)' }}>
                 {mod.label}
               </span>
               {(['can_view', 'can_edit', 'can_delete'] as const).map((field) => {
@@ -463,7 +463,7 @@ function RolePermissionsSection() {
                         border: 'none',
                         cursor: 'pointer',
                         position: 'relative',
-                        background: isOn ? '#10B981' : 'var(--border, #ddd)',
+                        background: isOn ? 'var(--green)' : 'var(--border, #ddd)',
                         transition: 'background 0.2s',
                         opacity: isSaving ? 0.5 : 1,
                       }}
@@ -487,7 +487,7 @@ function RolePermissionsSection() {
           );
         })}
       </div>
-      <p style={{ fontSize: 10, color: 'var(--text-3)', marginTop: 6, padding: '0 4px' }}>
+      <p style={{ fontSize: 10, color: 'var(--muted)', marginTop: 6, padding: '0 4px' }}>
         Controls which modules each role can access. Turning off View also disables Edit and Delete.
       </p>
     </div>
@@ -497,8 +497,8 @@ function RolePermissionsSection() {
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-      <span style={{ fontSize: 11, color: 'var(--text-3)' }}>{label}</span>
-      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-2)' }}>{value}</span>
+      <span style={{ fontSize: 11, color: 'var(--muted)' }}>{label}</span>
+      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--mid)' }}>{value}</span>
     </div>
   );
 }

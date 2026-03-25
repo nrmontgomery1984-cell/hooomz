@@ -276,7 +276,7 @@ export function DownloadCareSheetPDF({ data, children }: DownloadCareSheetPDFPro
               alignItems: 'center',
               justifyContent: 'center',
               gap: 6,
-              fontFamily: 'var(--font-cond)',
+              fontFamily: 'DM Mono, monospace',
               fontSize: 11,
               fontWeight: 600,
               letterSpacing: '0.04em',

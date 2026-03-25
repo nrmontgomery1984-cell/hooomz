@@ -23,9 +23,9 @@ interface CrewTrainingPanelProps {
 
 const TIER_STYLES: Record<string, { color: string; bg: string }> = {
   master:  { color: 'var(--green)',  bg: 'var(--green-dim)'  },
-  lead:    { color: 'var(--blue)',   bg: 'var(--blue-dim)'   },
+  lead:    { color: 'var(--blue)',   bg: 'var(--blue-bg)'   },
   proven:  { color: 'var(--amber)',  bg: 'var(--amber-dim)'  },
-  learner: { color: 'var(--text-3)', bg: 'var(--surface-3)'  },
+  learner: { color: 'var(--muted)', bg: 'var(--surface-3)'  },
 };
 
 export function CrewTrainingPanel({
@@ -37,7 +37,7 @@ export function CrewTrainingPanel({
     return (
       <PanelSection label="Crew & Training">
         <div style={{ padding: '6px 12px' }}>
-          <span style={{ fontSize: 11, color: 'var(--text-3)' }}>No active crew</span>
+          <span style={{ fontSize: 11, color: 'var(--muted)' }}>No active crew</span>
         </div>
       </PanelSection>
     );
@@ -74,7 +74,7 @@ export function CrewTrainingPanel({
       <div style={{ padding: '4px 0' }}>
         {crewSummaries.map((member) => {
           const pct = totalSops > 0 ? Math.round((member.certifiedCount / totalSops) * 100) : 0;
-          const tierStyle = TIER_STYLES[member.tier] || { color: 'var(--text-3)', bg: 'var(--surface-3)' };
+          const tierStyle = TIER_STYLES[member.tier] || { color: 'var(--muted)', bg: 'var(--surface-3)' };
           const tierColor = tierStyle.color;
 
           return (
@@ -83,13 +83,13 @@ export function CrewTrainingPanel({
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <Link
                     href={`/labs/training/${member.id}`}
-                    style={{ fontSize: 12, fontWeight: 500, color: 'var(--text)', textDecoration: 'none' }}
+                    style={{ fontSize: 12, fontWeight: 500, color: 'var(--charcoal)', textDecoration: 'none' }}
                   >
                     {member.name}
                   </Link>
                   <span
                     style={{
-                      fontFamily: 'var(--font-cond)',
+                      fontFamily: 'var(--font-mono)',
                       fontSize: 9,
                       fontWeight: 700,
                       letterSpacing: '0.06em',
@@ -104,7 +104,7 @@ export function CrewTrainingPanel({
                   </span>
                 </div>
                 {totalSops > 0 && (
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-2)' }}>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--mid)' }}>
                     {member.certifiedCount}/{totalSops}
                   </span>
                 )}

@@ -68,7 +68,7 @@ export default function CareSheetPage() {
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}>
         <div style={{ textAlign: 'center' }}>
           <div style={{ width: 32, height: 32, border: '2px solid var(--border)', borderTopColor: 'var(--blue)', borderRadius: '50%', animation: 'spin 0.7s linear infinite', margin: '0 auto 8px' }} />
-          <p style={{ fontSize: 11, color: 'var(--text-3)' }}>Loading care sheet...</p>
+          <p style={{ fontSize: 11, color: 'var(--muted)' }}>Loading care sheet...</p>
         </div>
       </div>
     );
@@ -78,8 +78,8 @@ export default function CareSheetPage() {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}>
         <div style={{ textAlign: 'center', padding: 32 }}>
-          <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-2)' }}>No care sheet data available</p>
-          <p style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 4 }}>This project has no recognized trades or materials.</p>
+          <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--mid)' }}>No care sheet data available</p>
+          <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4 }}>This project has no recognized trades or materials.</p>
           <button
             onClick={() => router.back()}
             style={{ marginTop: 16, fontSize: 11, fontWeight: 600, color: 'var(--blue)', background: 'none', border: 'none', cursor: 'pointer' }}
@@ -96,20 +96,20 @@ export default function CareSheetPage() {
       <div style={{ minHeight: '100vh', paddingBottom: 96, background: 'var(--bg)' }}>
 
         {/* Sticky Header */}
-        <div style={{ background: 'var(--surface-1)', borderBottom: '1px solid var(--border)', position: 'sticky', top: 0, zIndex: 10 }}>
+        <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)', position: 'sticky', top: 0, zIndex: 10 }}>
           <div className="max-w-lg md:max-w-full mx-auto px-4 md:px-6 py-3 md:py-4">
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <button
                 onClick={() => router.back()}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-3)', padding: 0, minWidth: 28, minHeight: 28, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)', padding: 0, minWidth: 28, minHeight: 28, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
                 <ArrowLeft size={18} />
               </button>
               <div style={{ flex: 1 }}>
-                <h1 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', fontFamily: 'var(--font-cond)', letterSpacing: '0.02em' }}>
+                <h1 style={{ fontSize: 16, fontWeight: 700, color: 'var(--charcoal)', fontFamily: 'var(--font-mono)', letterSpacing: '0.02em' }}>
                   Home Care Sheet
                 </h1>
-                <p style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 1 }}>
+                <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 1 }}>
                   {careSheet.projectName}
                 </p>
               </div>
@@ -121,12 +121,12 @@ export default function CareSheetPage() {
                     gap: 4,
                     fontSize: 10,
                     fontWeight: 600,
-                    fontFamily: 'var(--font-cond)',
+                    fontFamily: 'var(--font-mono)',
                     letterSpacing: '0.04em',
-                    color: '#374151',
-                    background: '#F3F4F6',
+                    color: 'var(--mid)',
+                    background: 'var(--surface-2)',
                     borderRadius: 6,
-                    border: '1px solid #E5E7EB',
+                    border: '1px solid var(--border)',
                     cursor: 'pointer',
                     padding: '5px 10px',
                   }}
@@ -145,7 +145,7 @@ export default function CareSheetPage() {
             marginTop: 16,
             padding: 14,
             borderRadius: 'var(--radius)',
-            background: 'var(--surface-1)',
+            background: 'var(--surface)',
             border: '1px solid var(--border)',
             boxShadow: 'var(--shadow-card)',
           }}>
@@ -169,23 +169,23 @@ export default function CareSheetPage() {
             marginTop: 16,
             padding: 14,
             borderRadius: 'var(--radius)',
-            background: '#f0fdf4',
-            border: '1px solid #bbf7d0',
+            background: 'var(--green-bg)',
+            border: '1px solid var(--green-bg)',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
-              <Shield size={14} style={{ color: '#059669' }} />
-              <span style={{ fontFamily: 'var(--font-cond)', fontSize: 12, fontWeight: 700, letterSpacing: '0.02em', color: '#059669' }}>
+              <Shield size={14} style={{ color: 'var(--green)' }} />
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 700, letterSpacing: '0.02em', color: 'var(--green)' }}>
                 Labour Warranty
               </span>
             </div>
             <ul style={{ margin: 0, paddingLeft: 16, display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <li style={{ fontSize: 11, color: '#374151' }}>
+              <li style={{ fontSize: 11, color: 'var(--mid)' }}>
                 All labour is warranted for <strong>1 year</strong> from project completion ({formatDate(careSheet.completionDate)} — {formatDate(careSheet.warrantyExpiryDate)}).
               </li>
-              <li style={{ fontSize: 11, color: '#374151' }}>
+              <li style={{ fontSize: 11, color: 'var(--mid)' }}>
                 Warranty covers defects in workmanship only — not normal wear, misuse, or acts of nature.
               </li>
-              <li style={{ fontSize: 11, color: '#374151' }}>
+              <li style={{ fontSize: 11, color: 'var(--mid)' }}>
                 To file a claim, contact {careSheet.businessName} at {careSheet.businessPhone} or {careSheet.businessEmail}.
               </li>
             </ul>
@@ -193,10 +193,10 @@ export default function CareSheetPage() {
 
           {/* Footer */}
           <div style={{ marginTop: 24, textAlign: 'center', padding: '16px 0' }}>
-            <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-2)' }}>
+            <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--mid)' }}>
               {careSheet.businessName}
             </p>
-            <p style={{ fontSize: 10, color: 'var(--text-3)', marginTop: 2 }}>
+            <p style={{ fontSize: 10, color: 'var(--muted)', marginTop: 2 }}>
               Thank you for choosing us for your home
             </p>
           </div>
@@ -214,19 +214,19 @@ function InfoRow({ label, value, highlight }: { label: string; value: string; hi
   return (
     <div>
       <span style={{
-        fontFamily: 'var(--font-cond)',
+        fontFamily: 'var(--font-mono)',
         fontSize: 8,
         fontWeight: 700,
         letterSpacing: '0.1em',
         textTransform: 'uppercase',
-        color: 'var(--text-3)',
+        color: 'var(--muted)',
         display: 'block',
       }}>
         {label}
       </span>
       <span style={{
         fontSize: 11,
-        color: highlight ? '#059669' : 'var(--text)',
+        color: highlight ? 'var(--green)' : 'var(--charcoal)',
         fontWeight: highlight ? 700 : 400,
         display: 'block',
         marginTop: 1,
@@ -242,7 +242,7 @@ function TradeSectionCard({ section }: { section: CareTradeSection }) {
     <div style={{
       marginTop: 12,
       borderRadius: 'var(--radius)',
-      background: 'var(--surface-1)',
+      background: 'var(--surface)',
       border: '1px solid var(--border)',
       boxShadow: 'var(--shadow-card)',
       overflow: 'hidden',
@@ -257,16 +257,16 @@ function TradeSectionCard({ section }: { section: CareTradeSection }) {
         gap: 6,
       }}>
         <span style={{
-          fontFamily: 'var(--font-cond)',
+          fontFamily: 'var(--font-mono)',
           fontSize: 12,
           fontWeight: 700,
           letterSpacing: '0.02em',
-          color: 'var(--text)',
+          color: 'var(--charcoal)',
         }}>
           {section.tradeName}
         </span>
         {section.locationsWorked.length > 0 && (
-          <span style={{ fontSize: 10, color: 'var(--text-3)' }}>
+          <span style={{ fontSize: 10, color: 'var(--muted)' }}>
             — {section.locationsWorked.join(', ')}
           </span>
         )}
@@ -277,12 +277,12 @@ function TradeSectionCard({ section }: { section: CareTradeSection }) {
         {section.materialsInstalled.length > 0 && (
           <div style={{ marginBottom: 10 }}>
             <span style={{
-              fontFamily: 'var(--font-cond)',
+              fontFamily: 'var(--font-mono)',
               fontSize: 8,
               fontWeight: 700,
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
-              color: 'var(--text-3)',
+              color: 'var(--muted)',
               display: 'block',
               marginBottom: 4,
             }}>
@@ -296,12 +296,12 @@ function TradeSectionCard({ section }: { section: CareTradeSection }) {
                 padding: '2px 0',
                 borderBottom: i < section.materialsInstalled.length - 1 ? '1px solid var(--border)' : 'none',
               }}>
-                <span style={{ fontSize: 11, color: 'var(--text)', flex: 1 }}>{mat.description}</span>
+                <span style={{ fontSize: 11, color: 'var(--charcoal)', flex: 1 }}>{mat.description}</span>
                 {mat.location && (
-                  <span style={{ fontSize: 9, color: 'var(--text-3)' }}>{mat.location}</span>
+                  <span style={{ fontSize: 9, color: 'var(--muted)' }}>{mat.location}</span>
                 )}
                 {mat.quantity != null && (
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-2)' }}>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--mid)' }}>
                     {mat.quantity} {mat.unit || ''}
                   </span>
                 )}
@@ -313,12 +313,12 @@ function TradeSectionCard({ section }: { section: CareTradeSection }) {
         {/* Care Instructions */}
         <div style={{ marginBottom: 10 }}>
           <span style={{
-            fontFamily: 'var(--font-cond)',
+            fontFamily: 'var(--font-mono)',
             fontSize: 8,
             fontWeight: 700,
             letterSpacing: '0.12em',
             textTransform: 'uppercase',
-            color: 'var(--text-3)',
+            color: 'var(--muted)',
             display: 'block',
             marginBottom: 4,
           }}>
@@ -326,7 +326,7 @@ function TradeSectionCard({ section }: { section: CareTradeSection }) {
           </span>
           <ul style={{ margin: 0, paddingLeft: 16, display: 'flex', flexDirection: 'column', gap: 2 }}>
             {section.careInstructions.map((item, i) => (
-              <li key={i} style={{ fontSize: 11, color: 'var(--text-2)' }}>{item}</li>
+              <li key={i} style={{ fontSize: 11, color: 'var(--mid)' }}>{item}</li>
             ))}
           </ul>
         </div>
@@ -335,12 +335,12 @@ function TradeSectionCard({ section }: { section: CareTradeSection }) {
         {section.thingsToAvoid.length > 0 && (
           <div style={{ marginBottom: 10 }}>
             <span style={{
-              fontFamily: 'var(--font-cond)',
+              fontFamily: 'var(--font-mono)',
               fontSize: 8,
               fontWeight: 700,
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
-              color: '#DC2626',
+              color: 'var(--red)',
               display: 'block',
               marginBottom: 4,
             }}>
@@ -348,14 +348,14 @@ function TradeSectionCard({ section }: { section: CareTradeSection }) {
             </span>
             <ul style={{ margin: 0, paddingLeft: 16, display: 'flex', flexDirection: 'column', gap: 2 }}>
               {section.thingsToAvoid.map((item, i) => (
-                <li key={i} style={{ fontSize: 11, color: 'var(--text-2)' }}>{item}</li>
+                <li key={i} style={{ fontSize: 11, color: 'var(--mid)' }}>{item}</li>
               ))}
             </ul>
           </div>
         )}
 
         {/* Warranty Note */}
-        <p style={{ fontSize: 10, fontStyle: 'italic', color: 'var(--text-3)', margin: 0 }}>
+        <p style={{ fontSize: 10, fontStyle: 'italic', color: 'var(--muted)', margin: 0 }}>
           {section.warrantyNotes}
         </p>
       </div>

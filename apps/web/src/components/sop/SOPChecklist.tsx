@@ -165,20 +165,20 @@ export function SOPChecklist({ taskId, sopId, projectId, onOpenSOP, onOpenKnowle
       <button
         onClick={() => setExpanded(true)}
         className="w-full mt-2 rounded-xl p-2.5 flex items-center justify-between min-h-[38px]"
-        style={{ background: '#F3F4F6', border: '1px solid #E5E7EB' }}
+        style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}
       >
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold" style={{ color: '#111827' }}>SOP</span>
-          <span className="text-xs" style={{ color: '#6B7280' }}>{sop.title}</span>
+          <span className="text-xs font-semibold" style={{ color: 'var(--charcoal)' }}>SOP</span>
+          <span className="text-xs" style={{ color: 'var(--muted)' }}>{sop.title}</span>
           {sop.isFromDatabase && (
-            <Database size={10} style={{ color: '#9CA3AF' }} />
+            <Database size={10} style={{ color: 'var(--muted)' }} />
           )}
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs font-medium" style={{ color: completedCount === totalSteps ? '#10B981' : '#6B7280' }}>
+          <span className="text-xs font-medium" style={{ color: completedCount === totalSteps ? 'var(--green)' : 'var(--muted)' }}>
             {completedCount}/{totalSteps}
           </span>
-          <ChevronDown size={14} style={{ color: '#9CA3AF' }} />
+          <ChevronDown size={14} style={{ color: 'var(--muted)' }} />
         </div>
       </button>
     );
@@ -187,19 +187,19 @@ export function SOPChecklist({ taskId, sopId, projectId, onOpenSOP, onOpenKnowle
   return (
     <div
       className="mt-2 rounded-xl overflow-hidden"
-      style={{ border: '1px solid #E5E7EB', borderLeft: '3px solid #0F766E' }}
+      style={{ border: '1px solid var(--border)', borderLeft: '3px solid var(--accent)' }}
     >
       {/* Header */}
       <div
         className="w-full p-2.5 flex items-center justify-between min-h-[38px]"
-        style={{ background: '#F9FAFB' }}
+        style={{ background: 'var(--surface)' }}
       >
         <div className="flex items-center gap-2 flex-1 min-w-0">
-          <span className="text-xs font-semibold" style={{ color: '#111827' }}>SOP</span>
+          <span className="text-xs font-semibold" style={{ color: 'var(--charcoal)' }}>SOP</span>
           {onOpenSOP ? (
             <button
               className="text-xs flex items-center gap-1 hover:underline text-left"
-              style={{ color: '#0F766E' }}
+              style={{ color: 'var(--accent)' }}
               onClick={(e) => { e.stopPropagation(); onOpenSOP(sopId); }}
             >
               {sop.title}
@@ -209,37 +209,37 @@ export function SOPChecklist({ taskId, sopId, projectId, onOpenSOP, onOpenKnowle
             <Link
               href={`${sop.detailRoute ?? '/labs/sops'}/${sop.detailId}`}
               className="text-xs flex items-center gap-1 hover:underline"
-              style={{ color: '#0F766E' }}
+              style={{ color: 'var(--accent)' }}
               onClick={(e) => e.stopPropagation()}
             >
               {sop.title}
               <ExternalLink size={10} />
             </Link>
           ) : (
-            <span className="text-xs" style={{ color: '#6B7280' }}>{sop.title}</span>
+            <span className="text-xs" style={{ color: 'var(--muted)' }}>{sop.title}</span>
           )}
           {sop.isFromDatabase && (
-            <Database size={10} style={{ color: '#9CA3AF' }} />
+            <Database size={10} style={{ color: 'var(--muted)' }} />
           )}
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
-          <span className="text-xs font-medium" style={{ color: completedCount === totalSteps ? '#10B981' : '#6B7280' }}>
+          <span className="text-xs font-medium" style={{ color: completedCount === totalSteps ? 'var(--green)' : 'var(--muted)' }}>
             {completedCount}/{totalSteps}
           </span>
           <button onClick={() => setExpanded(false)} className="p-1 -m-1">
-            <ChevronUp size={14} style={{ color: '#9CA3AF' }} />
+            <ChevronUp size={14} style={{ color: 'var(--muted)' }} />
           </button>
         </div>
       </div>
 
       {/* Progress bar */}
       <div className="px-2.5">
-        <div className="w-full h-1 rounded-full" style={{ background: '#E5E7EB' }}>
+        <div className="w-full h-1 rounded-full" style={{ background: 'var(--border)' }}>
           <div
             className="h-1 rounded-full transition-all"
             style={{
               width: `${progressPct}%`,
-              background: completedCount === totalSteps ? '#10B981' : '#0F766E',
+              background: completedCount === totalSteps ? 'var(--green)' : 'var(--accent)',
             }}
           />
         </div>
@@ -252,10 +252,10 @@ export function SOPChecklist({ taskId, sopId, projectId, onOpenSOP, onOpenKnowle
             <div
               key={i}
               className="rounded-lg p-2 flex items-start gap-2"
-              style={{ background: '#FEF2F2', borderLeft: '3px solid #EF4444' }}
+              style={{ background: 'var(--red-bg)', borderLeft: '3px solid var(--red)' }}
             >
-              <AlertTriangle size={14} style={{ color: '#EF4444', flexShrink: 0, marginTop: 1 }} />
-              <span className="text-xs" style={{ color: '#991B1B' }}>{condition}</span>
+              <AlertTriangle size={14} style={{ color: 'var(--red)', flexShrink: 0, marginTop: 1 }} />
+              <span className="text-xs" style={{ color: 'var(--red)' }}>{condition}</span>
             </div>
           ))}
         </div>
@@ -303,7 +303,7 @@ export function SOPChecklist({ taskId, sopId, projectId, onOpenSOP, onOpenKnowle
       {/* Critical standards / Lab badges */}
       {sop.criticalStandards.length > 0 && (
         <div className="px-2.5 pb-2.5 space-y-1">
-          <div className="text-[10px] font-medium uppercase tracking-wide" style={{ color: '#9CA3AF' }}>
+          <div className="text-[10px] font-medium uppercase tracking-wide" style={{ color: 'var(--muted)' }}>
             Lab Evidence
           </div>
           {sop.criticalStandards.map((cs, i) => (
@@ -341,14 +341,14 @@ function StepRow({
     <button
       onClick={onToggle}
       className="w-full flex items-start gap-2.5 py-2 min-h-[36px] text-left"
-      style={{ borderBottom: '1px solid #F3F4F6' }}
+      style={{ borderBottom: '1px solid var(--surface-2)' }}
     >
       {/* Checkbox */}
       <div
         className="flex-shrink-0 w-5 h-5 rounded mt-0.5 flex items-center justify-center"
         style={{
-          border: isChecked ? 'none' : '2px solid #D1D5DB',
-          background: isChecked ? '#0F766E' : 'transparent',
+          border: isChecked ? 'none' : '2px solid var(--border)',
+          background: isChecked ? 'var(--accent)' : 'transparent',
         }}
       >
         {isChecked && (
@@ -363,11 +363,11 @@ function StepRow({
         <span
           className="text-xs leading-relaxed"
           style={{
-            color: isChecked ? '#9CA3AF' : '#111827',
+            color: isChecked ? 'var(--muted)' : 'var(--charcoal)',
             textDecoration: isChecked ? 'line-through' : 'none',
           }}
         >
-          <span className="font-medium" style={{ color: isChecked ? '#9CA3AF' : '#6B7280' }}>
+          <span className="font-medium" style={{ color: isChecked ? 'var(--muted)' : 'var(--muted)' }}>
             {order}.
           </span>{' '}
           {action}
@@ -379,17 +379,17 @@ function StepRow({
         {generatesObservation && (
           <span
             className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-            style={{ background: '#0F766E' }}
+            style={{ background: 'var(--accent)' }}
             title="Generates observation"
           />
         )}
         {hasPhoto && (
-          <Camera size={12} style={{ color: '#9CA3AF' }} />
+          <Camera size={12} style={{ color: 'var(--muted)' }} />
         )}
         {hasLabRef && (
           <span
             className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full"
-            style={{ background: '#7C3AED', color: '#FFFFFF' }}
+            style={{ background: 'var(--violet)', color: '#fff' }}
           >
             LAB
           </span>
@@ -415,17 +415,17 @@ function LabBadge({
       <span
         className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full flex-shrink-0 mt-0.5"
         style={{
-          background: isLabTest ? '#7C3AED' : '#E5E7EB',
-          color: isLabTest ? '#FFFFFF' : '#6B7280',
+          background: isLabTest ? 'var(--violet)' : 'var(--border)',
+          color: isLabTest ? '#fff' : 'var(--muted)',
         }}
       >
         {isLabTest ? source : 'SOP'}
       </span>
-      <span className="text-xs" style={{ color: isLabTest ? '#0F766E' : '#374151' }}>
+      <span className="text-xs" style={{ color: isLabTest ? 'var(--accent)' : 'var(--mid)' }}>
         {standard}
       </span>
       {isLabTest && onOpenKnowledge && (
-        <ExternalLink size={10} className="flex-shrink-0 mt-0.5" style={{ color: '#9CA3AF' }} />
+        <ExternalLink size={10} className="flex-shrink-0 mt-0.5" style={{ color: 'var(--muted)' }} />
       )}
     </>
   );

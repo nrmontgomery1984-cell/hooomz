@@ -46,23 +46,23 @@ export default function SOPsPage() {
   });
 
   return (
-    <div className="min-h-screen pb-24" style={{ background: '#F3F4F6' }}>
+    <div className="min-h-screen pb-24" style={{ background: 'var(--surface-2)' }}>
       {/* Header */}
-      <div style={{ background: '#FFFFFF', borderBottom: '1px solid #E5E7EB' }}>
+      <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
         <div className="max-w-lg mx-auto px-4 py-4">
           <div className="flex items-center gap-2 mb-1">
             <Link href="/labs" className="text-sm hover:underline" style={{ color: LABS_COLOR }}>Labs</Link>
-            <span className="text-xs" style={{ color: 'var(--text-3)' }}>/</span>
+            <span className="text-xs" style={{ color: 'var(--muted)' }}>/</span>
           </div>
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-bold" style={{ color: '#111827' }}>SOPs</h1>
-              <p className="text-xs" style={{ color: '#9CA3AF' }}>{sops.length} standard operating procedures</p>
+              <h1 className="text-xl font-bold" style={{ color: 'var(--charcoal)' }}>SOPs</h1>
+              <p className="text-xs" style={{ color: 'var(--muted)' }}>{sops.length} standard operating procedures</p>
             </div>
             <Link
               href="/labs/sops/new"
               className="px-3 py-2 text-sm font-medium text-white rounded-xl"
-              style={{ background: '#0F766E', minHeight: '44px', display: 'flex', alignItems: 'center' }}
+              style={{ background: 'var(--accent)', minHeight: '44px', display: 'flex', alignItems: 'center' }}
             >
               + New SOP
             </Link>
@@ -80,7 +80,7 @@ export default function SOPsPage() {
                 style={
                   statusFilter === f.value
                     ? { background: LABS_COLOR, color: '#fff' }
-                    : { background: 'var(--surface-2)', color: 'var(--text-2)' }
+                    : { background: 'var(--surface-2)', color: 'var(--mid)' }
                 }
               >
                 {f.label}
@@ -99,7 +99,7 @@ export default function SOPsPage() {
                 style={
                   tradeFilter === 'all'
                     ? { background: LABS_COLOR, color: '#fff' }
-                    : { background: 'var(--surface-2)', color: 'var(--text-2)' }
+                    : { background: 'var(--surface-2)', color: 'var(--mid)' }
                 }
               >
                 All Trades
@@ -112,7 +112,7 @@ export default function SOPsPage() {
                   style={
                     tradeFilter === tf
                       ? { background: LABS_COLOR, color: '#fff' }
-                      : { background: 'var(--surface-2)', color: 'var(--text-2)' }
+                      : { background: 'var(--surface-2)', color: 'var(--mid)' }
                   }
                 >
                   {tf}
@@ -126,13 +126,13 @@ export default function SOPsPage() {
       <div className="max-w-lg mx-auto px-4 mt-4 space-y-3">
         {isLoading ? (
           <div className="text-center py-8">
-            <div className="w-8 h-8 border-3 rounded-full animate-spin mx-auto mb-3" style={{ borderColor: '#E5E7EB', borderTopColor: '#0F766E' }} />
-            <p className="text-sm" style={{ color: 'var(--text-3)' }}>Loading SOPs...</p>
+            <div className="w-8 h-8 border-3 rounded-full animate-spin mx-auto mb-3" style={{ borderColor: 'var(--border)', borderTopColor: 'var(--accent)' }} />
+            <p className="text-sm" style={{ color: 'var(--muted)' }}>Loading SOPs...</p>
           </div>
         ) : sorted.length === 0 ? (
           <div className="text-center py-8">
-            <p className="text-sm" style={{ color: 'var(--text-3)' }}>No SOPs found</p>
-            <p className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>Create your first SOP to start building procedures</p>
+            <p className="text-sm" style={{ color: 'var(--muted)' }}>No SOPs found</p>
+            <p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>Create your first SOP to start building procedures</p>
           </div>
         ) : (
           sorted.map((sop) => (

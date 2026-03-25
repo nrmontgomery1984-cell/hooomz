@@ -46,7 +46,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 // Styles
 // ============================================================================
 
-const TEAL = '#0F766E';
+const ACCENT = '#6B6560';
 
 const styles = StyleSheet.create({
   page: {
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 24,
     borderBottomWidth: 2,
-    borderBottomColor: TEAL,
+    borderBottomColor: ACCENT,
     paddingBottom: 12,
   },
   brandName: {
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
   docType: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: TEAL,
+    color: ACCENT,
     textAlign: 'right' as const,
   },
   dateText: {
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
   tradeHeader: {
     fontSize: 10,
     fontWeight: 'bold',
-    color: TEAL,
+    color: ACCENT,
     marginTop: 10,
     marginBottom: 4,
     paddingBottom: 2,
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     paddingTop: 10,
     borderTopWidth: 2,
-    borderTopColor: TEAL,
+    borderTopColor: ACCENT,
   },
   totalRow: {
     flexDirection: 'row',
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textTransform: 'uppercase',
     letterSpacing: 1,
-    color: TEAL,
+    color: ACCENT,
     marginBottom: 6,
   },
   paymentRow: {
@@ -498,10 +498,10 @@ export function DownloadQuotePDF({
               gap: 6,
               fontSize: 12,
               fontWeight: 600,
-              color: TEAL,
+              color: ACCENT,
               background: '#FFFFFF',
               borderRadius: 'var(--radius, 12px)',
-              border: `2px solid ${TEAL}`,
+              border: `2px solid ${ACCENT}`,
               cursor: loading ? 'not-allowed' : 'pointer',
               padding: '0 16px',
               opacity: loading ? 0.6 : 1,

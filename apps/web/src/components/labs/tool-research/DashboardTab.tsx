@@ -3,11 +3,11 @@
 import type { ToolResearchItem, ToolInventoryItem } from '@hooomz/shared-contracts';
 import { ToolResearchCard } from './ToolResearchCard';
 
-const NAVY = '#1B2A4A';
-const TEAL = '#2A9D8F';
-const GOLD = '#E9C46A';
-const CORAL = '#E76F51';
-const LIGHT_BG = '#F5F7FA';
+const NAVY = 'var(--charcoal)';
+const TEAL = 'var(--accent)';
+const GOLD = '#E9C46A'; /* tool-research category — no canonical equivalent */
+const CORAL = '#E76F51'; /* tool-research category — no canonical equivalent */
+const LIGHT_BG = 'var(--surface-2)';
 const LIGHT_TEAL = '#E6F5F3';
 const LIGHT_GOLD = '#FDF6E3';
 const LIGHT_CORAL = '#FDEEEA';
@@ -149,8 +149,8 @@ export function DashboardTab({ onNav, researchItems, inventory }: DashboardTabPr
         >
           {[
             { label: 'Total Items', value: String(totalResearch), colorVal: NAVY, bg: LIGHT_BG },
-            { label: 'Purchased', value: String(purchased), colorVal: '#2E7D32', bg: '#E8F5E9' },
-            { label: 'Remaining', value: String(remaining), colorVal: '#E65100', bg: '#FFF3E0' },
+            { label: 'Purchased', value: String(purchased), colorVal: 'var(--green)', bg: 'var(--green-bg)' },
+            { label: 'Remaining', value: String(remaining), colorVal: 'var(--amber)', bg: 'var(--amber-dim)' },
             { label: 'Total Spent', value: `$${totalSpent}`, colorVal: TEAL, bg: LIGHT_TEAL },
           ].map((s, i) => (
             <div
@@ -172,7 +172,7 @@ export function DashboardTab({ onNav, researchItems, inventory }: DashboardTabPr
           ))}
         </div>
         {/* Progress bar */}
-        <div style={{ background: '#E5E7EB', borderRadius: 6, height: 10, overflow: 'hidden' }}>
+        <div style={{ background: 'var(--border)', borderRadius: 6, height: 10, overflow: 'hidden' }}>
           <div
             style={{
               width: `${purchasePercent}%`,
@@ -183,7 +183,7 @@ export function DashboardTab({ onNav, researchItems, inventory }: DashboardTabPr
             }}
           />
         </div>
-        <div style={{ fontSize: 11, color: '#888', marginTop: 4, textAlign: 'right' }}>
+        <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4, textAlign: 'right' }}>
           {purchasePercent}% complete
         </div>
       </ToolResearchCard>
@@ -212,7 +212,7 @@ export function DashboardTab({ onNav, researchItems, inventory }: DashboardTabPr
             <div style={{ fontWeight: 700, fontSize: 13, color: CORAL }}>
               {unregisteredRidgid} RIDGID tool{unregisteredRidgid > 1 ? 's' : ''} need registration
             </div>
-            <div style={{ fontSize: 12, color: '#666' }}>
+            <div style={{ fontSize: 12, color: 'var(--muted)' }}>
               Register within 90 days at ridgid.com for Lifetime Service Agreement
             </div>
           </div>
@@ -238,8 +238,8 @@ export function DashboardTab({ onNav, researchItems, inventory }: DashboardTabPr
               {inventory.length}
             </div>
           </div>
-          <div style={{ padding: '12px 14px', background: '#E8F5E9', borderRadius: 8, textAlign: 'center' }}>
-            <div style={{ fontSize: 10, color: '#2E7D32', fontWeight: 600, textTransform: 'uppercase' }}>
+          <div style={{ padding: '12px 14px', background: 'var(--green-bg)', borderRadius: 8, textAlign: 'center' }}>
+            <div style={{ fontSize: 10, color: 'var(--green)', fontWeight: 600, textTransform: 'uppercase' }}>
               Owned
             </div>
             <div style={{ fontSize: 22, fontWeight: 700, color: NAVY, marginTop: 2 }}>
@@ -249,7 +249,7 @@ export function DashboardTab({ onNav, researchItems, inventory }: DashboardTabPr
         </div>
         {Object.keys(platformGroups).length > 0 && (
           <div style={{ display: 'grid', gap: 6 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: '#888', textTransform: 'uppercase' }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--muted)', textTransform: 'uppercase' }}>
               By Platform
             </div>
             {Object.entries(platformGroups).map(([platform, count]) => (
@@ -293,7 +293,7 @@ export function DashboardTab({ onNav, researchItems, inventory }: DashboardTabPr
               }}
             >
               <span style={{ fontWeight: 700, fontSize: 13, minWidth: 130 }}>{r}</span>
-              <span style={{ fontSize: 12, color: '#666' }}>{RETAILER_BRANDS[r]}</span>
+              <span style={{ fontSize: 12, color: 'var(--muted)' }}>{RETAILER_BRANDS[r]}</span>
             </div>
           ))}
         </div>
@@ -317,23 +317,23 @@ export function DashboardTab({ onNav, researchItems, inventory }: DashboardTabPr
                 padding: '10px 12px',
                 borderRadius: 6,
                 cursor: 'pointer',
-                border: '1px solid #EEE',
+                border: '1px solid var(--border)',
                 transition: 'all 0.15s',
-                background: 'white',
+                background: 'var(--surface)',
                 minHeight: 44,
               }}
               onMouseEnter={(e) => {
                 (e.currentTarget as HTMLElement).style.background = LIGHT_BG;
               }}
               onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.background = 'white';
+                (e.currentTarget as HTMLElement).style.background = 'var(--surface)';
               }}
             >
               <Badge text={`EXP-${exp.id}`} color={exp.color} />
               <span style={{ fontWeight: 600, fontSize: 13 }}>{exp.name}</span>
-              <span style={{ fontSize: 12, color: '#888' }}>{exp.items}</span>
+              <span style={{ fontSize: 12, color: 'var(--muted)' }}>{exp.items}</span>
               <span style={{ fontSize: 12, fontWeight: 600, color: TEAL }}>{exp.budget}</span>
-              <span style={{ fontSize: 11, color: '#888' }}>{exp.approach}</span>
+              <span style={{ fontSize: 11, color: 'var(--muted)' }}>{exp.approach}</span>
             </div>
           ))}
         </div>
@@ -369,12 +369,12 @@ export function DashboardTab({ onNav, researchItems, inventory }: DashboardTabPr
           <div
             style={{
               padding: 16,
-              background: totalSpent > 0 ? '#E8F5E9' : LIGHT_BG,
+              background: totalSpent > 0 ? 'var(--green-bg)' : LIGHT_BG,
               borderRadius: 8,
               textAlign: 'center',
             }}
           >
-            <div style={{ fontSize: 11, color: totalSpent > 0 ? '#2E7D32' : '#888', fontWeight: 600 }}>
+            <div style={{ fontSize: 11, color: totalSpent > 0 ? 'var(--green)' : 'var(--muted)', fontWeight: 600 }}>
               SPENT SO FAR
             </div>
             <div style={{ fontSize: 28, fontWeight: 700, color: NAVY }}>

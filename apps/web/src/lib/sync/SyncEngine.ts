@@ -90,6 +90,11 @@ const SYNCED_STORES: Set<string> = new Set([
   // Trim Cut Calculator (Block 5)
   StoreNames.MILLWORK_ASSEMBLY_CONFIGS,
   StoreNames.TRIM_CALCULATIONS,
+  // Properties (v34)
+  StoreNames.PROPERTIES,
+  // Passports (v35)
+  StoreNames.PASSPORTS,
+  StoreNames.PASSPORT_ENTRIES,
 ]);
 
 function getDeviceId(): string {

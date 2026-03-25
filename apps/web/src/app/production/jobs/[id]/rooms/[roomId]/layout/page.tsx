@@ -57,7 +57,7 @@ function SectionHeader({ children }: { children: React.ReactNode }) {
         fontWeight: 700,
         letterSpacing: '0.14em',
         textTransform: 'uppercase',
-        color: 'var(--text-3)',
+        color: 'var(--muted)',
         marginBottom: 10,
         marginTop: 20,
       }}
@@ -146,7 +146,7 @@ export default function LayoutPage() {
           alignItems: 'center',
           justifyContent: 'center',
           background: 'var(--bg)',
-          color: 'var(--text-3)',
+          color: 'var(--muted)',
           fontSize: 14,
         }}
       >
@@ -164,14 +164,14 @@ export default function LayoutPage() {
           alignItems: 'center',
           justifyContent: 'center',
           background: 'var(--bg)',
-          color: 'var(--text-3)',
+          color: 'var(--muted)',
           fontSize: 14,
         }}
       >
         Room not found.
         <button
           onClick={() => router.back()}
-          style={{ marginLeft: 8, background: 'none', border: 'none', color: '#3B82F6', cursor: 'pointer', fontSize: 14 }}
+          style={{ marginLeft: 8, background: 'none', border: 'none', color: 'var(--blue)', cursor: 'pointer', fontSize: 14 }}
         >
           Go back
         </button>
@@ -182,7 +182,7 @@ export default function LayoutPage() {
   const isBusy = saveMutation.isPending || optimizeMutation.isPending;
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--charcoal)' }}>
       {/* Header */}
       <div
         style={{
@@ -191,7 +191,7 @@ export default function LayoutPage() {
           display: 'flex',
           alignItems: 'center',
           gap: 12,
-          background: 'var(--surface-1)',
+          background: 'var(--surface)',
         }}
       >
         <button
@@ -200,7 +200,7 @@ export default function LayoutPage() {
             background: 'none',
             border: 'none',
             cursor: 'pointer',
-            color: 'var(--text-3)',
+            color: 'var(--muted)',
             display: 'flex',
             alignItems: 'center',
             padding: 4,
@@ -214,7 +214,7 @@ export default function LayoutPage() {
           <div
             style={{
               fontSize: 11,
-              color: 'var(--text-3)',
+              color: 'var(--muted)',
               fontWeight: 500,
               letterSpacing: '0.04em',
               textTransform: 'uppercase',
@@ -235,8 +235,8 @@ export default function LayoutPage() {
             alignItems: 'center',
             gap: 6,
             padding: '8px 14px',
-            background: 'var(--surface-1)',
-            color: isBusy ? 'var(--text-3)' : '#1E3A8A',
+            background: 'var(--surface)',
+            color: isBusy ? 'var(--muted)' : 'var(--blue)',
             border: '1px solid #1E3A8A',
             borderRadius: 8,
             fontSize: 13,
@@ -259,7 +259,7 @@ export default function LayoutPage() {
             alignItems: 'center',
             gap: 6,
             padding: '8px 14px',
-            background: '#1E3A8A',
+            background: 'var(--blue)',
             color: '#fff',
             border: 'none',
             borderRadius: 8,
@@ -305,9 +305,9 @@ export default function LayoutPage() {
                 style={{
                   padding: '6px 12px',
                   borderRadius: 8,
-                  border: `2px solid ${active ? '#1E3A8A' : 'var(--border)'}`,
-                  background: active ? 'rgba(30,58,138,0.1)' : 'var(--surface-1)',
-                  color: active ? '#1E3A8A' : 'var(--text-3)',
+                  border: `2px solid ${active ? 'var(--blue)' : 'var(--border)'}`,
+                  background: active ? 'var(--blue-bg)' : 'var(--surface)',
+                  color: active ? 'var(--blue)' : 'var(--muted)',
                   fontSize: 12,
                   fontWeight: 600,
                   cursor: 'pointer',
@@ -329,7 +329,7 @@ export default function LayoutPage() {
                   fontWeight: 700,
                   letterSpacing: '0.14em',
                   textTransform: 'uppercase',
-                  color: 'var(--text-3)',
+                  color: 'var(--muted)',
                   marginBottom: 4,
                 }}
               >
@@ -345,10 +345,10 @@ export default function LayoutPage() {
                 style={{
                   width: '100%',
                   padding: '8px 10px',
-                  background: 'var(--surface-1)',
+                  background: 'var(--surface)',
                   border: '1px solid var(--border)',
                   borderRadius: 8,
-                  color: 'var(--text)',
+                  color: 'var(--charcoal)',
                   fontSize: 14,
                   fontWeight: 600,
                   boxSizing: 'border-box',
@@ -378,10 +378,10 @@ export default function LayoutPage() {
               style={{
                 padding: '6px 14px',
                 borderRadius: 8,
-                border: `2px solid ${config.wasteFactor === w.value ? '#1E3A8A' : 'var(--border)'}`,
+                border: `2px solid ${config.wasteFactor === w.value ? 'var(--blue)' : 'var(--border)'}`,
                 background:
-                  config.wasteFactor === w.value ? 'rgba(30,58,138,0.1)' : 'var(--surface-1)',
-                color: config.wasteFactor === w.value ? '#1E3A8A' : 'var(--text-3)',
+                  config.wasteFactor === w.value ? 'var(--blue-bg)' : 'var(--surface)',
+                color: config.wasteFactor === w.value ? 'var(--blue)' : 'var(--muted)',
                 fontSize: 13,
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -398,11 +398,11 @@ export default function LayoutPage() {
             style={{
               marginTop: 16,
               padding: '10px 14px',
-              background: 'rgba(16,185,129,0.1)',
+              background: 'var(--green-bg)',
               border: '1px solid rgba(16,185,129,0.4)',
               borderRadius: 8,
               fontSize: 13,
-              color: '#10B981',
+              color: 'var(--green)',
               fontWeight: 600,
             }}
           >
@@ -414,11 +414,11 @@ export default function LayoutPage() {
             style={{
               marginTop: 16,
               padding: '10px 14px',
-              background: 'rgba(16,185,129,0.1)',
+              background: 'var(--green-bg)',
               border: '1px solid rgba(16,185,129,0.4)',
               borderRadius: 8,
               fontSize: 13,
-              color: '#10B981',
+              color: 'var(--green)',
               fontWeight: 600,
             }}
           >

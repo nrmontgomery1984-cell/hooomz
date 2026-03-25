@@ -51,11 +51,11 @@ function CheckboxFieldView({
         gap: 10,
         padding: '10px 12px',
         background: value
-          ? 'rgba(16,185,129,0.06)'
+          ? 'var(--green-bg)'
           : isLinked
-            ? 'rgba(239,68,68,0.04)'
-            : 'var(--surface-1)',
-        border: `1px solid ${value ? '#10B981' : isLinked ? 'rgba(239,68,68,0.2)' : 'var(--border)'}`,
+            ? 'var(--red-bg)'
+            : 'var(--surface)',
+        border: `1px solid ${value ? 'var(--green)' : isLinked ? 'rgba(239,68,68,0.2)' : 'var(--border)'}`,
         borderRadius: 8,
         cursor: 'pointer',
         textAlign: 'left',
@@ -65,8 +65,8 @@ function CheckboxFieldView({
         width: 22,
         height: 22,
         borderRadius: 6,
-        border: `2px solid ${value ? '#10B981' : 'var(--border)'}`,
-        background: value ? '#10B981' : 'transparent',
+        border: `2px solid ${value ? 'var(--green)' : 'var(--border)'}`,
+        background: value ? 'var(--green)' : 'transparent',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -74,24 +74,24 @@ function CheckboxFieldView({
       }}>
         {value && <Check size={14} style={{ color: '#fff' }} />}
       </div>
-      <span style={{ fontSize: 13, color: 'var(--text)', flex: 1, lineHeight: 1.4 }}>
+      <span style={{ fontSize: 13, color: 'var(--charcoal)', flex: 1, lineHeight: 1.4 }}>
         {field.label}
       </span>
       {isLinked && (
         <span style={{
           fontSize: 10,
           fontWeight: 600,
-          color: '#EF4444',
+          color: 'var(--red)',
           padding: '1px 6px',
           borderRadius: 4,
-          background: 'rgba(239,68,68,0.08)',
+          background: 'var(--red-bg)',
           whiteSpace: 'nowrap',
         }}>
           STOP
         </span>
       )}
       {field.required && !value && (
-        <span style={{ fontSize: 10, color: 'var(--text-3)' }}>Required</span>
+        <span style={{ fontSize: 10, color: 'var(--muted)' }}>Required</span>
       )}
     </button>
   );
@@ -108,9 +108,9 @@ function TextFieldView({
 }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-      <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-2)' }}>
+      <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--mid)' }}>
         {field.label}
-        {field.required && <span style={{ color: '#EF4444', marginLeft: 2 }}>*</span>}
+        {field.required && <span style={{ color: 'var(--red)', marginLeft: 2 }}>*</span>}
       </label>
       <textarea
         value={value}
@@ -123,8 +123,8 @@ function TextFieldView({
           fontSize: 13,
           borderRadius: 8,
           border: '1px solid var(--border)',
-          background: 'var(--surface-1)',
-          color: 'var(--text)',
+          background: 'var(--surface)',
+          color: 'var(--charcoal)',
           resize: 'vertical',
           outline: 'none',
           fontFamily: 'inherit',
@@ -150,9 +150,9 @@ function NumberFieldView({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-      <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-2)' }}>
+      <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--mid)' }}>
         {field.label}
-        {field.required && <span style={{ color: '#EF4444', marginLeft: 2 }}>*</span>}
+        {field.required && <span style={{ color: 'var(--red)', marginLeft: 2 }}>*</span>}
       </label>
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
         <input
@@ -164,15 +164,15 @@ function NumberFieldView({
             padding: '6px 10px',
             fontSize: 13,
             borderRadius: 8,
-            border: `1px solid ${outOfRange ? '#EF4444' : 'var(--border)'}`,
-            background: outOfRange ? 'rgba(239,68,68,0.04)' : 'var(--surface-1)',
-            color: 'var(--text)',
+            border: `1px solid ${outOfRange ? 'var(--red)' : 'var(--border)'}`,
+            background: outOfRange ? 'var(--red-bg)' : 'var(--surface)',
+            color: 'var(--charcoal)',
             outline: 'none',
           }}
         />
-        {field.unit && <span style={{ fontSize: 12, color: 'var(--text-3)' }}>{field.unit}</span>}
+        {field.unit && <span style={{ fontSize: 12, color: 'var(--muted)' }}>{field.unit}</span>}
         {outOfRange && (
-          <span style={{ fontSize: 11, color: '#EF4444', display: 'flex', alignItems: 'center', gap: 4 }}>
+          <span style={{ fontSize: 11, color: 'var(--red)', display: 'flex', alignItems: 'center', gap: 4 }}>
             <AlertTriangle size={12} /> Out of range
           </span>
         )}
@@ -196,18 +196,18 @@ function ChecklistSectionView({
 }) {
   return (
     <div style={{
-      background: 'var(--surface-1)',
+      background: 'var(--surface)',
       border: '1px solid var(--border)',
       borderRadius: 12,
       padding: 16,
     }}>
       <div style={{
-        fontFamily: 'var(--font-cond)',
+        fontFamily: 'var(--font-mono)',
         fontSize: 10,
         fontWeight: 700,
         letterSpacing: '0.12em',
         textTransform: 'uppercase',
-        color: 'var(--text-3)',
+        color: 'var(--muted)',
         marginBottom: 10,
       }}>
         {section.title}
@@ -254,7 +254,7 @@ function ChecklistSectionView({
                 padding: '10px 12px',
                 border: '1px dashed var(--border)',
                 borderRadius: 8,
-                color: 'var(--text-3)',
+                color: 'var(--muted)',
                 fontSize: 13,
               }}>
                 <Camera size={16} />
@@ -360,7 +360,7 @@ export default function ChecklistPage() {
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}>
         <div style={{ textAlign: 'center' }}>
           <div style={{ width: 32, height: 32, border: '2px solid var(--border)', borderTopColor: COLOR, borderRadius: '50%', animation: 'spin 0.7s linear infinite', margin: '0 auto 8px' }} />
-          <p style={{ fontSize: 11, color: 'var(--text-3)' }}>Loading...</p>
+          <p style={{ fontSize: 11, color: 'var(--muted)' }}>Loading...</p>
         </div>
       </div>
     );
@@ -369,7 +369,7 @@ export default function ChecklistPage() {
   if (!sop) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}>
-        <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-2)' }}>SOP not found</p>
+        <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--mid)' }}>SOP not found</p>
       </div>
     );
   }
@@ -386,7 +386,7 @@ export default function ChecklistPage() {
       <div style={{ minHeight: '100vh', paddingBottom: 96, background: 'var(--bg)' }}>
 
         {/* Header */}
-        <div style={{ background: 'var(--surface-1)', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
           <div className="max-w-lg md:max-w-full mx-auto px-4 md:px-6 py-3 md:py-4">
             <button
               onClick={() => router.push(`/standards/sops/${sopId}`)}
@@ -395,7 +395,7 @@ export default function ChecklistPage() {
                 alignItems: 'center',
                 gap: 6,
                 fontSize: 13,
-                color: 'var(--text-3)',
+                color: 'var(--muted)',
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
@@ -407,10 +407,10 @@ export default function ChecklistPage() {
               <span>Back to SOP</span>
             </button>
 
-            <h1 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)' }}>
+            <h1 style={{ fontSize: 18, fontWeight: 700, color: 'var(--charcoal)' }}>
               {sop.code} Checklist
             </h1>
-            <p style={{ fontSize: 13, color: 'var(--text-3)', marginTop: 2 }}>
+            <p style={{ fontSize: 13, color: 'var(--muted)', marginTop: 2 }}>
               {sop.title}
             </p>
 
@@ -431,7 +431,7 @@ export default function ChecklistPage() {
                   transition: 'width 200ms ease',
                 }} />
               </div>
-              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-2)' }}>
+              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--mid)' }}>
                 {completedCount}/{totalCheckboxes}
               </span>
             </div>
@@ -443,7 +443,7 @@ export default function ChecklistPage() {
               display: 'flex',
               gap: 16,
               fontSize: 12,
-              color: 'var(--text-3)',
+              color: 'var(--muted)',
               background: 'var(--surface-2)',
               borderRadius: 8,
               padding: '8px 12px',
@@ -472,7 +472,7 @@ export default function ChecklistPage() {
           bottom: 0,
           left: 0,
           right: 0,
-          background: 'var(--surface-1)',
+          background: 'var(--surface)',
           borderTop: '1px solid var(--border)',
           padding: '12px 16px',
           display: 'flex',
@@ -489,7 +489,7 @@ export default function ChecklistPage() {
               fontWeight: 600,
               borderRadius: 10,
               background: 'var(--surface-2)',
-              color: 'var(--text-2)',
+              color: 'var(--mid)',
               border: '1px solid var(--border)',
               cursor: saving ? 'not-allowed' : 'pointer',
               minHeight: 44,

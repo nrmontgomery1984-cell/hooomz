@@ -29,7 +29,7 @@ export function CatalogueNavBar({ selected, onChange, counts = {} }: Props) {
   return (
     <div
       style={{
-        background: 'var(--surface-1)',
+        background: 'var(--surface)',
         borderBottom: '1px solid var(--border)',
         flexShrink: 0,
       }}
@@ -110,10 +110,10 @@ function TabBtn({
       style={{
         fontFamily: 'var(--font-mono)',
         fontSize: sub ? '0.65rem' : '0.7rem',
-        color: active ? 'var(--text-1)' : 'var(--text-3)',
+        color: active ? 'var(--charcoal)' : 'var(--muted)',
         background: 'transparent',
         border: 'none',
-        borderBottom: active ? '2px solid var(--clay)' : '2px solid transparent',
+        borderBottom: active ? '2px solid var(--accent)' : '2px solid transparent',
         padding: sub ? '6px 12px' : '9px 14px',
         cursor: 'pointer',
         letterSpacing: '0.04em',

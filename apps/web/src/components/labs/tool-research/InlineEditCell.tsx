@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 
-const TEAL = '#2A9D8F';
+const TEAL = 'var(--accent)';
 
 interface InlineEditCellProps {
   value: string | number | null | undefined;
@@ -59,7 +59,7 @@ export function InlineEditCell({ value, onSave, type = 'text' }: InlineEditCellP
           borderRadius: 4,
           fontSize: 13,
           outline: 'none',
-          background: '#F0FDFA',
+          background: 'var(--accent-bg)',
         }}
       />
     );
@@ -82,7 +82,7 @@ export function InlineEditCell({ value, onSave, type = 'text' }: InlineEditCellP
         transition: 'background 0.15s',
       }}
       onMouseEnter={(e) => {
-        (e.currentTarget as HTMLElement).style.background = '#F0FDFA';
+        (e.currentTarget as HTMLElement).style.background = 'var(--accent-bg)';
       }}
       onMouseLeave={(e) => {
         (e.currentTarget as HTMLElement).style.background = 'transparent';

@@ -1,21 +1,22 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Providers } from './providers';
 import { BottomNav } from '@/components/navigation/BottomNav';
 import { Sidebar } from '@/components/navigation/Sidebar';
 import { QuickAddSheet } from '@/components/activity/QuickAddSheet';
-import { CrewGate } from '@/components/crew/CrewGate';
-
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { ServiceWorkerRegistration } from '@/components/ServiceWorkerRegistration';
 import { MobileModuleNav } from '@/components/navigation/MobileModuleNav';
 import './globals.css';
 
+export const viewport: Viewport = {
+  themeColor: '#6B6560',
+};
+
 export const metadata: Metadata = {
   title: 'Hooomz',
   description: 'Construction management for small contractors',
   manifest: '/manifest.json',
-  themeColor: '#A07355',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
@@ -40,24 +41,21 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&family=Josefin+Sans:wght@400;600;700&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Figtree:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
       </head>
-      <body style={{ backgroundColor: 'var(--color-bg)', fontFamily: 'var(--font-primary)' }}>
+      <body style={{ backgroundColor: 'var(--bg)', fontFamily: 'var(--font-body)' }}>
         <Providers>
           <ServiceWorkerRegistration />
           <ErrorBoundary>
-            <CrewGate>
-              <div className="flex min-h-screen">
-                <Sidebar />
-                <main className="flex-1 min-h-screen min-w-0" style={{ background: '#F0EDE8', fontFamily: "'Figtree', sans-serif" }}>
-                  <MobileModuleNav />
-                  <ProtectedRoute>{children}</ProtectedRoute>
-                </main>
-              </div>
-              <BottomNav />
-
-              <QuickAddSheet />
-            </CrewGate>
+            <div className="flex min-h-screen">
+              <Sidebar />
+              <main className="flex-1 min-h-screen min-w-0" style={{ background: 'var(--bg)', fontFamily: 'var(--font-body)' }}>
+                <MobileModuleNav />
+                <ProtectedRoute>{children}</ProtectedRoute>
+              </main>
+            </div>
+            <BottomNav />
+            <QuickAddSheet />
           </ErrorBoundary>
         </Providers>
       </body>

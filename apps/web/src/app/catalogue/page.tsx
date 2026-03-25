@@ -99,7 +99,7 @@ export default function CataloguePage() {
           gap: 10,
           padding: '8px 16px',
           borderBottom: '1px solid var(--border)',
-          background: 'var(--surface-1)',
+          background: 'var(--surface)',
           flexShrink: 0,
         }}
       >
@@ -117,7 +117,7 @@ export default function CataloguePage() {
             padding: '0 10px',
             fontFamily: 'var(--font-mono)',
             fontSize: '0.68rem',
-            color: 'var(--text-1)',
+            color: 'var(--charcoal)',
             background: 'var(--bg)',
             outline: 'none',
           }}
@@ -134,7 +134,7 @@ export default function CataloguePage() {
             border: `1px solid ${flaggedOnly ? FLAG_ACTIVE : 'var(--border)'}`,
             borderRadius: 'var(--radius-sm)',
             background: flaggedOnly ? 'rgba(200,160,0,0.06)' : 'transparent',
-            color: flaggedOnly ? FLAG_ACTIVE : 'var(--text-3)',
+            color: flaggedOnly ? FLAG_ACTIVE : 'var(--muted)',
             fontFamily: 'var(--font-mono)',
             fontSize: '0.65rem',
             cursor: 'pointer',
@@ -150,7 +150,7 @@ export default function CataloguePage() {
           style={{
             fontFamily: 'var(--font-mono)',
             fontSize: '0.65rem',
-            color: 'var(--text-3)',
+            color: 'var(--muted)',
           }}
         >
           {navFiltered.length} item{navFiltered.length !== 1 ? 's' : ''}
@@ -164,7 +164,7 @@ export default function CataloguePage() {
             style={{
               fontFamily: 'var(--font-mono)',
               fontSize: '0.7rem',
-              color: 'var(--text-3)',
+              color: 'var(--muted)',
             }}
           >
             Loading catalogue…

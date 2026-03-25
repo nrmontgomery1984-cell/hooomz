@@ -30,20 +30,20 @@ export function ProjectLabsData({ projectId }: ProjectLabsDataProps) {
     <>
       <div
         className="rounded-xl overflow-hidden mt-4"
-        style={{ background: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}
+        style={{ background: 'var(--surface)', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}
       >
         {/* Header */}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
           className="w-full px-4 py-3 flex items-center gap-2 min-h-[48px]"
         >
-          <FlaskConical size={16} style={{ color: '#0F766E' }} />
-          <span className="text-sm font-semibold flex-1 text-left" style={{ color: '#111827' }}>
+          <FlaskConical size={16} style={{ color: 'var(--accent)' }} />
+          <span className="text-sm font-semibold flex-1 text-left" style={{ color: 'var(--charcoal)' }}>
             Labs Data
           </span>
           <span
             className="text-xs font-medium px-1.5 py-0.5 rounded-full"
-            style={{ background: '#F0FDFA', color: '#0F766E' }}
+            style={{ background: 'var(--accent-bg)', color: 'var(--accent)' }}
           >
             {observations.length}
           </span>
@@ -52,7 +52,7 @@ export function ProjectLabsData({ projectId }: ProjectLabsDataProps) {
             strokeWidth={1.5}
             className="transition-transform duration-200"
             style={{
-              color: '#D1D5DB',
+              color: 'var(--border)',
               transform: isCollapsed ? 'rotate(0deg)' : 'rotate(180deg)',
             }}
           />

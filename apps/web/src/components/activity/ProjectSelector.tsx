@@ -25,12 +25,12 @@ export function ProjectSelector({ value, onChange }: ProjectSelectorProps) {
   if (isLoading) {
     return (
       <div className="mb-4">
-        <label className="block text-sm font-medium mb-1" style={{ color: 'var(--theme-secondary)' }}>
+        <label className="block text-sm font-medium mb-1" style={{ color: 'var(--mid)' }}>
           Project
         </label>
         <div
           className="h-11 rounded-xl animate-pulse"
-          style={{ backgroundColor: 'var(--theme-border)' }}
+          style={{ backgroundColor: 'var(--border)' }}
         />
       </div>
     );
@@ -39,10 +39,10 @@ export function ProjectSelector({ value, onChange }: ProjectSelectorProps) {
   if (projects.length === 0) {
     return (
       <div className="mb-4">
-        <label className="block text-sm font-medium mb-1" style={{ color: 'var(--theme-secondary)' }}>
+        <label className="block text-sm font-medium mb-1" style={{ color: 'var(--mid)' }}>
           Project
         </label>
-        <p className="text-sm" style={{ color: 'var(--theme-muted)' }}>
+        <p className="text-sm" style={{ color: 'var(--muted)' }}>
           No active projects. Create one first.
         </p>
       </div>
@@ -53,14 +53,14 @@ export function ProjectSelector({ value, onChange }: ProjectSelectorProps) {
   if (projects.length === 1) {
     return (
       <div className="mb-4">
-        <label className="block text-sm font-medium mb-1" style={{ color: 'var(--theme-secondary)' }}>
+        <label className="block text-sm font-medium mb-1" style={{ color: 'var(--mid)' }}>
           Project
         </label>
         <div
           className="inline-flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium"
           style={{
-            backgroundColor: 'var(--theme-accent-light, rgba(15,118,110,0.15))',
-            color: 'var(--theme-accent)',
+            backgroundColor: 'var(--accent-bg)',
+            color: 'var(--accent)',
           }}
         >
           <Check size={14} />
@@ -74,7 +74,7 @@ export function ProjectSelector({ value, onChange }: ProjectSelectorProps) {
   if (projects.length <= 3) {
     return (
       <div className="mb-4">
-        <label className="block text-sm font-medium mb-1" style={{ color: 'var(--theme-secondary)' }}>
+        <label className="block text-sm font-medium mb-1" style={{ color: 'var(--mid)' }}>
           Project
         </label>
         <div className="flex gap-2">
@@ -87,9 +87,9 @@ export function ProjectSelector({ value, onChange }: ProjectSelectorProps) {
                 onClick={() => onChange(project.id)}
                 className="flex-1 min-h-[44px] px-3 py-2 rounded-xl text-sm font-medium transition-colors border-2"
                 style={{
-                  borderColor: isSelected ? 'var(--theme-accent)' : 'var(--theme-border)',
-                  backgroundColor: isSelected ? 'var(--theme-accent-light, rgba(15,118,110,0.15))' : 'var(--theme-background)',
-                  color: isSelected ? 'var(--theme-accent)' : 'var(--theme-secondary)',
+                  borderColor: isSelected ? 'var(--accent)' : 'var(--border)',
+                  backgroundColor: isSelected ? 'var(--accent-bg)' : 'var(--bg)',
+                  color: isSelected ? 'var(--accent)' : 'var(--mid)',
                 }}
               >
                 {project.name}
@@ -104,7 +104,7 @@ export function ProjectSelector({ value, onChange }: ProjectSelectorProps) {
   // 4+ projects: dropdown
   return (
     <div className="mb-4">
-      <label className="block text-sm font-medium mb-1" style={{ color: 'var(--theme-secondary)' }}>
+      <label className="block text-sm font-medium mb-1" style={{ color: 'var(--mid)' }}>
         Project
       </label>
       <select
@@ -112,9 +112,9 @@ export function ProjectSelector({ value, onChange }: ProjectSelectorProps) {
         onChange={(e) => onChange(e.target.value)}
         className="w-full min-h-[44px] px-4 py-2 rounded-xl text-sm border-2 focus:outline-none focus:ring-2"
         style={{
-          borderColor: 'var(--theme-border)',
-          color: 'var(--theme-primary)',
-          backgroundColor: 'var(--theme-background)',
+          borderColor: 'var(--border)',
+          color: 'var(--charcoal)',
+          backgroundColor: 'var(--bg)',
         }}
       >
         <option value="">Select project...</option>

@@ -4,8 +4,8 @@ import { useState } from 'react';
 import type { ToolInventoryItem } from '@hooomz/shared-contracts';
 import { Modal } from '@/components/ui/Modal';
 
-const CORAL = '#E76F51';
-const TEAL = '#2A9D8F';
+const CORAL = '#E76F51'; /* tool-research category — no canonical equivalent */
+const TEAL = 'var(--accent)';
 
 interface RidgidRegistrationModalProps {
   isOpen: boolean;
@@ -36,8 +36,8 @@ export function RidgidRegistrationModal({ isOpen, onClose, item, onConfirm, isPe
             marginBottom: 16,
           }}
         >
-          <div style={{ fontWeight: 700, fontSize: 14, color: '#1a1a1a' }}>{item.item}</div>
-          <div style={{ fontSize: 12, color: '#666', marginTop: 2 }}>
+          <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--charcoal)' }}>{item.item}</div>
+          <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>
             RIDGID Lifetime Service Agreement
           </div>
         </div>
@@ -48,7 +48,7 @@ export function RidgidRegistrationModal({ isOpen, onClose, item, onConfirm, isPe
             background: '#FFF3E0',
             borderRadius: 6,
             fontSize: 12,
-            color: '#E65100',
+            color: 'var(--amber)',
             marginBottom: 16,
           }}
         >
@@ -57,7 +57,7 @@ export function RidgidRegistrationModal({ isOpen, onClose, item, onConfirm, isPe
         </div>
 
         <label style={{ display: 'block', marginBottom: 16 }}>
-          <span style={{ fontSize: 12, fontWeight: 600, color: '#555', display: 'block', marginBottom: 4 }}>
+          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--muted)', display: 'block', marginBottom: 4 }}>
             Registration Date
           </span>
           <input
@@ -67,7 +67,7 @@ export function RidgidRegistrationModal({ isOpen, onClose, item, onConfirm, isPe
             style={{
               width: '100%',
               padding: '8px 12px',
-              border: '1px solid #D1D5DB',
+              border: '1px solid var(--border)',
               borderRadius: 6,
               fontSize: 13,
               minHeight: 44,
@@ -81,9 +81,9 @@ export function RidgidRegistrationModal({ isOpen, onClose, item, onConfirm, isPe
             onClick={onClose}
             style={{
               padding: '8px 16px',
-              border: '1px solid #D1D5DB',
+              border: '1px solid var(--border)',
               borderRadius: 6,
-              background: 'white',
+              background: 'var(--surface)',
               fontSize: 13,
               cursor: 'pointer',
               minHeight: 44,

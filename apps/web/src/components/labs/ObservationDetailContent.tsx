@@ -36,20 +36,20 @@ export function ObservationDetailContent({ observation }: { observation: FieldOb
       <div className="flex items-center gap-2 flex-wrap">
         <span
           className="px-2 py-0.5 rounded text-xs font-medium"
-          style={{ background: '#F0FDFA', color: '#0F766E' }}
+          style={{ background: 'var(--green-bg)', color: 'var(--accent)' }}
         >
           {typeLabel}
         </span>
         <span
           className="px-2 py-0.5 rounded text-xs font-medium"
-          style={{ background: '#F3F4F6', color: '#6B7280' }}
+          style={{ background: 'var(--surface-2)', color: 'var(--muted)' }}
         >
           {captureLabel}
         </span>
         {observation.trade && (
           <span
             className="px-2 py-0.5 rounded text-xs font-medium"
-            style={{ background: '#F3F4F6', color: '#374151' }}
+            style={{ background: 'var(--surface-2)', color: 'var(--mid)' }}
           >
             {observation.trade}
           </span>
@@ -59,8 +59,8 @@ export function ObservationDetailContent({ observation }: { observation: FieldOb
       {/* Notes */}
       {observation.notes && (
         <div>
-          <p className="text-[11px] font-medium mb-1" style={{ color: '#9CA3AF' }}>Notes</p>
-          <p className="text-sm" style={{ color: '#111827' }}>{observation.notes}</p>
+          <p className="text-[11px] font-medium mb-1" style={{ color: 'var(--muted)' }}>Notes</p>
+          <p className="text-sm" style={{ color: 'var(--charcoal)' }}>{observation.notes}</p>
         </div>
       )}
 
@@ -68,14 +68,14 @@ export function ObservationDetailContent({ observation }: { observation: FieldOb
       <div className="flex items-center gap-6">
         {observation.quality && (
           <div>
-            <p className="text-[11px] font-medium mb-1" style={{ color: '#9CA3AF' }}>Quality</p>
+            <p className="text-[11px] font-medium mb-1" style={{ color: 'var(--muted)' }}>Quality</p>
             <StarRating value={observation.quality} onChange={() => {}} size={16} />
           </div>
         )}
         {observation.difficulty && (
           <div>
-            <p className="text-[11px] font-medium mb-1" style={{ color: '#9CA3AF' }}>Difficulty</p>
-            <p className="text-sm font-medium" style={{ color: '#374151' }}>{observation.difficulty}/5</p>
+            <p className="text-[11px] font-medium mb-1" style={{ color: 'var(--muted)' }}>Difficulty</p>
+            <p className="text-sm font-medium" style={{ color: 'var(--mid)' }}>{observation.difficulty}/5</p>
           </div>
         )}
       </div>
@@ -83,31 +83,31 @@ export function ObservationDetailContent({ observation }: { observation: FieldOb
       {/* Context */}
       <div
         className="rounded-lg p-3"
-        style={{ background: '#F9FAFB', border: '1px solid #F3F4F6' }}
+        style={{ background: 'var(--surface)', border: '1px solid var(--surface-2)' }}
       >
         <div className="grid grid-cols-2 gap-2 text-xs">
           {observation.locationId && (
             <div>
-              <span style={{ color: '#9CA3AF' }}>Location: </span>
-              <span style={{ color: '#374151' }}>{observation.locationId}</span>
+              <span style={{ color: 'var(--muted)' }}>Location: </span>
+              <span style={{ color: 'var(--mid)' }}>{observation.locationId}</span>
             </div>
           )}
           {observation.durationMinutes && (
             <div>
-              <span style={{ color: '#9CA3AF' }}>Duration: </span>
-              <span style={{ color: '#374151' }}>{observation.durationMinutes}min</span>
+              <span style={{ color: 'var(--muted)' }}>Duration: </span>
+              <span style={{ color: 'var(--mid)' }}>{observation.durationMinutes}min</span>
             </div>
           )}
           <div>
-            <span style={{ color: '#9CA3AF' }}>Captured: </span>
-            <span style={{ color: '#374151' }}>
+            <span style={{ color: 'var(--muted)' }}>Captured: </span>
+            <span style={{ color: 'var(--mid)' }}>
               {new Date(observation.metadata.createdAt).toLocaleString()}
             </span>
           </div>
           {observation.deviated && (
             <div className="col-span-2">
-              <span style={{ color: '#F59E0B' }}>Deviated: </span>
-              <span style={{ color: '#374151' }}>{observation.deviationReason || 'Yes'}</span>
+              <span style={{ color: 'var(--yellow)' }}>Deviated: </span>
+              <span style={{ color: 'var(--mid)' }}>{observation.deviationReason || 'Yes'}</span>
             </div>
           )}
         </div>

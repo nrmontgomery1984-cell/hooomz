@@ -80,10 +80,10 @@ export function BatchConfirmModal({
     <Modal isOpen={isOpen} onClose={onClose} title="Pending Observations" size="lg">
       {/* Progress */}
       <div className="flex items-center justify-between mb-4">
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-[var(--mid)]">
           {processedCount} of {totalCount} processed
         </p>
-        <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+        <div className="w-32 h-2 bg-[var(--surface-2)] rounded-full overflow-hidden">
           <div
             className="h-full rounded-full transition-all"
             style={{
@@ -108,12 +108,12 @@ export function BatchConfirmModal({
         </div>
       ) : (
         <div className="text-center py-6">
-          <p className="text-sm text-gray-500">All items processed</p>
+          <p className="text-sm text-[var(--muted)]">All items processed</p>
         </div>
       )}
 
       {/* Actions */}
-      <div className="flex gap-2 mt-4 pt-4 border-t border-gray-200">
+      <div className="flex gap-2 mt-4 pt-4 border-t border-[var(--border)]">
         {remaining.length > 0 && (
           <button
             onClick={handleConfirmAll}
@@ -126,7 +126,7 @@ export function BatchConfirmModal({
         )}
         <button
           onClick={onClose}
-          className="px-4 py-3 text-sm font-medium text-gray-600 border border-gray-200 rounded-xl hover:bg-gray-50"
+          className="px-4 py-3 text-sm font-medium text-[var(--mid)] border border-[var(--border)] rounded-xl hover:bg-[var(--surface)]"
           style={{ minHeight: '48px' }}
         >
           {remaining.length === 0 ? 'Done' : 'Close'}

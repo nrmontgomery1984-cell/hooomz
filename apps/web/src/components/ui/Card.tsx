@@ -43,7 +43,7 @@ export function Card({
   className = '',
   onClick,
 }: CardProps) {
-  const baseStyles = 'bg-white rounded-lg border border-gray-200';
+  const baseStyles = 'bg-[var(--surface)] rounded-lg border border-[var(--border)]';
 
   const interactiveStyles = interactive
     ? 'cursor-pointer transition-shadow hover:shadow-lg active:shadow-md'

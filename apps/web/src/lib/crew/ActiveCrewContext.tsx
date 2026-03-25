@@ -13,6 +13,7 @@ import { createContext, useContext, useState, useEffect, useCallback } from 'rea
 import type { ReactNode } from 'react';
 import { ActiveCrewSessionRepository } from '../repositories/activeCrewSession.repository';
 import { initializeStorage } from '../storage/initialize';
+import { getSession } from '../supabase/client';
 
 interface ActiveCrewContextValue {
   crewMemberId: string | null;
@@ -53,6 +54,25 @@ export function ActiveCrewProvider({ children }: { children: ReactNode }) {
           setCrewMemberName(activeSession.crewMemberName);
           setProjectId(activeSession.projectId);
           setHasActiveSession(true);
+        } else if (mounted) {
+          // Auto-populate from Supabase auth session if no crew session exists
+          try {
+            const { data: { session } } = await getSession();
+            if (session?.user && mounted) {
+              const userId = session.user.id;
+              // Find crew member by supabaseUserId in IndexedDB
+              const allCrew = await storage.getAll<{ id: string; name: string; supabaseUserId?: string }>('crewMembers');
+              const match = allCrew.find(c => c.supabaseUserId === userId);
+              if (match && mounted) {
+                await sessionRepo.switchSession(match.id, match.name, '');
+                setCrewMemberId(match.id);
+                setCrewMemberName(match.name);
+                setHasActiveSession(true);
+              }
+            }
+          } catch {
+            // Auth not available — continue without crew session
+          }
         }
       } catch (err) {
         console.error('Failed to load crew session:', err);

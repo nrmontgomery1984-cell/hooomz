@@ -23,7 +23,7 @@ interface TimelinePanelProps {
 const STATUS_DOT_COLORS: Record<string, string> = {
   complete:    'var(--green)',
   in_progress: 'var(--blue)',
-  not_started: 'var(--text-3)',
+  not_started: 'var(--muted)',
   blocked:     'var(--red)',
 };
 
@@ -47,7 +47,7 @@ export function TimelinePanel({
     return (
       <PanelSection label="Timeline">
         <div style={{ padding: '6px 12px' }}>
-          <span style={{ fontSize: 11, color: 'var(--text-3)' }}>
+          <span style={{ fontSize: 11, color: 'var(--muted)' }}>
             Add start/end dates and task due dates to see the timeline.
           </span>
         </div>
@@ -77,7 +77,7 @@ export function TimelinePanel({
     const ms = new Date(m.dueDate).getTime() - rangeStart.getTime();
     const pct = totalMs > 0 ? Math.max(0, Math.min(100, (ms / totalMs) * 100)) : 50;
     const overdue = m.status !== 'complete' && isOverdueDate(m.dueDate);
-    const dotColor = overdue ? 'var(--red)' : (STATUS_DOT_COLORS[m.status] || 'var(--text-3)');
+    const dotColor = overdue ? 'var(--red)' : (STATUS_DOT_COLORS[m.status] || 'var(--muted)');
     return { ...m, pct, dotColor };
   });
 
@@ -91,10 +91,10 @@ export function TimelinePanel({
       <div style={{ padding: '6px 12px 8px' }}>
         {/* Date labels */}
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-          <span style={{ fontSize: 10, color: 'var(--text-2)' }}>
+          <span style={{ fontSize: 10, color: 'var(--mid)' }}>
             {formatShortDate(rangeStart.toISOString())}
           </span>
-          <span style={{ fontSize: 10, color: 'var(--text-2)' }}>
+          <span style={{ fontSize: 10, color: 'var(--mid)' }}>
             {formatShortDate(rangeEnd.toISOString())}
           </span>
         </div>
@@ -149,10 +149,10 @@ export function TimelinePanel({
                   left: '50%',
                   transform: 'translateX(-50%)',
                   background: 'var(--blue)',
-                  color: 'var(--surface-1)',
+                  color: 'var(--surface)',
                   fontSize: 7,
                   fontWeight: 700,
-                  fontFamily: 'var(--font-cond)',
+                  fontFamily: 'var(--font-mono)',
                   letterSpacing: '0.08em',
                   padding: '1px 3px',
                   borderRadius: 2,
@@ -176,7 +176,7 @@ export function TimelinePanel({
                 height: 9,
                 borderRadius: '50%',
                 background: m.dotColor,
-                border: '2px solid var(--surface-1)',
+                border: '2px solid var(--surface)',
                 transform: 'translate(-50%, -50%)',
               }}
               title={`${m.name} — ${formatShortDate(m.dueDate)}`}
@@ -189,10 +189,10 @@ export function TimelinePanel({
           {[
             { label: 'Done', color: 'var(--green)' },
             { label: 'Active', color: 'var(--blue)' },
-            { label: 'Upcoming', color: 'var(--text-3)' },
+            { label: 'Upcoming', color: 'var(--muted)' },
             { label: 'Overdue', color: 'var(--red)' },
           ].map(({ label, color }) => (
-            <span key={label} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 9, color: 'var(--text-2)' }}>
+            <span key={label} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 9, color: 'var(--mid)' }}>
               <span style={{ width: 5, height: 5, borderRadius: '50%', background: color, flexShrink: 0 }} />
               {label}
             </span>
@@ -201,8 +201,8 @@ export function TimelinePanel({
 
         {/* Next task */}
         {nextTask && (
-          <p style={{ fontSize: 11, color: 'var(--text-2)' }}>
-            <span style={{ color: 'var(--text-3)' }}>Next:</span>{' '}
+          <p style={{ fontSize: 11, color: 'var(--mid)' }}>
+            <span style={{ color: 'var(--muted)' }}>Next:</span>{' '}
             {nextTask.name} — {formatShortDate(nextTask.dueDate)}
           </p>
         )}

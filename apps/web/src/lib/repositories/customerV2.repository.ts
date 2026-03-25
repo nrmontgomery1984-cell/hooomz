@@ -27,6 +27,7 @@ export class CustomerV2Repository {
     const now = new Date().toISOString();
     const record: CustomerRecord = {
       ...data,
+      household_members: data.household_members ?? [],
       id: this.generateId(),
       createdAt: now,
       updatedAt: now,

@@ -74,44 +74,64 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          {/* View Mode */}
+          {/* View Mode — DEV ONLY */}
+          {process.env.NODE_ENV === 'development' && (
           <div style={{ marginTop: 16 }}>
             <SectionHeader title="View Mode" />
-            <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
-              {VIEW_MODES.map((mode, i) => (
-                <button
-                  key={mode}
-                  onClick={() => setViewMode(mode)}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 12,
-                    width: '100%', padding: '12px 16px',
-                    background: viewMode === mode ? `${ADMIN_COLOR}10` : 'none',
-                    border: 'none', cursor: 'pointer',
-                    borderBottom: i < VIEW_MODES.length - 1 ? '1px solid var(--border)' : 'none',
-                    minHeight: 44, fontFamily: 'var(--font-mono)',
-                  }}
-                >
-                  <Monitor size={16} style={{ color: viewMode === mode ? ADMIN_COLOR : 'var(--muted)' }} />
-                  <span style={{
-                    fontSize: 13, fontWeight: viewMode === mode ? 600 : 500,
-                    color: viewMode === mode ? 'var(--charcoal)' : 'var(--mid)',
-                    flex: 1, textAlign: 'left',
-                  }}>
-                    {VIEW_MODE_LABELS[mode]}
-                  </span>
-                  {viewMode === mode && (
-                    <div style={{
-                      width: 8, height: 8, borderRadius: '50%',
-                      background: ADMIN_COLOR,
-                    }} />
-                  )}
-                </button>
-              ))}
+            <div style={{
+              border: '2px solid var(--amber, #D97706)',
+              background: 'rgba(217,119,6,0.04)',
+              padding: 0,
+              overflow: 'hidden',
+            }}>
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                padding: '8px 16px',
+                background: 'rgba(217,119,6,0.1)',
+                borderBottom: '1px solid rgba(217,119,6,0.2)',
+              }}>
+                <span style={{
+                  fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700,
+                  letterSpacing: '0.1em', textTransform: 'uppercase',
+                  color: 'var(--amber, #D97706)',
+                }}>
+                  ⚠ DEV TOOL — Not visible in production builds
+                </span>
+              </div>
+              <div style={{ background: 'var(--surface)' }}>
+                {VIEW_MODES.map((mode, i) => (
+                  <button
+                    key={mode}
+                    onClick={() => setViewMode(mode)}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 12,
+                      width: '100%', padding: '12px 16px',
+                      background: viewMode === mode ? `${ADMIN_COLOR}10` : 'none',
+                      border: 'none', cursor: 'pointer',
+                      borderBottom: i < VIEW_MODES.length - 1 ? '1px solid var(--border)' : 'none',
+                      minHeight: 44, fontFamily: 'var(--font-mono)',
+                    }}
+                  >
+                    <Monitor size={16} style={{ color: viewMode === mode ? ADMIN_COLOR : 'var(--muted)' }} />
+                    <span style={{
+                      fontSize: 13, fontWeight: viewMode === mode ? 600 : 500,
+                      color: viewMode === mode ? 'var(--charcoal)' : 'var(--mid)',
+                      flex: 1, textAlign: 'left',
+                    }}>
+                      {VIEW_MODE_LABELS[mode]}
+                    </span>
+                    {viewMode === mode && (
+                      <div style={{
+                        width: 8, height: 8, borderRadius: '50%',
+                        background: ADMIN_COLOR,
+                      }} />
+                    )}
+                  </button>
+                ))}
+              </div>
             </div>
-            <p style={{ fontSize: 10, color: 'var(--muted)', marginTop: 6, padding: '0 4px' }}>
-              View mode controls which sections and features are visible. This is a development tool — not production auth.
-            </p>
           </div>
+          )}
 
           {/* Skill Rates & Margins */}
           <SkillRateSection />

@@ -23,11 +23,6 @@ function phaseDotStyle(project: Project, phase: ScriptPhase): { background: stri
   return { background: colors.linenDark, borderColor: colors.border, color: colors.lightGrey };
 }
 
-const TRADE_COLORS: Record<string, string> = {
-  FL: '#4A7FA5',
-  PT: '#7C3AED',
-  TR: '#D97706',
-};
 
 // ============================================================================
 // SCRIPT DASHBOARD PAGE
@@ -113,8 +108,8 @@ export default function ScriptDashboardPage() {
           <span style={{ fontFamily: MONO, fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: colors.midGrey, display: 'block', marginBottom: 14 }}>
             Alerts
           </span>
-          <AlertItem color={colors.amber} borderColor={colors.amberDim} text="Bourque — materials not confirmed" />
-          <AlertItem color={colors.blue} borderColor={colors.blueBorder} text="Arsenault — 2 days to punch" />
+          <AlertItem color={colors.amber} text="Bourque — materials not confirmed" />
+          <AlertItem color={colors.blue} text="Arsenault — 2 days to punch" />
         </div>
       </div>
     </div>
@@ -198,7 +193,7 @@ function JobRow({ project, isLast }: { project: Project; isLast: boolean }) {
 // ALERT ITEM
 // ============================================================================
 
-function AlertItem({ color, borderColor, text }: { color: string; borderColor: string; text: string }) {
+function AlertItem({ color, text }: { color: string; text: string }) {
   return (
     <div
       style={{

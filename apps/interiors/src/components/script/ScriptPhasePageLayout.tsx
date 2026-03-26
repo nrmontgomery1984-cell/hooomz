@@ -147,8 +147,8 @@ function ensureShimmerCSS() {
 export default function ScriptPhasePageLayout({
   phase,
   phaseLabel,
-  phaseLetter,
-  phaseDescription,
+  phaseLetter: _phaseLetter,
+  phaseDescription: _phaseDescription,
 }: ScriptPhasePageLayoutProps) {
   const activeProjects = MOCK_PROJECTS.filter((p) => p.phases[phase].status === 'active');
   const [selectedId, setSelectedId] = useState<string | null>(null);

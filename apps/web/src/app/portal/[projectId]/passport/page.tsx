@@ -13,12 +13,14 @@ import type { PassportJobData } from '@/components/passport';
 import { useLocalProject } from '@/lib/hooks/useLocalData';
 import { useServicesContext } from '@/lib/services/ServicesContext';
 import { useQuery } from '@tanstack/react-query';
+import { useCustomer } from '@/lib/hooks/useCustomersV2';
 
 export default function PortalPassportPage() {
   const params = useParams();
   const projectId = params.projectId as string;
   const { data: project, isLoading } = useLocalProject(projectId);
   const { services } = useServicesContext();
+  const { data: customer } = useCustomer(project?.customerId);
 
   const { data: lineItems = [] } = useQuery({
     queryKey: ['passport', 'portal', 'lineItems', projectId],
@@ -68,18 +70,22 @@ export default function PortalPassportPage() {
         trade: trade.charAt(0).toUpperCase() + trade.slice(1),
         description: descs.slice(0, 3).join('. ') + '.',
       })),
-      crew: [{ firstName: 'Nathan', role: 'Lead Installer' }],
+      crew: [{ firstName: 'Hooomz Interiors', role: '' }],
     };
+
+    const customerName = customer
+      ? `${customer.firstName} ${customer.lastName}`.trim()
+      : 'Homeowner';
 
     return {
       address,
       city,
-      homeownerName: 'Homeowner',
+      homeownerName: customerName,
       jobs: [job],
       firstJobDate: project.metadata?.createdAt ? new Date(project.metadata.createdAt).toLocaleDateString('en-CA') : undefined,
       lastUpdated: new Date().toLocaleDateString('en-CA'),
     };
-  }, [project, lineItems, projectId]);
+  }, [project, lineItems, projectId, customer]);
 
   if (isLoading) {
     return (
@@ -89,7 +95,7 @@ export default function PortalPassportPage() {
     );
   }
 
-  if (!passportData) {
+  if (!passportData || !project?.passportPublished) {
     return (
       <div className="min-h-screen flex items-center justify-center flex-col gap-3" style={{ background: 'var(--bg)' }}>
         <p className="text-sm font-medium" style={{ color: 'var(--mid)' }}>Passport not available</p>

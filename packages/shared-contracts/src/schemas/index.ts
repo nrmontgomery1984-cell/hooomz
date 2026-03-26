@@ -78,6 +78,9 @@ export const ProjectSchema = z.object({
   callbackReportedAt: z.string().nullable().optional(),
   observationModeOverride: z.enum(['minimal', 'standard', 'detailed']).nullable().optional(),
   activeExperimentIds: z.array(z.string()).optional(),
+  // Passport (Turnover deliverable)
+  passportPublished: z.boolean().optional(),
+  passportPublishedAt: z.string().optional(),
 });
 
 // Customer Type Schema

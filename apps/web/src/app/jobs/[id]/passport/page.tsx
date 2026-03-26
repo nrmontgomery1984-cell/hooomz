@@ -1,9 +1,8 @@
 'use client';
 
 /**
- * Operator Passport Preview — /production/jobs/[id]/passport
- * Shows the Property Passport for this job's property.
- * Operator can review before publishing to the homeowner portal.
+ * Owner Passport View — /jobs/[id]/passport
+ * Same as operator view but in owner chrome. Can publish.
  */
 
 import { useMemo, useState } from 'react';
@@ -18,17 +17,16 @@ import { useToast } from '@/components/ui/Toast';
 import { useActiveCrewMembers } from '@/lib/hooks/useCrewData';
 import { useCustomer } from '@/lib/hooks/useCustomersV2';
 
-export default function OperatorPassportPage() {
+export default function OwnerPassportPage() {
   const params = useParams();
   const jobId = params.id as string;
-  const { data: project, isLoading: projectLoading } = useLocalProject(jobId);
+  const { data: project, isLoading } = useLocalProject(jobId);
   const { services } = useServicesContext();
   const { showToast } = useToast();
   const [publishing, setPublishing] = useState(false);
   const { data: crewMembers = [] } = useActiveCrewMembers();
   const { data: customer } = useCustomer(project?.customerId);
 
-  // Load line items for material/trade data
   const { data: lineItems = [] } = useQuery({
     queryKey: ['passport', 'lineItems', jobId],
     queryFn: async () => {
@@ -38,7 +36,6 @@ export default function OperatorPassportPage() {
     enabled: !!services && !!jobId,
   });
 
-  // Build passport data from project + line items
   const passportData = useMemo(() => {
     if (!project) return null;
 
@@ -46,16 +43,14 @@ export default function OperatorPassportPage() {
     const address = addr?.street || project.name || jobId;
     const city = [addr?.city, addr?.province].filter(Boolean).join(', ') || 'NB';
 
-    // Group line items by trade for materials and work performed
     const materialMap = new Map<string, { name: string; spec: string; room: string }>();
     const tradeMap = new Map<string, string[]>();
 
     for (const li of lineItems) {
       const item = li as { description: string; category: string; quantity: number; unit: string; isLabor: boolean; workCategoryCode?: string; locationLabel?: string };
       if (!item.isLabor) {
-        const key = item.description;
-        if (!materialMap.has(key)) {
-          materialMap.set(key, {
+        if (!materialMap.has(item.description)) {
+          materialMap.set(item.description, {
             name: item.description,
             spec: `${item.quantity} ${item.unit}`,
             room: item.locationLabel || 'General',
@@ -119,7 +114,7 @@ export default function OperatorPassportPage() {
 
   const isPublished = project?.passportPublished === true;
 
-  if (projectLoading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg)' }}>
         <p className="text-xs" style={{ color: 'var(--muted)' }}>Loading passport...</p>

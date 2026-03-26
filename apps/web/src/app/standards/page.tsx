@@ -195,7 +195,7 @@ export default function StandardsDashboard() {
           <div className="mt-5" style={{ display: 'grid', gap: 16 }}>
             <div style={{ display: 'grid', gap: 16 }} className="md:grid-cols-[1fr_1fr]">
 
-              {/* Recent SOPs */}
+              {/* SOPs — dense list */}
               <div>
                 <SectionHeader title="SOPs" />
                 <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
@@ -208,31 +208,31 @@ export default function StandardsDashboard() {
                     recentSops.map((sop, i) => {
                       const statusStyle = SOP_STATUS_STYLES[sop.status] ?? SOP_STATUS_STYLES.draft;
                       const tradeStyle = getTradeStyle(sop.trade);
+                      const meta = sop as StandardSOP & { metadata?: { updatedAt?: string; createdAt?: string } };
+                      const updatedAt = meta.metadata?.updatedAt || meta.metadata?.createdAt;
                       return (
                         <button
                           key={sop.id}
                           onClick={() => router.push(`/standards/sops/${sop.id}`)}
                           style={{
-                            width: '100%', textAlign: 'left', padding: '10px 12px',
-                            display: 'flex', alignItems: 'center', gap: 10, minHeight: 44,
+                            width: '100%', textAlign: 'left', padding: '6px 12px',
+                            display: 'flex', alignItems: 'center', gap: 8, minHeight: 40,
                             background: 'none', border: 'none',
                             borderBottom: i < recentSops.length - 1 ? '1px solid var(--border)' : 'none',
                             cursor: 'pointer',
                           }}
                         >
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600, color: COLOR, flexShrink: 0 }}>
-                                {sop.code}
-                              </span>
-                              <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--charcoal)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                {sop.title}
-                              </span>
-                            </div>
-                            <span style={{ marginTop: 2, fontSize: 10, fontWeight: 600, color: tradeStyle.text, background: tradeStyle.bg, padding: '1px 5px', borderRadius: 3, fontFamily: 'var(--font-mono)' }}>
-                              {sop.trade}
+                          <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--charcoal)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {sop.title}
+                          </span>
+                          <span style={{ fontSize: 9, fontWeight: 600, color: tradeStyle.text, background: tradeStyle.bg, padding: '1px 5px', borderRadius: 3, fontFamily: 'var(--font-mono)', flexShrink: 0 }}>
+                            {sop.trade}
+                          </span>
+                          {updatedAt && (
+                            <span style={{ fontSize: 9, color: 'var(--muted)', fontFamily: 'var(--font-mono)', flexShrink: 0, width: 52, textAlign: 'right' }}>
+                              {new Date(updatedAt).toLocaleDateString('en-CA', { month: 'short', day: 'numeric' })}
                             </span>
-                          </div>
+                          )}
                           <span style={{
                             fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 700,
                             letterSpacing: '0.06em', textTransform: 'uppercase',
@@ -260,7 +260,7 @@ export default function StandardsDashboard() {
                 </div>
               </div>
 
-              {/* Training Guides */}
+              {/* Training Guides — dense list */}
               <div>
                 <SectionHeader title="Training Guides" />
                 <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
@@ -270,14 +270,47 @@ export default function StandardsDashboard() {
                       <p style={{ fontSize: 12, color: 'var(--muted)' }}>No training guides loaded</p>
                     </div>
                   ) : (
-                    trainingGuides.map((tg, i) => (
-                      <TrainingGuideRow
-                        key={tg.id}
-                        guide={tg}
-                        isLast={i === trainingGuides.length - 1}
-                        onClick={() => router.push(`/standards/training/${tg.id}`)}
-                      />
-                    ))
+                    trainingGuides.map((tg, i) => {
+                      const trade = TRADE_STYLES[tg.trade] ?? TRADE_STYLES.default;
+                      const meta = tg as TrainingGuide & { metadata?: { updatedAt?: string; createdAt?: string } };
+                      const updatedAt = meta.metadata?.updatedAt || meta.metadata?.createdAt;
+                      return (
+                        <button
+                          key={tg.id}
+                          onClick={() => router.push(`/standards/training/${tg.id}`)}
+                          style={{
+                            width: '100%', textAlign: 'left', padding: '6px 12px',
+                            display: 'flex', alignItems: 'center', gap: 8, minHeight: 40,
+                            background: 'none', border: 'none',
+                            borderBottom: i < trainingGuides.length - 1 ? '1px solid var(--border)' : 'none',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--charcoal)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {tg.title}
+                          </span>
+                          <span style={{ fontSize: 9, fontWeight: 600, color: trade.text, background: trade.bg, padding: '1px 5px', borderRadius: 3, fontFamily: 'var(--font-mono)', flexShrink: 0 }}>
+                            {tg.trade}
+                          </span>
+                          {updatedAt && (
+                            <span style={{ fontSize: 9, color: 'var(--muted)', fontFamily: 'var(--font-mono)', flexShrink: 0, width: 52, textAlign: 'right' }}>
+                              {new Date(updatedAt).toLocaleDateString('en-CA', { month: 'short', day: 'numeric' })}
+                            </span>
+                          )}
+                          <span style={{
+                            fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 700,
+                            letterSpacing: '0.06em', textTransform: 'uppercase',
+                            padding: '1px 5px', borderRadius: 2,
+                            background: tg.status === 'active' ? 'var(--green-dim)' : 'var(--surface-3)',
+                            color: tg.status === 'active' ? 'var(--green)' : 'var(--muted)',
+                            flexShrink: 0,
+                          }}>
+                            {tg.status}
+                          </span>
+                          <ChevronRight size={11} style={{ color: 'var(--border-strong)', flexShrink: 0 }} />
+                        </button>
+                      );
+                    })
                   )}
                   <Link
                     href="/standards/training"
@@ -398,41 +431,3 @@ function StatCard({ icon, label, value, color, href }: {
   );
 }
 
-function TrainingGuideRow({ guide, isLast, onClick }: { guide: TrainingGuide; isLast: boolean; onClick: () => void }) {
-  const trade = TRADE_STYLES[guide.trade] ?? TRADE_STYLES.default;
-  const activeModules = guide.modules.length;
-  const sopCount = guide.modules.reduce((acc, m) => acc + (m.sopCodes?.length ?? 0), 0);
-
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        width: '100%', textAlign: 'left', padding: '10px 12px',
-        display: 'flex', alignItems: 'center', gap: 10, minHeight: 44,
-        background: 'none', border: 'none',
-        borderBottom: isLast ? 'none' : '1px solid var(--border)',
-        cursor: 'pointer',
-      }}
-    >
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600, color: COLOR, flexShrink: 0 }}>
-            {guide.code}
-          </span>
-          <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--charcoal)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {guide.title}
-          </span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
-          <span style={{ fontSize: 10, fontWeight: 600, color: trade.text, background: trade.bg, padding: '1px 5px', borderRadius: 3 }}>
-            {guide.trade}
-          </span>
-          <span style={{ fontSize: 10, color: 'var(--muted)' }}>
-            {activeModules} modules · {sopCount} SOPs
-          </span>
-        </div>
-      </div>
-      <ChevronRight size={11} style={{ color: 'var(--border-strong)', flexShrink: 0 }} />
-    </button>
-  );
-}

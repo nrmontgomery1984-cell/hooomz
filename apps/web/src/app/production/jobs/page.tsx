@@ -8,11 +8,11 @@
  * Search / trade / health / progress are local state (transient).
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { PageErrorBoundary } from '@/components/ui/PageErrorBoundary';
-import { ArrowLeft, ChevronRight, FolderOpen, Search, X } from 'lucide-react';
+import { ArrowLeft, ChevronDown, ChevronRight, FolderOpen, Search, X } from 'lucide-react';
 import { SECTION_COLORS } from '@/lib/viewmode';
 import { useDashboardData } from '@/lib/hooks/useDashboardData';
 import { useServicesContext } from '@/lib/services/ServicesContext';
@@ -103,6 +103,17 @@ export default function ProductionJobsPage() {
   const [healthFilter, setHealthFilter]     = useState<HealthFilter>('all');
   const [progressFilter, setProgressFilter] = useState<ProgressFilter>('all');
   const [tradeFilter, setTradeFilter]       = useState<TradeFilter>('all');
+  const [expandedIds, setExpandedIds]       = useState<Set<string>>(new Set());
+
+  const toggleExpanded = useCallback((id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
 
   // Three-Dot weighted health scores
   const projectIds = dashboard.activeProjects.map((p) => p.id);
@@ -300,46 +311,83 @@ export default function ProductionJobsPage() {
                 const healthColor = threeDotHex(getHealthScore(project.id, project.healthScore));
                 const pct = project.taskCount > 0 ? Math.round((project.completedCount / project.taskCount) * 100) : 0;
                 const trades = projectTradesMap.get(project.id) ?? [];
+                const isExpanded = expandedIds.has(project.id);
 
                 return (
-                  <button
+                  <div
                     key={project.id}
-                    onClick={() => router.push(`/projects/${project.id}`)}
-                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', borderRadius: 'var(--radius)', background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-card)', cursor: 'pointer', width: '100%', textAlign: 'left' }}
+                    style={{
+                      borderRadius: 'var(--radius)', background: 'var(--surface)',
+                      border: '1px solid var(--border)', boxShadow: 'var(--shadow-card)',
+                      overflow: 'hidden', cursor: 'pointer', width: '100%', textAlign: 'left',
+                    }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flex: 1 }}>
-                      <div style={{ width: 8, height: 8, borderRadius: '50%', flexShrink: 0, background: healthColor }} />
-                      <div style={{ minWidth: 0, flex: 1 }}>
-                        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--charcoal)', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {/* Collapsed row — always visible */}
+                    <div
+                      onClick={(e) => toggleExpanded(project.id, e)}
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', gap: 8 }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flex: 1 }}>
+                        <div style={{ width: 8, height: 8, borderRadius: '50%', flexShrink: 0, background: healthColor }} />
+                        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--charcoal)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
                           {project.name}
                         </span>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 3 }}>
-                          <div style={{ flex: 1, height: 3, background: 'var(--border)', borderRadius: 2, overflow: 'hidden', maxWidth: 80 }}>
-                            <div style={{ height: '100%', width: `${pct}%`, background: healthColor, borderRadius: 2 }} />
-                          </div>
-                          <span style={{ fontSize: 9, color: 'var(--muted)', flexShrink: 0 }}>
-                            {project.completedCount}/{project.taskCount}
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+                        {trades.map((t) => (
+                          <span
+                            key={t}
+                            style={{ fontSize: 9, fontWeight: 600, color: 'var(--muted)', background: 'var(--border)', borderRadius: 3, padding: '1px 4px', textTransform: 'capitalize', fontFamily: 'var(--font-mono)' }}
+                          >
+                            {t}
                           </span>
-                          {trades.map((t) => (
-                            <span
-                              key={t}
-                              style={{ fontSize: 9, fontWeight: 600, color: 'var(--muted)', background: 'var(--border)', borderRadius: 3, padding: '1px 4px', textTransform: 'capitalize', fontFamily: 'var(--font-mono)' }}
-                            >
-                              {t}
-                            </span>
-                          ))}
-                        </div>
+                        ))}
+                        {stageMeta && (
+                          <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '2px 6px', borderRadius: 4, background: `${stageColor}18`, color: stageColor, fontFamily: 'var(--font-mono)' }}>
+                            {stageMeta.label}
+                          </span>
+                        )}
+                        <ChevronDown
+                          size={14}
+                          style={{
+                            color: 'var(--muted)',
+                            transition: 'transform 0.2s ease',
+                            transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                          }}
+                        />
                       </div>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, marginLeft: 8 }}>
-                      {stageMeta && (
-                        <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '2px 6px', borderRadius: 4, background: `${stageColor}18`, color: stageColor, fontFamily: 'var(--font-mono)' }}>
-                          {stageMeta.label}
-                        </span>
-                      )}
-                      <ChevronRight size={14} style={{ color: 'var(--border-strong, #d1d5db)' }} />
+
+                    {/* Expanded detail — smooth height transition */}
+                    <div
+                      style={{
+                        maxHeight: isExpanded ? 200 : 0,
+                        overflow: 'hidden',
+                        transition: 'max-height 0.25s ease',
+                      }}
+                    >
+                      <div style={{ padding: '0 14px 12px', borderTop: '1px solid var(--border)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 10 }}>
+                          <div style={{ flex: 1, height: 3, background: 'var(--border)', borderRadius: 2, overflow: 'hidden', maxWidth: 120 }}>
+                            <div style={{ height: '100%', width: `${pct}%`, background: healthColor, borderRadius: 2, transition: 'width 0.3s ease' }} />
+                          </div>
+                          <span style={{ fontSize: 10, color: 'var(--muted)', fontFamily: 'var(--font-mono)' }}>
+                            {project.completedCount}/{project.taskCount} tasks
+                          </span>
+                        </div>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); router.push(`/projects/${project.id}`); }}
+                          style={{
+                            marginTop: 10, display: 'flex', alignItems: 'center', gap: 4,
+                            fontSize: 11, fontWeight: 600, color: COLOR, background: 'none',
+                            border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'var(--font-mono)',
+                          }}
+                        >
+                          Open Job <ChevronRight size={10} />
+                        </button>
+                      </div>
                     </div>
-                  </button>
+                  </div>
                 );
               })}
             </div>

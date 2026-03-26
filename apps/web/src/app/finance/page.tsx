@@ -4,10 +4,11 @@
  * Finance Dashboard — Revenue, forecast, cost tracking
  */
 
+import { useMemo } from 'react';
 import Link from 'next/link';
+import { useQuery } from '@tanstack/react-query';
 import { PageErrorBoundary } from '@/components/ui/PageErrorBoundary';
 import { TrendingUp, DollarSign, ChevronRight, BarChart3, Users } from 'lucide-react';
-import { useActiveForecastConfig, useForecastProjection } from '@/lib/hooks/useForecast';
 import { useProjectVarianceSummary } from '@/lib/hooks/useLabourEstimation';
 import { useActiveCrew } from '@/lib/crew/ActiveCrewContext';
 import { SECTION_COLORS } from '@/lib/viewmode';
@@ -16,6 +17,7 @@ import { useAllInvoices } from '@/lib/hooks/useInvoices';
 import { useInvoiceAging } from '@/lib/hooks/useInvoiceAging';
 import { ARAgingTable } from '@/components/finance/ARAgingTable';
 import { FinancialScoreWidget } from '@/components/finance/FinancialScoreWidget';
+import { useServicesContext } from '@/lib/services/ServicesContext';
 import {
   usePendingReimbursements,
   usePendingExpenseReview,
@@ -24,23 +26,67 @@ import {
 
 const FINANCE_COLOR = SECTION_COLORS.finance;
 
-// Division data for breakdown panel
-const DIVISIONS = [
-  { name: 'Interiors (Nishant)', key: 'interiors' },
-  { name: 'Brisso Exteriors', key: 'exteriors' },
-  { name: 'Labs / Affiliate', key: 'labs' },
-  { name: 'Maintenance', key: 'maintenance' },
-];
+type TransactionRow = {
+  id: string;
+  date: string;
+  description: string;
+  type: 'Invoice' | 'Payment' | 'Expense';
+  amount: number;
+};
 
 export default function FinanceDashboard() {
-  const { data: forecastConfig, isLoading: configLoading } = useActiveForecastConfig();
-  const { data: projection } = useForecastProjection(forecastConfig ?? null);
+  const { services, isLoading: servicesLoading } = useServicesContext();
   const { projectId: crewProjectId } = useActiveCrew();
   const { data: labourVariance } = useProjectVarianceSummary(crewProjectId);
   const { data: allInvoices } = useAllInvoices();
   const aging = useInvoiceAging(allInvoices);
 
-  const isLoading = configLoading;
+  // All expenses for recent transactions
+  const { data: allExpenses = [] } = useQuery({
+    queryKey: ['finance', 'allExpenses'],
+    queryFn: () => services!.expenses.findAll(),
+    enabled: !servicesLoading && !!services,
+    staleTime: 15_000,
+  });
+
+  // Merge invoices + expenses into a unified transaction list (last 10)
+  const recentTransactions = useMemo<TransactionRow[]>(() => {
+    const rows: TransactionRow[] = [];
+
+    for (const inv of allInvoices ?? []) {
+      rows.push({
+        id: inv.id,
+        date: inv.metadata.createdAt,
+        description: `${inv.invoiceNumber} — ${inv.invoiceType}`,
+        type: 'Invoice',
+        amount: inv.totalAmount,
+      });
+      if (inv.amountPaid > 0) {
+        rows.push({
+          id: `${inv.id}-pay`,
+          date: inv.paidAt ?? inv.metadata.updatedAt,
+          description: `Payment on ${inv.invoiceNumber}`,
+          type: 'Payment',
+          amount: inv.amountPaid,
+        });
+      }
+    }
+
+    for (const exp of allExpenses) {
+      rows.push({
+        id: exp.id,
+        date: exp.date || exp.metadata.createdAt,
+        description: exp.description,
+        type: 'Expense',
+        amount: exp.amount,
+      });
+    }
+
+    rows.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    return rows.slice(0, 10);
+  }, [allInvoices, allExpenses]);
+
+  const isLoading = servicesLoading;
 
   if (isLoading) {
     return (
@@ -52,11 +98,6 @@ export default function FinanceDashboard() {
       </div>
     );
   }
-
-  // Extract yearly forecasts from projection
-  const years = projection?.years || [];
-  const maxYearlyRevenue = Math.max(...years.map((y) => y.grossRevenue || 0), 1);
-  const y1Revenue = years[0]?.grossRevenue ?? 0;
 
   return (
     <PageErrorBoundary>
@@ -88,94 +129,33 @@ export default function FinanceDashboard() {
             className="grid-cols-2 md:grid-cols-4"
           >
             <StatCard icon={<DollarSign size={14} />} label="Revenue MTD" value="—" color={FINANCE_COLOR} />
-            {/* TODO: wire to useFinancialActuals for current month */}
-            <StatCard icon={<TrendingUp size={14} />} label="Y1 Forecast" value={y1Revenue > 0 ? `$${Math.round(y1Revenue).toLocaleString()}` : '—'} color={FINANCE_COLOR} />
+            <StatCard icon={<TrendingUp size={14} />} label="Forecast" value="→" color={FINANCE_COLOR} />
             <StatCard icon={<DollarSign size={14} />} label="Outstanding AR" value={aging.totalOutstanding > 0 ? `$${Math.round(aging.totalOutstanding).toLocaleString()}` : '—'} color={FINANCE_COLOR} />
             <StatCard icon={<BarChart3 size={14} />} label="Gross Margin" value="—" color={FINANCE_COLOR} />
-            {/* TODO: compute from actuals vs cost data */}
           </div>
 
           {/* Content Grid */}
           <div className="mt-5" style={{ display: 'grid', gap: 16 }}>
-            <div
-              style={{ display: 'grid', gap: 16 }}
-              className="md:grid-cols-[1fr_1fr]"
-            >
-              {/* Revenue Forecast */}
-              <div>
-                <SectionHeader title="Revenue Forecast (3-Year)" />
-                <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 16, boxShadow: 'var(--shadow-card)' }}>
-                  {years.length === 0 ? (
-                    <div style={{ textAlign: 'center', padding: 16 }}>
-                      <BarChart3 size={20} style={{ color: 'var(--muted)', margin: '0 auto 8px' }} />
-                      <p style={{ fontSize: 12, color: 'var(--muted)' }}>No forecast data configured</p>
-                      <Link
-                        href="/forecast"
-                        style={{ display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 8, fontSize: 11, fontWeight: 600, color: FINANCE_COLOR, textDecoration: 'none' }}
-                      >
-                        Configure Forecast <ChevronRight size={10} />
-                      </Link>
-                    </div>
-                  ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                      {years.map((yr, i) => (
-                        <div key={i}>
-                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-                            <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--mid)' }}>{yr.label}</span>
-                            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--muted)' }}>
-                              ${(yr.grossRevenue / 1000).toFixed(0)}k rev · {yr.grossMarginPct.toFixed(0)}% margin
-                            </span>
-                          </div>
-                          <div style={{ height: 8, borderRadius: 4, background: 'var(--surface-3)', overflow: 'hidden', position: 'relative' }}>
-                            {/* Revenue bar */}
-                            <div style={{
-                              position: 'absolute', height: '100%', borderRadius: 4,
-                              width: `${Math.max((yr.grossRevenue / maxYearlyRevenue) * 100, 4)}%`,
-                              background: `${FINANCE_COLOR}30`,
-                            }} />
-                            {/* Profit bar */}
-                            <div style={{
-                              position: 'relative', height: '100%', borderRadius: 4,
-                              width: `${Math.max((yr.grossProfit / maxYearlyRevenue) * 100, 0)}%`,
-                              background: FINANCE_COLOR,
-                              transition: 'width 0.4s',
-                            }} />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  <Link
-                    href="/forecast"
-                    style={{
-                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
-                      marginTop: 12, padding: '8px 0', fontSize: 11, fontWeight: 600,
-                      color: FINANCE_COLOR, textDecoration: 'none',
-                    }}
-                  >
-                    Full Forecast <ChevronRight size={10} />
-                  </Link>
-                </div>
-              </div>
 
-              {/* Revenue by Division */}
-              <div>
-                <SectionHeader title="Revenue by Division" />
-                <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 16, boxShadow: 'var(--shadow-card)' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                    {DIVISIONS.map((div) => (
-                      <div key={div.key} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--charcoal)' }}>{div.name}</span>
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 700, color: 'var(--muted)' }}>
-                          —
-                        </span>
-                        {/* TODO: wire to actual division revenue data */}
-                      </div>
-                    ))}
-                  </div>
+            {/* Forecast Link Card */}
+            <Link
+              href="/finance/forecast"
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                padding: '16px 18px', borderRadius: 'var(--radius)',
+                background: 'var(--surface)', border: '1px solid var(--border)',
+                boxShadow: 'var(--shadow-card)', textDecoration: 'none', color: 'inherit',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <TrendingUp size={16} style={{ color: FINANCE_COLOR }} />
+                <div>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--charcoal)', display: 'block' }}>View Forecast</span>
+                  <span style={{ fontSize: 11, color: 'var(--muted)' }}>Revenue projections & scenario planning</span>
                 </div>
               </div>
-            </div>
+              <ChevronRight size={16} style={{ color: 'var(--muted)' }} />
+            </Link>
 
             {/* Labour Performance */}
             <div>
@@ -329,6 +309,52 @@ export default function FinanceDashboard() {
                   ))}
                 </div>
               )}
+            </div>
+
+            {/* Recent Transactions */}
+            <div>
+              <SectionHeader title="Recent Transactions" />
+              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
+                {recentTransactions.length === 0 ? (
+                  <div style={{ padding: 24, textAlign: 'center' }}>
+                    <DollarSign size={20} style={{ color: 'var(--muted)', margin: '0 auto 8px' }} />
+                    <p style={{ fontSize: 12, color: 'var(--muted)' }}>No transactions yet</p>
+                  </div>
+                ) : (
+                  recentTransactions.map((tx, i) => {
+                    const typeColor = tx.type === 'Invoice' ? 'var(--blue)' : tx.type === 'Payment' ? 'var(--green)' : 'var(--amber)';
+                    const typeBg = tx.type === 'Invoice' ? 'var(--blue-bg)' : tx.type === 'Payment' ? 'var(--green-bg)' : 'var(--amber-dim)';
+                    return (
+                      <div
+                        key={tx.id}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: 10,
+                          padding: '8px 12px', minHeight: 40,
+                          borderBottom: i < recentTransactions.length - 1 ? '1px solid var(--border)' : 'none',
+                        }}
+                      >
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--muted)', flexShrink: 0, width: 56 }}>
+                          {new Date(tx.date).toLocaleDateString('en-CA', { month: 'short', day: 'numeric' })}
+                        </span>
+                        <span style={{ fontSize: 12, color: 'var(--charcoal)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {tx.description}
+                        </span>
+                        <span style={{
+                          fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 700,
+                          letterSpacing: '0.06em', textTransform: 'uppercase',
+                          padding: '1px 5px', borderRadius: 2,
+                          background: typeBg, color: typeColor, flexShrink: 0,
+                        }}>
+                          {tx.type}
+                        </span>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 600, color: 'var(--charcoal)', flexShrink: 0, width: 70, textAlign: 'right' }}>
+                          ${tx.amount.toLocaleString('en-CA', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                        </span>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
             </div>
           </div>
         </div>

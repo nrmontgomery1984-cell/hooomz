@@ -10,6 +10,7 @@
 import { useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
 import { PageErrorBoundary } from '@/components/ui/PageErrorBoundary';
 import {
   Plus,
@@ -18,12 +19,14 @@ import {
   CheckCircle2,
   AlertTriangle,
   FileText,
+  Clock,
 } from 'lucide-react';
 import { SECTION_COLORS } from '@/lib/viewmode';
 import { useDashboardData } from '@/lib/hooks/useDashboardData';
 import { useLocalRecentActivity } from '@/lib/hooks/useLocalData';
 import { threeDotHex } from '@/lib/constants/threeDot';
 import { useAllJobHealth } from '@/lib/hooks/useJobHealth';
+import { useServicesContext } from '@/lib/services/ServicesContext';
 import {
   SCRIPT_STAGES,
   JOB_STAGE_META,
@@ -85,6 +88,144 @@ function inferScriptStage(status: string): JobStage | null {
 /** Resolve a project's SCRIPT stage — prefer jobStage, fallback to inference. */
 function resolveScriptStage(project: { jobStage?: JobStage; status: string }): JobStage | null {
   return (project.jobStage as JobStage) ?? inferScriptStage(project.status);
+}
+
+// ============================================================================
+// Labour Donut Chart
+// ============================================================================
+
+const DONUT_TRADES = ['Flooring', 'Trim', 'Paint', 'Tile', 'Other'] as const;
+const DONUT_OPACITIES = [1.0, 0.72, 0.50, 0.34, 0.20];
+
+type TradeSlice = { trade: string; budgeted: number; actual: number };
+
+function DonutChart({ slices, size = 120 }: { slices: TradeSlice[]; size?: number }) {
+  const total = slices.reduce((s, sl) => s + Math.max(sl.actual, sl.budgeted), 0);
+  if (total === 0) return null;
+
+  const r = size / 2;
+  const strokeWidth = 18;
+  const innerR = r - strokeWidth / 2;
+  const circumference = 2 * Math.PI * innerR;
+
+  let offset = 0;
+  const arcs = slices.map((sl, i) => {
+    const fraction = Math.max(sl.actual, sl.budgeted) / total;
+    const dashLen = fraction * circumference;
+    const gapLen = circumference - dashLen;
+    const arc = (
+      <circle
+        key={sl.trade}
+        cx={r}
+        cy={r}
+        r={innerR}
+        fill="none"
+        stroke="var(--charcoal)"
+        strokeWidth={strokeWidth}
+        strokeDasharray={`${dashLen} ${gapLen}`}
+        strokeDashoffset={-offset}
+        opacity={DONUT_OPACITIES[i] ?? 0.15}
+        style={{ transition: 'stroke-dasharray 0.3s ease' }}
+      />
+    );
+    offset += dashLen;
+    return arc;
+  });
+
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ transform: 'rotate(-90deg)' }}>
+      {arcs}
+    </svg>
+  );
+}
+
+function LabourDonutCard({
+  projectIds,
+}: {
+  projectIds: string[];
+}) {
+  const { services, isLoading: servicesLoading } = useServicesContext();
+
+  // Pull material selections across all active projects to get trade breakdown
+  const { data: tradeData } = useQuery({
+    queryKey: ['production', 'labourDonut', ...projectIds],
+    queryFn: async () => {
+      const tradeMap = new Map<string, { budgeted: number; actual: number }>();
+      for (const trade of DONUT_TRADES) {
+        tradeMap.set(trade, { budgeted: 0, actual: 0 });
+      }
+
+      for (const pid of projectIds) {
+        // Get material selections for budgeted hours by trade
+        const sels = await services!.materialSelection.findByProject(pid).catch(() => []);
+        for (const sel of sels) {
+          const tradeName = sel.trade || 'Other';
+          const matchedTrade = DONUT_TRADES.find((t) => tradeName.toLowerCase().includes(t.toLowerCase())) || 'Other';
+          const bucket = tradeMap.get(matchedTrade)!;
+          bucket.budgeted += sel.quantity || 0;
+        }
+      }
+
+      return Array.from(tradeMap.entries()).map(([trade, data]) => ({
+        trade,
+        budgeted: data.budgeted,
+        actual: data.actual,
+      }));
+    },
+    enabled: !servicesLoading && !!services && projectIds.length > 0,
+    staleTime: 30_000,
+  });
+
+  const slices = tradeData ?? [];
+  const hasData = slices.some((s) => s.budgeted > 0 || s.actual > 0);
+
+  return (
+    <div style={{
+      background: 'var(--surface)', border: '1px solid var(--border)',
+      borderRadius: 'var(--radius)', padding: 16, boxShadow: 'var(--shadow-card)',
+    }}>
+      {!hasData ? (
+        <div style={{ textAlign: 'center', padding: 16 }}>
+          <Clock size={20} style={{ color: 'var(--muted)', margin: '0 auto 8px' }} />
+          <p style={{ fontSize: 12, color: 'var(--muted)', margin: 0 }}>No time entries yet</p>
+        </div>
+      ) : (
+        <>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 14 }}>
+            <DonutChart slices={slices} size={120} />
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {slices.map((sl, i) => (
+              <div key={sl.trade} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11 }}>
+                <div style={{ width: 10, height: 10, borderRadius: 2, background: 'var(--charcoal)', opacity: DONUT_OPACITIES[i] ?? 0.15, flexShrink: 0 }} />
+                <span style={{ flex: 1, color: 'var(--mid)', fontWeight: 500 }}>{sl.trade}</span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--muted)', width: 48, textAlign: 'right' }}>
+                  {sl.budgeted.toFixed(1)}h
+                </span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--charcoal)', fontWeight: 600, width: 48, textAlign: 'right' }}>
+                  {sl.actual.toFixed(1)}h
+                </span>
+                <span style={{
+                  fontFamily: 'var(--font-mono)', fontSize: 10, width: 48, textAlign: 'right',
+                  color: sl.actual > sl.budgeted && sl.budgeted > 0 ? 'var(--red)' : 'var(--muted)',
+                }}>
+                  {sl.budgeted > 0 ? `${sl.actual > sl.budgeted ? '+' : ''}${(sl.actual - sl.budgeted).toFixed(1)}` : '—'}
+                </span>
+              </div>
+            ))}
+            {/* Legend header */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 9, color: 'var(--muted)', fontFamily: 'var(--font-mono)', letterSpacing: '0.06em', marginTop: 2 }}>
+              <span style={{ flex: 1 }} />
+              <span style={{ width: 10, flexShrink: 0 }} />
+              <span style={{ width: 48, textAlign: 'right' }}>Budget</span>
+              <span style={{ width: 48, textAlign: 'right' }}>Actual</span>
+              <span style={{ width: 48, textAlign: 'right' }}>Var</span>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
 }
 
 // ============================================================================
@@ -327,8 +468,12 @@ export default function ProductionDashboardPage() {
                 </div>
               </div>
 
-              {/* Needs Attention */}
+              {/* Labour Allocation + Needs Attention */}
               <div>
+                <SectionHeader title="Labour Allocation" />
+                <LabourDonutCard projectIds={projectIds} />
+
+                <div style={{ marginTop: 16 }}>
                 <SectionHeader title="Needs Attention" />
                 <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
                   {needsAttention.length === 0 ? (
@@ -341,6 +486,8 @@ export default function ProductionDashboardPage() {
                       <AttentionItem key={i} {...item} />
                     ))
                   )}
+                </div>
+
                 </div>
 
                 {/* Recent Activity */}

@@ -204,7 +204,7 @@ export default function ChangeOrdersPage() {
               <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4 }}>Change orders will appear here when created on a job.</p>
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
               {filtered.map((co) => {
                 const statusColor = STATUS_COLORS[co.status] || 'var(--muted)';
                 const opacity = ROW_OPACITY[co.status] ?? 1;
@@ -217,26 +217,26 @@ export default function ChangeOrdersPage() {
                     href={`/production/jobs/${co.projectId}/change-orders/${co.id}`}
                     style={{
                       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                      padding: '12px 14px', borderRadius: 'var(--radius)',
+                      padding: '8px 12px', borderRadius: 'var(--radius)',
                       background: 'var(--surface)', border: '1px solid var(--border)',
                       boxShadow: 'var(--shadow-card)', cursor: 'pointer', width: '100%',
-                      textAlign: 'left', textDecoration: 'none', opacity,
+                      textAlign: 'left', textDecoration: 'none', opacity, minHeight: 44,
                     }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0, flex: 1 }}>
                       <span style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: 'var(--muted)', flexShrink: 0 }}>{co.coNumber}</span>
                       <div style={{ minWidth: 0, flex: 1 }}>
                         <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--charcoal)', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {co.title}
                         </span>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 3 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
                           <span style={{ fontSize: 9, color: 'var(--muted)' }}>{projectName}</span>
                           <span style={{ fontSize: 9, color: 'var(--muted)' }}>·</span>
                           <span style={{ fontSize: 9, color: 'var(--muted)' }}>{formatDate(co.metadata.createdAt)}</span>
                         </div>
                       </div>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, marginLeft: 8 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0, marginLeft: 8 }}>
                       <span style={{ fontSize: 9, fontWeight: 600, fontFamily: 'var(--font-mono)', padding: '2px 6px', borderRadius: 4, background: `${statusColor}18`, color: statusColor }}>
                         {CO_INITIATOR_LABEL[co.initiatorType] || co.initiatorType}
                       </span>
@@ -246,7 +246,7 @@ export default function ChangeOrdersPage() {
                       <span style={{ fontSize: 11, fontWeight: 600, fontFamily: 'var(--font-mono)', color: deltaColor }}>
                         {co.costImpact >= 0 ? '+' : ''}{formatCurrency(co.costImpact)}
                       </span>
-                      <ChevronRight size={14} style={{ color: 'var(--border)' }} />
+                      <ChevronRight size={12} style={{ color: 'var(--muted)' }} />
                     </div>
                   </Link>
                 );

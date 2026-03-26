@@ -129,6 +129,34 @@ export function useUpdateCrewMember() {
   });
 }
 
+export function useArchiveCrewMember() {
+  const queryClient = useQueryClient();
+  const { services } = useServicesContext();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      return services!.crew.update(id, { isActive: false });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: CREW_QUERY_KEYS.members.all });
+      queryClient.invalidateQueries({ queryKey: CREW_QUERY_KEYS.members.active });
+    },
+  });
+}
+
+export function useDeleteCrewMember() {
+  const queryClient = useQueryClient();
+  const { services } = useServicesContext();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      return services!.crew.delete(id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: CREW_QUERY_KEYS.members.all });
+      queryClient.invalidateQueries({ queryKey: CREW_QUERY_KEYS.members.active });
+    },
+  });
+}
+
 export function useCrewMember(id: string | null) {
   const { services, isLoading: servicesLoading } = useServicesContext();
   return useQuery({

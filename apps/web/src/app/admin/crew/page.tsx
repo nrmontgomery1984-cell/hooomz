@@ -13,6 +13,7 @@ import {
 import {
   useActiveCrewMembers, useTrainingRecords,
   useCreateCrewMember, useUpdateCrewMember,
+  useArchiveCrewMember, useDeleteCrewMember,
 } from '@/lib/hooks/useCrewData';
 import { SECTION_COLORS } from '@/lib/viewmode';
 
@@ -151,6 +152,8 @@ export default function CrewPage() {
   const { data: trainingRecords = [], isLoading: trLoading } = useTrainingRecords();
   const createCrew = useCreateCrewMember();
   const updateCrew = useUpdateCrewMember();
+  const archiveCrew = useArchiveCrewMember();
+  const deleteCrew = useDeleteCrewMember();
 
   const [showForm, setShowForm] = useState(false);
   const [selectedCrewId, setSelectedCrewId] = useState<string | null>(null);
@@ -522,6 +525,45 @@ export default function CrewPage() {
                 </div>
               </div>
             )}
+
+            {/* Actions — Archive / Delete */}
+            <div style={{ marginTop: 16 }}>
+              <SectionHeader title="Actions" />
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button
+                  onClick={async () => {
+                    const ok = window.confirm(`Archive "${selectedCrew.name}"? They will be hidden from active crew lists but their data is kept.`);
+                    if (!ok) return;
+                    await archiveCrew.mutateAsync(selectedCrew.id);
+                    backToList();
+                  }}
+                  disabled={archiveCrew.isPending}
+                  style={{
+                    flex: 1, minHeight: 44, borderRadius: 'var(--radius)', fontSize: 13, fontWeight: 600,
+                    background: 'var(--bg)', color: 'var(--mid)', border: '1px solid var(--border)',
+                    cursor: 'pointer', fontFamily: 'inherit',
+                  }}
+                >
+                  {archiveCrew.isPending ? 'Archiving...' : 'Archive Member'}
+                </button>
+                <button
+                  onClick={async () => {
+                    const ok = window.confirm(`Permanently delete "${selectedCrew.name}"? This cannot be undone.`);
+                    if (!ok) return;
+                    await deleteCrew.mutateAsync(selectedCrew.id);
+                    backToList();
+                  }}
+                  disabled={deleteCrew.isPending}
+                  style={{
+                    flex: 1, minHeight: 44, borderRadius: 'var(--radius)', fontSize: 13, fontWeight: 600,
+                    background: 'var(--red, #DC2626)', color: '#FFFFFF', border: 'none',
+                    cursor: 'pointer', fontFamily: 'inherit', opacity: deleteCrew.isPending ? 0.5 : 1,
+                  }}
+                >
+                  {deleteCrew.isPending ? 'Deleting...' : 'Delete Member'}
+                </button>
+              </div>
+            </div>
 
             {/* Training Progress */}
             <div style={{ marginTop: 16 }}>

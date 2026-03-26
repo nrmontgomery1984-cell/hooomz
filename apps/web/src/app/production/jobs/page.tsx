@@ -72,19 +72,19 @@ function progressBucket(p: ActiveProjectSummary): ProgressFilter {
   return 'not-started';
 }
 
-function Pill({ label, active, color, onClick }: {
+function Pill({ label, active, onClick }: {
   label: string; active: boolean; color?: string; onClick: () => void;
 }) {
-  const c = color ?? COLOR;
   return (
     <button
       onClick={onClick}
       style={{
-        padding: '5px 12px', borderRadius: 99, flexShrink: 0,
-        border: `1.5px solid ${active ? c : 'var(--border)'}`,
-        background: active ? `${c}18` : 'var(--surface)',
-        color: active ? c : 'var(--muted)',
-        fontSize: 11, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap',
+        padding: '6px 0', marginRight: 16, flexShrink: 0,
+        border: 'none', borderBottom: `2px solid ${active ? 'var(--charcoal)' : 'transparent'}`,
+        background: 'none',
+        color: active ? 'var(--charcoal)' : 'var(--muted)',
+        fontSize: 11, fontWeight: active ? 700 : 500, cursor: 'pointer', whiteSpace: 'nowrap',
+        fontFamily: 'var(--font-mono)', letterSpacing: '0.04em',
       }}
     >
       {label}
@@ -217,7 +217,7 @@ export default function ProductionJobsPage() {
           {/* Stage filter */}
           <div style={{ marginBottom: 10 }}>
             <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 6 }}>Stage</div>
-            <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 2 }}>
+            <div style={{ display: 'flex', gap: 0, overflowX: 'auto', borderBottom: '1px solid var(--border)' }}>
               <Pill label="All" active={!stageFilter} onClick={() => setStage(null)} />
               {SCRIPT_STAGES.map((s) => (
                 <Pill
@@ -234,7 +234,7 @@ export default function ProductionJobsPage() {
           {/* Trade filter */}
           <div style={{ marginBottom: 10 }}>
             <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 6 }}>Trade</div>
-            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: 0, flexWrap: 'wrap', borderBottom: '1px solid var(--border)' }}>
               {(['all', 'flooring', 'paint', 'trim', 'tile', 'drywall'] as TradeFilter[]).map((key) => (
                 <Pill
                   key={key}
@@ -249,7 +249,7 @@ export default function ProductionJobsPage() {
           {/* Health filter */}
           <div style={{ marginBottom: 10 }}>
             <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 6 }}>Health</div>
-            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: 0, flexWrap: 'wrap', borderBottom: '1px solid var(--border)' }}>
               {([
                 { key: 'all'   as HealthFilter, label: 'All',      color: COLOR },
                 { key: 'green' as HealthFilter, label: 'On Track',  color: THREE_DOT_HEX.green },
@@ -265,7 +265,7 @@ export default function ProductionJobsPage() {
           {/* Progress filter */}
           <div style={{ marginBottom: 16 }}>
             <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 6 }}>Progress</div>
-            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: 0, flexWrap: 'wrap', borderBottom: '1px solid var(--border)' }}>
               {([
                 { key: 'all'          as ProgressFilter, label: 'All' },
                 { key: 'not-started'  as ProgressFilter, label: 'Not Started' },

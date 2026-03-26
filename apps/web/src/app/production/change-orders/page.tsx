@@ -57,12 +57,12 @@ function Pill({ label, active, onClick }: { label: string; active: boolean; onCl
     <button
       onClick={onClick}
       style={{
-        padding: '5px 12px', borderRadius: 99, flexShrink: 0,
-        border: `1.5px solid ${active ? COLOR : 'var(--border)'}`,
-        background: active ? `${COLOR}18` : 'var(--surface)',
-        color: active ? COLOR : 'var(--muted)',
-        fontSize: 11, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap',
-        fontFamily: 'var(--font-mono)',
+        padding: '6px 0', marginRight: 16, flexShrink: 0,
+        border: 'none', borderBottom: `2px solid ${active ? 'var(--charcoal)' : 'transparent'}`,
+        background: 'none',
+        color: active ? 'var(--charcoal)' : 'var(--muted)',
+        fontSize: 11, fontWeight: active ? 700 : 500, cursor: 'pointer', whiteSpace: 'nowrap',
+        fontFamily: 'var(--font-mono)', letterSpacing: '0.04em',
       }}
     >
       {label}
@@ -176,7 +176,7 @@ export default function ChangeOrdersPage() {
           {/* Status filters */}
           <div style={{ marginBottom: 10 }}>
             <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 6, fontFamily: 'var(--font-mono)' }}>Status</div>
-            <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 2 }}>
+            <div style={{ display: 'flex', gap: 0, overflowX: 'auto', borderBottom: '1px solid var(--border)' }}>
               <Pill label="All" active={statusFilter === 'all'} onClick={() => setStatusFilter('all')} />
               <Pill label={`Pending (${pendingCount})`} active={statusFilter === 'pending_approval'} onClick={() => setStatusFilter(statusFilter === 'pending_approval' ? 'all' : 'pending_approval')} />
               <Pill label="Approved" active={statusFilter === 'approved'} onClick={() => setStatusFilter(statusFilter === 'approved' ? 'all' : 'approved')} />
@@ -188,7 +188,7 @@ export default function ChangeOrdersPage() {
           {/* Initiator filters */}
           <div style={{ marginBottom: 16 }}>
             <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 6, fontFamily: 'var(--font-mono)' }}>Initiated By</div>
-            <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 2 }}>
+            <div style={{ display: 'flex', gap: 0, overflowX: 'auto', borderBottom: '1px solid var(--border)' }}>
               <Pill label="All" active={initiatorFilter === 'all'} onClick={() => setInitiatorFilter('all')} />
               {(['client_request', 'contractor_recommendation', 'sub_trade', 'site_condition'] as ChangeOrderInitiatorType[]).map((type) => (
                 <Pill key={type} label={CO_INITIATOR_LABEL[type]} active={initiatorFilter === type} onClick={() => setInitiatorFilter(initiatorFilter === type ? 'all' : type)} />

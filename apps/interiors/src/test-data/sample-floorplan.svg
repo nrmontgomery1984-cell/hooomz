@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 500 400"
+     width="500"
+     height="400">
+
+  <!-- Metadata block for Hooomz -->
+  <metadata>
+    <hooomz:export
+      xmlns:hooomz="http://hooomz.com/ns/export"
+      version="1.0"
+      date="2026-01-26T12:00:00"
+      view-name="L1"
+      project-name="Sample Floor Plan"
+      project-number="TEST-001" />
+  </metadata>
+
+  <!-- Styles -->
+  <defs>
+    <style>
+      .wall-ext { fill: none; stroke: #333; stroke-width: 8; }
+      .wall-int { fill: none; stroke: #666; stroke-width: 4; }
+      .wall-wet { fill: none; stroke: #0066cc; stroke-width: 4; }
+      .room-label { font-family: Arial, sans-serif; font-size: 12px; fill: #666; }
+    </style>
+  </defs>
+
+  <!-- Layer: Exterior Walls -->
+  <g id="layer-walls-ext">
+    <!-- North exterior wall (matches revit_id 1241340 from JSON) -->
+    <line id="wall-1241340"
+          data-revit-id="1241340"
+          data-cost-code="WALL-EXT-2X6-R24-EXT"
+          data-element-type="wall"
+          x1="50" y1="50" x2="450" y2="50"
+          class="wall-ext" />
+
+    <!-- East exterior wall (matches revit_id 1241387 from JSON) -->
+    <line id="wall-1241387"
+          data-revit-id="1241387"
+          data-cost-code="WALL-EXT-2X6-R24-EXT"
+          data-element-type="wall"
+          x1="450" y1="50" x2="450" y2="350"
+          class="wall-ext" />
+
+    <!-- South exterior wall (matches revit_id 1241487 from JSON) -->
+    <line id="wall-1241487"
+          data-revit-id="1241487"
+          data-cost-code="WALL-EXT-2X6-R24-EXT"
+          data-element-type="wall"
+          x1="450" y1="350" x2="50" y2="350"
+          class="wall-ext" />
+
+    <!-- West exterior wall (matches revit_id 1241529 from JSON) -->
+    <line id="wall-1241529"
+          data-revit-id="1241529"
+          data-cost-code="WALL-EXT-2X6-R24-EXT"
+          data-element-type="wall"
+          x1="50" y1="350" x2="50" y2="50"
+          class="wall-ext" />
+  </g>
+
+  <!-- Layer: Interior Walls -->
+  <g id="layer-walls-int">
+    <!-- Wet wall for bathroom (matches revit_id 1247937 from JSON) -->
+    <line id="wall-1247937"
+          data-revit-id="1247937"
+          data-cost-code="WALL-INT-2X4-WET"
+          data-element-type="wall"
+          x1="200" y1="50" x2="200" y2="150"
+          class="wall-wet" />
+
+    <!-- Wet wall (matches revit_id 1248012 from JSON) -->
+    <line id="wall-1248012"
+          data-revit-id="1248012"
+          data-cost-code="WALL-INT-2X4-WET"
+          data-element-type="wall"
+          x1="200" y1="150" x2="300" y2="150"
+          class="wall-wet" />
+
+    <!-- Wet wall (matches revit_id 1248079 from JSON) -->
+    <line id="wall-1248079"
+          data-revit-id="1248079"
+          data-cost-code="WALL-INT-2X4-WET"
+          data-element-type="wall"
+          x1="300" y1="50" x2="300" y2="150"
+          class="wall-wet" />
+
+    <!-- Partition wall (matches revit_id 1248208 from JSON) -->
+    <line id="wall-1248208"
+          data-revit-id="1248208"
+          data-cost-code="WALL-INT-2X4-PART"
+          data-element-type="wall"
+          x1="50" y1="200" x2="250" y2="200"
+          class="wall-int" />
+
+    <!-- Partition wall (matches revit_id 1248255 from JSON) -->
+    <line id="wall-1248255"
+          data-revit-id="1248255"
+          data-cost-code="WALL-INT-2X4-PART"
+          data-element-type="wall"
+          x1="250" y1="200" x2="250" y2="350"
+          class="wall-int" />
+
+    <!-- Partition wall (matches revit_id 1248320 from JSON) -->
+    <line id="wall-1248320"
+          data-revit-id="1248320"
+          data-cost-code="WALL-INT-2X4-PART"
+          data-element-type="wall"
+          x1="350" y1="200" x2="350" y2="350"
+          class="wall-int" />
+
+    <!-- Partition wall (matches revit_id 1248365 from JSON) -->
+    <line id="wall-1248365"
+          data-revit-id="1248365"
+          data-cost-code="WALL-INT-2X4-PART"
+          data-element-type="wall"
+          x1="350" y1="200" x2="450" y2="200"
+          class="wall-int" />
+
+    <!-- Sound wall (matches revit_id 1248467 from JSON) -->
+    <line id="wall-1248467"
+          data-revit-id="1248467"
+          data-cost-code="WALL-INT-2X4-SOUND"
+          data-element-type="wall"
+          x1="350" y1="50" x2="350" y2="150"
+          class="wall-int" />
+
+    <!-- Sound wall (matches revit_id 1248520 from JSON) -->
+    <line id="wall-1248520"
+          data-revit-id="1248520"
+          data-cost-code="WALL-INT-2X4-SOUND"
+          data-element-type="wall"
+          x1="350" y1="150" x2="450" y2="150"
+          class="wall-int" />
+
+    <!-- Sound wall (matches revit_id 1248633 from JSON) -->
+    <line id="wall-1248633"
+          data-revit-id="1248633"
+          data-cost-code="WALL-INT-2X4-SOUND"
+          data-element-type="wall"
+          x1="50" y1="150" x2="200" y2="150"
+          class="wall-int" />
+
+    <!-- Sound wall (matches revit_id 1248634 from JSON) -->
+    <line id="wall-1248634"
+          data-revit-id="1248634"
+          data-cost-code="WALL-INT-2X4-SOUND"
+          data-element-type="wall"
+          x1="100" y1="200" x2="100" y2="350"
+          class="wall-int" />
+  </g>
+
+  <!-- Layer: Room Labels (for reference, not linked) -->
+  <g id="layer-labels">
+    <text x="120" y="100" class="room-label">Living Room</text>
+    <text x="240" y="100" class="room-label">Bath</text>
+    <text x="380" y="100" class="room-label">Bedroom 1</text>
+    <text x="70" y="275" class="room-label">Entry</text>
+    <text x="160" y="275" class="room-label">Kitchen</text>
+    <text x="290" y="275" class="room-label">Dining</text>
+    <text x="380" y="275" class="room-label">Bedroom 2</text>
+  </g>
+
+</svg>

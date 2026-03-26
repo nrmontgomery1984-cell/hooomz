@@ -15,7 +15,7 @@ docs/architecture/2026-02-23_SPEC_app-foundation_v1.md
   → globals.css is the authority. tailwind.config.js matches it.
 - State: TanStack React Query 5.x + React Context
   → NOT Zustand. Zustand is not used anywhere in this codebase.
-- Client DB: IndexedDB v35, 77 stores, database name: hooomz_db
+- Client DB: IndexedDB v37, 82 stores, database name: hooomz_db
 - Remote: Supabase JS 2.39.0 (48 stores synced)
 - Package manager: pnpm workspace monorepo (10 packages)
 - Hosting: Vercel. DNS: Wix → hooomz.ca
@@ -58,6 +58,14 @@ Sidebar accordion: only one section open at a time.
 - Customers appears in Sales, Production, and Admin — three filtered views, by design
 - Material selection → Quote integration is deferred (stores exist, connection not wired)
 - Intake form shows no auto-estimate — homeowner receives 24–48hr email response
+
+## Specced But Unbuilt
+- **Work Orders (WO):** Labour authorization entity — time entries and expenses hang off it.
+  Distinct from DeployedTask (task instance from SOP pipeline). `woId` fields on expenses/POs
+  are plain string references for now. When built: WO-YYYY-NNN numbering, full entity with
+  create triggers, task relationships, time entry attachment. Needs its own spec session.
+- **Property Passport:** IDB stores exist (passports, passportEntries, v35). No UI pages built.
+  Prompt written, implementation pending.
 
 ## When In Doubt
 1. Does this write to the activity log?

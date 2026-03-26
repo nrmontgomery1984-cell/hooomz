@@ -71,15 +71,15 @@ interface Lead {
 // ============================================================================
 
 const DISCOVER_CHECKLIST: ChecklistItem[] = [
-  { id: 1, type: 'auto', label: 'Intake received — CRM lead + draft estimate auto-created', note: '\u26A1 Automated — fires on form submit', checked: false },
-  { id: 2, type: 'auto', label: 'Intake confirmation sent to client', note: '\u26A1 Automated — branded email + SMS on receipt', checked: false },
-  { id: 3, type: 'auto', label: 'New lead notification sent to manager', note: '\u26A1 Automated — email + in-app alert with CRM link', checked: false },
-  { id: 4, type: 'killer', label: 'Draft estimate reviewed by manager', note: '\u2691 Only manual step — review for accuracy before sending', checked: false },
-  { id: 5, type: 'killer', label: 'Estimate sent to client within 24 hours of intake', note: '\u2691 Includes survey booking link. Speed = conversion.', checked: false },
-  { id: 6, type: 'normal', label: 'Client opened estimate — confirmed via tracking', note: '\u26A1 Drip fires if survey not booked within 48h', checked: false },
-  { id: 7, type: 'normal', label: 'Survey booked by client via booking link', note: '\u26A1 Calendar confirmation auto-sent both parties', checked: false },
-  { id: 8, type: 'normal', label: 'Survey reminder sent 24h before visit', note: '\u26A1 Automated — SMS + email with prep checklist', checked: false },
-  { id: 9, type: 'normal', label: 'Lock D phase with performance colour \u2192 advance to Estimate', note: '\uD83D\uDFE2 Estimate <24h + survey booked \u00B7 \uD83D\uDFE1 <48h \u00B7 \uD83D\uDD34 Manual follow-up required', checked: false },
+  { id: 1, type: 'auto', label: 'Intake received — CRM lead + draft estimate auto-created', note: '⚡ Automated — fires on form submit', checked: false },
+  { id: 2, type: 'auto', label: 'Intake confirmation sent to client', note: '⚡ Automated — branded email + SMS on receipt', checked: false },
+  { id: 3, type: 'auto', label: 'New lead notification sent to manager', note: '⚡ Automated — email + in-app alert with CRM link', checked: false },
+  { id: 4, type: 'killer', label: 'Draft estimate reviewed by manager', note: '⚑ Only manual step — review for accuracy before sending', checked: false },
+  { id: 5, type: 'killer', label: 'Estimate sent to client within 24 hours of intake', note: '⚑ Includes survey booking link. Speed = conversion.', checked: false },
+  { id: 6, type: 'normal', label: 'Client opened estimate — confirmed via tracking', note: '⚡ Drip fires if survey not booked within 48h', checked: false },
+  { id: 7, type: 'normal', label: 'Survey booked by client via booking link', note: '⚡ Calendar confirmation auto-sent both parties', checked: false },
+  { id: 8, type: 'normal', label: 'Survey reminder sent 24h before visit', note: '⚡ Automated — SMS + email with prep checklist', checked: false },
+  { id: 9, type: 'normal', label: 'Lock D phase with performance colour → advance to Estimate', note: '🟢 Estimate <24h + survey booked · 🟡 <48h · 🔴 Manual follow-up required', checked: false },
 ];
 
 // ============================================================================
@@ -99,7 +99,7 @@ const MOCK_LEADS: Lead[] = [
     trades: ['FL'],
     sqft: 1240,
     roomCount: 4,
-    timeline: 'Apr 14 \u2013 May 2',
+    timeline: 'Apr 14 – May 2',
     phases: {
       discover: { status: 'complete', performanceColour: 'green' },
       estimate: { status: 'complete', performanceColour: 'green' },
@@ -115,10 +115,10 @@ const MOCK_LEADS: Lead[] = [
     email: 'karen.h@gmail.com',
     preferredContact: 'Text',
     referredBy: 'Mike Torres',
-    scope: 'LVT install \u2014 main floor + stairs',
+    scope: 'LVT install — main floor + stairs',
     checklist: DISCOVER_CHECKLIST.map((c) => ({ ...c, checked: true })),
     intakeEstimate: [
-      { trade: 'Flooring \u2014 LVT', description: '1,240 sqft Shaw Endura Plus, includes underlay', amount: 9800 },
+      { trade: 'Flooring — LVT', description: '1,240 sqft Shaw Endura Plus, includes underlay', amount: 9800 },
       { trade: 'Stairs', description: '14 risers, bull-nose trim', amount: 1400 },
     ],
   },
@@ -149,11 +149,11 @@ const MOCK_LEADS: Lead[] = [
     phone: '(604) 555-0198',
     email: 'ravi.patel@outlook.com',
     preferredContact: 'Email',
-    referredBy: '\u2014',
+    referredBy: '—',
     scope: 'Full main floor + trim replacement',
     checklist: DISCOVER_CHECKLIST.map((c, i) => ({ ...c, checked: i < 3 })),
     intakeEstimate: [
-      { trade: 'Flooring \u2014 Hardwood', description: '1,860 sqft engineered oak', amount: 14200 },
+      { trade: 'Flooring — Hardwood', description: '1,860 sqft engineered oak', amount: 14200 },
       { trade: 'Trim', description: 'Baseboards + casing, 6 rooms', amount: 2800 },
     ],
   },
@@ -169,7 +169,7 @@ const MOCK_LEADS: Lead[] = [
     trades: ['FL', 'PT', 'TR'],
     sqft: 2400,
     roomCount: 8,
-    timeline: 'May \u2013 Jun',
+    timeline: 'May – Jun',
     phases: {
       discover: { status: 'active' },
       estimate: { status: 'future' },
@@ -185,10 +185,10 @@ const MOCK_LEADS: Lead[] = [
     email: 'tmorrison@shaw.ca',
     preferredContact: 'Call',
     referredBy: 'Home Show 2026',
-    scope: 'Whole home reno \u2014 floors, paint, trim',
+    scope: 'Whole home reno — floors, paint, trim',
     checklist: DISCOVER_CHECKLIST.map((c, i) => ({ ...c, checked: i < 1 })),
     intakeEstimate: [
-      { trade: 'Flooring \u2014 LVT', description: '1,800 sqft main + bedrooms', amount: 14400 },
+      { trade: 'Flooring — LVT', description: '1,800 sqft main + bedrooms', amount: 14400 },
       { trade: 'Paint', description: '8 rooms, ceilings included', amount: 6200 },
       { trade: 'Trim', description: 'Full baseboard + casing replacement', amount: 4800 },
     ],
@@ -205,7 +205,7 @@ const MOCK_LEADS: Lead[] = [
     trades: ['FL'],
     sqft: 780,
     roomCount: 3,
-    timeline: 'Apr 7 \u2013 Apr 18',
+    timeline: 'Apr 7 – Apr 18',
     phases: {
       discover: { status: 'complete', performanceColour: 'green' },
       estimate: { status: 'complete', performanceColour: 'amber' },
@@ -221,10 +221,10 @@ const MOCK_LEADS: Lead[] = [
     email: 'wei.chen@gmail.com',
     preferredContact: 'Text',
     referredBy: 'Karen Henderson',
-    scope: 'Condo \u2014 LVT living + 2 bedrooms',
+    scope: 'Condo — LVT living + 2 bedrooms',
     checklist: DISCOVER_CHECKLIST.map((c) => ({ ...c, checked: true })),
     intakeEstimate: [
-      { trade: 'Flooring \u2014 LVT', description: '780 sqft, strata-approved underlay', amount: 7200 },
+      { trade: 'Flooring — LVT', description: '780 sqft, strata-approved underlay', amount: 7200 },
     ],
   },
   {
@@ -239,7 +239,7 @@ const MOCK_LEADS: Lead[] = [
     trades: ['FL', 'PT'],
     sqft: 1520,
     roomCount: 5,
-    timeline: 'Apr 21 \u2013 May 9',
+    timeline: 'Apr 21 – May 9',
     phases: {
       discover: { status: 'complete', performanceColour: 'green' },
       estimate: { status: 'complete', performanceColour: 'green' },
@@ -254,11 +254,11 @@ const MOCK_LEADS: Lead[] = [
     phone: '(604) 555-0089',
     email: 'marie.dubois@gmail.com',
     preferredContact: 'Email',
-    referredBy: '\u2014',
-    scope: 'Townhouse \u2014 hardwood + paint refresh',
+    referredBy: '—',
+    scope: 'Townhouse — hardwood + paint refresh',
     checklist: DISCOVER_CHECKLIST.map((c) => ({ ...c, checked: true })),
     intakeEstimate: [
-      { trade: 'Flooring \u2014 Hardwood', description: '1,120 sqft engineered maple', amount: 8960 },
+      { trade: 'Flooring — Hardwood', description: '1,120 sqft engineered maple', amount: 8960 },
       { trade: 'Paint', description: '5 rooms, accent walls', amount: 3800 },
     ],
   },
@@ -294,6 +294,61 @@ const SCRIPT_PHASES = [
   { letter: 'T', name: 'Turnover', desc: 'Final clean, client sign-off, warranty docs' },
 ];
 
+// ============================================================================
+// PHASE CHECKLISTS (E–N)
+// ============================================================================
+
+const PHASE_CHECKLISTS: Record<string, ChecklistItem[]> = {
+  estimate: [
+    { id: 1, type: 'auto', label: 'Draft estimate auto-generated from intake data', note: '⚡ Automated — pulls room/sqft/trade data from intake', checked: false },
+    { id: 2, type: 'killer', label: 'Manager reviews and adjusts line items', note: '⚑ Verify quantities, rates, and material selections', checked: false },
+    { id: 3, type: 'normal', label: 'Material costs confirmed with supplier', note: 'Check current pricing — quotes valid 30 days', checked: false },
+    { id: 4, type: 'normal', label: 'Labour hours estimated per trade', note: 'Use historical data from similar projects', checked: false },
+    { id: 5, type: 'killer', label: 'Margin meets minimum threshold (35%+)', note: '⚑ Do not proceed below margin floor without approval', checked: false },
+    { id: 6, type: 'normal', label: 'Estimate PDF generated and reviewed', note: 'Check formatting, spelling, and line item totals', checked: false },
+    { id: 7, type: 'auto', label: 'Estimate sent to client via portal link', note: '⚡ Automated — client receives email with view/accept link', checked: false },
+    { id: 8, type: 'normal', label: 'Lock E phase with performance colour → advance to Survey', note: '🟢 Sent <24h · 🟡 <48h · 🔴 Manual follow-up required', checked: false },
+  ],
+  survey: [
+    { id: 1, type: 'auto', label: 'Survey appointment confirmed in calendar', note: '⚡ Automated — syncs to company + client calendar', checked: false },
+    { id: 2, type: 'normal', label: 'Pre-survey prep checklist sent to client', note: 'Clear furniture, access requirements, parking', checked: false },
+    { id: 3, type: 'killer', label: 'On-site measurements completed', note: '⚑ Laser measure all rooms — record in survey tool', checked: false },
+    { id: 4, type: 'normal', label: 'Subfloor condition assessed', note: 'Check for moisture, level, and structural issues', checked: false },
+    { id: 5, type: 'normal', label: 'Moisture readings taken and recorded', note: 'Pin meter + RH probe — log all readings by room', checked: false },
+    { id: 6, type: 'normal', label: 'Site photos captured (all rooms + details)', note: 'Minimum 3 per room — overview, floor, transitions', checked: false },
+    { id: 7, type: 'killer', label: 'Survey report uploaded to project', note: '⚑ Must include measurements, photos, and notes', checked: false },
+    { id: 8, type: 'normal', label: 'Estimate updated with survey findings', note: 'Adjust for actual conditions vs intake assumptions', checked: false },
+    { id: 9, type: 'normal', label: 'Lock S phase with performance colour → advance to Iterations', note: '🟢 Survey complete + estimate updated · 🟡 Partial data · 🔴 Re-survey needed', checked: false },
+  ],
+  iterations: [
+    { id: 1, type: 'auto', label: 'Updated estimate sent to client for review', note: '⚡ Automated — client notified of revised estimate', checked: false },
+    { id: 2, type: 'normal', label: 'Client feedback received and documented', note: 'Record all requested changes in project notes', checked: false },
+    { id: 3, type: 'normal', label: 'Material selections finalized with client', note: 'Confirm colours, brands, and grades — get sign-off', checked: false },
+    { id: 4, type: 'normal', label: 'Scope changes documented and priced', note: 'Any additions/removals reflected in estimate', checked: false },
+    { id: 5, type: 'killer', label: 'Final estimate approved by client', note: '⚑ Written confirmation required before Go-Ahead', checked: false },
+    { id: 6, type: 'normal', label: 'Material lead times confirmed', note: 'Check availability — flag any backorder items', checked: false },
+    { id: 7, type: 'normal', label: 'Lock I phase with performance colour → advance to Go-Ahead', note: '🟢 Approved first round · 🟡 2+ rounds · 🔴 3+ rounds or scope disputes', checked: false },
+  ],
+  goAhead: [
+    { id: 1, type: 'killer', label: 'Contract/quote signed by client', note: '⚑ Digital signature via portal or wet signature on PDF', checked: false },
+    { id: 2, type: 'killer', label: 'Deposit received and confirmed', note: '⚑ Minimum 50% deposit before scheduling', checked: false },
+    { id: 3, type: 'auto', label: 'Payment confirmation sent to client', note: '⚡ Automated — receipt + next steps email', checked: false },
+    { id: 4, type: 'normal', label: 'Material order placed with supplier', note: 'Confirm delivery date aligns with project start', checked: false },
+    { id: 5, type: 'normal', label: 'Project scheduled in production calendar', note: 'Assign crew, confirm availability, block dates', checked: false },
+    { id: 6, type: 'normal', label: 'Client notified of project start date', note: 'Include prep instructions and contact info', checked: false },
+    { id: 7, type: 'normal', label: 'Lock G phase with performance colour → advance to Notify', note: '🟢 Signed + deposit <48h · 🟡 <1wk · 🔴 Delays or payment issues', checked: false },
+  ],
+  notify: [
+    { id: 1, type: 'auto', label: 'Production brief auto-generated from project data', note: '⚡ Automated — compiles scope, materials, schedule, notes', checked: false },
+    { id: 2, type: 'killer', label: 'Production brief reviewed by manager', note: '⚑ Verify all details before handoff to production', checked: false },
+    { id: 3, type: 'auto', label: 'Brief sent to production team lead', note: '⚡ Automated — email + in-app notification', checked: false },
+    { id: 4, type: 'auto', label: 'Client portal access enabled', note: '⚡ Automated — client can now track progress', checked: false },
+    { id: 5, type: 'normal', label: 'Pre-start client call completed', note: 'Confirm dates, access, pets, parking, expectations', checked: false },
+    { id: 6, type: 'auto', label: 'Project moves to SCRIPT → Shield phase', note: '⚡ Automated — triggers production workflow', checked: false },
+    { id: 7, type: 'normal', label: 'Lock N phase with performance colour → handoff complete', note: '🟢 Handoff <24h after Go-Ahead · 🟡 <48h · 🔴 Delays', checked: false },
+  ],
+};
+
 const MONO = "'DM Mono', monospace";
 const FIG = "'Figtree', sans-serif";
 
@@ -313,7 +368,7 @@ function timeAgo(iso: string): string {
 
 function formatBudget(min: number, max: number): string {
   const f = (n: number) => `$${(n / 1000).toFixed(0)}k`;
-  return `${f(min)}\u2013${f(max)}`;
+  return `${f(min)}–${f(max)}`;
 }
 
 function fmtCad(n: number): string {
@@ -334,21 +389,6 @@ function phaseDotStyle(e: PhaseEntry): { background: string; borderColor: string
   if (e.status === 'complete' && e.performanceColour === 'red') return { background: '#FDF2F1', borderColor: '#E8B4AF', color: '#C0392B' };
   if (e.status === 'warning') return { background: '#FDF7EE', borderColor: '#E8C98A', color: '#D4830A' };
   return { background: '#E8E4DE', borderColor: '#D0CBC3', color: '#9C9690' };
-}
-
-// ============================================================================
-// SHIMMER KEYFRAMES — injected once
-// ============================================================================
-
-const SHIMMER_ID = 'hooomz-shimmer-keyframes';
-
-function ensureShimmerCSS() {
-  if (typeof document === 'undefined') return;
-  if (document.getElementById(SHIMMER_ID)) return;
-  const style = document.createElement('style');
-  style.id = SHIMMER_ID;
-  style.textContent = `@keyframes hooomzShimmer{0%,100%{opacity:1}50%{opacity:0.5}}`;
-  document.head.appendChild(style);
 }
 
 // ============================================================================
@@ -446,7 +486,7 @@ function LeadCard({ lead, selected, onClick }: { lead: Lead; selected: boolean; 
         <span style={{ fontFamily: MONO, fontSize: 9.5, color: '#5C5349' }}>{formatBudget(lead.budgetMin, lead.budgetMax)}</span>
       </div>
       <div style={{ fontFamily: MONO, fontSize: 8, color: '#9C9690', marginTop: 3 }}>
-        {timeAgo(lead.createdAt)} \u00B7 {lead.source}
+        {timeAgo(lead.createdAt)} · {lead.source}
       </div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 6 }}>
         <div style={{ display: 'flex', gap: 4 }}>
@@ -454,7 +494,7 @@ function LeadCard({ lead, selected, onClick }: { lead: Lead; selected: boolean; 
             <span key={t} style={{ fontFamily: MONO, fontSize: 8, fontWeight: 500, letterSpacing: '0.06em', color: '#fff', background: TRADE_COLORS[t], borderRadius: 3, padding: '1px 5px' }}>{t}</span>
           ))}
         </div>
-        <span style={{ fontFamily: MONO, fontSize: 8, color: '#9A8E84' }}>{lead.sqft} sqft \u00B7 {lead.roomCount} rm</span>
+        <span style={{ fontFamily: MONO, fontSize: 8, color: '#9A8E84' }}>{lead.sqft} sqft · {lead.roomCount} rm</span>
       </div>
       <div style={{ display: 'flex', gap: 3, marginTop: 7 }}>
         {PHASE_KEYS.map((key, i) => {
@@ -462,7 +502,7 @@ function LeadCard({ lead, selected, onClick }: { lead: Lead; selected: boolean; 
           return (
             <div
               key={key}
-              title={`${PHASE_LABELS[i]} \u2014 ${lead.phases[key].status}`}
+              title={`${PHASE_LABELS[i]} — ${lead.phases[key].status}`}
               style={{
                 width: 15, height: 15, borderRadius: 0,
                 background: ds.background, border: `1px solid ${ds.borderColor}`, color: ds.color,
@@ -517,14 +557,14 @@ function ProjectDetail({ lead, onCheckToggle }: { lead: Lead; onCheckToggle: (le
           <div style={{ minWidth: 0 }}>
             <div style={{ fontFamily: FIG, fontWeight: 700, fontSize: 19, color: '#1A1714', lineHeight: 1.2 }}>{lead.clientFullName}</div>
             <div style={{ fontFamily: MONO, fontSize: 9, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B6560', marginTop: 4 }}>
-              {lead.sqft} SQFT \u00B7 {lead.roomCount} ROOMS \u00B7 {tradesLabel} \u00B7 {lead.timeline}
+              {lead.sqft} SQFT · {lead.roomCount} ROOMS · {tradesLabel} · {lead.timeline}
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 7, flexShrink: 0, marginTop: 2 }}>
-            <ActionButton label="\uD83D\uDCDE Call" border="#111010" color="#F0EDE8" fill="#111010" hoverBg="#2A2826" />
-            <ActionButton label="\uD83D\uDCAC Text" border="#111010" color="#F0EDE8" fill="#111010" hoverBg="#2A2826" />
+            <ActionButton label="📞 Call" border="#111010" color="#F0EDE8" fill="#111010" hoverBg="#2A2826" />
+            <ActionButton label="💬 Text" border="#111010" color="#F0EDE8" fill="#111010" hoverBg="#2A2826" />
             <ActionButton label="Edit" border="#D0CBC3" color="#111010" />
-            {!lead.estimateSent && <ActionButton label="\u2197 Send Estimate" border="#D0CBC3" color="#111010" />}
+            {!lead.estimateSent && <ActionButton label="↗ Send Estimate" border="#D0CBC3" color="#111010" />}
             {goAheadComplete && <ActionButton label="Convert to Job" border="#111010" color="#fff" fill="#111010" hoverBg="#2A2826" />}
           </div>
         </div>
@@ -561,7 +601,11 @@ function ProjectDetail({ lead, onCheckToggle }: { lead: Lead; onCheckToggle: (le
         {activeTab === 'discover' && <DiscoverTab lead={lead} onCheckToggle={onCheckToggle} />}
         {activeTab === 'script' && <ScriptTab />}
         {activeTab !== 'discover' && activeTab !== 'script' && (
-          <PhaseSkeleton label={PHASE_WORDS[PHASE_KEYS.indexOf(activeTab as PhaseKey)]} />
+          <PhaseTab
+            phaseKey={activeTab as PhaseKey}
+            label={PHASE_WORDS[PHASE_KEYS.indexOf(activeTab as PhaseKey)]}
+            lead={lead}
+          />
         )}
       </div>
     </div>
@@ -613,7 +657,7 @@ function DiscoverTab({ lead, onCheckToggle }: { lead: Lead; onCheckToggle: (lead
               onToggle={() => {
                 if (item.type === 'auto') return;
                 if (item.type === 'killer' && !item.checked) {
-                  const ok = window.confirm('\u2691 STOP & CONFIRM \u2014 This is a killer item. Verify before marking complete. Proceed?');
+                  const ok = window.confirm('⚑ STOP & CONFIRM — This is a killer item. Verify before marking complete. Proceed?');
                   if (!ok) return;
                 }
                 onCheckToggle(lead.id, item.id);
@@ -653,7 +697,7 @@ function DiscoverTab({ lead, onCheckToggle }: { lead: Lead; onCheckToggle: (lead
           <DetailRow label="Source" value={lead.source} />
           <DetailRow label="Referred by" value={lead.referredBy} />
           <DetailRow label="Scope" value={lead.scope} />
-          <DetailRow label="Area" value={`${lead.sqft} sqft \u00B7 ${lead.roomCount} rooms`} />
+          <DetailRow label="Area" value={`${lead.sqft} sqft · ${lead.roomCount} rooms`} />
           <DetailRow label="Timeline" value={lead.timeline} />
           <DetailRow label="Budget" value={formatBudget(lead.budgetMin, lead.budgetMax)} />
         </SectionCard>
@@ -750,8 +794,8 @@ function ChecklistRow({ item, onToggle }: { item: ChecklistItem; onToggle: () =>
             textDecoration: item.checked ? 'line-through' : 'none', lineHeight: 1.4,
           }}
         >
-          {isAuto && !item.checked && <span style={{ marginRight: 4 }}>{'\u26A1'}</span>}
-          {isKiller && !item.checked && <span style={{ marginRight: 4 }}>{'\u2691'}</span>}
+          {isAuto && !item.checked && <span style={{ marginRight: 4 }}>{'⚡'}</span>}
+          {isKiller && !item.checked && <span style={{ marginRight: 4 }}>{'⚑'}</span>}
           {item.label}
         </div>
         <div style={{ fontFamily: MONO, fontSize: 8.5, color: '#6B6560', marginTop: 2, lineHeight: 1.4 }}>
@@ -788,53 +832,70 @@ function SectionCard({ children }: { children: React.ReactNode }) {
 }
 
 // ============================================================================
-// E-N PHASE SKELETON
+// E–N PHASE TAB (full checklist)
 // ============================================================================
 
-function PhaseSkeleton({ label }: { label: string }) {
-  ensureShimmerCSS();
+function PhaseTab({ phaseKey, label, lead }: { phaseKey: PhaseKey; label: string; lead: Lead }) {
+  const template = PHASE_CHECKLISTS[phaseKey];
+  const [items, setItems] = useState<ChecklistItem[]>(() =>
+    template ? template.map((c) => ({ ...c })) : [],
+  );
 
-  const shimmer: React.CSSProperties = {
-    background: '#E0DCD7', borderRadius: 4,
-    animation: 'hooomzShimmer 1.5s ease-in-out infinite',
-  };
+  const handleToggle = useCallback((itemId: number, type: CheckItemType) => {
+    if (type === 'auto') return;
+    if (type === 'killer') {
+      const ok = window.confirm('⚑ STOP & CONFIRM — This is a killer item. Verify before marking complete. Proceed?');
+      if (!ok) return;
+    }
+    setItems((prev) => prev.map((c) => (c.id === itemId ? { ...c, checked: !c.checked } : c)));
+  }, []);
+
+  if (!template) return null;
+
+  const checkedCount = items.filter((c) => c.checked).length;
+  const totalCount = items.length;
 
   return (
-    <div style={{ display: 'flex', gap: 16, padding: 20, minHeight: '100%' }}>
-      {/* Left — checklist skeleton */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <div style={{ background: '#FAF8F5', border: '1px solid #E0DCD7', borderRadius: 6, padding: 16, flex: 1 }}>
-          <div style={{ fontFamily: MONO, fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6B6560', marginBottom: 16 }}>
-            {label} — Checklist
+    <div style={{ display: 'flex', gap: 16, padding: 20, height: '100%', overflow: 'hidden' }}>
+      {/* Left column — checklist */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 16, overflow: 'auto', minWidth: 0 }}>
+        <SectionCard>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+            <span style={{ fontFamily: MONO, fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6B6560' }}>
+              {label} — READ-DO Checklist
+            </span>
+            <span style={{ fontFamily: MONO, fontSize: 8, color: '#fff', background: '#111010', borderRadius: 4, padding: '2px 8px' }}>
+              {checkedCount === totalCount ? 'Complete' : 'In Progress'} {checkedCount}/{totalCount}
+            </span>
           </div>
-          {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
-            <div key={n} style={{ display: 'flex', gap: 10, marginBottom: 12 }}>
-              <div style={{ ...shimmer, width: 15, height: 15, flexShrink: 0, animationDelay: `${n * 0.1}s` }} />
-              <div style={{ flex: 1 }}>
-                <div style={{ ...shimmer, height: 10, width: `${70 + (n * 5) % 30}%`, marginBottom: 6, animationDelay: `${n * 0.1}s` }} />
-                <div style={{ ...shimmer, height: 7, width: `${50 + (n * 7) % 40}%`, animationDelay: `${n * 0.1 + 0.05}s` }} />
-              </div>
-            </div>
+          {items.map((item) => (
+            <ChecklistRow
+              key={item.id}
+              item={item}
+              onToggle={() => handleToggle(item.id, item.type)}
+            />
           ))}
-        </div>
+        </SectionCard>
       </div>
-      {/* Right — side panel skeleton */}
-      <div style={{ width: 280, flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
-        <div style={{ background: '#FAF8F5', border: '1px solid #E0DCD7', borderRadius: 6, padding: 16, flex: 1 }}>
-          <div style={{ fontFamily: MONO, fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6B6560', marginBottom: 16 }}>
-            {label} — Details
-          </div>
-          {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
-            <div key={n} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
-              <div style={{ ...shimmer, height: 8, width: 60, animationDelay: `${n * 0.12}s` }} />
-              <div style={{ ...shimmer, height: 8, width: `${40 + (n * 11) % 50}%`, animationDelay: `${n * 0.12 + 0.06}s` }} />
-            </div>
-          ))}
-        </div>
+
+      {/* Right column — lead details */}
+      <div style={{ width: 280, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 16, overflow: 'auto' }}>
+        <SectionCard>
+          <div style={{ fontFamily: MONO, fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6B6560', marginBottom: 12 }}>Lead Details</div>
+          <DetailRow label="Phone" value={lead.phone} />
+          <DetailRow label="Email" value={lead.email} />
+          <DetailRow label="Prefers" value={lead.preferredContact} />
+          <DetailRow label="Source" value={lead.source} />
+          <DetailRow label="Scope" value={lead.scope} />
+          <DetailRow label="Area" value={`${lead.sqft} sqft · ${lead.roomCount} rooms`} />
+          <DetailRow label="Timeline" value={lead.timeline} />
+          <DetailRow label="Budget" value={formatBudget(lead.budgetMin, lead.budgetMax)} />
+        </SectionCard>
       </div>
     </div>
   );
 }
+
 
 // ============================================================================
 // SCRIPT TAB

@@ -39,6 +39,7 @@ export const colors = {
   // Sidebar specific
   sidebarBg: '#111010',
   sidebarNavDefault: '#7A7570',
+  sidebarNavSub: '#5A5550',
   sidebarNavHover: '#D0CBC3',
   sidebarNavActive: '#F0EDE8',
   sidebarActiveBorder: '#F0EDE8',

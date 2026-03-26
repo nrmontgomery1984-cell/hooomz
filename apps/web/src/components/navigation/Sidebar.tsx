@@ -190,7 +190,7 @@ export function Sidebar() {
               key={item.href}
               item={item}
               active={isActive(pathname, item.href)}
-              indent={false}
+              kind="flat"
             />
           ))}
         </div>
@@ -305,7 +305,7 @@ function NavGroupSection({
             key={item.href}
             item={item}
             active={isActive(pathname, item.href)}
-            indent
+            kind="sub"
           />
         ))}
       </div>
@@ -316,22 +316,25 @@ function NavGroupSection({
 function SidebarNavItem({
   item,
   active,
-  indent,
+  kind,
 }: {
   item: NavItem;
   active: boolean;
-  indent: boolean;
+  kind: 'sub' | 'flat';
 }) {
+  const isSub = kind === 'sub';
+
   return (
     <Link
       href={item.href}
       className="flex items-center gap-2.5 no-underline sidebar-link"
       style={{
         fontFamily: typography.mono,
-        fontSize: fontSizes.monoNavSub,
-        letterSpacing: '0.04em',
-        padding: `7px 16px 7px ${indent ? '24px' : '16px'}`,
-        color: active ? colors.sidebarNavActive : colors.sidebarNavDefault,
+        fontSize: isSub ? fontSizes.monoNavSub : fontSizes.monoMd,
+        letterSpacing: isSub ? '0.1em' : '0.13em',
+        textTransform: 'uppercase' as const,
+        padding: `7px 16px 7px ${isSub ? '24px' : '16px'}`,
+        color: active ? colors.sidebarNavActive : (isSub ? colors.sidebarNavSub : colors.sidebarNavDefault),
         background: active ? colors.sidebarActiveBg : 'transparent',
         fontWeight: active ? 500 : 400,
         borderLeft: active

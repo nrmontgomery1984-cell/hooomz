@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
+import { useLocalProjects } from '@/lib/hooks/useLocalData';
 
 // ============================================================================
 // FONTS
@@ -66,61 +67,57 @@ const PERF_COLOURS: Record<PerformanceColour, string> = {
 const CURRENT_PHASE: ScriptPhase = 'turnover';
 
 // ============================================================================
-// MOCK DATA
+// IDB → PROJECT MAPPER
 // ============================================================================
-const MOCK_PROJECTS: Project[] = [
-  {
-    id: 'proj-1', clientName: 'Arsenault', address: '42 Champlain Dr, Dieppe',
-    trades: ['FL', 'PT'], sqft: 1450, rooms: 6, startDate: 'Mar 10', endDate: 'Apr 4',
-    phases: {
-      shield: { status: 'complete', performanceColour: 'green', completedDate: 'Mar 10' },
-      clear: { status: 'complete', performanceColour: 'green', completedDate: 'Mar 12' },
-      ready: { status: 'complete', performanceColour: 'green', completedDate: 'Mar 15' },
-      install: { status: 'active', startDate: 'Mar 16' },
-      punch: { status: 'locked' }, turnover: { status: 'locked' },
-    },
-    margin: 59, quotedValue: 14200, actualValue: 5800, pmAssigned: 'Nathan M.', foremanAssigned: 'Dave K.',
-    notes: 'Main floor hardwood + accent wall paint. Client flexible on schedule.',
-  },
-  {
-    id: 'proj-2', clientName: 'Bourque', address: '118 Mountain Rd, Moncton',
-    trades: ['TR', 'PT'], sqft: 980, rooms: 4, startDate: 'Mar 18', endDate: 'Apr 1',
-    phases: {
-      shield: { status: 'complete', performanceColour: 'green', completedDate: 'Mar 18' },
-      clear: { status: 'complete', performanceColour: 'green', completedDate: 'Mar 19' },
-      ready: { status: 'active', startDate: 'Mar 20' },
-      install: { status: 'locked' }, punch: { status: 'locked' }, turnover: { status: 'locked' },
-    },
-    margin: 35, quotedValue: 8600, actualValue: 5590, pmAssigned: 'Nathan M.', foremanAssigned: 'Mike R.',
-    notes: 'Trim replacement + full interior paint. Materials not yet confirmed.',
-  },
-  {
-    id: 'proj-3', clientName: 'LeBlanc', address: '7 Elmwood Ct, Riverview',
-    trades: ['FL'], sqft: 1120, rooms: 5, startDate: 'Mar 24', endDate: 'Apr 11',
-    phases: {
-      shield: { status: 'active', startDate: 'Mar 24' },
-      clear: { status: 'locked' }, ready: { status: 'locked' },
-      install: { status: 'locked' }, punch: { status: 'locked' }, turnover: { status: 'locked' },
-    },
-    margin: 35, quotedValue: 9800, pmAssigned: 'Nathan M.', foremanAssigned: 'Dave K.',
-    notes: 'LVT throughout main floor. Dog on premises.',
-  },
-  {
-    id: 'proj-4', clientName: 'Goguen', address: '205 St. George St, Moncton',
-    trades: ['PT'], sqft: 760, rooms: 3, startDate: 'Mar 3', endDate: 'Mar 26',
-    phases: {
-      shield: { status: 'complete', performanceColour: 'green', completedDate: 'Mar 3' },
-      clear: { status: 'complete', performanceColour: 'green', completedDate: 'Mar 4' },
-      ready: { status: 'complete', performanceColour: 'green', completedDate: 'Mar 5' },
-      install: { status: 'complete', performanceColour: 'green', completedDate: 'Mar 14' },
-      punch: { status: 'complete', performanceColour: 'green', completedDate: 'Mar 20' },
-      turnover: { status: 'active', startDate: 'Mar 21' },
-    },
-    margin: 3, quotedValue: 4200, actualValue: 4074, pmAssigned: 'Nathan M.',
-    notes: 'Interior paint only. Margin thin — no overruns.',
-  },
-];
+const SCRIPT_PHASE_ORDER: ScriptPhase[] = ['shield', 'clear', 'ready', 'install', 'punch', 'turnover'];
 
+function mapIDBProject(p: Record<string, unknown>): Project {
+  const addr = p.address as { street?: string; city?: string } | undefined;
+  const dates = p.dates as { startDate?: string; estimatedEndDate?: string } | undefined;
+  const budget = p.budget as { estimatedCost?: number; actualCost?: number } | undefined;
+  const jobStage = (p.jobStage as string) || '';
+
+  const currentIdx = SCRIPT_PHASE_ORDER.indexOf(jobStage as ScriptPhase);
+  const isComplete = jobStage === 'complete';
+  const phases = {} as Record<ScriptPhase, ScriptPhaseEntry>;
+
+  SCRIPT_PHASE_ORDER.forEach((phase, i) => {
+    if (isComplete || i < currentIdx) {
+      phases[phase] = { status: 'complete', performanceColour: 'green' };
+    } else if (i === currentIdx) {
+      phases[phase] = { status: 'active' };
+    } else {
+      phases[phase] = { status: 'locked' };
+    }
+  });
+
+  if (currentIdx === -1 && !isComplete) {
+    SCRIPT_PHASE_ORDER.forEach(phase => { phases[phase] = { status: 'locked' }; });
+  }
+
+  const estimated = budget?.estimatedCost || 0;
+  const actual = budget?.actualCost || 0;
+
+  return {
+    id: p.id as string,
+    clientName: (p.name as string) || 'Unnamed',
+    address: addr ? `${addr.street || ''}, ${addr.city || ''}`.replace(/^, |, $/g, '') : '',
+    trades: ['FL'],
+    sqft: 0,
+    rooms: 0,
+    startDate: dates?.startDate ? new Date(dates.startDate).toLocaleDateString('en-CA', { month: 'short', day: 'numeric' }) : '',
+    endDate: dates?.estimatedEndDate ? new Date(dates.estimatedEndDate).toLocaleDateString('en-CA', { month: 'short', day: 'numeric' }) : '',
+    phases,
+    margin: estimated > 0 ? Math.round(((estimated - actual) / estimated) * 100) : undefined,
+    quotedValue: estimated,
+    actualValue: actual > 0 ? actual : undefined,
+    notes: '',
+  };
+}
+
+// ============================================================================
+// CHECKLIST TEMPLATE
+// ============================================================================
 const TURNOVER_CHECKLIST_TEMPLATE: ChecklistItem[] = [
   { id: 1, type: 'normal', label: 'Full site cleanup — all debris, tools, and protection removed', note: '', checked: false },
   { id: 2, type: 'normal', label: 'Final photos taken — completed work documented', note: 'Minimum 3 per room — match pre-work photos', checked: false },
@@ -307,14 +304,26 @@ function PhaseDot({ phase, label, project, activePhase, onClick }: {
 // TURNOVER PAGE
 // ============================================================================
 export default function TurnoverPage() {
-  const filteredProjects = MOCK_PROJECTS.filter((p) => p.phases[CURRENT_PHASE].status === 'active');
-  const [selectedId, setSelectedId] = useState<string>(filteredProjects[0]?.id ?? '');
+  const { data: projectData, isLoading: projectsLoading } = useLocalProjects();
+  const allProjects = useMemo(() => {
+    if (!projectData?.projects) return [];
+    return projectData.projects.map(p => mapIDBProject(p as Record<string, unknown>));
+  }, [projectData]);
+
+  // Filter to jobs relevant to this phase (active or complete in CURRENT_PHASE)
+  const relevantJobs = useMemo(() =>
+    allProjects.filter(p => p.phases[CURRENT_PHASE].status === 'active' || p.phases[CURRENT_PHASE].status === 'complete'),
+    [allProjects]
+  );
+
+  const [selectedId, setSelectedId] = useState<string>('');
   const [activeTab, setActiveTab] = useState<ScriptPhase>(CURRENT_PHASE);
   const [checklist, setChecklist] = useState<ChecklistItem[]>(
     TURNOVER_CHECKLIST_TEMPLATE.map((c) => ({ ...c })),
   );
 
-  const selectedProject = filteredProjects.find((p) => p.id === selectedId) ?? filteredProjects[0];
+  const effectiveSelectedId = selectedId || relevantJobs[0]?.id || '';
+  const selectedProject = relevantJobs.find((p) => p.id === effectiveSelectedId) ?? relevantJobs[0];
 
   const handleSelectProject = useCallback((id: string) => {
     setSelectedId(id);
@@ -334,6 +343,18 @@ export default function TurnoverPage() {
   const checkedCount = checklist.filter((c) => c.checked).length;
   const totalCount = checklist.length;
   const allComplete = checkedCount === totalCount;
+
+  if (projectsLoading) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
+        <div style={{
+          width: 24, height: 24, border: '2px solid #E0DCD7', borderTopColor: '#1A1714',
+          borderRadius: '50%', animation: 'spin 0.8s linear infinite',
+        }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </div>
+    );
+  }
 
   if (!selectedProject) {
     return (
@@ -356,14 +377,14 @@ export default function TurnoverPage() {
           fontFamily: MONO, fontSize: 9, letterSpacing: '0.12em', textTransform: 'uppercase',
           color: '#6B6660', marginBottom: 14, paddingLeft: 12,
         }}>
-          Turnover · {filteredProjects.length} Active
+          Turnover · {relevantJobs.length} Active
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          {filteredProjects.map((p) => (
+          {relevantJobs.map((p) => (
             <JobCard
               key={p.id}
               project={p}
-              selected={p.id === selectedId}
+              selected={p.id === effectiveSelectedId}
               onClick={() => handleSelectProject(p.id)}
             />
           ))}

@@ -1,6 +1,8 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useLeadPipeline } from '@/lib/hooks/useLeadData';
+import type { LeadRecord } from '@/lib/hooks/useLeadData';
 
 // ============================================================================
 // TYPES
@@ -83,186 +85,125 @@ const DISCOVER_CHECKLIST: ChecklistItem[] = [
 ];
 
 // ============================================================================
-// MOCK DATA
+// LEAD RECORD → LEAD MAPPING
 // ============================================================================
 
-const MOCK_LEADS: Lead[] = [
-  {
-    id: 'lead-1',
-    clientName: 'Henderson, K.',
-    clientFullName: 'Karen Henderson',
-    status: 'active',
-    source: 'Referral',
-    createdAt: new Date(Date.now() - 2 * 3600000).toISOString(),
-    budgetMin: 8500,
-    budgetMax: 12000,
-    trades: ['FL'],
-    sqft: 1240,
-    roomCount: 4,
-    timeline: 'Apr 14 – May 2',
-    phases: {
-      discover: { status: 'complete', performanceColour: 'green' },
-      estimate: { status: 'complete', performanceColour: 'green' },
-      survey: { status: 'active' },
-      iterations: { status: 'future' },
-      goAhead: { status: 'future' },
-      notify: { status: 'future' },
-    },
-    jobTemp: 'positive',
-    estimateSent: true,
+const SCOPE_TO_TRADE: Record<string, Trade> = {
+  floors: 'FL', flooring: 'FL', lvp: 'FL', hardwood: 'FL', laminate: 'FL', tile: 'FL',
+  paint: 'PT', painting: 'PT', walls: 'PT',
+  trim: 'TR', baseboard: 'TR', moulding: 'TR', casing: 'TR',
+};
+
+const BUDGET_RANGES: Record<string, [number, number]> = {
+  'under-5k': [2000, 5000],
+  '5k-10k': [5000, 10000],
+  '10k-20k': [10000, 20000],
+  '20k+': [20000, 40000],
+  'unknown': [0, 0],
+};
+
+// Map lead stage to DESIGN phase progression
+const STAGE_TO_PHASE_INDEX: Record<string, number> = {
+  new: 0, contacted: 0, discovery: 1, site_visit: 2, quote_sent: 3, won: 5, lost: -1,
+};
+
+function mapLeadRecord(rec: LeadRecord): Lead {
+  const c = rec.customer;
+  const lastName = c.lastName || '';
+  const firstInitial = c.firstName ? c.firstName[0] + '.' : '';
+  const clientName = lastName ? `${lastName}, ${firstInitial}` : c.firstName || 'Unknown';
+  const clientFullName = `${c.firstName || ''} ${c.lastName || ''}`.trim() || 'Unknown';
+
+  // Trades from scope tags
+  const trades: Trade[] = [];
+  const seenTrades = new Set<Trade>();
+  for (const tag of rec.scopeTags) {
+    const t = SCOPE_TO_TRADE[tag];
+    if (t && !seenTrades.has(t)) { seenTrades.add(t); trades.push(t); }
+  }
+  // Fallback: legacy interests
+  if (trades.length === 0) {
+    for (const interest of rec.interests) {
+      const t = SCOPE_TO_TRADE[interest];
+      if (t && !seenTrades.has(t)) { seenTrades.add(t); trades.push(t); }
+    }
+  }
+  if (trades.length === 0) trades.push('FL'); // default
+
+  // Budget
+  const range = BUDGET_RANGES[rec.budgetRange] || BUDGET_RANGES['unknown'];
+  let budgetMin = range[0];
+  let budgetMax = range[1];
+  if (rec.instantEstimate) {
+    budgetMin = rec.instantEstimate.low;
+    budgetMax = rec.instantEstimate.high;
+  }
+
+  // Phases from stage
+  const phaseKeys: (keyof LeadPhases)[] = ['discover', 'estimate', 'survey', 'iterations', 'goAhead', 'notify'];
+  const activeIdx = STAGE_TO_PHASE_INDEX[rec.stage] ?? 0;
+  const phases: LeadPhases = {} as LeadPhases;
+  phaseKeys.forEach((key, i) => {
+    if (rec.stage === 'lost') {
+      phases[key] = { status: 'future' };
+    } else if (i < activeIdx) {
+      phases[key] = { status: 'complete', performanceColour: 'green' };
+    } else if (i === activeIdx) {
+      phases[key] = { status: 'active' };
+    } else {
+      phases[key] = { status: 'future' };
+    }
+  });
+
+  // Status
+  let status: LeadStatus = 'new';
+  if (rec.stage === 'won') status = 'won';
+  else if (rec.stage === 'lost') status = 'lost';
+  else if (rec.stage === 'quote_sent') status = 'quoted';
+  else if (rec.stage !== 'new') status = 'active';
+
+  // Scope description
+  const scopeParts = rec.scopeTags.length > 0 ? rec.scopeTags : rec.interests;
+  const scope = scopeParts.map(s => s.replace(/_/g, ' ')).join(', ') || 'General inquiry';
+
+  // Estimate lines from instant estimate
+  const intakeEstimate: EstimateLine[] = [];
+  if (rec.instantEstimate) {
+    if (trades.includes('FL')) intakeEstimate.push({ trade: 'Flooring', description: `${rec.totalSqft || '—'} sqft`, amount: Math.round(rec.instantEstimate.mid * 0.6) });
+    if (trades.includes('PT')) intakeEstimate.push({ trade: 'Paint', description: `${rec.roomCount || '—'} rooms`, amount: Math.round(rec.instantEstimate.mid * 0.25) });
+    if (trades.includes('TR')) intakeEstimate.push({ trade: 'Trim', description: 'Baseboards + casing', amount: Math.round(rec.instantEstimate.mid * 0.15) });
+    if (intakeEstimate.length === 0) intakeEstimate.push({ trade: 'General', description: 'Estimate', amount: rec.instantEstimate.mid });
+  }
+
+  // Temperature → jobTemp
+  const jobTemp: Lead['jobTemp'] = rec.temperature === 'hot' ? 'positive' : rec.temperature === 'cool' ? 'neutral' : 'warning';
+
+  return {
+    id: c.id,
+    clientName,
+    clientFullName,
+    status,
+    source: rec.source || 'Direct',
+    createdAt: c.metadata?.createdAt || new Date().toISOString(),
+    budgetMin,
+    budgetMax,
+    trades,
+    sqft: rec.totalSqft || 0,
+    roomCount: rec.roomCount || 0,
+    timeline: rec.timeline || 'TBD',
+    phases,
+    jobTemp,
+    estimateSent: rec.stage === 'quote_sent' || rec.stage === 'won',
     scriptStarted: false,
-    phone: '(604) 555-0142',
-    email: 'karen.h@gmail.com',
-    preferredContact: 'Text',
-    referredBy: 'Mike Torres',
-    scope: 'LVT install — main floor + stairs',
-    checklist: DISCOVER_CHECKLIST.map((c) => ({ ...c, checked: true })),
-    intakeEstimate: [
-      { trade: 'Flooring — LVT', description: '1,240 sqft Shaw Endura Plus, includes underlay', amount: 9800 },
-      { trade: 'Stairs', description: '14 risers, bull-nose trim', amount: 1400 },
-    ],
-  },
-  {
-    id: 'lead-2',
-    clientName: 'Patel, R.',
-    clientFullName: 'Ravi Patel',
-    status: 'new',
-    source: 'Website',
-    createdAt: new Date(Date.now() - 25 * 60000).toISOString(),
-    budgetMin: 14000,
-    budgetMax: 18000,
-    trades: ['FL', 'TR'],
-    sqft: 1860,
-    roomCount: 6,
-    timeline: 'TBD',
-    phases: {
-      discover: { status: 'active' },
-      estimate: { status: 'future' },
-      survey: { status: 'future' },
-      iterations: { status: 'future' },
-      goAhead: { status: 'future' },
-      notify: { status: 'future' },
-    },
-    jobTemp: 'neutral',
-    estimateSent: false,
-    scriptStarted: false,
-    phone: '(604) 555-0198',
-    email: 'ravi.patel@outlook.com',
-    preferredContact: 'Email',
-    referredBy: '—',
-    scope: 'Full main floor + trim replacement',
-    checklist: DISCOVER_CHECKLIST.map((c, i) => ({ ...c, checked: i < 3 })),
-    intakeEstimate: [
-      { trade: 'Flooring — Hardwood', description: '1,860 sqft engineered oak', amount: 14200 },
-      { trade: 'Trim', description: 'Baseboards + casing, 6 rooms', amount: 2800 },
-    ],
-  },
-  {
-    id: 'lead-3',
-    clientName: 'Morrison, T.',
-    clientFullName: 'Theresa Morrison',
-    status: 'new',
-    source: 'Home Show',
-    createdAt: new Date(Date.now() - 10 * 60000).toISOString(),
-    budgetMin: 22000,
-    budgetMax: 30000,
-    trades: ['FL', 'PT', 'TR'],
-    sqft: 2400,
-    roomCount: 8,
-    timeline: 'May – Jun',
-    phases: {
-      discover: { status: 'active' },
-      estimate: { status: 'future' },
-      survey: { status: 'future' },
-      iterations: { status: 'future' },
-      goAhead: { status: 'future' },
-      notify: { status: 'future' },
-    },
-    jobTemp: 'neutral',
-    estimateSent: false,
-    scriptStarted: false,
-    phone: '(778) 555-0311',
-    email: 'tmorrison@shaw.ca',
-    preferredContact: 'Call',
-    referredBy: 'Home Show 2026',
-    scope: 'Whole home reno — floors, paint, trim',
-    checklist: DISCOVER_CHECKLIST.map((c, i) => ({ ...c, checked: i < 1 })),
-    intakeEstimate: [
-      { trade: 'Flooring — LVT', description: '1,800 sqft main + bedrooms', amount: 14400 },
-      { trade: 'Paint', description: '8 rooms, ceilings included', amount: 6200 },
-      { trade: 'Trim', description: 'Full baseboard + casing replacement', amount: 4800 },
-    ],
-  },
-  {
-    id: 'lead-4',
-    clientName: 'Chen, W.',
-    clientFullName: 'Wei Chen',
-    status: 'active',
-    source: 'Referral',
-    createdAt: new Date(Date.now() - 48 * 3600000).toISOString(),
-    budgetMin: 6000,
-    budgetMax: 9000,
-    trades: ['FL'],
-    sqft: 780,
-    roomCount: 3,
-    timeline: 'Apr 7 – Apr 18',
-    phases: {
-      discover: { status: 'complete', performanceColour: 'green' },
-      estimate: { status: 'complete', performanceColour: 'amber' },
-      survey: { status: 'complete', performanceColour: 'green' },
-      iterations: { status: 'warning' },
-      goAhead: { status: 'future' },
-      notify: { status: 'future' },
-    },
-    jobTemp: 'warning',
-    estimateSent: true,
-    scriptStarted: false,
-    phone: '(604) 555-0267',
-    email: 'wei.chen@gmail.com',
-    preferredContact: 'Text',
-    referredBy: 'Karen Henderson',
-    scope: 'Condo — LVT living + 2 bedrooms',
-    checklist: DISCOVER_CHECKLIST.map((c) => ({ ...c, checked: true })),
-    intakeEstimate: [
-      { trade: 'Flooring — LVT', description: '780 sqft, strata-approved underlay', amount: 7200 },
-    ],
-  },
-  {
-    id: 'lead-5',
-    clientName: 'Dubois, M.',
-    clientFullName: 'Marie Dubois',
-    status: 'quoted',
-    source: 'Website',
-    createdAt: new Date(Date.now() - 96 * 3600000).toISOString(),
-    budgetMin: 11000,
-    budgetMax: 15000,
-    trades: ['FL', 'PT'],
-    sqft: 1520,
-    roomCount: 5,
-    timeline: 'Apr 21 – May 9',
-    phases: {
-      discover: { status: 'complete', performanceColour: 'green' },
-      estimate: { status: 'complete', performanceColour: 'green' },
-      survey: { status: 'complete', performanceColour: 'amber' },
-      iterations: { status: 'complete', performanceColour: 'red' },
-      goAhead: { status: 'complete', performanceColour: 'green' },
-      notify: { status: 'active' },
-    },
-    jobTemp: 'positive',
-    estimateSent: true,
-    scriptStarted: false,
-    phone: '(604) 555-0089',
-    email: 'marie.dubois@gmail.com',
-    preferredContact: 'Email',
-    referredBy: '—',
-    scope: 'Townhouse — hardwood + paint refresh',
-    checklist: DISCOVER_CHECKLIST.map((c) => ({ ...c, checked: true })),
-    intakeEstimate: [
-      { trade: 'Flooring — Hardwood', description: '1,120 sqft engineered maple', amount: 8960 },
-      { trade: 'Paint', description: '5 rooms, accent walls', amount: 3800 },
-    ],
-  },
-];
+    phone: c.phone || '',
+    email: c.email || '',
+    preferredContact: rec.preferredContact || '',
+    referredBy: rec.referralSource || '—',
+    scope,
+    checklist: DISCOVER_CHECKLIST.map(item => ({ ...item })),
+    intakeEstimate,
+  };
+}
 
 // ============================================================================
 // CONSTANTS
@@ -396,7 +337,25 @@ function phaseDotStyle(e: PhaseEntry): { background: string; borderColor: string
 // ============================================================================
 
 export default function DiscoverPage() {
-  const [leads, setLeads] = useState<Lead[]>(() => MOCK_LEADS.map((l) => ({ ...l, checklist: l.checklist.map((c) => ({ ...c })) })));
+  const pipeline = useLeadPipeline();
+  const mappedLeads = useMemo(() => pipeline.leads.map(mapLeadRecord), [pipeline.leads]);
+  const [leads, setLeads] = useState<Lead[]>([]);
+
+  // Sync mapped leads into state (preserves checklist check state for existing leads)
+  useEffect(() => {
+    setLeads(prev => {
+      const prevMap = new Map(prev.map(l => [l.id, l]));
+      return mappedLeads.map(ml => {
+        const existing = prevMap.get(ml.id);
+        if (existing) {
+          // Keep checklist state, update everything else
+          return { ...ml, checklist: existing.checklist };
+        }
+        return ml;
+      });
+    });
+  }, [mappedLeads]);
+
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const newCount = leads.filter((l) => l.status === 'new').length;
@@ -415,6 +374,27 @@ export default function DiscoverPage() {
       }),
     );
   }, []);
+
+  // Loading state
+  if (pipeline.isLoading) {
+    return (
+      <div style={{ display: 'flex', height: '100%', alignItems: 'center', justifyContent: 'center', background: '#F0EDE8' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div
+            style={{
+              width: 28, height: 28, border: '3px solid #E0DCD7', borderTopColor: '#111010',
+              borderRadius: '50%', margin: '0 auto 12px',
+              animation: 'spin 0.8s linear infinite',
+            }}
+          />
+          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+          <div style={{ fontFamily: MONO, fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#9C9690' }}>
+            Loading leads...
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ display: 'flex', height: '100%', overflow: 'hidden', background: '#F0EDE8' }}>
@@ -441,9 +421,23 @@ export default function DiscoverPage() {
           )}
         </div>
         <div style={{ flex: 1, overflowY: 'auto' }}>
-          {leads.map((lead) => (
-            <LeadCard key={lead.id} lead={lead} selected={selectedId === lead.id} onClick={() => setSelectedId(lead.id)} />
-          ))}
+          {leads.length === 0 ? (
+            <div style={{ padding: '40px 20px', textAlign: 'center' }}>
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#9C9690" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: 10, opacity: 0.5 }}>
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <line x1="19" y1="8" x2="19" y2="14" />
+                <line x1="22" y1="11" x2="16" y2="11" />
+              </svg>
+              <div style={{ fontFamily: MONO, fontSize: 9, letterSpacing: '0.08em', color: '#9C9690', lineHeight: 1.6 }}>
+                No leads yet — create one from<br />the intake form or /leads/new
+              </div>
+            </div>
+          ) : (
+            leads.map((lead) => (
+              <LeadCard key={lead.id} lead={lead} selected={selectedId === lead.id} onClick={() => setSelectedId(lead.id)} />
+            ))
+          )}
         </div>
       </div>
 

@@ -16,6 +16,11 @@ import { useAllInvoices } from '@/lib/hooks/useInvoices';
 import { useInvoiceAging } from '@/lib/hooks/useInvoiceAging';
 import { ARAgingTable } from '@/components/finance/ARAgingTable';
 import { FinancialScoreWidget } from '@/components/finance/FinancialScoreWidget';
+import {
+  usePendingReimbursements,
+  usePendingExpenseReview,
+  useRetroactivePOsPending,
+} from '@/lib/hooks/useExpenseTracker';
 
 const FINANCE_COLOR = SECTION_COLORS.finance;
 
@@ -287,6 +292,9 @@ export default function FinanceDashboard() {
               )}
             </div>
 
+            {/* Expense Tracker Summary */}
+            <ExpenseTrackerCards />
+
             {/* Overdue Invoices */}
             <div>
               <SectionHeader title="Overdue Invoices" />
@@ -366,6 +374,75 @@ function StatCard({ icon, label, value, color }: {
       <span style={{ fontFamily: 'var(--font-mono)', fontSize: 22, fontWeight: 700, color: 'var(--charcoal)' }}>
         {value}
       </span>
+    </div>
+  );
+}
+
+function fmtCurrency(n: number) {
+  return '$' + n.toLocaleString('en-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function ExpenseTrackerCards() {
+  const { data: pendingReimb = [] } = usePendingReimbursements();
+  const { data: pendingReview = [] } = usePendingExpenseReview();
+  const { data: retroPOs = [] } = useRetroactivePOsPending();
+
+  const reimbTotal = pendingReimb.reduce((s, e) => s + e.amount, 0);
+  const reimbCrewCount = new Set(pendingReimb.map((e) => e.crewMemberId)).size;
+  const retroTotal = retroPOs.reduce((s, po) => s + po.total, 0);
+
+  if (pendingReimb.length === 0 && pendingReview.length === 0 && retroPOs.length === 0) return null;
+
+  return (
+    <div>
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12,
+        fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 700,
+        letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--muted)',
+      }}>
+        Expense Tracker
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+        {pendingReimb.length > 0 && (
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderLeft: '3px solid var(--amber)', padding: '14px 18px' }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 6 }}>
+              Reimbursements Owing
+            </div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 22, fontWeight: 500, color: 'var(--amber)', lineHeight: 1 }}>
+              {fmtCurrency(reimbTotal)}
+            </div>
+            <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4 }}>
+              {reimbCrewCount} crew member{reimbCrewCount !== 1 ? 's' : ''}
+            </div>
+          </div>
+        )}
+        {pendingReview.length > 0 && (
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderLeft: '3px solid var(--blue)', padding: '14px 18px' }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 6 }}>
+              Expenses Pending Review
+            </div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 22, fontWeight: 500, color: 'var(--charcoal)', lineHeight: 1 }}>
+              {pendingReview.length}
+            </div>
+            <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4 }}>
+              across active jobs
+            </div>
+          </div>
+        )}
+        {retroPOs.length > 0 && (
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderLeft: '3px solid var(--red)', padding: '14px 18px' }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 6 }}>
+              Retroactive POs Pending
+            </div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 22, fontWeight: 500, color: 'var(--charcoal)', lineHeight: 1 }}>
+              {retroPOs.length}
+            </div>
+            <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4 }}>
+              {fmtCurrency(retroTotal)} total value
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

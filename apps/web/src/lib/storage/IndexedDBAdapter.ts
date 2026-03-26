@@ -7,7 +7,7 @@ import type { StorageAdapter } from './StorageAdapter';
 import { StoreNames } from './StorageAdapter';
 
 const DB_NAME = 'hooomz_db';
-const DB_VERSION = 36; // v36: Risk Register
+const DB_VERSION = 37; // v37: Expense & PO Tracker
 
 export class IndexedDBAdapter implements StorageAdapter {
   private db: IDBDatabase | null = null;
@@ -200,6 +200,30 @@ export class IndexedDBAdapter implements StorageAdapter {
           riskStore.createIndex('by_source', 'source', { unique: false });
         }
 
+        // v37: Expense & PO Tracker
+        if (oldVersion < 37) {
+          if (!db.objectStoreNames.contains('vendors')) {
+            const vendorStore = db.createObjectStore('vendors', { keyPath: 'id' });
+            vendorStore.createIndex('by_name', 'name', { unique: false });
+            vendorStore.createIndex('by_type', 'type', { unique: false });
+          }
+          if (!db.objectStoreNames.contains('jobExpenses')) {
+            const expStore = db.createObjectStore('jobExpenses', { keyPath: 'id' });
+            expStore.createIndex('by_jobId', 'jobId', { unique: false });
+            expStore.createIndex('by_woId', 'woId', { unique: false });
+            expStore.createIndex('by_crewMemberId', 'crewMemberId', { unique: false });
+            expStore.createIndex('by_status', 'status', { unique: false });
+            expStore.createIndex('by_reimbursementOwing', 'reimbursementOwing', { unique: false });
+          }
+          if (!db.objectStoreNames.contains('purchaseOrders')) {
+            const poStore = db.createObjectStore('purchaseOrders', { keyPath: 'id' });
+            poStore.createIndex('by_jobId', 'jobId', { unique: false });
+            poStore.createIndex('by_woId', 'woId', { unique: false });
+            poStore.createIndex('by_status', 'status', { unique: false });
+            poStore.createIndex('by_approvalStatus', 'approvalStatus', { unique: false });
+          }
+        }
+
         // Build 3b migration: fix timeEntries indexes (crewMemberId → team_member_id)
         if (oldVersion < 9 && db.objectStoreNames.contains(StoreNames.TIME_ENTRIES)) {
           const teStore = tx.objectStore(StoreNames.TIME_ENTRIES);
@@ -350,6 +374,10 @@ export class IndexedDBAdapter implements StorageAdapter {
       [StoreNames.PASSPORT_ENTRIES]: ['org_id', 'passport_id', 'project_id', 'property_id'],
       // Risk Register (v36)
       [StoreNames.RISK_ENTRIES]: ['trade', 'severity', 'status', 'linkedSopId', 'source'],
+      // Expense & PO Tracker (v37)
+      [StoreNames.VENDORS]: ['name', 'type'],
+      [StoreNames.JOB_EXPENSES]: ['jobId', 'woId', 'crewMemberId', 'status', 'reimbursementOwing'],
+      [StoreNames.PURCHASE_ORDERS]: ['jobId', 'woId', 'status', 'approvalStatus'],
     };
 
     const storeIndexes = indexes[storeName] || [];

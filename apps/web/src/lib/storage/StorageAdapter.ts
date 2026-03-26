@@ -176,6 +176,10 @@ export const StoreNames = {
   PASSPORT_ENTRIES: 'passportEntries',
   // Risk Register (v36)
   RISK_ENTRIES: 'riskEntries',
+  // Expense & PO Tracker (v37)
+  VENDORS: 'vendors',
+  JOB_EXPENSES: 'jobExpenses',
+  PURCHASE_ORDERS: 'purchaseOrders',
 } as const;
 
 export type StoreName = (typeof StoreNames)[keyof typeof StoreNames];

@@ -62,8 +62,8 @@ export const fontSizes = {
   monoMd: '9.5px',
   monoLg: '10px',
   monoNav: '14px',
-  monoNavSub: '14px',
-  monoGroupLabel: '21px',
+  monoNavSub: '11px',
+  monoGroupLabel: '14px',
 
   // Figtree sizes
   bodyXs: '11px',

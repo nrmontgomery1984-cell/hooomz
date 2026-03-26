@@ -330,7 +330,7 @@ function SidebarNavItem({
       className="flex items-center gap-2.5 no-underline sidebar-link"
       style={{
         fontFamily: typography.mono,
-        fontSize: isSub ? fontSizes.monoNavSub : fontSizes.monoMd,
+        fontSize: isSub ? fontSizes.monoNavSub : fontSizes.monoNav,
         letterSpacing: isSub ? '0.1em' : '0.13em',
         textTransform: 'uppercase' as const,
         padding: `7px 16px 7px ${isSub ? '24px' : '16px'}`,

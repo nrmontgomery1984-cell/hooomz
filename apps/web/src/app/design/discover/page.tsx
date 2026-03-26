@@ -602,6 +602,7 @@ function ProjectDetail({ lead, onCheckToggle }: { lead: Lead; onCheckToggle: (le
         {activeTab === 'script' && <ScriptTab />}
         {activeTab !== 'discover' && activeTab !== 'script' && (
           <PhaseTab
+            key={activeTab}
             phaseKey={activeTab as PhaseKey}
             label={PHASE_WORDS[PHASE_KEYS.indexOf(activeTab as PhaseKey)]}
             lead={lead}

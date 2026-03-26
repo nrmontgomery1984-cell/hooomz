@@ -268,10 +268,6 @@ const MOCK_LEADS: Lead[] = [
 
 const TRADE_COLORS: Record<Trade, string> = { FL: '#4A7FA5', PT: '#7C3AED', TR: '#D97706' };
 
-// Phase dot colors kept for reference — phaseDotStyle() is the active implementation
-const _PHASE_DOT_COLORS: Record<PhaseStatus, string> = {
-  complete: '#16A34A', active: '#111010', warning: '#D97706', future: '#D4CEC7',
-};
 
 const BORDER_COLORS: Record<string, string> = {
   selected: '#111010', positive: '#16A34A', warning: '#DC2626', neutral: '#E0DCD7',

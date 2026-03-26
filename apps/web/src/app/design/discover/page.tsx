@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useMemo, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { useLeadPipeline } from '@/lib/hooks/useLeadData';
 import type { LeadRecord } from '@/lib/hooks/useLeadData';
 
@@ -337,22 +338,20 @@ function phaseDotStyle(e: PhaseEntry): { background: string; borderColor: string
 // ============================================================================
 
 export default function DiscoverPage() {
+  const router = useRouter();
   const pipeline = useLeadPipeline();
   const mappedLeads = useMemo(() => pipeline.leads.map(mapLeadRecord), [pipeline.leads]);
-  const [leads, setLeads] = useState<Lead[]>([]);
 
-  // Sync mapped leads into state (preserves checklist check state for existing leads)
-  useEffect(() => {
-    setLeads(prev => {
-      const prevMap = new Map(prev.map(l => [l.id, l]));
-      return mappedLeads.map(ml => {
-        const existing = prevMap.get(ml.id);
-        if (existing) {
-          // Keep checklist state, update everything else
-          return { ...ml, checklist: existing.checklist };
-        }
-        return ml;
-      });
+  // Checklist state stored in a ref so pipeline re-fetches don't clobber it
+  const checklistStateRef = useRef<Map<string, Map<number, boolean>>>(new Map());
+
+  const leads = useMemo(() => {
+    return mappedLeads.map((ml) => {
+      const savedChecks = checklistStateRef.current.get(ml.id);
+      if (savedChecks) {
+        return { ...ml, checklist: ml.checklist.map((c) => ({ ...c, checked: savedChecks.get(c.id) ?? c.checked })) };
+      }
+      return ml;
     });
   }, [mappedLeads]);
 
@@ -361,18 +360,13 @@ export default function DiscoverPage() {
   const newCount = leads.filter((l) => l.status === 'new').length;
   const selectedLead = leads.find((l) => l.id === selectedId) ?? null;
 
+  const [, forceRender] = useState(0);
   const handleCheckToggle = useCallback((leadId: string, itemId: number) => {
-    setLeads((prev) =>
-      prev.map((l) => {
-        if (l.id !== leadId) return l;
-        return {
-          ...l,
-          checklist: l.checklist.map((c) =>
-            c.id === itemId ? { ...c, checked: !c.checked } : c,
-          ),
-        };
-      }),
-    );
+    const leadChecks = checklistStateRef.current.get(leadId) ?? new Map<number, boolean>();
+    const current = leadChecks.get(itemId) ?? false;
+    leadChecks.set(itemId, !current);
+    checklistStateRef.current.set(leadId, leadChecks);
+    forceRender((n) => n + 1);
   }, []);
 
   // Loading state
@@ -444,7 +438,7 @@ export default function DiscoverPage() {
       {/* Project Detail Panel */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         {selectedLead ? (
-          <ProjectDetail key={selectedLead.id} lead={selectedLead} onCheckToggle={handleCheckToggle} />
+          <ProjectDetail key={selectedLead.id} lead={selectedLead} onCheckToggle={handleCheckToggle} onEdit={() => router.push(`/customers/${selectedLead.id}`)} />
         ) : (
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <EmptyDetail />
@@ -534,7 +528,7 @@ function EmptyDetail() {
 // PROJECT DETAIL
 // ============================================================================
 
-function ProjectDetail({ lead, onCheckToggle }: { lead: Lead; onCheckToggle: (leadId: string, itemId: number) => void }) {
+function ProjectDetail({ lead, onCheckToggle, onEdit }: { lead: Lead; onCheckToggle: (leadId: string, itemId: number) => void; onEdit: () => void }) {
   const [activeTab, setActiveTab] = useState<TabId>(() => {
     const active = PHASE_KEYS.find((k) => lead.phases[k].status === 'active');
     return active ?? 'discover';
@@ -557,7 +551,7 @@ function ProjectDetail({ lead, onCheckToggle }: { lead: Lead; onCheckToggle: (le
           <div style={{ display: 'flex', alignItems: 'center', gap: 7, flexShrink: 0, marginTop: 2 }}>
             <ActionButton label="📞 Call" border="#111010" color="#F0EDE8" fill="#111010" hoverBg="#2A2826" />
             <ActionButton label="💬 Text" border="#111010" color="#F0EDE8" fill="#111010" hoverBg="#2A2826" />
-            <ActionButton label="Edit" border="#D0CBC3" color="#111010" />
+            <ActionButton label="Edit" border="#D0CBC3" color="#111010" onClick={onEdit} />
             {!lead.estimateSent && <ActionButton label="↗ Send Estimate" border="#D0CBC3" color="#111010" />}
             {goAheadComplete && <ActionButton label="Convert to Job" border="#111010" color="#fff" fill="#111010" hoverBg="#2A2826" />}
           </div>
@@ -936,7 +930,7 @@ function ScriptTab() {
 // ACTION BUTTON
 // ============================================================================
 
-function ActionButton({ label, border, color, fill, hoverBg }: { label: string; border: string; color: string; fill?: string; hoverBg?: string }) {
+function ActionButton({ label, border, color, fill, hoverBg, onClick }: { label: string; border: string; color: string; fill?: string; hoverBg?: string; onClick?: () => void }) {
   const bg = fill ?? 'white';
   return (
     <button
@@ -946,6 +940,7 @@ function ActionButton({ label, border, color, fill, hoverBg }: { label: string; 
         borderRadius: 4, padding: '6px 13px', cursor: 'pointer', whiteSpace: 'nowrap',
         flexShrink: 0, transition: 'background 0.12s, opacity 0.12s',
       }}
+      onClick={onClick}
       onMouseEnter={(e) => { e.currentTarget.style.background = hoverBg ?? bg; e.currentTarget.style.opacity = '0.9'; }}
       onMouseLeave={(e) => { e.currentTarget.style.background = bg; e.currentTarget.style.opacity = '1'; }}
     >

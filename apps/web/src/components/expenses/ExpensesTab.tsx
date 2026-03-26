@@ -6,14 +6,15 @@
  * Matches hooomz-expense-tracker.html artifact (operator view, expenses panel).
  */
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   useJobExpenses,
   useUpdateExpense,
+  useCreateExpense,
   useVendors,
 } from '@/lib/hooks/useExpenseTracker';
 import { useServicesContext } from '@/lib/services/ServicesContext';
-import type { JobExpense, ExpenseCategory } from '@/lib/repositories/jobExpense.repository';
+import type { JobExpense, ExpenseCategory, PaymentType } from '@/lib/repositories/jobExpense.repository';
 
 const CATEGORY_OPTIONS: { value: ExpenseCategory; label: string }[] = [
   { value: 'materials-unplanned', label: 'Materials — Unplanned' },
@@ -43,7 +44,47 @@ export function ExpensesTab({ jobId }: ExpensesTabProps) {
   const { data: expenses = [] } = useJobExpenses(jobId);
   const { data: vendors = [] } = useVendors();
   const updateExpense = useUpdateExpense();
+  const createExpense = useCreateExpense();
   const { services } = useServicesContext();
+
+  // Log Expense form state
+  const [showCreate, setShowCreate] = useState(false);
+  const [newVendorId, setNewVendorId] = useState('');
+  const [newAmount, setNewAmount] = useState('');
+  const [newPaymentType, setNewPaymentType] = useState<PaymentType>('company-card');
+  const [newCategory, setNewCategory] = useState<ExpenseCategory | ''>('');
+  const [newReceipt, setNewReceipt] = useState(false);
+  const [newCrewMemberId, setNewCrewMemberId] = useState('');
+  const [newWoId, setNewWoId] = useState('');
+  const [newNotes, setNewNotes] = useState('');
+
+  const resetForm = () => {
+    setNewVendorId('');
+    setNewAmount('');
+    setNewPaymentType('company-card');
+    setNewCategory('');
+    setNewReceipt(false);
+    setNewCrewMemberId('');
+    setNewWoId('');
+    setNewNotes('');
+  };
+
+  const handleCreate = async () => {
+    if (!newVendorId || !newAmount) return;
+    await createExpense.mutateAsync({
+      jobId,
+      woId: newWoId,
+      vendorId: newVendorId,
+      amount: parseFloat(newAmount),
+      paymentType: newPaymentType,
+      receiptUploaded: newReceipt,
+      crewMemberId: newCrewMemberId,
+      ...(newCategory ? { category: newCategory } : {}),
+      ...(newNotes ? { notes: newNotes } : {}),
+    });
+    resetForm();
+    setShowCreate(false);
+  };
 
   const vendorMap = useMemo(() => {
     const m = new Map<string, string>();
@@ -106,8 +147,18 @@ export function ExpensesTab({ jobId }: ExpensesTabProps) {
 
   if (woGroups.length === 0) {
     return (
-      <div className="text-center py-8" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-        <p className="text-xs" style={{ color: 'var(--muted)' }}>No expenses logged for this job yet.</p>
+      <div className="space-y-4">
+        <div className="text-center py-8" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+          <p className="text-xs" style={{ color: 'var(--muted)' }}>No expenses logged for this job yet.</p>
+          <button
+            onClick={() => setShowCreate(true)}
+            className="mt-2 text-[10px] font-medium uppercase tracking-[0.08em] px-4 py-2"
+            style={{ fontFamily: 'var(--font-mono)', border: '1px dashed var(--border)', background: 'transparent', color: 'var(--muted)' }}
+          >
+            + Log Expense
+          </button>
+        </div>
+        {showCreate && <LogExpenseModal />}
       </div>
     );
   }
@@ -240,6 +291,172 @@ export function ExpensesTab({ jobId }: ExpensesTabProps) {
           })}
         </div>
       ))}
+
+      {/* Log Expense Button */}
+      <button
+        onClick={() => setShowCreate(true)}
+        className="w-full flex items-center gap-2 px-4 py-3 text-[10px] font-medium uppercase tracking-[0.08em]"
+        style={{ fontFamily: 'var(--font-mono)', border: '1px dashed var(--border)', background: 'transparent', color: 'var(--muted)' }}
+      >
+        + Log Expense
+      </button>
+
+      {showCreate && <LogExpenseModal />}
     </div>
   );
+
+  function LogExpenseModal() {
+    return (
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center"
+        style={{ background: 'rgba(0,0,0,0.5)' }}
+        onClick={(e) => { if (e.target === e.currentTarget) setShowCreate(false); }}
+      >
+        <div className="w-full max-w-lg max-h-[85vh] overflow-y-auto p-5" style={{ background: 'var(--surface)' }}>
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-sm font-bold" style={{ color: 'var(--charcoal)' }}>Log Expense</span>
+            <button onClick={() => setShowCreate(false)} className="text-sm" style={{ background: 'none', border: 'none', color: 'var(--muted)', cursor: 'pointer' }}>✕</button>
+          </div>
+          <div className="space-y-3">
+            {/* Vendor */}
+            <div>
+              <label className="block text-[10px] font-medium uppercase tracking-[0.08em] mb-1" style={{ fontFamily: 'var(--font-mono)', color: 'var(--muted)' }}>Vendor</label>
+              <select value={newVendorId} onChange={(e) => setNewVendorId(e.target.value)} className="w-full h-10 px-3 text-sm" style={{ background: '#fff', border: '1px solid var(--border)', color: 'var(--charcoal)', outline: 'none' }}>
+                <option value="">Select vendor...</option>
+                {vendors.map((v) => <option key={v.id} value={v.id}>{v.name}</option>)}
+              </select>
+            </div>
+
+            {/* Amount */}
+            <div>
+              <label className="block text-[10px] font-medium uppercase tracking-[0.08em] mb-1" style={{ fontFamily: 'var(--font-mono)', color: 'var(--muted)' }}>Amount (CAD)</label>
+              <input
+                type="number"
+                value={newAmount}
+                onChange={(e) => setNewAmount(e.target.value)}
+                placeholder="0.00"
+                step="0.01"
+                min="0"
+                className="w-full h-10 px-3 text-sm text-right"
+                style={{ fontFamily: 'var(--font-mono)', background: '#fff', border: '1px solid var(--border)', color: 'var(--charcoal)', outline: 'none' }}
+              />
+            </div>
+
+            {/* Payment Type */}
+            <div>
+              <label className="block text-[10px] font-medium uppercase tracking-[0.08em] mb-1" style={{ fontFamily: 'var(--font-mono)', color: 'var(--muted)' }}>Payment Type</label>
+              <div className="flex gap-2">
+                {([
+                  { value: 'company-card' as const, label: 'Company Card' },
+                  { value: 'personal' as const, label: 'Personal' },
+                  { value: 'cash' as const, label: 'Cash' },
+                ]).map((pt) => (
+                  <button
+                    key={pt.value}
+                    onClick={() => setNewPaymentType(pt.value)}
+                    className="flex-1 h-10 text-[10px] font-medium uppercase tracking-[0.04em]"
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      background: newPaymentType === pt.value ? 'var(--charcoal)' : 'var(--surface)',
+                      color: newPaymentType === pt.value ? '#fff' : 'var(--muted)',
+                      border: `1px solid ${newPaymentType === pt.value ? 'var(--charcoal)' : 'var(--border)'}`,
+                    }}
+                  >
+                    {pt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Category */}
+            <div>
+              <label className="block text-[10px] font-medium uppercase tracking-[0.08em] mb-1" style={{ fontFamily: 'var(--font-mono)', color: 'var(--muted)' }}>Category (optional)</label>
+              <select value={newCategory} onChange={(e) => setNewCategory(e.target.value as ExpenseCategory | '')} className="w-full h-10 px-3 text-sm" style={{ background: '#fff', border: '1px solid var(--border)', color: 'var(--charcoal)', outline: 'none' }}>
+                <option value="">Assign later...</option>
+                {CATEGORY_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+            </div>
+
+            {/* Work Order */}
+            <div>
+              <label className="block text-[10px] font-medium uppercase tracking-[0.08em] mb-1" style={{ fontFamily: 'var(--font-mono)', color: 'var(--muted)' }}>Work Order ID</label>
+              <input
+                type="text"
+                value={newWoId}
+                onChange={(e) => setNewWoId(e.target.value)}
+                placeholder="e.g. WO-2026-001"
+                className="w-full h-10 px-3 text-sm"
+                style={{ background: '#fff', border: '1px solid var(--border)', color: 'var(--charcoal)', outline: 'none' }}
+              />
+            </div>
+
+            {/* Crew Member */}
+            <div>
+              <label className="block text-[10px] font-medium uppercase tracking-[0.08em] mb-1" style={{ fontFamily: 'var(--font-mono)', color: 'var(--muted)' }}>Crew Member</label>
+              <input
+                type="text"
+                value={newCrewMemberId}
+                onChange={(e) => setNewCrewMemberId(e.target.value)}
+                placeholder="Name or ID"
+                className="w-full h-10 px-3 text-sm"
+                style={{ background: '#fff', border: '1px solid var(--border)', color: 'var(--charcoal)', outline: 'none' }}
+              />
+            </div>
+
+            {/* Receipt */}
+            <div className="flex items-center gap-2.5">
+              <button
+                onClick={() => setNewReceipt(!newReceipt)}
+                className="w-5 h-5 flex items-center justify-center text-[10px]"
+                style={{
+                  border: '1px solid var(--border)',
+                  background: newReceipt ? 'var(--charcoal)' : '#fff',
+                  color: newReceipt ? '#fff' : 'transparent',
+                }}
+              >
+                ✓
+              </button>
+              <span className="text-[10px] font-medium uppercase tracking-[0.08em]" style={{ fontFamily: 'var(--font-mono)', color: 'var(--muted)' }}>Receipt Uploaded</span>
+            </div>
+
+            {/* Notes */}
+            <div>
+              <label className="block text-[10px] font-medium uppercase tracking-[0.08em] mb-1" style={{ fontFamily: 'var(--font-mono)', color: 'var(--muted)' }}>Notes (optional)</label>
+              <textarea
+                value={newNotes}
+                onChange={(e) => setNewNotes(e.target.value)}
+                placeholder="Additional details..."
+                rows={2}
+                className="w-full px-3 py-2 text-sm"
+                style={{ background: '#fff', border: '1px solid var(--border)', color: 'var(--charcoal)', outline: 'none', resize: 'vertical' }}
+              />
+            </div>
+
+            {/* Personal payment reimbursement note */}
+            {newPaymentType === 'personal' && (
+              <div
+                className="flex items-center gap-2 px-3 py-2 text-[10px]"
+                style={{ fontFamily: 'var(--font-mono)', background: 'rgba(217,119,6,0.06)', border: '1px solid rgba(217,119,6,0.2)', color: 'var(--amber)' }}
+              >
+                ⚠ Personal expenses are automatically flagged for reimbursement
+              </div>
+            )}
+
+            {/* Actions */}
+            <div className="flex gap-2 pt-2">
+              <button onClick={() => setShowCreate(false)} className="flex-1 h-10 text-[11px] font-medium" style={{ fontFamily: 'var(--font-mono)', background: 'var(--bg)', color: 'var(--muted)', border: '1px solid var(--border)' }}>Cancel</button>
+              <button
+                onClick={handleCreate}
+                disabled={!newVendorId || !newAmount || createExpense.isPending}
+                className="flex-1 h-10 text-[11px] font-medium text-white"
+                style={{ fontFamily: 'var(--font-mono)', background: 'var(--charcoal)', border: 'none', opacity: newVendorId && newAmount ? 1 : 0.5 }}
+              >
+                {createExpense.isPending ? 'Logging...' : 'Log Expense'}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 }

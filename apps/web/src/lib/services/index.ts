@@ -81,6 +81,7 @@ import { DiscoveryDraftRepository } from '../repositories/discoveryDraft.reposit
 
 // Cost Catalogue (admin config, local-only)
 import { StoreNames } from '../storage/StorageAdapter';
+import type { StorageAdapter } from '../storage/StorageAdapter';
 import type { CostCatalog } from '../types/costCatalog.types';
 
 // Financial Forecasting
@@ -156,11 +157,18 @@ import { PunchListService } from './punchList.service';
 // Stage Gate (SCRIPT enforcement)
 import { StageGateService } from './stageGate.service';
 
+// Risk Register (v36)
+import { RiskEntryRepository } from '../repositories/riskEntry.repository';
+
 /**
  * Repository container - provides access to all offline-first repositories
  * Use this for read operations and internal access.
  */
 export interface Services {
+  // Raw storage adapter — for seed utilities and migrations only.
+  // Use service/repository methods for all normal reads and writes.
+  storage: StorageAdapter;
+
   // Activity Log - THE SPINE (every mutation logs here)
   activity: ActivityService;
 
@@ -291,6 +299,9 @@ export interface Services {
 
   // Stage Gate (SCRIPT enforcement)
   stageGate: StageGateService;
+
+  // Risk Register (v36)
+  riskEntries: RiskEntryRepository;
 }
 
 /**
@@ -387,6 +398,8 @@ export async function initializeServices(): Promise<Services> {
 
     // Use repositories directly for offline-first operation
     const services: Services = {
+      storage,
+
       // Activity Log - THE SPINE (every mutation logs here)
       activity: activityService,
 
@@ -583,6 +596,9 @@ export async function initializeServices(): Promise<Services> {
 
       // Stage Gate — late-bound below
       stageGate: null as unknown as StageGateService,
+
+      // Risk Register (v36)
+      riskEntries: new RiskEntryRepository(storage),
     };
 
     // Late-bind expense repo to budget service for derived actualMaterialCost

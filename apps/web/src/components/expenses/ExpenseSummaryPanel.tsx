@@ -77,7 +77,7 @@ export function ExpenseSummaryPanel({ projectId, tasks }: ExpenseSummaryPanelPro
         alignItems: 'center',
         gap: 3,
         fontSize: 10,
-        color: 'var(--teal)',
+        color: 'var(--accent)',
         background: 'none',
         border: 'none',
         cursor: 'pointer',
@@ -94,16 +94,16 @@ export function ExpenseSummaryPanel({ projectId, tasks }: ExpenseSummaryPanelPro
       <PanelSection label="Expenses" action={action}>
         {expenses.length === 0 ? (
           <div style={{ padding: '6px 12px' }}>
-            <span style={{ fontSize: 11, color: 'var(--text-3)' }}>No expenses recorded</span>
+            <span style={{ fontSize: 11, color: 'var(--muted)' }}>No expenses recorded</span>
           </div>
         ) : (
           <>
             {/* Total */}
             <div style={{ padding: '4px 12px 6px', display: 'flex', alignItems: 'baseline', gap: 6 }}>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 16, fontWeight: 700, color: 'var(--text)' }}>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 16, fontWeight: 700, color: 'var(--charcoal)' }}>
                 {formatCurrency(totalSpend)}
               </span>
-              <span style={{ fontSize: 10, color: 'var(--text-3)' }}>
+              <span style={{ fontSize: 10, color: 'var(--muted)' }}>
                 {expenses.length} {expenses.length === 1 ? 'expense' : 'expenses'}
               </span>
             </div>
@@ -114,9 +114,9 @@ export function ExpenseSummaryPanel({ projectId, tasks }: ExpenseSummaryPanelPro
               return (
                 <div key={category} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '3px 12px' }}>
                   <span style={{
-                    fontFamily: 'var(--font-cond)',
+                    fontFamily: 'var(--font-mono)',
                     fontSize: 9,
-                    color: 'var(--text-3)',
+                    color: 'var(--muted)',
                     width: 56,
                     flexShrink: 0,
                     overflow: 'hidden',
@@ -128,7 +128,7 @@ export function ExpenseSummaryPanel({ projectId, tasks }: ExpenseSummaryPanelPro
                   <span style={{
                     fontFamily: 'var(--font-mono)',
                     fontSize: 9,
-                    color: 'var(--text-2)',
+                    color: 'var(--mid)',
                     width: 48,
                     flexShrink: 0,
                     textAlign: 'right',
@@ -139,7 +139,7 @@ export function ExpenseSummaryPanel({ projectId, tasks }: ExpenseSummaryPanelPro
                     <div style={{
                       width: `${Math.min(pct, 100)}%`,
                       height: '100%',
-                      background: 'var(--teal)',
+                      background: 'var(--accent)',
                       borderRadius: 1,
                     }} />
                   </div>

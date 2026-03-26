@@ -78,14 +78,14 @@ export default function KnowledgePage() {
   return (
     <div className="min-h-screen pb-24" style={{ background: 'var(--bg)' }}>
       {/* Header */}
-      <div style={{ background: 'var(--surface-1)', borderBottom: '1px solid var(--border)' }}>
+      <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
         <div className="max-w-lg mx-auto px-4 py-4">
           <div className="flex items-center gap-2 mb-1">
             <Link href="/labs" className="text-sm hover:underline" style={{ color: LABS_COLOR }}>Labs</Link>
-            <span className="text-xs" style={{ color: 'var(--text-3)' }}>/</span>
+            <span className="text-xs" style={{ color: 'var(--muted)' }}>/</span>
           </div>
-          <h1 className="text-xl font-bold" style={{ color: 'var(--text)' }}>Knowledge Base</h1>
-          <p className="text-xs" style={{ color: 'var(--text-3)' }}>Verified knowledge from field data</p>
+          <h1 className="text-xl font-bold" style={{ color: 'var(--charcoal)' }}>Knowledge Base</h1>
+          <p className="text-xs" style={{ color: 'var(--muted)' }}>Verified knowledge from field data</p>
         </div>
 
         {/* Status filter pills */}
@@ -99,7 +99,7 @@ export default function KnowledgePage() {
                 style={
                   statusFilter === f.key
                     ? { background: LABS_COLOR, color: '#fff' }
-                    : { background: 'var(--surface-2)', color: 'var(--text-2)' }
+                    : { background: 'var(--surface-2)', color: 'var(--mid)' }
                 }
               >
                 {f.label}
@@ -118,8 +118,8 @@ export default function KnowledgePage() {
                 className="px-3 py-1.5 text-xs font-medium rounded-full whitespace-nowrap transition-colors"
                 style={
                   typeFilter === f.value
-                    ? { background: 'var(--text)', color: 'var(--bg)' }
-                    : { background: 'var(--surface-2)', color: 'var(--text-2)' }
+                    ? { background: 'var(--charcoal)', color: 'var(--bg)' }
+                    : { background: 'var(--surface-2)', color: 'var(--mid)' }
                 }
               >
                 {f.label}
@@ -134,14 +134,14 @@ export default function KnowledgePage() {
         {showCategoryBanner && categorySearch && (
           <div
             className="flex items-center justify-between px-3 py-2.5 rounded-xl"
-            style={{ background: '#F0FDFA', border: '1px solid #99F6E4' }}
+            style={{ background: 'var(--accent-bg)', border: '1px solid var(--accent-bg)' }}
           >
             <div>
               <p className="text-xs font-semibold" style={{ color: 'var(--blue)' }}>
                 Filtered: {catLabel}
               </p>
               {actionParam === 'new' && sorted.length === 0 && (
-                <p className="text-[11px] mt-0.5" style={{ color: '#115E59' }}>
+                <p className="text-[11px] mt-0.5" style={{ color: 'var(--accent)' }}>
                   No research data yet — track observations during your next {catLabel.toLowerCase()} project
                 </p>
               )}
@@ -149,7 +149,7 @@ export default function KnowledgePage() {
             <button
               onClick={() => { setCategorySearch(''); setShowCategoryBanner(false); }}
               className="text-[11px] font-medium px-2 py-1 rounded-lg"
-              style={{ background: 'var(--surface-1)', color: 'var(--text-2)', border: '1px solid var(--border)' }}
+              style={{ background: 'var(--surface)', color: 'var(--mid)', border: '1px solid var(--border)' }}
             >
               Clear
             </button>
@@ -159,14 +159,14 @@ export default function KnowledgePage() {
         {isLoading ? (
           <div className="text-center py-8">
             <div className="w-8 h-8 border-3 rounded-full animate-spin mx-auto mb-3" style={{ borderColor: 'var(--border)', borderTopColor: 'var(--blue)' }} />
-            <p className="text-sm" style={{ color: 'var(--text-3)' }}>Loading knowledge base...</p>
+            <p className="text-sm" style={{ color: 'var(--muted)' }}>Loading knowledge base...</p>
           </div>
         ) : sorted.length === 0 ? (
           <div className="text-center py-8">
-            <p className="text-sm" style={{ color: 'var(--text-3)' }}>
+            <p className="text-sm" style={{ color: 'var(--muted)' }}>
               {categorySearch ? `No knowledge items for ${catLabel}` : 'No knowledge items yet'}
             </p>
-            <p className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>
+            <p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>
               {categorySearch
                 ? 'Track field observations during projects to build knowledge here'
                 : 'Knowledge items are created from observations and experiments'}

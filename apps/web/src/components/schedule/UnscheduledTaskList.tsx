@@ -26,27 +26,27 @@ export function UnscheduledTaskList({ tasks, onTaskClick }: UnscheduledTaskListP
   }, {});
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+    <div className="bg-white rounded-xl border border-[var(--border)] shadow-sm overflow-hidden">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-gray-50 transition-colors"
+        className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-[var(--surface)] transition-colors"
         style={{ minHeight: '44px' }}
       >
         <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-gray-900">Unscheduled</span>
+          <span className="text-sm font-semibold text-[var(--charcoal)]">Unscheduled</span>
           <span className="inline-flex px-1.5 py-0.5 text-[10px] font-medium rounded-full bg-amber-100 text-amber-700">
             {tasks.length}
           </span>
         </div>
-        <span className="text-gray-400 text-sm">{isOpen ? '▲' : '▼'}</span>
+        <span className="text-[var(--muted)] text-sm">{isOpen ? '▲' : '▼'}</span>
       </button>
 
       {isOpen && (
-        <div className="border-t border-gray-100">
+        <div className="border-t border-[var(--border)]">
           {Object.entries(byProject).map(([projectId, projectTasks]) => (
             <div key={projectId}>
-              <div className="px-4 py-1.5 bg-gray-50">
-                <span className="text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+              <div className="px-4 py-1.5 bg-[var(--surface)]">
+                <span className="text-[10px] font-medium text-[var(--muted)] uppercase tracking-wider">
                   {projectId}
                 </span>
               </div>
@@ -54,16 +54,16 @@ export function UnscheduledTaskList({ tasks, onTaskClick }: UnscheduledTaskListP
                 <button
                   key={task.id}
                   onClick={() => onTaskClick(task)}
-                  className="w-full flex items-center justify-between px-4 py-2.5 text-left hover:bg-gray-50 transition-colors border-t border-gray-50"
+                  className="w-full flex items-center justify-between px-4 py-2.5 text-left hover:bg-[var(--surface)] transition-colors border-t border-[var(--surface)]"
                   style={{ minHeight: '44px' }}
                 >
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm text-gray-900 truncate">{task.title}</p>
+                    <p className="text-sm text-[var(--charcoal)] truncate">{task.title}</p>
                     {task.dueDate && (
-                      <p className="text-[10px] text-gray-400">Due: {task.dueDate}</p>
+                      <p className="text-[10px] text-[var(--muted)]">Due: {task.dueDate}</p>
                     )}
                   </div>
-                  <span className="text-xs text-teal-600 font-medium ml-2 flex-shrink-0">+ Schedule</span>
+                  <span className="text-xs font-medium ml-2 flex-shrink-0" style={{ color: 'var(--accent)' }}>+ Schedule</span>
                 </button>
               ))}
             </div>

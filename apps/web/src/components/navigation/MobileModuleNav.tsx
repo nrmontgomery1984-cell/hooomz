@@ -45,7 +45,7 @@ export function MobileModuleNav() {
     <nav
       className="md:hidden"
       style={{
-        background: 'var(--surface-1)',
+        background: 'var(--surface)',
         borderBottom: '1px solid var(--border)',
         overflowX: 'auto',
         overflowY: 'hidden',
@@ -74,12 +74,12 @@ export function MobileModuleNav() {
             key={item.href}
             href={item.href}
             style={{
-              fontFamily: "'DM Mono', monospace",
+              fontFamily: 'var(--font-mono)',
               fontSize: 10,
               fontWeight: 500,
               letterSpacing: '1.5px',
               textTransform: 'uppercase',
-              color: isActive ? '#111010' : 'var(--text-3)',
+              color: isActive ? 'var(--dark-nav)' : 'var(--muted)',
               background: 'none',
               borderBottom: isActive
                 ? '2px solid #111010'

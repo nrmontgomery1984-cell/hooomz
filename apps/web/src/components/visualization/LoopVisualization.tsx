@@ -57,10 +57,10 @@ function getStatusFromScore(score: number): HealthStatus {
 
 function getStatusColor(status: HealthStatus): string {
   const colors = {
-    healthy: 'var(--theme-status-green, #10b981)',
-    progress: 'var(--theme-status-blue, #3B82F6)',
-    attention: 'var(--theme-status-amber, #f59e0b)',
-    blocked: 'var(--theme-status-red, #ef4444)',
+    healthy: 'var(--green)',
+    progress: 'var(--blue)',
+    attention: 'var(--yellow)',
+    blocked: 'var(--red)',
   };
   return colors[status];
 }
@@ -267,7 +267,7 @@ function InnerSphere({ loop, position, isHovered, isSelected, onClick, onHover }
       </svg>
 
       {/* Label below sphere */}
-      <span className="text-xs md:text-sm text-slate-600 font-medium text-center max-w-[80px] truncate">
+      <span className="text-xs md:text-sm text-[var(--mid)] font-medium text-center max-w-[80px] truncate">
         {loop.name}
       </span>
     </div>
@@ -339,7 +339,7 @@ export function LoopVisualization({
       {/* Empty state */}
       {childLoops.length === 0 && (
         <div className="absolute inset-0 flex items-center justify-center">
-          <p className="text-slate-400 text-sm">No items</p>
+          <p className="text-[var(--muted)] text-sm">No items</p>
         </div>
       )}
     </div>

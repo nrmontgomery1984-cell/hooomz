@@ -9,10 +9,10 @@ import { InlineEditCell } from './InlineEditCell';
 import { PurchaseModal } from './PurchaseModal';
 import { ContentStatusBadge } from './ContentStatusBadge';
 
-const NAVY = '#1B2A4A';
-const TEAL = '#2A9D8F';
-const GOLD = '#E9C46A';
-const CORAL = '#E76F51';
+const NAVY = 'var(--charcoal)';
+const TEAL = 'var(--accent)';
+const GOLD = '#E9C46A'; /* tool-research category — no canonical equivalent */
+const CORAL = '#E76F51'; /* tool-research category — no canonical equivalent */
 
 function Badge({ text, color = TEAL }: { text: string; color?: string }) {
   return (
@@ -43,7 +43,7 @@ export function LabInstrumentsTab({ items }: LabInstrumentsTabProps) {
   const [purchaseItem, setPurchaseItem] = useState<ToolResearchItem | null>(null);
 
   const purchasedRowStyle = (row: ToolResearchItem) =>
-    row.purchased ? { background: '#E8F5E9' } : undefined;
+    row.purchased ? { background: 'var(--green-bg)' } : undefined;
 
   return (
     <>
@@ -52,7 +52,7 @@ export function LabInstrumentsTab({ items }: LabInstrumentsTabProps) {
         accent="Reference instruments already owned"
         color={NAVY}
       >
-        <p style={{ fontSize: 12, color: '#666', margin: '0 0 12px' }}>
+        <p style={{ fontSize: 12, color: 'var(--muted)', margin: '0 0 12px' }}>
           Split purchase: in-store items at CT/HD and online for specialty instruments. Owned
           instruments (Wagner Orion 950, Mitutoyo caliper, BAFX 3370) are reference standards —
           document them first.
@@ -115,7 +115,7 @@ export function LabInstrumentsTab({ items }: LabInstrumentsTabProps) {
               nowrap: true,
               render: (_: unknown, row: ToolResearchItem) =>
                 row.purchased ? (
-                  <span style={{ color: '#2E7D32', fontSize: 11, fontWeight: 600 }}>Purchased</span>
+                  <span style={{ color: 'var(--green)', fontSize: 11, fontWeight: 600 }}>Purchased</span>
                 ) : (
                   <button
                     onClick={(e) => { e.stopPropagation(); setPurchaseItem(row); }}
@@ -123,7 +123,7 @@ export function LabInstrumentsTab({ items }: LabInstrumentsTabProps) {
                       padding: '4px 10px',
                       border: `1px solid ${TEAL}`,
                       borderRadius: 6,
-                      background: 'white',
+                      background: 'var(--surface)',
                       color: TEAL,
                       fontSize: 11,
                       fontWeight: 600,

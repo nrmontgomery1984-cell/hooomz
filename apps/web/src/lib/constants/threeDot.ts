@@ -26,9 +26,9 @@ export interface JobHealthResult {
 // ============================================================================
 
 export const THREE_DOT_HEX = {
-  green:  '#22C55E',
-  yellow: '#F59E0B',
-  red:    '#EF4444',
+  green:  'var(--green)',
+  yellow: 'var(--yellow)',
+  red:    'var(--red)',
 } as const;
 
 export const THREE_DOT_LABELS: Record<ThreeDotColor, string> = {

@@ -12,19 +12,25 @@
 :root{
   --bg:#F0EDE8;
   --surface:#FAF8F5;
-  --surface-2:#E8E4DE;
+  --surface-2:#EAE4DB;
   --charcoal:#1A1714;
   --dark-nav:#111010;
   --mid:#5C5349;
   --muted:#9A8E84;
   --faint:#D4CEC7;
-  --border:rgba(0,0,0,.10);
-  --border-s:rgba(0,0,0,.18);
+  --border:#E0DCD7;
+  --border-s:rgba(0,0,0,.18); /* non-canonical — used by form inputs */
   --accent:#6B6560;
   --accent-bg:rgba(107,101,96,.09);
   --accent-border:rgba(107,101,96,.22);
   --green:#16A34A;
+  --green-bg:rgba(22,163,74,.08);
   --red:#DC2626;
+  --amber:#D97706;
+  --blue:#4A7FA5;
+  --font-display:'Figtree',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --font-body:'Figtree',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --font-mono:'DM Mono','SF Mono',ui-monospace,monospace;
   --radius:10px;
   --radius-sm:6px;
 }
@@ -56,11 +62,6 @@ nav{
   color:#fff;
   letter-spacing:0.06em;
 }
-.nav-dots{display:flex;align-items:center;gap:3px;margin:0 2px}
-.nav-dot{width:7px;height:7px;border-radius:50%;display:inline-block}
-.nav-dot.r{background:#DC2626}
-.nav-dot.a{background:#D97706}
-.nav-dot.g{background:#16A34A}
 .nav-interiors{color:rgba(255,255,255,.5);margin-left:6px;font-weight:400}
 .nav-back{
   font-family:'DM Mono',monospace;
@@ -100,34 +101,8 @@ nav{
 }
 .badge-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green)}
 
-.left-headline{
-  font-size:26px;font-weight:700;color:#fff;line-height:1.2;
-}
-.left-body{
-  font-size:13.5px;color:rgba(255,255,255,.55);line-height:1.65;
-}
-
-/* DESIGN ACRONYM */
-.design-steps{display:flex;flex-direction:column;gap:10px}
-.ds-row{display:flex;gap:12px;align-items:flex-start}
-.ds-letter{
-  font-family:'DM Mono',monospace;
-  font-size:12px;font-weight:500;
-  color:rgba(255,255,255,.4);
-  min-width:16px;
-  padding-top:2px;
-  letter-spacing:0.06em;
-}
-.ds-content{}
-.ds-name{
-  font-family:'DM Mono',monospace;
-  font-size:10px;font-weight:500;
-  color:rgba(255,255,255,.35);
-  letter-spacing:0.1em;
-  text-transform:uppercase;
-  margin-bottom:1px;
-}
-.ds-desc{font-size:12px;color:rgba(255,255,255,.5);line-height:1.5}
+.left-headline{font-size:26px;font-weight:700;color:#fff;line-height:1.2}
+.left-body{font-size:13.5px;color:rgba(255,255,255,.55);line-height:1.65}
 
 /* ESTIMATE PREVIEW */
 .estimate-preview{
@@ -152,7 +127,9 @@ nav{
   line-height:1;
   margin-bottom:6px;
 }
-.ep-trades{font-size:12px;color:rgba(255,255,255,.5);margin-bottom:10px}
+.ep-trades{font-size:12px;color:rgba(255,255,255,.5);margin-bottom:4px}
+.ep-trade-line{font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.45);margin-bottom:2px}
+.ep-meta{font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.45);margin-top:6px;margin-bottom:8px}
 .ep-caveat{
   font-family:'DM Mono',monospace;
   font-size:9px;letter-spacing:0.08em;
@@ -207,7 +184,7 @@ nav{
   display:block;
 }
 .field-label .req{color:var(--red)}
-input[type=text],input[type=email],input[type=tel],textarea,select{
+input[type=text],input[type=email],input[type=tel],input[type=number],textarea,select{
   width:100%;
   background:var(--bg);
   border:1.5px solid var(--border-s);
@@ -220,10 +197,10 @@ input[type=text],input[type=email],input[type=tel],textarea,select{
   transition:border-color .15s;
   -webkit-appearance:none;appearance:none;
 }
-input[type=text]:focus,input[type=email]:focus,input[type=tel]:focus,textarea:focus,select:focus{
+input[type=text]:focus,input[type=email]:focus,input[type=tel]:focus,input[type=number]:focus,textarea:focus,select:focus{
   border-color:var(--charcoal);
 }
-input.error,select.error,textarea.error{border-color:var(--red)!important}
+input.error,select.error{border-color:var(--red)!important}
 .error-msg{
   font-family:'DM Mono',monospace;
   font-size:10px;color:var(--red);
@@ -321,49 +298,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 }
 .src input:checked~.src-box .src-label{color:var(--charcoal)}
 
-/* TRIM STYLE CARDS */
-.tscard-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
-.tscard{cursor:pointer}
-.tscard input{display:none}
-.tscard-box{
-  display:flex;flex-direction:column;
-  border:1.5px solid var(--border-s);
-  border-radius:var(--radius);
-  padding:16px 14px 14px;
-  background:var(--bg);
-  transition:all .15s;
-}
-.tscard-box:hover{border-color:var(--charcoal)}
-.tscard.selected .tscard-box{
-  border-color:var(--charcoal);
-  background:var(--surface-2);
-}
-.ts-profile{height:40px;display:flex;align-items:flex-end;margin-bottom:10px}
-.ts-name{
-  font-family:'DM Mono',monospace;
-  font-size:11px;font-weight:500;
-  letter-spacing:0.08em;
-  text-transform:uppercase;
-  color:var(--charcoal);
-  margin-bottom:3px;
-}
-.ts-sub{font-size:11.5px;color:var(--mid);line-height:1.4}
-
-.tscard-samples{
-  cursor:pointer;
-  border:1.5px solid var(--border-s);
-  border-radius:var(--radius);
-  padding:12px 16px;
-  background:var(--bg);
-  display:flex;align-items:center;gap:10px;
-  transition:all .15s;
-}
-.tscard-samples:hover{border-color:var(--charcoal)}
-.tscard-samples.selected{border-color:var(--charcoal);background:var(--surface-2)}
-.tscard-samples input{display:none}
-.ts-plus{font-size:18px;color:var(--muted);line-height:1}
-.ts-samples-label{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--mid)}
-
 /* TIER BOXES */
 .tier-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .tier{cursor:pointer;position:relative}
@@ -427,42 +361,15 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 }
 .counter-count.nonzero{color:var(--charcoal);font-weight:500}
 
-/* FINISH BOXES (2-col) */
-.finish-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-
 /* FEATURE ROOM ENTRIES */
-.feature-rooms{display:flex;flex-direction:column;gap:12px;margin-bottom:12px}
 .feature-room-entry{
   border:1.5px solid var(--border-s);
   border-radius:var(--radius);
   padding:16px;
   background:var(--bg);
   position:relative;
+  margin-bottom:10px;
 }
-.fe-remove{
-  position:absolute;top:12px;right:12px;
-  font-family:'DM Mono',monospace;
-  font-size:10px;font-weight:500;
-  letter-spacing:0.08em;
-  text-transform:uppercase;
-  color:var(--muted);
-  background:none;border:none;cursor:pointer;
-  padding:2px 6px;
-}
-.fe-remove:hover{color:var(--red)}
-.fe-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
-.fe-label{
-  font-family:'DM Mono',monospace;
-  font-size:10px;font-weight:500;
-  letter-spacing:0.1em;text-transform:uppercase;
-  color:var(--mid);margin-bottom:8px;display:block;
-}
-.fe-ck-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.fe-ck-box{
-  display:flex;align-items:center;gap:8px;
-  padding:9px 10px;font-size:12px;
-}
-
 .add-room-btn{
   width:100%;
   display:flex;align-items:center;justify-content:center;gap:8px;
@@ -479,47 +386,57 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 }
 .add-room-btn:hover{border-color:var(--charcoal);color:var(--charcoal)}
 
-/* PER-AREA FLOORING */
-.per-area-grid{
+/* MEASUREMENT CARDS */
+.measure-placeholder{font-size:13px;color:var(--muted);text-align:center;padding:20px 0}
+.measure-card{
   border:1.5px solid var(--border-s);
   border-radius:var(--radius);
-  overflow:hidden;
-  margin-bottom:8px;
+  background:var(--bg);
+  margin-bottom:10px;
 }
-.per-area-row{
-  display:flex;align-items:center;gap:12px;
-  padding:10px 14px;
-  border-bottom:1px solid var(--border);
-}
-.per-area-row:last-child{border-bottom:none}
-.par-name{
+.measure-card:last-of-type{margin-bottom:0}
+.measure-card-header{
   font-family:'DM Mono',monospace;
   font-size:10px;font-weight:500;
   letter-spacing:0.1em;text-transform:uppercase;
-  color:var(--mid);min-width:120px;
+  color:var(--charcoal);
+  padding:12px 16px;
+  border-bottom:1px solid var(--border);
 }
-.par-select{flex:1}
-.par-select select{margin:0}
-
-/* SECTION HEADING */
-.section-heading{
-  display:flex;align-items:center;gap:10px;
-  margin-bottom:20px;
+.shapes-container{padding:4px 0}
+.shape-row{display:flex;align-items:center;gap:8px;padding:8px 16px}
+.shape-input{
+  font-family:'DM Mono',monospace;
+  font-size:13px;
+  width:80px;
+  padding:8px 10px;
+  border:1.5px solid var(--border-s);
+  border-radius:var(--radius-sm);
+  background:var(--surface);
+  color:var(--charcoal);
+  text-align:center;
+  outline:none;
 }
-.sh-num{
+.shape-input:focus{border-color:var(--charcoal)}
+.shape-input::placeholder{color:var(--muted);font-size:11px}
+.shape-x{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)}
+.shape-sqft{
+  font-family:'DM Mono',monospace;
+  font-size:12px;font-weight:500;
+  color:var(--charcoal);
+  min-width:70px;text-align:right;
+}
+.shape-remove{
   font-family:'DM Mono',monospace;
   font-size:10px;font-weight:500;
-  letter-spacing:0.1em;
+  letter-spacing:0.08em;text-transform:uppercase;
   color:var(--muted);
+  background:none;border:none;cursor:pointer;
+  padding:2px 6px;
 }
-
-/* CONDITIONAL SECTIONS */
-.conditional{display:none;border-top:none!important;padding-top:0!important}
-.conditional.visible{border-top:1px solid var(--border)!important;padding-top:28px!important}
-.conditional.visible{display:block}
-
-/* SUB-SECTION */
-.sub-section{margin-bottom:24px}
+.shape-remove:hover{color:var(--red)}
+.room-total-row{display:flex;justify-content:flex-end;padding:10px 16px;border-top:1px solid var(--border)}
+.room-total{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--charcoal)}
 
 /* SUBMIT */
 .submit-row{
@@ -546,7 +463,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   transition:opacity .15s;
 }
 .submit-btn:hover{opacity:.9}
-.submit-btn:disabled{opacity:.6;cursor:not-allowed}
 
 /* SUCCESS STATE */
 .success-state{
@@ -606,50 +522,34 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   padding:2px 7px;
   color:var(--mid);
 }
-
-/* WHAT HAPPENS NEXT */
-.next-label{
-  font-family:'DM Mono',monospace;
-  font-size:10px;font-weight:500;
+.summary-estimate{
+  background:var(--charcoal);
+  padding:16px;
+  border-radius:0 0 var(--radius) var(--radius);
+}
+.summary-est-label{
+  font-family:'DM Mono',monospace;font-size:9px;font-weight:500;
   letter-spacing:0.12em;text-transform:uppercase;
-  color:var(--muted);margin-bottom:14px;
+  color:rgba(255,255,255,.35);margin-bottom:4px;
 }
-.next-steps{display:flex;flex-direction:column;gap:12px}
-.next-step{display:flex;gap:12px;align-items:flex-start;font-size:13px;color:var(--mid);line-height:1.5}
-.next-num{
-  font-family:'DM Mono',monospace;
-  font-size:11px;font-weight:500;
-  color:var(--charcoal);
-  min-width:20px;padding-top:1px;
-}
+.summary-est-range{font-size:18px;font-weight:700;color:#fff;letter-spacing:-0.02em;margin-bottom:6px}
+.summary-est-line{font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.45);margin-bottom:2px}
 
-/* FLOORING VARIES NOTE */
-.field-note{font-size:12px;color:var(--muted);line-height:1.5;margin-top:6px}
-
-/* DIVIDER */
-.sub-divider{
-  height:1px;background:var(--border);
-  margin:20px 0;
-}
+/* CONDITIONAL */
+.conditional{display:none}
+.conditional.visible{display:block}
 
 /* RESPONSIVE */
-@media(max-width:1100px){
-  .layout{grid-template-columns:300px 1fr}
-}
+@media(max-width:1100px){.layout{grid-template-columns:300px 1fr}}
 @media(max-width:768px){
   .layout{grid-template-columns:1fr;grid-template-rows:auto 1fr}
   .left-panel{position:static;height:auto}
   nav{padding:0 16px}
   .right-panel{padding:32px 20px 60px}
   .ck-grid{grid-template-columns:repeat(2,1fr)}
-  .src-grid{grid-template-columns:repeat(2,1fr)}
-  .tscard-grid{grid-template-columns:1fr 1fr}
-  .tier-grid{grid-template-columns:1fr}
-  .counter-grid{grid-template-columns:1fr}
-  .finish-grid{grid-template-columns:1fr}
   .row-2{grid-template-columns:1fr}
-  .fe-row{grid-template-columns:1fr}
-  .submit-row{flex-direction:column;gap:14px;align-items:flex-start}
+  .counter-grid{grid-template-columns:1fr}
+  .tier-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -658,9 +558,9 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 <!-- NAV -->
 <nav>
   <div class="nav-logo">
-    <a href="/interiors"><img src="/hooomz-logo-white.svg" alt="Hooomz Interiors" style="height:24px;width:auto"></a>
+    H<svg width="22" height="8" viewBox="0 0 22 8" fill="none" style="display:inline-block;vertical-align:middle;margin:0 3px 1px"><circle cx="3" cy="4" r="3" fill="#DC2626"/><circle cx="11" cy="4" r="3" fill="#D97706"/><circle cx="19" cy="4" r="3" fill="#16A34A"/></svg>MZ<span class="nav-interiors">&nbsp;INTERIORS</span>
   </div>
-  <a href="/" class="nav-back">← BACK TO HOME</a>
+  <a class="nav-back" href="/interiors">&larr; BACK</a>
 </nav>
 
 <!-- LAYOUT -->
@@ -673,546 +573,220 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     </div>
     <div>
       <h1 class="left-headline">Let's see your space.</h1>
-      <p class="left-body" style="margin-top:12px">Tell us what you're thinking. We'll come to you — iPad in hand — and give you a real picture of what it will take, cost, and look like.</p>
+      <p class="left-body" style="margin-top:12px">Tell us what you're thinking — we'll come to you with iPad in hand and give you a real picture of what it will take, cost, and look like.</p>
     </div>
 
-    <div class="design-steps">
-      <div class="ds-row"><div class="ds-letter">D</div><div class="ds-content"><div class="ds-name">Discover</div><div class="ds-desc">We come to you. Measurements, before-state photos, material samples in your actual lighting.</div></div></div>
-      <div class="ds-row"><div class="ds-letter">E</div><div class="ds-content"><div class="ds-name">Estimate</div><div class="ds-desc">Unit pricing from a fixed catalog. No vague allowances. A real number before you decide anything.</div></div></div>
-      <div class="ds-row"><div class="ds-letter">S</div><div class="ds-content"><div class="ds-name">Select</div><div class="ds-desc">Your materials, your tier. Good, Better, or Best — same scope, different spec level.</div></div></div>
-      <div class="ds-row"><div class="ds-letter">I</div><div class="ds-content"><div class="ds-name">Illustrate</div><div class="ds-desc">A rendered walkthrough of your finished space. See it before you sign.</div></div></div>
-      <div class="ds-row"><div class="ds-letter">G</div><div class="ds-content"><div class="ds-name">Go</div><div class="ds-desc">Contract signed. Start date confirmed. Everything locked before day one of work.</div></div></div>
-      <div class="ds-row"><div class="ds-letter">N</div><div class="ds-content"><div class="ds-name">Notify</div><div class="ds-desc">You're updated by email at every stage. No chasing. No wondering what's happening.</div></div></div>
-    </div>
+    <!-- Estimate preview removed — homeowner receives estimate by email within 24–48 hours -->
 
-    <div id="estimatePreview" class="estimate-preview">
-      <div class="ep-label">Preliminary Range</div>
-      <div class="ep-range" id="epRange">—</div>
-      <div class="ep-trades" id="epTrades"></div>
-      <div class="ep-caveat">ROUGH RANGE ONLY · SUBJECT TO SITE VISIT</div>
-    </div>
-
-    <div class="left-footer">No pressure · Free site visit · Southern New Brunswick</div>
+    <div class="left-footer">No pressure &middot; Free site visit &middot; Southern New Brunswick</div>
   </aside>
 
   <!-- RIGHT PANEL -->
   <main class="right-panel">
     <div class="form-inner">
 
-      <!-- FORM -->
       <div id="formWrap">
-        <h2 class="form-title">Book your site visit.</h2>
-        <p class="form-subtitle">No commitment. We'll come to you, see the space, and talk through what you want.</p>
+        <h2 class="form-title">Book a Site Visit.</h2>
+        <p class="form-subtitle">Tell us about your project — your estimate updates live as you fill this out. Takes about 3 minutes.</p>
 
         <form id="intakeForm" novalidate>
 
-          <!-- 1. YOUR INFO -->
+          <!-- 1. CONTACT -->
           <div class="form-section">
-            <span class="section-label">1 — Your Info</span>
+            <span class="section-label">1 &mdash; Contact</span>
             <div class="row-2">
               <div class="field">
                 <label class="field-label" for="firstName">First Name <span class="req">*</span></label>
-                <input type="text" id="firstName" name="firstName" placeholder="Jane" autocomplete="given-name">
-                <div class="error-msg" id="firstName-err">First name is required.</div>
+                <input type="text" id="firstName" placeholder="First name" autocomplete="given-name">
               </div>
               <div class="field">
                 <label class="field-label" for="lastName">Last Name</label>
-                <input type="text" id="lastName" name="lastName" placeholder="Smith" autocomplete="family-name">
+                <input type="text" id="lastName" placeholder="Last name" autocomplete="family-name">
               </div>
             </div>
             <div class="row-2">
               <div class="field">
-                <label class="field-label" for="email">Email <span class="req">*</span></label>
-                <input type="email" id="email" name="email" placeholder="jane@example.com" autocomplete="email">
-                <div class="error-msg" id="email-err">A valid email is required.</div>
+                <label class="field-label" for="phone">Phone <span class="req">*</span></label>
+                <input type="tel" id="phone" placeholder="(506) 000-0000" autocomplete="tel">
               </div>
               <div class="field">
-                <label class="field-label" for="phone">Phone</label>
-                <input type="tel" id="phone" name="phone" placeholder="506-555-0100" autocomplete="tel">
+                <label class="field-label" for="email">Email</label>
+                <input type="email" id="email" placeholder="email@example.com" autocomplete="email">
               </div>
             </div>
             <div class="field">
               <label class="field-label" for="address">Address <span class="req">*</span></label>
-              <input type="text" id="address" name="address" placeholder="Start typing your address..." autocomplete="street-address">
-              <div class="error-msg" id="address-err">Address is required.</div>
+              <input type="text" id="address" placeholder="Street address" autocomplete="street-address">
             </div>
-            <!-- hidden fields populated by Places autocomplete -->
-            <input type="hidden" id="place_id"   name="place_id">
-            <input type="hidden" id="place_lat"  name="place_lat">
-            <input type="hidden" id="place_lng"  name="place_lng">
-            <input type="hidden" id="maps_url"   name="maps_url">
-            <!-- street view preview (shown after address selected) -->
-            <div id="streetviewWrap" style="display:none;margin-bottom:14px">
-              <div style="position:relative;border-radius:var(--radius);overflow:hidden;border:1.5px solid var(--border-s)">
-                <img id="streetviewImg" src="" alt="Street view" style="width:100%;height:160px;object-fit:cover;display:block">
-                <div style="position:absolute;bottom:0;left:0;right:0;padding:7px 10px;background:linear-gradient(transparent,rgba(0,0,0,.55));display:flex;align-items:center;justify-content:space-between">
-                  <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.08em;color:rgba(255,255,255,.75);text-transform:uppercase">Google Street View · Cover photo</span>
-                  <a id="mapsLink" href="#" target="_blank" rel="noopener" style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.08em;color:rgba(255,255,255,.9);text-decoration:none;border:1px solid rgba(255,255,255,.35);border-radius:4px;padding:3px 7px">Open in Maps ↗</a>
-                </div>
+            <div class="row-2">
+              <div class="field">
+                <label class="field-label" for="city">City</label>
+                <select id="city">
+                  <option>Moncton</option><option>Dieppe</option><option>Riverview</option><option>Other</option>
+                </select>
               </div>
-            </div>
-            <div class="field">
-              <label class="field-label" for="city">City <span class="req">*</span></label>
-              <input type="text" id="city" name="city" placeholder="Auto-filled from address" autocomplete="address-level2">
-              <div class="error-msg" id="city-err">City is required.</div>
+              <div class="field">
+                <label class="field-label" for="propertyType">Property Type</label>
+                <select id="propertyType">
+                  <option value="detached">Detached home</option>
+                  <option value="semi">Semi-detached</option>
+                  <option value="townhome">Townhome</option>
+                  <option value="condo">Condo</option>
+                </select>
+              </div>
             </div>
           </div>
 
-          <!-- 2. TRADES -->
+          <!-- 2. SERVICES -->
           <div class="form-section">
-            <span class="section-label">2 — What are you looking to do?</span>
+            <span class="section-label">2 &mdash; Services Requested</span>
             <div class="ck-grid" id="tradesGrid">
-              <label class="ck" id="ck-flooring">
-                <input type="checkbox" name="trades" value="flooring" onchange="updateEstimate()">
-                <div class="ck-box">
-                  <span class="ck-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="4" width="7" height="3" rx="0.5" stroke="currentColor" stroke-width="1.2"/><rect x="10" y="4" width="7" height="3" rx="0.5" stroke="currentColor" stroke-width="1.2"/><rect x="4" y="8.5" width="7" height="3" rx="0.5" stroke="currentColor" stroke-width="1.2"/><rect x="1" y="13" width="7" height="3" rx="0.5" stroke="currentColor" stroke-width="1.2"/><rect x="10" y="13" width="7" height="3" rx="0.5" stroke="currentColor" stroke-width="1.2"/></svg></span>
-                  <span class="ck-label">Flooring</span>
-                  <span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                </div>
-              </label>
-              <label class="ck" id="ck-paint">
-                <input type="checkbox" name="trades" value="paint" onchange="updateEstimate()">
-                <div class="ck-box">
-                  <span class="ck-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="12" width="14" height="4" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="6" y="9" width="6" height="4" rx="0.5" stroke="currentColor" stroke-width="1.2"/><rect x="7.5" y="3" width="3" height="7" rx="0.5" stroke="currentColor" stroke-width="1.2"/></svg></span>
-                  <span class="ck-label">Paint</span>
-                  <span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                </div>
-              </label>
-              <label class="ck" id="ck-trim">
-                <input type="checkbox" name="trades" value="trim" onchange="updateEstimate()">
-                <div class="ck-box">
-                  <span class="ck-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="3" y="2" width="12" height="14" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="5.5" y="4.5" width="7" height="4" rx="0.5" stroke="currentColor" stroke-width="1.2"/><rect x="5.5" y="10" width="7" height="4" rx="0.5" stroke="currentColor" stroke-width="1.2"/></svg></span>
-                  <span class="ck-label">Trim &amp; Doors</span>
-                  <span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                </div>
-              </label>
-              <label class="ck" id="ck-feature">
-                <input type="checkbox" name="trades" value="feature" onchange="updateEstimate()">
-                <div class="ck-box">
-                  <span class="ck-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2L16 9L9 16L2 9Z" stroke="currentColor" stroke-width="1.2"/><path d="M9 2L9 16M2 9L16 9" stroke="currentColor" stroke-width="1.2"/></svg></span>
-                  <span class="ck-label">Feature Wall</span>
-                  <span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                </div>
-              </label>
-              <label class="ck" id="ck-notsure">
-                <input type="checkbox" name="trades" value="notsure" onchange="updateEstimate()">
-                <div class="ck-box">
-                  <span class="ck-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.2"/><path d="M9 13v-.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M9 10.5c0-1.5 2-2 2-3.5a2 2 0 00-4 0" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span>
-                  <span class="ck-label">Not sure yet</span>
-                  <span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                </div>
-              </label>
-              <label class="ck" id="ck-full">
-                <input type="checkbox" name="trades" value="full" onchange="updateEstimate()">
-                <div class="ck-box">
-                  <span class="ck-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2L16 8H14v7H4V8H2L9 2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><rect x="7" y="11" width="4" height="4" stroke="currentColor" stroke-width="1.2"/></svg></span>
-                  <span class="ck-label">Full Refresh</span>
-                  <span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                </div>
-              </label>
+              <label class="ck"><input type="checkbox" name="trades" value="flooring"><div class="ck-box"><span class="ck-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="1" y="4" width="7" height="3" rx=".5" stroke="currentColor" stroke-width="1.2"/><rect x="10" y="4" width="7" height="3" rx=".5" stroke="currentColor" stroke-width="1.2"/><rect x="4" y="8.5" width="7" height="3" rx=".5" stroke="currentColor" stroke-width="1.2"/><rect x="1" y="13" width="7" height="3" rx=".5" stroke="currentColor" stroke-width="1.2"/><rect x="10" y="13" width="7" height="3" rx=".5" stroke="currentColor" stroke-width="1.2"/></svg></span><span class="ck-label">Flooring</span><span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></label>
+              <label class="ck"><input type="checkbox" name="trades" value="paint"><div class="ck-box"><span class="ck-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="12" width="14" height="4" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="6" y="9" width="6" height="4" rx=".5" stroke="currentColor" stroke-width="1.2"/><rect x="7.5" y="3" width="3" height="7" rx=".5" stroke="currentColor" stroke-width="1.2"/></svg></span><span class="ck-label">Paint</span><span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></label>
+              <label class="ck"><input type="checkbox" name="trades" value="trim"><div class="ck-box"><span class="ck-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="3" y="2" width="12" height="14" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="5.5" y="4.5" width="7" height="4" rx=".5" stroke="currentColor" stroke-width="1.2"/><rect x="5.5" y="10" width="7" height="4" rx=".5" stroke="currentColor" stroke-width="1.2"/></svg></span><span class="ck-label">Trim &amp; Doors</span><span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></label>
+              <label class="ck"><input type="checkbox" name="trades" value="doors"><div class="ck-box"><span class="ck-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="5" y="2" width="8" height="14" rx="1" stroke="currentColor" stroke-width="1.2"/><circle cx="11" cy="9" r="1" fill="currentColor"/></svg></span><span class="ck-label">Doors</span><span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></label>
+              <label class="ck"><input type="checkbox" name="trades" value="tile"><div class="ck-box"><span class="ck-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="1" y="1" width="7" height="7" rx=".5" stroke="currentColor" stroke-width="1.2"/><rect x="10" y="1" width="7" height="7" rx=".5" stroke="currentColor" stroke-width="1.2"/><rect x="1" y="10" width="7" height="7" rx=".5" stroke="currentColor" stroke-width="1.2"/><rect x="10" y="10" width="7" height="7" rx=".5" stroke="currentColor" stroke-width="1.2"/></svg></span><span class="ck-label">Tile</span><span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></label>
+              <label class="ck"><input type="checkbox" name="trades" value="microcement"><div class="ck-box"><span class="ck-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 16h14M4 16V6l5-4 5 4v10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="ck-label">Microcement</span><span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></label>
             </div>
           </div>
 
           <!-- 3. ROOMS -->
           <div class="form-section">
-            <span class="section-label">3 — Which rooms?</span>
+            <span class="section-label">3 &mdash; Rooms in Scope</span>
             <div class="ck-grid" id="roomsGrid">
-              <label class="ck"><input type="checkbox" name="rooms" value="Main Floor" onchange="handleRoomChange(this)"><div class="ck-box"><span class="ck-label">Main Floor</span><span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></label>
-              <label class="ck"><input type="checkbox" name="rooms" value="Kitchen" onchange="handleRoomChange(this)"><div class="ck-box"><span class="ck-label">Kitchen</span><span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></label>
-              <label class="ck"><input type="checkbox" name="rooms" value="Living / Dining" onchange="handleRoomChange(this)"><div class="ck-box"><span class="ck-label">Living / Dining</span><span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></label>
-              <label class="ck"><input type="checkbox" name="rooms" value="Bedrooms" onchange="handleRoomChange(this)"><div class="ck-box"><span class="ck-label">Bedrooms</span><span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></label>
-              <label class="ck"><input type="checkbox" name="rooms" value="Bathrooms" onchange="handleRoomChange(this)"><div class="ck-box"><span class="ck-label">Bathrooms</span><span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></label>
-              <label class="ck"><input type="checkbox" name="rooms" value="Home Office" onchange="handleRoomChange(this)"><div class="ck-box"><span class="ck-label">Home Office</span><span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></label>
-              <label class="ck"><input type="checkbox" name="rooms" value="Basement" onchange="handleRoomChange(this)"><div class="ck-box"><span class="ck-label">Basement</span><span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></label>
-              <label class="ck"><input type="checkbox" name="rooms" value="Staircase" onchange="handleRoomChange(this)"><div class="ck-box"><span class="ck-label">Staircase</span><span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></label>
-              <label class="ck" id="ck-wholehouse"><input type="checkbox" name="rooms" value="Whole House" onchange="handleWholeHouse(this)"><div class="ck-box"><span class="ck-label">Whole House</span><span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></label>
+              <label class="ck"><input type="checkbox" name="rooms" value="Living Room"><div class="ck-box"><span class="ck-label">Living Room</span><span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></label>
+              <label class="ck"><input type="checkbox" name="rooms" value="Dining Room"><div class="ck-box"><span class="ck-label">Dining Room</span><span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></label>
+              <label class="ck"><input type="checkbox" name="rooms" value="Kitchen"><div class="ck-box"><span class="ck-label">Kitchen</span><span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></label>
+              <label class="ck"><input type="checkbox" name="rooms" value="Primary Bedroom"><div class="ck-box"><span class="ck-label">Primary Bedroom</span><span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></label>
+              <label class="ck"><input type="checkbox" name="rooms" value="Bedroom 2"><div class="ck-box"><span class="ck-label">Bedroom 2</span><span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></label>
+              <label class="ck"><input type="checkbox" name="rooms" value="Bedroom 3"><div class="ck-box"><span class="ck-label">Bedroom 3</span><span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></label>
+              <label class="ck"><input type="checkbox" name="rooms" value="Main Bath"><div class="ck-box"><span class="ck-label">Main Bath</span><span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></label>
+              <label class="ck"><input type="checkbox" name="rooms" value="Powder Room"><div class="ck-box"><span class="ck-label">Powder Room</span><span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></label>
+              <label class="ck"><input type="checkbox" name="rooms" value="Ensuite"><div class="ck-box"><span class="ck-label">Ensuite</span><span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></label>
+              <label class="ck"><input type="checkbox" name="rooms" value="Hallway"><div class="ck-box"><span class="ck-label">Hallway</span><span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></label>
+              <label class="ck"><input type="checkbox" name="rooms" value="Staircase"><div class="ck-box"><span class="ck-label">Staircase</span><span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></label>
+              <label class="ck"><input type="checkbox" name="rooms" value="Basement"><div class="ck-box"><span class="ck-label">Basement</span><span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></label>
             </div>
           </div>
 
-          <!-- 4. SIZE -->
+          <!-- 4. ROOM MEASUREMENTS -->
           <div class="form-section">
-            <span class="section-label">4 — Approximate size</span>
-            <textarea id="sizeField" name="size" placeholder="e.g. Main floor is roughly 900 sq ft, basement around 700. Master bedroom approx 14×16. Not sure on the rest."></textarea>
+            <span class="section-label">4 &mdash; Room Measurements</span>
+            <div id="measureContainer">
+              <div class="measure-placeholder">Select rooms above to enter measurements.</div>
+            </div>
           </div>
 
-          <!-- 5. CEILING HEIGHT (conditional) -->
-          <div class="form-section conditional" id="ceilingSection">
-            <span class="section-label">5 — Ceiling height</span>
+          <!-- 5. CEILING & PAINT SCOPE -->
+          <div class="form-section">
+            <span class="section-label">5 &mdash; Ceiling Height &amp; Paint Scope</span>
             <div class="row-2">
               <div class="field">
                 <label class="field-label">Ceiling Height</label>
-                <select id="ceilingHeight" name="ceilingHeight">
-                  <option value="">Select...</option>
-                  <option value="8ft">8 ft (standard)</option>
+                <select id="ceilingHeight">
+                  <option value="8ft" selected>8 ft (standard)</option>
                   <option value="9ft">9 ft</option>
                   <option value="10ft">10 ft</option>
                   <option value="vaulted">Vaulted / cathedral</option>
-                  <option value="mixed">Mixed / varies by room</option>
+                  <option value="mixed">Mixed / varies</option>
                   <option value="notsure">Not sure</option>
                 </select>
               </div>
               <div class="field">
-                <label class="field-label">Include ceilings in paint scope?</label>
-                <select id="ceilingScope" name="ceilingScope">
-                  <option value="">Select...</option>
-                  <option value="yes">Yes — paint ceilings too</option>
-                  <option value="no">No — walls only</option>
-                  <option value="some">Some rooms only</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <!-- 6. FINISH DETAILS (conditional) -->
-          <div class="form-section conditional" id="finishSection">
-            <span class="section-label">6 — Finish details</span>
-
-            <!-- FLOORING DETAIL -->
-            <div class="sub-section conditional" id="flooringDetailRow">
-              <label class="field-label">Flooring</label>
-              <div class="field">
-                <select id="flooringType" name="flooringType" onchange="handleFlooringChange()">
-                  <option value="">Same throughout — select type...</option>
-                  <option value="hardwood-solid">Hardwood (solid)</option>
-                  <option value="hardwood-eng">Engineered hardwood</option>
-                  <option value="lvp">LVP / vinyl plank</option>
-                  <option value="laminate">Laminate</option>
-                  <option value="tile">Tile</option>
-                  <option value="carpet">Carpet</option>
-                  <option value="concrete">Painted concrete</option>
-                  <option value="varies">It varies — I'll break it down</option>
-                  <option value="notsure">Not sure yet</option>
-                </select>
-              </div>
-              <div id="perAreaGrid" style="display:none">
-                <div class="per-area-grid" id="perAreaRows"></div>
-                <p class="field-note">Subfloor assessed on-site. Standard is OSB or plywood — concrete slab or over-existing noted during visit.</p>
-              </div>
-            </div>
-
-            <!-- TRIM DETAIL -->
-            <div class="sub-section conditional" id="trimDetailRow">
-              <div class="sub-divider" style="margin-top:4px"></div>
-              <label class="field-label" style="margin-bottom:12px">Trim Style</label>
-
-              <div class="tscard-grid" id="trimStyleGrid">
-                <div class="tscard" data-val="glebe" onclick="selectTrimStyle(this)">
-                  <input type="radio" name="trimStyle" value="glebe">
-                  <div class="tscard-box">
-                    <div class="ts-profile">
-                      <svg width="48" height="40" viewBox="0 0 48 40" fill="none">
-                        <!-- base: widest -->
-                        <rect x="4"  y="31" width="40" height="8" fill="#9A8E84"/>
-                        <!-- mid-low: slightly narrower, overlaps into base -->
-                        <rect x="9"  y="21" width="30" height="11" fill="#9A8E84"/>
-                        <!-- mid-high: narrower again, overlaps -->
-                        <rect x="14" y="12" width="20" height="10" fill="#9A8E84"/>
-                        <!-- top cap: narrowest, thin -->
-                        <rect x="17" y="6"  width="14" height="7"  fill="#9A8E84"/>
-                      </svg>
-                    </div>
-                    <div class="ts-name">GLEBE</div>
-                    <div class="ts-sub">Square-edge stacked profile · clean shadow line at top</div>
-                  </div>
-                </div>
-                <div class="tscard" data-val="flat" onclick="selectTrimStyle(this)">
-                  <input type="radio" name="trimStyle" value="flat">
-                  <div class="tscard-box">
-                    <div class="ts-profile">
-                      <svg width="48" height="40" viewBox="0 0 48 40" fill="none">
-                        <!-- single flush rectangle, full height -->
-                        <rect x="11" y="5" width="26" height="34" fill="#9A8E84"/>
-                      </svg>
-                    </div>
-                    <div class="ts-name">FLAT / MINIMAL</div>
-                    <div class="ts-sub">Single flush board · no cap, no detail</div>
-                  </div>
-                </div>
-                <div class="tscard" data-val="craftsman" onclick="selectTrimStyle(this)">
-                  <input type="radio" name="trimStyle" value="craftsman">
-                  <div class="tscard-box">
-                    <div class="ts-profile">
-                      <svg width="48" height="40" viewBox="0 0 48 40" fill="none">
-                        <!-- thin base plate at floor -->
-                        <rect x="4"  y="35" width="40" height="4"  fill="#9A8E84"/>
-                        <!-- narrow body (clear gap from cap edges) -->
-                        <rect x="15" y="16" width="18" height="20" fill="#9A8E84"/>
-                        <!-- proud cap — notably wider than body, clearly overhangs both sides -->
-                        <rect x="4"  y="6"  width="40" height="12" fill="#9A8E84"/>
-                      </svg>
-                    </div>
-                    <div class="ts-name">CRAFTSMAN</div>
-                    <div class="ts-sub">Flat face · bold top cap · strong horizontal line</div>
-                  </div>
-                </div>
-                <div class="tscard" data-val="traditional" onclick="selectTrimStyle(this)">
-                  <input type="radio" name="trimStyle" value="traditional">
-                  <div class="tscard-box">
-                    <div class="ts-profile">
-                      <svg width="48" height="40" viewBox="0 0 48 40" fill="none">
-                        <!-- flat base plinth -->
-                        <rect x="4" y="33" width="40" height="6" fill="#9A8E84"/>
-                        <!--
-                          Ogee S-curve profile body.
-                          Left edge = wall side (straight vertical).
-                          Right edge = exposed face: straight at top,
-                          then convex bulge outward, then concave cove inward — classic ogee.
-                        -->
-                        <path d="
-                          M4 33
-                          L4 5
-                          L42 5
-                          L42 12
-                          C44 15 45 19 39 23
-                          C33 27 28 28 30 33
-                          Z
-                        " fill="#9A8E84"/>
-                      </svg>
-                    </div>
-                    <div class="ts-name">TRADITIONAL</div>
-                    <div class="ts-sub">Ogee / colonial profile · classic curved detail</div>
-                  </div>
-                </div>
-              </div>
-              <div class="tscard-samples" id="tscard-samples" onclick="selectTrimSamples(this)">
-                <input type="radio" name="trimStyle" value="samples">
-                <span class="ts-plus">+</span>
-                <span class="ts-samples-label">I'd like to see samples at the site visit</span>
-              </div>
-
-              <div style="margin-top:16px">
-                <label class="field-label" style="font-size:9px;line-height:1.4">Trim Tier <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted)">(Optional — we'll walk you through this on-site)</span></label>
-                <div class="tier-grid" id="trimTierGrid">
-                  <div class="tier" data-group="trimTier" data-val="good" onclick="selectTier(this)"><input type="radio" name="trimTier" value="good"><div class="tier-box"><div class="tier-name">GOOD</div><div class="tier-desc">MDF — painted in place, crisp result, budget-friendly</div></div></div>
-                  <div class="tier" data-group="trimTier" data-val="better" onclick="selectTier(this)"><input type="radio" name="trimTier" value="better"><div class="tier-box"><div class="tier-name">BETTER</div><div class="tier-desc">Finger-jointed pine — tighter grain, holds paint longer</div></div></div>
-                  <div class="tier" data-group="trimTier" data-val="best" onclick="selectTier(this)"><input type="radio" name="trimTier" value="best"><div class="tier-box"><div class="tier-name">BEST</div><div class="tier-desc">Finger-jointed + stools &amp; aprons on windows, headers on doors · composite sill &amp; jamb in bathrooms</div></div></div>
-                </div>
-              </div>
-            </div>
-
-            <!-- PAINT DETAIL -->
-            <div class="sub-section conditional" id="paintDetailRow">
-              <div class="sub-divider" style="margin-top:4px"></div>
-              <label class="field-label">Paint</label>
-              <div class="row-2">
-                <div class="field">
-                  <label class="field-label">Paint Finish</label>
-                  <select id="paintFinish" name="paintFinish">
-                    <option value="">Select...</option>
-                    <option value="eggshell">Eggshell (most rooms)</option>
-                    <option value="satin">Satin (kitchens / baths)</option>
-                    <option value="flat">Flat / matte</option>
-                    <option value="semigloss">Semi-gloss (trim)</option>
-                    <option value="recommend">Not sure / your recommendation</option>
-                  </select>
-                </div>
-                <div class="field">
-                  <label class="field-label">Colour Direction</label>
-                  <select id="colourDirection" name="colourDirection">
-                    <option value="">Select...</option>
-                    <option value="neutral">Neutral / warm whites</option>
-                    <option value="greige">Greige / earth tones</option>
-                    <option value="bold">Bold accent colours</option>
-                    <option value="dark">Dark / moody</option>
-                    <option value="help">Help me choose</option>
-                  </select>
+                <label class="field-label">Paint Scope</label>
+                <div class="pill-group" id="ceilingScope">
+                  <label class="pill"><input type="radio" name="ceilingScope" value="walls" checked><span class="pill-box">WALLS ONLY</span></label>
+                  <label class="pill"><input type="radio" name="ceilingScope" value="walls_ceiling"><span class="pill-box">WALLS + CEILING</span></label>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- 7. FEATURE WALL (conditional) -->
-          <div class="form-section conditional" id="featureSection">
-            <span class="section-label">7 — Feature wall details</span>
-            <div id="featureRooms" class="feature-rooms"></div>
-            <button type="button" class="add-room-btn" onclick="addFeatureRoom()">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-              ADD ANOTHER ROOM
-            </button>
-            <div class="field" style="margin-top:14px">
-              <label class="field-label">Inspiration or Notes (optional)</label>
-              <input type="text" id="featureNotes" name="featureNotes" placeholder="e.g. saw something on Pinterest, want shiplap in living room...">
-            </div>
-          </div>
-
-          <!-- 8. DOOR DETAILS (conditional) -->
-          <div class="form-section conditional" id="doorSection">
-            <span class="section-label">8 — Door details</span>
-            <p style="font-size:13px;color:var(--mid);margin-bottom:16px">How many of each type are you replacing? Tap + to add.</p>
-            <div class="counter-grid">
-              <div class="counter-item">
-                <div class="counter-name">SWING</div>
-                <div class="counter-desc">Standard hinged interior doors</div>
-                <div class="counter-ctrl">
-                  <button type="button" class="counter-btn" onclick="stepCounter('doors-swing',-1)">−</button>
-                  <span class="counter-count" id="doors-swing-display">0</span>
-                  <button type="button" class="counter-btn" onclick="stepCounter('doors-swing',1)">+</button>
-                </div>
-                <input type="hidden" id="doors-swing" name="doors-swing" value="0">
-              </div>
-              <div class="counter-item">
-                <div class="counter-name">POCKET</div>
-                <div class="counter-desc">Slides into the wall cavity</div>
-                <div class="counter-ctrl">
-                  <button type="button" class="counter-btn" onclick="stepCounter('doors-pocket',-1)">−</button>
-                  <span class="counter-count" id="doors-pocket-display">0</span>
-                  <button type="button" class="counter-btn" onclick="stepCounter('doors-pocket',1)">+</button>
-                </div>
-                <input type="hidden" id="doors-pocket" name="doors-pocket" value="0">
-              </div>
-              <div class="counter-item">
-                <div class="counter-name">BI-FOLD</div>
-                <div class="counter-desc">Closet fold-in panels</div>
-                <div class="counter-ctrl">
-                  <button type="button" class="counter-btn" onclick="stepCounter('doors-bifold',-1)">−</button>
-                  <span class="counter-count" id="doors-bifold-display">0</span>
-                  <button type="button" class="counter-btn" onclick="stepCounter('doors-bifold',1)">+</button>
-                </div>
-                <input type="hidden" id="doors-bifold" name="doors-bifold" value="0">
-              </div>
-              <div class="counter-item">
-                <div class="counter-name">BARN / SLIDING</div>
-                <div class="counter-desc">Hardware-mounted sliding panels</div>
-                <div class="counter-ctrl">
-                  <button type="button" class="counter-btn" onclick="stepCounter('doors-barn',-1)">−</button>
-                  <span class="counter-count" id="doors-barn-display">0</span>
-                  <button type="button" class="counter-btn" onclick="stepCounter('doors-barn',1)">+</button>
-                </div>
-                <input type="hidden" id="doors-barn" name="doors-barn" value="0">
-              </div>
-            </div>
-
-            <div style="margin-top:18px">
-              <label class="field-label">Finish Application</label>
-              <div class="finish-grid">
-                <div class="tier" data-group="finishApp" data-val="brush" onclick="selectTier(this)">
-                  <input type="radio" name="finishApp" value="brush">
-                  <div class="tier-box">
-                    <div class="tier-name">BRUSH &amp; ROLL</div>
-                    <div class="tier-desc">Standard application — included in base pricing</div>
-                  </div>
-                </div>
-                <div class="tier" data-group="finishApp" data-val="spray" onclick="selectTier(this)">
-                  <input type="radio" name="finishApp" value="spray">
-                  <div class="tier-box">
-                    <div class="tier-name">SPRAY FINISH</div>
-                    <div class="tier-desc">Factory-smooth result on doors &amp; trim — premium add-on, discussed on-site</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="field" style="margin-top:14px">
-              <label class="field-label">Anything unusual? (optional)</label>
-              <input type="text" id="doorNotes" name="doorNotes" placeholder="e.g. arched doorways, non-standard heights, existing barn hardware to keep...">
-            </div>
-          </div>
-
-          <!-- 9. WINDOW DETAILS (conditional) -->
-          <div class="form-section conditional" id="windowSection">
-            <span class="section-label">9 — Window details</span>
-            <p style="font-size:13px;color:var(--mid);margin-bottom:16px">Used to calculate trim linear footage and paintable wall area. Tap + to add.</p>
-            <div class="counter-grid">
-              <div class="counter-item">
-                <div class="counter-name">SMALL</div>
-                <div class="counter-desc">Bathroom or basement hopper · under ~24″ wide</div>
-                <div class="counter-ctrl">
-                  <button type="button" class="counter-btn" onclick="stepCounter('win-small',-1)">−</button>
-                  <span class="counter-count" id="win-small-display">0</span>
-                  <button type="button" class="counter-btn" onclick="stepCounter('win-small',1)">+</button>
-                </div>
-                <input type="hidden" id="win-small" name="win-small" value="0">
-              </div>
-              <div class="counter-item">
-                <div class="counter-name">STANDARD</div>
-                <div class="counter-desc">Typical bedroom or living room · 24″–48″ wide</div>
-                <div class="counter-ctrl">
-                  <button type="button" class="counter-btn" onclick="stepCounter('win-standard',-1)">−</button>
-                  <span class="counter-count" id="win-standard-display">0</span>
-                  <button type="button" class="counter-btn" onclick="stepCounter('win-standard',1)">+</button>
-                </div>
-                <input type="hidden" id="win-standard" name="win-standard" value="0">
-              </div>
-              <div class="counter-item">
-                <div class="counter-name">LARGE</div>
-                <div class="counter-desc">Picture window or patio · over ~48″ wide</div>
-                <div class="counter-ctrl">
-                  <button type="button" class="counter-btn" onclick="stepCounter('win-large',-1)">−</button>
-                  <span class="counter-count" id="win-large-display">0</span>
-                  <button type="button" class="counter-btn" onclick="stepCounter('win-large',1)">+</button>
-                </div>
-                <input type="hidden" id="win-large" name="win-large" value="0">
-              </div>
-              <div class="counter-item">
-                <div class="counter-name">IRREGULAR</div>
-                <div class="counter-desc">Arched, bay, bow, or non-rectangular — custom trim required</div>
-                <div class="counter-ctrl">
-                  <button type="button" class="counter-btn" onclick="stepCounter('win-irregular',-1)">−</button>
-                  <span class="counter-count" id="win-irregular-display">0</span>
-                  <button type="button" class="counter-btn" onclick="stepCounter('win-irregular',1)">+</button>
-                </div>
-                <input type="hidden" id="win-irregular" name="win-irregular" value="0">
-              </div>
-            </div>
-            <div class="field" style="margin-top:14px">
-              <label class="field-label">Window notes (optional)</label>
-              <input type="text" id="winNotes" name="winNotes" placeholder="e.g. bay window in dining room, skylights, unusual shapes...">
-            </div>
-          </div>
-
-          <!-- 10. TIMELINE -->
+          <!-- 6. FLOORING TYPE -->
           <div class="form-section">
-            <span class="section-label">10 — Timeline</span>
-            <div class="pill-group">
-              <label class="pill"><input type="radio" name="timeline" value="asap"><span class="pill-box">ASAP</span></label>
-              <label class="pill"><input type="radio" name="timeline" value="1-2mo"><span class="pill-box">1–2 MONTHS</span></label>
-              <label class="pill"><input type="radio" name="timeline" value="3-6mo"><span class="pill-box">3–6 MONTHS</span></label>
-              <label class="pill"><input type="radio" name="timeline" value="exploring"><span class="pill-box">JUST EXPLORING</span></label>
-              <label class="pill"><input type="radio" name="timeline" value="flexible"><span class="pill-box">FLEXIBLE</span></label>
-            </div>
-          </div>
-
-          <!-- 11. PROPERTY -->
-          <div class="form-section">
-            <span class="section-label">11 — Property</span>
+            <span class="section-label">6 &mdash; Flooring Type</span>
             <div class="field">
-              <select id="propertyType" name="propertyType">
-                <option value="">Select property type...</option>
-                <option value="detached">Detached home</option>
-                <option value="semi">Semi-detached</option>
-                <option value="townhome">Townhome / row house</option>
-                <option value="condo">Condo / apartment</option>
-                <option value="newbuild">New build (under construction)</option>
-                <option value="rental">Rental property</option>
-                <option value="commercial">Commercial / mixed-use</option>
+              <label class="field-label">Primary Flooring</label>
+              <select id="flooringType">
+                <option value="lvp" selected>LVP / vinyl plank</option>
+                <option value="hardwood_eng">Engineered hardwood</option>
+                <option value="hardwood_solid">Solid hardwood</option>
+                <option value="laminate">Laminate</option>
+                <option value="tile">Tile</option>
+                <option value="carpet">Carpet</option>
+                <option value="notsure">Not sure yet</option>
               </select>
             </div>
           </div>
 
-          <!-- 12. HOW DID YOU FIND US -->
+          <!-- 7. DOORS & FEATURE WALLS -->
           <div class="form-section">
-            <span class="section-label">12 — How did you find us?</span>
+            <span class="section-label">7 &mdash; Doors &amp; Feature Walls</span>
+            <div class="row-2">
+              <div class="field">
+                <label class="field-label">Interior Doors (approx)</label>
+                <div class="counter-item" style="border:none;padding:0;background:transparent">
+                  <div class="counter-ctrl">
+                    <button type="button" class="counter-btn" onclick="stepCounter(-1)">&minus;</button>
+                    <span class="counter-count" id="doorCountDisplay">0</span>
+                    <button type="button" class="counter-btn" onclick="stepCounter(1)">+</button>
+                  </div>
+                </div>
+                <input type="hidden" id="doorCount" value="0">
+              </div>
+              <div class="field">
+                <label class="field-label">Rooms with Feature Wall</label>
+                <div id="featureWallContainer" class="pill-group">
+                  <span style="font-size:12px;color:var(--muted)">Select rooms above first</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 8. TIER -->
+          <div class="form-section">
+            <span class="section-label">8 &mdash; Finish Tier Preference</span>
+            <div class="tier-grid" id="tierGrid">
+              <div class="tier" data-val="good" onclick="selectTier(this)"><input type="radio" name="tier" value="good"><div class="tier-box"><div class="tier-name">GOOD</div><div class="tier-desc">Quality builder grade. Clean, durable, no-fuss.</div></div></div>
+              <div class="tier selected" data-val="better" onclick="selectTier(this)"><input type="radio" name="tier" value="better" checked><div class="tier-box"><div class="tier-name">BETTER</div><div class="tier-desc">Mid-range upgrades. Best value for most clients.</div></div></div>
+              <div class="tier" data-val="best" onclick="selectTier(this)"><input type="radio" name="tier" value="best"><div class="tier-box"><div class="tier-name">BEST</div><div class="tier-desc">Premium finishes. Designed to impress.</div></div></div>
+            </div>
+          </div>
+
+          <!-- 9. TIMELINE & SOURCE -->
+          <div class="form-section">
+            <span class="section-label">9 &mdash; Timeline</span>
+            <div class="pill-group">
+              <label class="pill"><input type="radio" name="timeline" value="asap"><span class="pill-box">ASAP</span></label>
+              <label class="pill"><input type="radio" name="timeline" value="1-3mo"><span class="pill-box">1&ndash;3 MONTHS</span></label>
+              <label class="pill"><input type="radio" name="timeline" value="3-6mo"><span class="pill-box">3&ndash;6 MONTHS</span></label>
+              <label class="pill"><input type="radio" name="timeline" value="flexible"><span class="pill-box">FLEXIBLE</span></label>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <span class="section-label">10 &mdash; Lead Source</span>
             <div class="src-grid">
+              <label class="src"><input type="radio" name="referral" value="ritchies"><div class="src-box"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="5" width="14" height="10" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M7 5v10M13 5v10M3 10h14" stroke="currentColor" stroke-width="1.3"/></svg><span class="src-label">RITCHIES</span></div></label>
               <label class="src"><input type="radio" name="referral" value="word-of-mouth"><div class="src-box"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="4" stroke="currentColor" stroke-width="1.3"/><path d="M3 18c0-3.866 3.134-7 7-7s7 3.134 7 7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg><span class="src-label">WORD OF MOUTH</span></div></label>
-              <label class="src"><input type="radio" name="referral" value="home-show"><div class="src-box"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="13" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.3"/><path d="M7 2v4M13 2v4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><rect x="6" y="11" width="3" height="3" rx="0.5" fill="currentColor"/></svg><span class="src-label">HOME SHOW</span></div></label>
-              <label class="src"><input type="radio" name="referral" value="social-media"><div class="src-box"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="4" y="4" width="12" height="12" rx="3" stroke="currentColor" stroke-width="1.3"/><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.3"/><circle cx="14" cy="6" r="1" fill="currentColor"/></svg><span class="src-label">SOCIAL MEDIA</span></div></label>
-              <label class="src"><input type="radio" name="referral" value="google"><div class="src-box"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M10 10h4M10 7v6M14 10a4 4 0 01-4 4 4 4 0 01-4-4 4 4 0 014-4c1.1 0 2.1.45 2.83 1.17" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg><span class="src-label">GOOGLE</span></div></label>
-              <label class="src"><input type="radio" name="referral" value="referral-partner"><div class="src-box"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 8c0-1.1.9-2 2-2h8a2 2 0 012 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M4 12c0 1.1.9 2 2 2h8a2 2 0 002-2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M7 6l-3-2M7 14l-3 2M13 6l3-2M13 14l3 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg><span class="src-label">REFERRAL PARTNER</span></div></label>
+              <label class="src"><input type="radio" name="referral" value="home-show"><div class="src-box"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="13" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.3"/><path d="M7 2v4M13 2v4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg><span class="src-label">HOME SHOW</span></div></label>
+              <label class="src"><input type="radio" name="referral" value="google"><div class="src-box"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="5" stroke="currentColor" stroke-width="1.3"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg><span class="src-label">GOOGLE</span></div></label>
+              <label class="src"><input type="radio" name="referral" value="instagram"><div class="src-box"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="4" y="4" width="12" height="12" rx="3" stroke="currentColor" stroke-width="1.3"/><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.3"/><circle cx="14" cy="6" r="1" fill="currentColor"/></svg><span class="src-label">INSTAGRAM</span></div></label>
               <label class="src"><input type="radio" name="referral" value="other"><div class="src-box"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M10 14v-.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M10 11.5c0-1.5 2-2 2-3.5a2 2 0 00-4 0" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg><span class="src-label">OTHER</span></div></label>
             </div>
           </div>
 
-          <!-- 13. ANYTHING ELSE -->
+          <!-- 11. NOTES -->
           <div class="form-section">
-            <span class="section-label">13 — Anything else?</span>
-            <textarea id="additionalNotes" name="additionalNotes" placeholder="Tell us about the space, any existing conditions we should know about, or anything that would help us prepare for the visit."></textarea>
+            <span class="section-label">11 &mdash; Notes</span>
+            <textarea id="notes" placeholder="Any additional context — referral name, specific requests, site conditions, etc."></textarea>
           </div>
 
-          <!-- 14. SUBMIT -->
+          <!-- SUBMIT -->
           <div class="submit-row">
-            <span class="submit-note">Free site visit · No commitment</span>
-            <button type="submit" class="submit-btn" id="submitBtn">
-              SEND REQUEST
+            <span class="submit-note"></span>
+            <button type="button" class="submit-btn" id="submitBtn">
+              SUBMIT REQUEST
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h12M7 1l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </button>
           </div>
@@ -1225,17 +799,10 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
         <div class="success-icon">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#16A34A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
-        <h2 class="success-title">Request received.</h2>
-        <p class="success-body">We'll reach out within 24–48 hours to confirm and schedule your site visit. Here's exactly what you submitted — if anything looks off, reply to our email and we'll update it before we start.</p>
-
+        <h2 class="success-title">We've received your project.</h2>
+        <p class="success-body">You'll hear from us within 24–48 hours with a preliminary estimate based on what you've shared. We'll reach out to start the design process by email.</p>
+        <p style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.14em;color:var(--muted);text-transform:uppercase;margin-bottom:24px">MONCTON · DIEPPE · RIVERVIEW</p>
         <div id="summaryCard" class="summary-card"></div>
-
-        <div class="next-label">WHAT HAPPENS NEXT</div>
-        <div class="next-steps">
-          <div class="next-step"><span class="next-num">1.</span><span>We'll email you within 24–48 hours to confirm details and schedule your site visit.</span></div>
-          <div class="next-step"><span class="next-num">2.</span><span>We come to you — iPad in hand, material samples, about 45 minutes. No commitment.</span></div>
-          <div class="next-step"><span class="next-num">3.</span><span>We send your quote by email — rendered walkthrough, line-item pricing, three material tiers. Yours to review at your own pace.</span></div>
-        </div>
       </div>
 
     </div>
@@ -1243,569 +810,633 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 </div>
 
 <script>
-// ——— CATALOG ———
-const CATALOG = {
-  flooring:[2400,6800],
-  paint:[900,2800],
-  trim:[800,2200],
-  feature:[600,1800],
-  full:[4500,12000]
-};
+(function () {
+  'use strict';
 
-const TRADE_LABELS = {
-  flooring:'Flooring',
-  paint:'Paint',
-  trim:'Trim & Doors',
-  feature:'Feature Wall',
-  full:'Full Refresh'
-};
+  /* ══════════════════════════════════════════════════════════════════
+     RATE CONFIG
+     ══════════════════════════════════════════════════════════════════ */
+  var rateConfig = null;
 
-// ——— ESTIMATE ENGINE ———
-function updateEstimate(){
-  const checked = [...document.querySelectorAll('[name=trades]:checked')].map(i=>i.value);
-  const hasFull = checked.includes('full');
-  const hasSignificant = checked.some(v=>v!=='notsure');
+  fetch('/interiors/intake/intake-rate-config.json')
+    .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function (data) { rateConfig = data; computeAndUpdate(); })
+    .catch(function (e) { console.warn('intake-rate-config.json not loaded:', e); });
 
-  updateConditionalSections(checked);
+  /* ══════════════════════════════════════════════════════════════════
+     DOM REFS
+     ══════════════════════════════════════════════════════════════════ */
+  var measureContainer = document.getElementById('measureContainer');
+  var ceilingHeight    = document.getElementById('ceilingHeight');
+  var flooringType     = document.getElementById('flooringType');
+  var doorCountHidden  = document.getElementById('doorCount');
+  var featureWallCont  = document.getElementById('featureWallContainer');
+  var epPanel          = document.getElementById('estimatePreview');
+  var epRange          = document.getElementById('epRange');
+  var epBreakdown      = document.getElementById('epBreakdown');
+  var epMeta           = document.getElementById('epMeta');
 
-  if(!hasSignificant || checked.length===0){
-    document.getElementById('estimatePreview').classList.remove('visible');
-    return;
+  /* ══════════════════════════════════════════════════════════════════
+     ROOM DATA STORE
+     ══════════════════════════════════════════════════════════════════ */
+  var roomData = {};
+
+  /* ══════════════════════════════════════════════════════════════════
+     EVENT WIRING
+     ══════════════════════════════════════════════════════════════════ */
+  // Trades
+  document.getElementById('tradesGrid').addEventListener('change', function () { computeAndUpdate(); });
+
+  // Rooms
+  document.getElementById('roomsGrid').addEventListener('change', function () {
+    syncMeasurementCards();
+    syncFeatureWallChips();
+    computeAndUpdate();
+  });
+
+  // Ceiling / flooring / scope
+  ceilingHeight.addEventListener('change', computeAndUpdate);
+  flooringType.addEventListener('change', computeAndUpdate);
+  document.getElementById('ceilingScope').addEventListener('change', computeAndUpdate);
+
+  /* ══════════════════════════════════════════════════════════════════
+     DOOR COUNTER
+     ══════════════════════════════════════════════════════════════════ */
+  window.stepCounter = function (delta) {
+    var val = Math.max(0, (parseInt(doorCountHidden.value) || 0) + delta);
+    doorCountHidden.value = val;
+    var display = document.getElementById('doorCountDisplay');
+    display.textContent = val;
+    display.classList.toggle('nonzero', val > 0);
+    computeAndUpdate();
+  };
+
+  /* ══════════════════════════════════════════════════════════════════
+     TIER SELECT
+     ══════════════════════════════════════════════════════════════════ */
+  window.selectTier = function (card) {
+    document.querySelectorAll('#tierGrid .tier').forEach(function (c) { c.classList.remove('selected'); });
+    card.classList.add('selected');
+    var inp = card.querySelector('input[type=radio]');
+    if (inp) inp.checked = true;
+  };
+
+  /* ══════════════════════════════════════════════════════════════════
+     MEASUREMENT CARDS
+     ══════════════════════════════════════════════════════════════════ */
+  function getSelectedRooms() {
+    return Array.from(document.querySelectorAll('[name=rooms]:checked')).map(function (c) { return c.value; });
   }
 
-  let low=0,high=0;
-  let tradeNames=[];
-  if(hasFull){
-    [low,high]=CATALOG.full;
-    tradeNames=['Full Refresh'];
-  } else {
-    checked.filter(v=>v!=='notsure').forEach(v=>{
-      if(CATALOG[v]){
-        low+=CATALOG[v][0];
-        high+=CATALOG[v][1];
-        tradeNames.push(TRADE_LABELS[v]);
+  function getSelectedTrades() {
+    return Array.from(document.querySelectorAll('[name=trades]:checked')).map(function (c) { return c.value; });
+  }
+
+  function syncMeasurementCards() {
+    var selected = getSelectedRooms();
+
+    if (selected.length === 0) {
+      measureContainer.innerHTML = '<div class="measure-placeholder">Select rooms above to enter measurements.</div>';
+      return;
+    }
+
+    var ph = measureContainer.querySelector('.measure-placeholder');
+    if (ph) ph.remove();
+
+    Array.from(measureContainer.querySelectorAll('.measure-card')).forEach(function (card) {
+      if (selected.indexOf(card.dataset.room) === -1) card.remove();
+    });
+
+    selected.forEach(function (room) {
+      if (measureContainer.querySelector('.measure-card[data-room="' + room + '"]')) return;
+      if (!roomData[room]) roomData[room] = { shapes: [{ w: '', l: '' }], featureWall: false };
+      measureContainer.appendChild(buildCard(room));
+    });
+  }
+
+  function buildCard(room) {
+    var card = document.createElement('div');
+    card.className = 'measure-card';
+    card.dataset.room = room;
+
+    var header = document.createElement('div');
+    header.className = 'measure-card-header';
+    header.textContent = room;
+    card.appendChild(header);
+
+    var sc = document.createElement('div');
+    sc.className = 'shapes-container';
+    card.appendChild(sc);
+
+    renderShapes(card, room);
+
+    var addBtn = document.createElement('button');
+    addBtn.type = 'button';
+    addBtn.className = 'add-room-btn';
+    addBtn.style.margin = '8px 16px 12px';
+    addBtn.style.width = 'calc(100% - 32px)';
+    addBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> ADD SHAPE';
+    addBtn.addEventListener('click', function () {
+      roomData[room].shapes.push({ w: '', l: '' });
+      renderShapes(card, room);
+      computeAndUpdate();
+    });
+    card.appendChild(addBtn);
+
+    var tr = document.createElement('div');
+    tr.className = 'room-total-row';
+    var tl = document.createElement('div');
+    tl.className = 'room-total';
+    tl.dataset.roomTotal = room;
+    tl.textContent = getRoomSqft(room) + ' sqft';
+    tr.appendChild(tl);
+    card.appendChild(tr);
+
+    return card;
+  }
+
+  function renderShapes(card, room) {
+    var sc = card.querySelector('.shapes-container');
+    sc.innerHTML = '';
+    roomData[room].shapes.forEach(function (shape, idx) {
+      sc.appendChild(buildShapeRow(room, idx, card));
+    });
+  }
+
+  function buildShapeRow(room, idx, card) {
+    var shape = roomData[room].shapes[idx];
+    var row = document.createElement('div');
+    row.className = 'shape-row';
+
+    var wIn = mkInput(shape.w, 'W ft');
+    var lIn = mkInput(shape.l, 'L ft');
+
+    function onInput() {
+      shape.w = wIn.value;
+      shape.l = lIn.value;
+      sqftEl.textContent = shapeSqft(shape) + ' sqft';
+      updateRoomTotal(room);
+      computeAndUpdate();
+    }
+    wIn.addEventListener('keyup', onInput);
+    wIn.addEventListener('change', onInput);
+    lIn.addEventListener('keyup', onInput);
+    lIn.addEventListener('change', onInput);
+
+    var sqftEl = document.createElement('span');
+    sqftEl.className = 'shape-sqft';
+    sqftEl.textContent = shapeSqft(shape) + ' sqft';
+
+    row.appendChild(wIn);
+    row.appendChild(xSpan('\u00d7'));
+    row.appendChild(lIn);
+    row.appendChild(xSpan('='));
+    row.appendChild(sqftEl);
+
+    if (roomData[room].shapes.length > 1) {
+      var rm = document.createElement('button');
+      rm.type = 'button';
+      rm.className = 'shape-remove';
+      rm.textContent = 'REMOVE';
+      rm.addEventListener('click', function () {
+        roomData[room].shapes.splice(idx, 1);
+        renderShapes(card, room);
+        updateRoomTotal(room);
+        computeAndUpdate();
+      });
+      row.appendChild(rm);
+    }
+
+    return row;
+  }
+
+  function mkInput(val, ph) {
+    var i = document.createElement('input');
+    i.className = 'shape-input';
+    i.type = 'number';
+    i.min = '0';
+    i.step = '0.1';
+    i.placeholder = ph;
+    if (val !== '') i.value = val;
+    return i;
+  }
+  function xSpan(t) { var s = document.createElement('span'); s.className = 'shape-x'; s.textContent = t; return s; }
+
+  function shapeSqft(s) {
+    return Math.round((parseFloat(s.w) || 0) * (parseFloat(s.l) || 0));
+  }
+  function getRoomSqft(room) {
+    if (!roomData[room]) return 0;
+    return roomData[room].shapes.reduce(function (sum, s) { return sum + shapeSqft(s); }, 0);
+  }
+  function updateRoomTotal(room) {
+    var el = document.querySelector('[data-room-total="' + room + '"]');
+    if (el) el.textContent = getRoomSqft(room) + ' sqft';
+  }
+
+  /* ══════════════════════════════════════════════════════════════════
+     FEATURE WALL CHIPS
+     ══════════════════════════════════════════════════════════════════ */
+  function syncFeatureWallChips() {
+    var selected = getSelectedRooms();
+    if (selected.length === 0) {
+      featureWallCont.innerHTML = '<span style="font-size:12px;color:var(--muted)">Select rooms above first</span>';
+      return;
+    }
+    featureWallCont.innerHTML = '';
+    selected.forEach(function (room) {
+      if (!roomData[room]) roomData[room] = { shapes: [{ w: '', l: '' }], featureWall: false };
+      var lbl = document.createElement('label');
+      lbl.className = 'pill';
+      var inp = document.createElement('input');
+      inp.type = 'checkbox';
+      inp.style.cssText = 'position:absolute;opacity:0;pointer-events:none';
+      inp.checked = roomData[room].featureWall;
+      inp.addEventListener('change', function () {
+        roomData[room].featureWall = inp.checked;
+        computeAndUpdate();
+      });
+      var box = document.createElement('span');
+      box.className = 'pill-box';
+      box.textContent = room;
+      lbl.appendChild(inp);
+      lbl.appendChild(box);
+      featureWallCont.appendChild(lbl);
+    });
+  }
+
+  /* ══════════════════════════════════════════════════════════════════
+     COMPUTE ESTIMATE
+     ══════════════════════════════════════════════════════════════════ */
+  function getCeilingScope() {
+    var sel = document.querySelector('[name=ceilingScope]:checked');
+    return sel ? sel.value : 'walls';
+  }
+
+  function computeEstimate() {
+    if (!rateConfig) return null;
+
+    var trades     = getSelectedTrades();
+    var selected   = getSelectedRooms();
+    var floorType  = flooringType.value;
+    var ceilHeight = ceilingHeight.value;
+    var ceilScope  = getCeilingScope();
+    var doors      = parseInt(doorCountHidden.value) || 0;
+
+    var totalSqft     = 0;
+    var roomsMeasured = 0;
+    var byTrade = {
+      flooring:     { low: 0, high: 0 },
+      paint:        { low: 0, high: 0 },
+      trim:         { low: 0, high: 0 },
+      feature_wall: { low: 0, high: 0 }
+    };
+
+    var roomSqfts = {};
+    selected.forEach(function (room) {
+      var sqft = getRoomSqft(room);
+      roomSqfts[room] = sqft;
+      if (sqft > 0) { totalSqft += sqft; roomsMeasured++; }
+    });
+
+    if (totalSqft === 0 || trades.length === 0) return null;
+
+    // FLOORING
+    if (trades.indexOf('flooring') !== -1) {
+      var fc = rateConfig.flooring_types[floorType];
+      if (fc) {
+        var wk = floorType === 'hardwood_eng' ? 'hardwood_floating'
+               : floorType === 'hardwood_solid' ? 'hardwood_nail'
+               : floorType === 'tile' ? 'tile_standard'
+               : floorType === 'notsure' ? 'lvp'
+               : floorType;
+        var wf = rateConfig.waste_factors[wk] || 1.10;
+        selected.forEach(function (room) {
+          var sq = roomSqfts[room] || 0;
+          if (sq > 0) {
+            byTrade.flooring.low  += sq * wf * fc.rate_per_sqft.low;
+            byTrade.flooring.high += sq * wf * fc.rate_per_sqft.high;
+          }
+        });
+      }
+    }
+
+    // PAINT
+    if (trades.indexOf('paint') !== -1) {
+      var pc = ceilScope === 'walls_ceiling'
+        ? rateConfig.paint.walls_and_ceiling_per_sqft
+        : rateConfig.paint.walls_per_sqft;
+      var cm = rateConfig.paint.ceiling_height_multipliers[ceilHeight] || 1.0;
+      selected.forEach(function (room) {
+        var sq = roomSqfts[room] || 0;
+        if (sq > 0) {
+          if (ceilScope === 'walls_ceiling') {
+            byTrade.paint.low  += sq * pc.rate_per_sqft.low  * cm;
+            byTrade.paint.high += sq * pc.rate_per_sqft.high * cm;
+          } else {
+            byTrade.paint.low  += sq * pc.rate_per_sqft.low  * pc.floor_to_wall_factor * cm;
+            byTrade.paint.high += sq * pc.rate_per_sqft.high * pc.floor_to_wall_factor * cm;
+          }
+        }
+      });
+    }
+
+    // TRIM
+    var hasTrim  = trades.indexOf('trim')  !== -1;
+    var hasDoors = trades.indexOf('doors') !== -1;
+    if (hasTrim) {
+      var bb = rateConfig.trim.baseboard_per_sqft;
+      byTrade.trim.low  += totalSqft * bb.rate_per_sqft.low;
+      byTrade.trim.high += totalSqft * bb.rate_per_sqft.high;
+    }
+    if (hasDoors || hasTrim) {
+      var dc = rateConfig.trim.door_casing_each;
+      byTrade.trim.low  += doors * dc.rate_each.low;
+      byTrade.trim.high += doors * dc.rate_each.high;
+    }
+
+    // FEATURE WALL
+    var fwConf = rateConfig.feature_wall.per_sqft;
+    selected.forEach(function (room) {
+      if (roomData[room] && roomData[room].featureWall) {
+        var sq = roomSqfts[room] || 0;
+        if (sq > 0) {
+          var wallSq = sq * 0.30;
+          byTrade.feature_wall.low  += wallSq * fwConf.rate_per_sqft.low;
+          byTrade.feature_wall.high += wallSq * fwConf.rate_per_sqft.high;
+        }
       }
     });
+
+    // TOTALS
+    var projectLow  = byTrade.flooring.low + byTrade.paint.low + byTrade.trim.low + byTrade.feature_wall.low;
+    var projectHigh = byTrade.flooring.high + byTrade.paint.high + byTrade.trim.high + byTrade.feature_wall.high;
+    projectHigh *= rateConfig.global_adjustments.complexity_multiplier.high;
+    projectLow  = Math.round(projectLow / 100) * 100;
+    projectHigh = Math.round(projectHigh / 100) * 100;
+
+    Object.keys(byTrade).forEach(function (k) {
+      byTrade[k].low  = Math.round(byTrade[k].low / 10) * 10;
+      byTrade[k].high = Math.round(byTrade[k].high / 10) * 10;
+    });
+
+    return {
+      project_low: projectLow, project_high: projectHigh,
+      by_trade: byTrade, confidence: 'single_job',
+      sqft_total: totalSqft, rooms_measured: roomsMeasured
+    };
   }
 
-  if(low===0 && high===0){
-    document.getElementById('estimatePreview').classList.remove('visible');
+  /* ══════════════════════════════════════════════════════════════════
+     PREVIEW
+     ══════════════════════════════════════════════════════════════════ */
+  var TRADE_LABELS = { flooring: 'Flooring', paint: 'Paint', trim: 'Trim', feature_wall: 'Feature Wall' };
+
+  function computeAndUpdate() {
+    updatePreview(computeEstimate());
+  }
+
+  function updatePreview(est) {
+    /* Preview removed — estimate is internal only, not shown to homeowner */
     return;
+
+    var html = '';
+    Object.keys(TRADE_LABELS).forEach(function (key) {
+      var t = est.by_trade[key];
+      if (t && (t.low > 0 || t.high > 0)) {
+        html += '<div class="ep-trade-line">' + TRADE_LABELS[key] + ' \u00b7 $' + fmt(t.low) + ' \u2013 $' + fmt(t.high) + '</div>';
+      }
+    });
+    epBreakdown.innerHTML = html;
+    epMeta.textContent = est.rooms_measured + ' room' + (est.rooms_measured !== 1 ? 's' : '') + ' \u00b7 ' + est.sqft_total + ' sqft';
   }
 
-  document.getElementById('epRange').textContent=`$${low.toLocaleString('en-CA')} – $${high.toLocaleString('en-CA')}`;
-  document.getElementById('epTrades').textContent=tradeNames.join(' · ');
-  document.getElementById('estimatePreview').classList.add('visible');
-}
+  function fmt(n) { return n.toLocaleString('en-CA'); }
 
-function updateConditionalSections(checked){
-  const has = v=>checked.includes(v);
-  toggle('ceilingSection', has('paint')||has('trim')||has('full'));
-  toggle('finishSection', has('paint')||has('flooring')||has('trim')||has('full'));
-  toggle('flooringDetailRow', has('flooring')||has('full'));
-  toggle('trimDetailRow', has('trim')||has('full'));
-  toggle('paintDetailRow', has('paint')||has('full'));
-  const showFeature = has('feature')||has('full');
-  toggle('featureSection', showFeature);
-  if(showFeature) initFeatureSection();
-  toggle('doorSection', has('trim')||has('full'));
-  toggle('windowSection', has('trim')||has('paint')||has('full'));
-}
+  /* ══════════════════════════════════════════════════════════════════
+     API CONFIG — submissions go through /api/intake (server-side)
+     ══════════════════════════════════════════════════════════════════ */
 
-function toggle(id,show){
-  const el=document.getElementById(id);
-  if(!el)return;
-  el.classList.toggle('visible',show);
-}
-
-// ——— ROOMS ———
-function handleRoomChange(cb){
-  if(cb.value==='Whole House') return;
-  // uncheck Whole House if any other room checked
-  const wh=document.querySelector('[name=rooms][value="Whole House"]');
-  if(wh) wh.checked=false;
-  updatePerAreaGrid();
-}
-
-function handleWholeHouse(cb){
-  if(cb.checked){
-    document.querySelectorAll('[name=rooms]').forEach(r=>{
-      if(r.value!=='Whole House') r.checked=false;
+  function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      var r = Math.random() * 16 | 0;
+      return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
     });
   }
-  updatePerAreaGrid();
-}
 
-function getCheckedRooms(){
-  return [...document.querySelectorAll('[name=rooms]:checked')].map(r=>r.value);
-}
+  /* ══════════════════════════════════════════════════════════════════
+     BUILD LEAD RECORD
+     ══════════════════════════════════════════════════════════════════ */
+  function buildLeadRecord(leadId, est) {
+    var trades = getSelectedTrades();
+    var rooms  = getSelectedRooms();
+    var measurements = [];
 
-// ——— FLOORING PER-AREA ———
-const perAreaSelections={};
-
-function handleFlooringChange(){
-  const val=document.getElementById('flooringType').value;
-  const showGrid = val==='varies';
-  document.getElementById('perAreaGrid').style.display=showGrid?'block':'none';
-  if(showGrid) updatePerAreaGrid();
-}
-
-function updatePerAreaGrid(){
-  const show=document.getElementById('flooringType')&&document.getElementById('flooringType').value==='varies';
-  if(!show) return;
-  const rooms=getCheckedRooms();
-  const container=document.getElementById('perAreaRows');
-  // Keep existing selections
-  [...container.querySelectorAll('.per-area-row')].forEach(row=>{
-    const key=row.dataset.room;
-    const sel=row.querySelector('select');
-    if(sel) perAreaSelections[key]=sel.value;
-  });
-  container.innerHTML='';
-  rooms.forEach(r=>{
-    const row=document.createElement('div');
-    row.className='per-area-row';
-    row.dataset.room=r;
-    const saved=perAreaSelections[r]||'';
-    row.innerHTML=`<span class="par-name">${r}</span><div class="par-select"><select name="par-${r}">
-      <option value="">Select flooring...</option>
-      <option value="hardwood-solid"${saved==='hardwood-solid'?' selected':''}>Hardwood (solid)</option>
-      <option value="hardwood-eng"${saved==='hardwood-eng'?' selected':''}>Engineered hardwood</option>
-      <option value="lvp"${saved==='lvp'?' selected':''}>LVP / vinyl plank</option>
-      <option value="laminate"${saved==='laminate'?' selected':''}>Laminate</option>
-      <option value="tile"${saved==='tile'?' selected':''}>Tile</option>
-      <option value="carpet"${saved==='carpet'?' selected':''}>Carpet</option>
-      <option value="concrete"${saved==='concrete'?' selected':''}>Painted concrete</option>
-      <option value="notsure"${saved==='notsure'?' selected':''}>Not sure yet</option>
-    </select></div>`;
-    container.appendChild(row);
-  });
-}
-
-// ——— TRIM STYLE ———
-function selectTrimStyle(card){
-  document.querySelectorAll('.tscard').forEach(c=>c.classList.remove('selected'));
-  document.getElementById('tscard-samples').classList.remove('selected');
-  card.classList.add('selected');
-  const inp=card.querySelector('input[type=radio]');
-  if(inp) inp.checked=true;
-}
-
-function selectTrimSamples(el){
-  document.querySelectorAll('.tscard').forEach(c=>c.classList.remove('selected'));
-  el.classList.toggle('selected');
-  const inp=el.querySelector('input[type=radio]');
-  if(inp) inp.checked=el.classList.contains('selected');
-}
-
-// ——— TIER / FINISH BOXES ———
-function selectTier(card){
-  const group=card.dataset.group;
-  document.querySelectorAll(`.tier[data-group="${group}"]`).forEach(c=>c.classList.remove('selected'));
-  card.classList.add('selected');
-  const inp=card.querySelector('input[type=radio]');
-  if(inp) inp.checked=true;
-}
-
-// ——— COUNTER STEPPER ———
-function stepCounter(id,delta){
-  const hidden=document.getElementById(id);
-  const display=document.getElementById(id+'-display');
-  if(!hidden||!display) return;
-  let val=parseInt(hidden.value)||0;
-  val=Math.max(0,val+delta);
-  hidden.value=val;
-  display.textContent=val;
-  display.classList.toggle('nonzero',val>0);
-}
-
-// ——— FEATURE WALL ———
-let featureRoomId=0;
-
-function initFeatureSection(){
-  const container=document.getElementById('featureRooms');
-  if(container.children.length===0) addFeatureRoom();
-}
-
-function addFeatureRoom(){
-  featureRoomId++;
-  const id=featureRoomId;
-  const container=document.getElementById('featureRooms');
-  const entry=document.createElement('div');
-  entry.className='feature-room-entry';
-  entry.dataset.id=id;
-  entry.innerHTML=`
-    <button type="button" class="fe-remove" onclick="removeFeatureRoom(${id})" style="display:none">REMOVE</button>
-    <div class="fe-row">
-      <div class="field" style="margin:0">
-        <label class="field-label">Room</label>
-        <select name="fe-room-${id}">
-          <option value="">Select room...</option>
-          <option>Living room</option><option>Primary bedroom</option><option>Other bedroom</option>
-          <option>Dining room</option><option>Kitchen</option><option>Entryway / foyer</option>
-          <option>Home office</option><option>Basement / rec room</option><option>Other</option>
-        </select>
-      </div>
-      <div class="field" style="margin:0">
-        <label class="field-label">Wall count</label>
-        <select name="fe-walls-${id}">
-          <option value="">Select...</option>
-          <option>1 wall</option><option>2 walls</option><option>Full room</option><option>Not sure</option>
-        </select>
-      </div>
-    </div>
-    <span class="fe-label">Treatment</span>
-    <div class="fe-ck-grid">
-      ${['Bold paint colour','Wallpaper / mural','Board & batten','Shiplap / planks','Wainscoting','Not sure yet'].map(t=>`
-        <label class="ck"><input type="checkbox" name="fe-treat-${id}" value="${t}"><div class="ck-box fe-ck-box"><span class="ck-label">${t}</span><span class="ck-check"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></label>
-      `).join('')}
-    </div>
-  `;
-  container.appendChild(entry);
-  updateRemoveButtons();
-}
-
-function removeFeatureRoom(id){
-  const entry=document.querySelector(`.feature-room-entry[data-id="${id}"]`);
-  if(entry) entry.remove();
-  updateRemoveButtons();
-}
-
-function updateRemoveButtons(){
-  const entries=document.querySelectorAll('.feature-room-entry');
-  entries.forEach(e=>{
-    const btn=e.querySelector('.fe-remove');
-    if(btn) btn.style.display=entries.length>=2?'block':'none';
-  });
-}
-
-// ——— VALIDATION ———
-function validateForm(){
-  let valid=true;
-
-  const firstName=document.getElementById('firstName');
-  const fnErr=document.getElementById('firstName-err');
-  if(!firstName.value.trim()){
-    firstName.classList.add('error');
-    fnErr.classList.add('visible');
-    valid=false;
-  } else {
-    firstName.classList.remove('error');
-    fnErr.classList.remove('visible');
-  }
-
-  const email=document.getElementById('email');
-  const emErr=document.getElementById('email-err');
-  const emailRx=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if(!email.value.trim()||!emailRx.test(email.value)){
-    email.classList.add('error');
-    emErr.classList.add('visible');
-    valid=false;
-  } else {
-    email.classList.remove('error');
-    emErr.classList.remove('visible');
-  }
-
-  const address=document.getElementById('address');
-  const adErr=document.getElementById('address-err');
-  if(!address.value.trim()){
-    address.classList.add('error');
-    adErr.classList.add('visible');
-    valid=false;
-  } else {
-    address.classList.remove('error');
-    adErr.classList.remove('visible');
-  }
-
-  const city=document.getElementById('city');
-  const cyErr=document.getElementById('city-err');
-  if(!city.value.trim()){
-    city.classList.add('error');
-    cyErr.classList.add('visible');
-    valid=false;
-  } else {
-    city.classList.remove('error');
-    cyErr.classList.remove('visible');
-  }
-
-  return valid;
-}
-
-// ——— SUMMARY BUILDER ———
-function fmtSelect(id){
-  const el=document.getElementById(id);
-  if(!el||!el.options||el.selectedIndex<=0) return '';
-  return el.options[el.selectedIndex].text;
-}
-
-function buildSummary(){
-  const rows=[];
-
-  const fn=document.getElementById('firstName')?.value||'';
-  const ln=document.getElementById('lastName')?.value||'';
-  const name=[fn,ln].filter(Boolean).join(' ');
-  if(name) rows.push({label:'NAME',val:name});
-
-  const email=document.getElementById('email')?.value||'';
-  if(email) rows.push({label:'EMAIL',val:email});
-
-  const phone=document.getElementById('phone')?.value||'';
-  if(phone) rows.push({label:'PHONE',val:phone});
-
-  const address=document.getElementById('address')?.value||'';
-  const city=document.getElementById('city')?.value||'';
-  const mapsUrl=document.getElementById('maps_url')?.value||'';
-  const location=[address,city].filter(Boolean).join(', ');
-  if(location) rows.push({label:'LOCATION',val:location+(mapsUrl?` <a href="${mapsUrl}" target="_blank" rel="noopener" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--green);text-decoration:none">View in Maps ↗</a>`:'')});
-
-  const prop=fmtSelect('propertyType');
-  if(prop) rows.push({label:'PROPERTY',val:prop});
-
-  const trades=[...document.querySelectorAll('[name=trades]:checked')].map(i=>TRADE_LABELS[i.value]||i.value);
-  if(trades.length) rows.push({label:'SCOPE',val:'',tags:trades});
-
-  const rooms=getCheckedRooms();
-  if(rooms.length) rows.push({label:'ROOMS',val:'',tags:rooms});
-
-  const size=document.getElementById('sizeField')?.value||'';
-  if(size) rows.push({label:'SIZE',val:size});
-
-  const ch=fmtSelect('ceilingHeight');
-  const cs=fmtSelect('ceilingScope');
-  if(ch||cs) rows.push({label:'CEILINGS',val:[ch,cs].filter(Boolean).join(' · ')});
-
-  // Flooring
-  const ft=document.getElementById('flooringType');
-  if(ft&&ft.value&&ft.value!==''){
-    if(ft.value==='varies'){
-      const perRows=[...document.querySelectorAll('#perAreaRows .per-area-row')];
-      const parts=perRows.map(r=>{
-        const sel=r.querySelector('select');
-        const room=r.dataset.room;
-        const type=sel&&sel.selectedIndex>0?sel.options[sel.selectedIndex].text:'—';
-        return `${room}: ${type}`;
-      }).join(', ');
-      rows.push({label:'FLOORING',val:parts||'Varies by room'});
-    } else {
-      rows.push({label:'FLOORING',val:ft.options[ft.selectedIndex].text});
-    }
-  }
-
-  // Trim
-  const tsEl=document.querySelector('.tscard.selected input[type=radio]')||document.querySelector('#tscard-samples.selected input[type=radio]');
-  const trimStyle=tsEl?tsEl.value:'';
-  const trimTierEl=document.querySelector('.tier[data-group=trimTier].selected input');
-  const trimTier=trimTierEl?trimTierEl.value.toUpperCase():'';
-  const finishAppEl=document.querySelector('.tier[data-group=finishApp].selected input');
-  const finishApp=finishAppEl?(finishAppEl.value==='brush'?'Brush & Roll':'Spray Finish'):'';
-  if(trimStyle){
-    const parts=[trimStyle,trimTier,finishApp].filter(Boolean).join(' · ');
-    rows.push({label:'TRIM',val:parts});
-  }
-
-  const pf=fmtSelect('paintFinish');
-  if(pf) rows.push({label:'PAINT FINISH',val:pf});
-  const cd=fmtSelect('colourDirection');
-  if(cd) rows.push({label:'COLOUR',val:cd});
-
-  // Feature walls
-  const feEntries=document.querySelectorAll('.feature-room-entry');
-  if(feEntries.length){
-    const feLines=[];
-    feEntries.forEach(e=>{
-      const id=e.dataset.id;
-      const roomSel=e.querySelector(`[name^="fe-room"]`);
-      const wallSel=e.querySelector(`[name^="fe-walls"]`);
-      const treatCbs=[...e.querySelectorAll(`[name^="fe-treat"]:checked`)].map(c=>c.value);
-      const roomName=roomSel&&roomSel.value?roomSel.value:'';
-      const walls=wallSel&&wallSel.value?wallSel.value:'';
-      const treats=treatCbs.join(', ');
-      const line=[roomName,walls,treats].filter(Boolean).join(' · ');
-      if(line) feLines.push(line);
+    rooms.forEach(function (room) {
+      if (!roomData[room]) return;
+      var shapes = roomData[room].shapes.map(function (s) {
+        return { width: parseFloat(s.w) || 0, length: parseFloat(s.l) || 0 };
+      });
+      measurements.push({
+        room: room,
+        shapes: shapes,
+        total_sqft: getRoomSqft(room)
+      });
     });
-    const feNotes=document.getElementById('featureNotes')?.value||'';
-    if(feLines.length) rows.push({label:'FEATURE WALLS',val:feLines.join(' | ')+(feNotes?` — ${feNotes}`:'')});
-  }
 
-  // Timeline
-  const tlEl=document.querySelector('[name=timeline]:checked');
-  if(tlEl){
-    const tlLabels={'asap':'ASAP','1-2mo':'1–2 Months','3-6mo':'3–6 Months','exploring':'Just Exploring','flexible':'Flexible'};
-    rows.push({label:'TIMELINE',val:tlLabels[tlEl.value]||tlEl.value});
-  }
+    var tierEl = document.querySelector('#tierGrid .tier.selected input');
+    var timelineEl = document.querySelector('[name=timeline]:checked');
+    var referralEl = document.querySelector('[name=referral]:checked');
 
-  // Estimate
-  const epEl=document.getElementById('epRange');
-  if(epEl&&epEl.textContent&&epEl.textContent!=='—'){
-    rows.push({label:'PRELIM ESTIMATE',val:epEl.textContent+' CAD'});
-  }
+    var featureWallRooms = [];
+    rooms.forEach(function (room) {
+      if (roomData[room] && roomData[room].featureWall) featureWallRooms.push(room);
+    });
 
-  // Doors
-  const doorTypes=[
-    {id:'doors-swing',name:'Swing'},
-    {id:'doors-pocket',name:'Pocket'},
-    {id:'doors-bifold',name:'Bi-fold'},
-    {id:'doors-barn',name:'Barn/Sliding'}
-  ];
-  const doorParts=doorTypes.map(d=>{
-    const v=parseInt(document.getElementById(d.id)?.value||'0');
-    return v>0?`${d.name}: ${v}`:'';
-  }).filter(Boolean).join(', ');
-  if(doorParts) rows.push({label:'DOORS',val:doorParts});
-
-  const doorNotes=document.getElementById('doorNotes')?.value||'';
-  if(doorNotes) rows.push({label:'DOOR NOTES',val:doorNotes});
-
-  // Windows
-  const winTypes=[
-    {id:'win-small',name:'Small'},
-    {id:'win-standard',name:'Standard'},
-    {id:'win-large',name:'Large'},
-    {id:'win-irregular',name:'Irregular'}
-  ];
-  const winParts=winTypes.map(w=>{
-    const v=parseInt(document.getElementById(w.id)?.value||'0');
-    return v>0?`${w.name}: ${v}`:'';
-  }).filter(Boolean).join(', ');
-  if(winParts) rows.push({label:'WINDOWS',val:winParts});
-
-  const winNotes=document.getElementById('winNotes')?.value||'';
-  if(winNotes) rows.push({label:'WINDOW NOTES',val:winNotes});
-
-  // Referral
-  const refEl=document.querySelector('[name=referral]:checked');
-  if(refEl){
-    const rLabels={
-      'word-of-mouth':'Word of Mouth','home-show':'Home Show',
-      'social-media':'Social Media','google':'Google',
-      'referral-partner':'Referral Partner','other':'Other'
+    return {
+      id: leadId,
+      created_at: new Date().toISOString(),
+      source: 'homeowner_intake',
+      status: 'new',
+      contact: {
+        first_name: document.getElementById('firstName').value || '',
+        last_name: document.getElementById('lastName').value || '',
+        email: document.getElementById('email').value || '',
+        phone: document.getElementById('phone').value || ''
+      },
+      address: {
+        street: document.getElementById('address').value || '',
+        city: document.getElementById('city').value || '',
+        place_id: '',
+        lat: null,
+        lng: null,
+        maps_url: ''
+      },
+      property_type: document.getElementById('propertyType').value || '',
+      trades: trades,
+      rooms: rooms,
+      measurements: measurements,
+      flooring_type: flooringType.value,
+      ceiling_height: ceilingHeight.value,
+      ceiling_scope: getCeilingScope(),
+      doors: { swing: parseInt(doorCountHidden.value) || 0, pocket: 0, bifold: 0, barn: 0 },
+      windows: { small: 0, standard: 0, large: 0, irregular: 0 },
+      trim_style: '',
+      trim_tier: tierEl ? tierEl.value : 'better',
+      paint_finish: '',
+      colour_direction: '',
+      timeline: timelineEl ? timelineEl.value : '',
+      referral: referralEl ? referralEl.value : '',
+      feature_walls: featureWallRooms,
+      notes: document.getElementById('notes').value || '',
+      estimate: est ? {
+        project_low: est.project_low,
+        project_high: est.project_high,
+        by_trade: est.by_trade,
+        sqft_total: est.sqft_total,
+        rooms_measured: est.rooms_measured,
+        confidence: est.confidence,
+        generated_at: new Date().toISOString()
+      } : null
     };
-    rows.push({label:'HOW YOU FOUND US',val:rLabels[refEl.value]||refEl.value});
   }
 
-  // Notes
-  const notes=document.getElementById('additionalNotes')?.value||'';
-  if(notes) rows.push({label:'NOTES',val:notes});
+  /* ══════════════════════════════════════════════════════════════════
+     SAVE / SUMMARY
+     ══════════════════════════════════════════════════════════════════ */
+  document.getElementById('submitBtn').addEventListener('click', function () {
+    // Validate required fields
+    var firstName = document.getElementById('firstName');
+    var phone = document.getElementById('phone');
+    var address = document.getElementById('address');
+    var hasError = false;
 
-  // Render
-  const card=document.getElementById('summaryCard');
-  card.innerHTML=`
-    <div class="summary-header">YOUR SUBMISSION</div>
-    <div class="summary-body">
-      ${rows.map(r=>`
-        <div class="summary-row">
-          <span class="summary-label">${r.label}</span>
-          <span class="summary-val">
-            ${r.tags?`<div class="summary-tags">${r.tags.map(t=>`<span class="summary-tag">${t}</span>`).join('')}</div>`:r.val}
-          </span>
-        </div>
-      `).join('')}
-    </div>
-  `;
-}
-
-// ——— FORM SUBMIT ———
-document.getElementById('intakeForm').addEventListener('submit',function(e){
-  e.preventDefault();
-  if(!validateForm()) return;
-
-  const btn=document.getElementById('submitBtn');
-  btn.disabled=true;
-  btn.textContent='SENDING...';
-
-  try { buildSummary(); } catch(err){ console.warn('Summary build error:',err); }
-
-  setTimeout(()=>{
-    document.getElementById('formWrap').style.display='none';
-    document.getElementById('successState').classList.add('visible');
-    window.scrollTo({top:0,behavior:'smooth'});
-  },600);
-});
-</script>
-
-<!-- ═══════════════════════════════════════════════════
-     GOOGLE PLACES AUTOCOMPLETE
-     Replace YOUR_API_KEY with your Google Maps API key.
-     Required APIs to enable in Google Cloud Console:
-       • Maps JavaScript API
-       • Places API
-       • Street View Static API
-     ═══════════════════════════════════════════════════ -->
-<script>
-const GMAPS_KEY = 'YOUR_API_KEY';
-
-function initAutocomplete() {
-  const input = document.getElementById('address');
-
-  const autocomplete = new google.maps.places.Autocomplete(input, {
-    componentRestrictions: { country: 'ca' },
-    fields: ['place_id', 'geometry', 'formatted_address', 'address_components'],
-    types: ['address'],
-  });
-
-  // Style the Google autocomplete dropdown to match the page
-  const styleEl = document.createElement('style');
-  styleEl.textContent = `.pac-container{font-family:'Figtree',sans-serif;border:1.5px solid var(--border-s);border-radius:var(--radius);box-shadow:0 4px 16px rgba(0,0,0,.08);background:var(--surface);margin-top:4px}.pac-item{padding:8px 12px;font-size:13px;color:var(--charcoal);cursor:pointer}.pac-item:hover,.pac-item-selected{background:var(--surface-2)}.pac-item-query{font-weight:600;color:var(--charcoal)}.pac-matched{font-weight:700}.pac-icon{display:none}`;
-  document.head.appendChild(styleEl);
-
-  autocomplete.addListener('place_changed', () => {
-    const place = autocomplete.getPlace();
-    if (!place.geometry) return;
-
-    const lat = place.geometry.location.lat();
-    const lng = place.geometry.location.lng();
-    const placeId = place.place_id;
-
-    // Store hidden fields for app use
-    document.getElementById('place_id').value  = placeId;
-    document.getElementById('place_lat').value = lat;
-    document.getElementById('place_lng').value = lng;
-
-    // Build the Google Maps deep link (opens place directly)
-    const mapsUrl = `https://www.google.com/maps/place/?q=place_id:${placeId}`;
-    document.getElementById('maps_url').value = mapsUrl;
-    document.getElementById('mapsLink').href = mapsUrl;
-
-    // Auto-fill city from address components
-    const comps = place.address_components || [];
-    const cityComp = comps.find(c => c.types.includes('locality'))
-                  || comps.find(c => c.types.includes('sublocality'))
-                  || comps.find(c => c.types.includes('administrative_area_level_2'));
-    if (cityComp) {
-      const cityField = document.getElementById('city');
-      cityField.value = cityComp.long_name;
-      // Clear any validation error
-      cityField.classList.remove('error');
-      document.getElementById('city-err').classList.remove('visible');
+    [firstName, phone, address].forEach(function (el) {
+      if (!el.value.trim()) {
+        el.classList.add('error');
+        hasError = true;
+      } else {
+        el.classList.remove('error');
+      }
+    });
+    if (hasError) {
+      firstName.focus();
+      return;
     }
 
-    // Clear address validation error
-    input.classList.remove('error');
-    document.getElementById('address-err').classList.remove('visible');
+    var btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.innerHTML = 'SAVING\u2026';
 
-    // Street View static image (600×320, key embedded — safe for static API)
-    const svUrl = `https://maps.googleapis.com/maps/api/streetview?size=600x320&location=${lat},${lng}&fov=90&pitch=5&key=${GMAPS_KEY}`;
-    const img = document.getElementById('streetviewImg');
-    img.src = svUrl;
-    img.onerror = () => {
-      // No street view available — hide the preview
-      document.getElementById('streetviewWrap').style.display = 'none';
+    var est = computeEstimate();
+    var leadId = generateUUID();
+
+    var record = buildLeadRecord(leadId, est);
+
+    // Generate display ID (L-YYYY-NNN)
+    var displayId = 'L-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random() * 900) + 100).padStart(3, '0');
+    record.display_id = displayId;
+
+    var now = new Date().toISOString();
+
+    // Build Customer record for /leads pipeline
+    var custId = 'cust-' + leadId.replace(/-/g, '').slice(0, 12);
+    var custEmail = record.contact.email || ('lead-' + Date.now() + '@noemail.hooomz.local');
+    var custTags = ['lead', 'source:homeowner_intake'];
+    if (record.timeline) custTags.push('timeline:' + record.timeline);
+    if (est) {
+      custTags.push('budget:' + est.project_low + '-' + est.project_high);
+      custTags.push('estimate-low:' + est.project_low);
+      custTags.push('estimate-mid:' + Math.round((est.project_low + est.project_high) / 2));
+      custTags.push('estimate-high:' + est.project_high);
+      custTags.push('sqft:' + est.sqft_total);
+    }
+    custTags.push('rooms:' + record.rooms.length);
+    record.trades.forEach(function (t) { custTags.push('scope:' + t); });
+    if (record.referral) custTags.push('referral-source:' + record.referral);
+    custTags.push('preferred-contact:phone');
+    custTags.push('temperature:warm');
+
+    var customer = {
+      id: custId,
+      firstName: record.contact.first_name,
+      lastName: record.contact.last_name || '',
+      email: custEmail,
+      phone: record.contact.phone || '',
+      type: 'residential',
+      address: { street: record.address.street || 'TBD', city: record.address.city || 'Moncton', province: 'NB', postalCode: 'E1A 0A1', country: 'CA' },
+      tags: custTags,
+      notes: record.notes || '',
+      preferredContactMethod: 'phone',
+      metadata: { createdAt: now, updatedAt: now, version: 1 }
     };
-    img.onload = () => {
-      document.getElementById('streetviewWrap').style.display = 'block';
-    };
+
+    // Submit via API route (server adds org_id + uses service role key)
+    fetch('/api/intake', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ lead: record, customer: customer })
+    })
+      .then(function (r) {
+        if (!r.ok) throw new Error('Save failed: ' + r.status);
+        return r.json();
+      })
+      .then(function () {
+        // Success — show summary
+        showSummary(record, est, displayId);
+        document.getElementById('formWrap').style.display = 'none';
+        document.getElementById('successState').classList.add('visible');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      })
+      .catch(function (err) {
+        console.error('Lead save error:', err);
+        btn.disabled = false;
+        btn.innerHTML = 'SUBMIT REQUEST <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h12M7 1l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        // Show inline error
+        var errEl = document.getElementById('submitError');
+        if (!errEl) {
+          errEl = document.createElement('div');
+          errEl.id = 'submitError';
+          errEl.style.cssText = 'font-family:"DM Mono",monospace;font-size:11px;color:var(--red);margin-top:12px;text-align:right';
+          document.querySelector('.submit-row').appendChild(errEl);
+        }
+        errEl.textContent = 'Save failed \u2014 check your connection and try again.';
+      });
   });
-}
-</script>
-<script>
-// Only load the Maps SDK when a real key has been set
-if (GMAPS_KEY && GMAPS_KEY !== 'YOUR_API_KEY') {
-  const s = document.createElement('script');
-  s.src = `https://maps.googleapis.com/maps/api/js?key=${GMAPS_KEY}&libraries=places&callback=initAutocomplete`;
-  s.async = true;
-  s.defer = true;
-  document.head.appendChild(s);
-}
+
+  function showSummary(record, est, displayId) {
+    var sc = document.getElementById('summaryCard');
+    var html = '<div class="summary-header">LEAD SUMMARY \u00b7 ' + displayId + '</div><div class="summary-body">';
+
+    var name = [record.contact.first_name, record.contact.last_name].filter(Boolean).join(' ');
+    if (name) html += row('NAME', name);
+    if (record.contact.phone) html += row('PHONE', record.contact.phone);
+    if (record.address.street) html += row('ADDRESS', record.address.street + (record.address.city ? ', ' + record.address.city : ''));
+
+    if (record.trades.length) html += row('SERVICES', '<div class="summary-tags">' + record.trades.map(function (t) { return '<span class="summary-tag">' + t.toUpperCase() + '</span>'; }).join('') + '</div>');
+    if (record.rooms.length) html += row('ROOMS', '<div class="summary-tags">' + record.rooms.map(function (r) { return '<span class="summary-tag">' + r + '</span>'; }).join('') + '</div>');
+
+    html += '</div>';
+
+    /* Estimate display removed — homeowner sees confirmation only.
+       est object still computed and sent with lead record for internal use. */
+
+    sc.innerHTML = html;
+
+    // Title stays as-is — no lead ID shown to homeowner
+  }
+
+  function row(label, val) {
+    return '<div class="summary-row"><span class="summary-label">' + label + '</span><span class="summary-val">' + val + '</span></div>';
+  }
+
+  /* ══════════════════════════════════════════════════════════════════
+     INIT
+     ══════════════════════════════════════════════════════════════════ */
+  syncMeasurementCards();
+  syncFeatureWallChips();
+
+})();
 </script>
 </body>
 </html>

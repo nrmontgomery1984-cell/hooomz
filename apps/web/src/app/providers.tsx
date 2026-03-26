@@ -5,6 +5,7 @@
  * Separates client components from server layout
  */
 
+import { AuthProvider } from '@/context/AuthContext';
 import { ServicesProvider } from '@/lib/services/ServicesContext';
 import { ToastProvider } from '@/components/ui/Toast';
 import { QueryProvider } from '@/lib/api';
@@ -21,21 +22,23 @@ interface ProvidersProps {
 
 export function Providers({ children }: ProvidersProps) {
   return (
-    <ThemeProvider>
-      <ViewModeProvider>
-        <QueryProvider>
-          <SyncRefreshListener />
-          <ServicesProvider>
-            <ActiveCrewProvider>
-              <ToastProvider>
-                <RevealGaugeProvider>
-                  <QuickAddProvider>{children}</QuickAddProvider>
-                </RevealGaugeProvider>
-              </ToastProvider>
-            </ActiveCrewProvider>
-          </ServicesProvider>
-        </QueryProvider>
-      </ViewModeProvider>
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider>
+        <ViewModeProvider>
+          <QueryProvider>
+            <SyncRefreshListener />
+            <ServicesProvider>
+              <ActiveCrewProvider>
+                <ToastProvider>
+                  <RevealGaugeProvider>
+                    <QuickAddProvider>{children}</QuickAddProvider>
+                  </RevealGaugeProvider>
+                </ToastProvider>
+              </ActiveCrewProvider>
+            </ServicesProvider>
+          </QueryProvider>
+        </ViewModeProvider>
+      </ThemeProvider>
+    </AuthProvider>
   );
 }

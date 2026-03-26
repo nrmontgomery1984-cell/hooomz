@@ -7,11 +7,11 @@ import { ScoreBar } from './ScoreBar';
 import { RetailerDots } from './RetailerDots';
 import { ToolResearchCard } from './ToolResearchCard';
 
-const NAVY = '#1B2A4A';
-const TEAL = '#2A9D8F';
-const GOLD = '#E9C46A';
-const CORAL = '#E76F51';
-const LIGHT_BG = '#F5F7FA';
+const NAVY = 'var(--charcoal)';
+const TEAL = 'var(--accent)';
+const GOLD = '#E9C46A'; /* tool-research category — no canonical equivalent */
+const CORAL = '#E76F51'; /* tool-research category — no canonical equivalent */
+const LIGHT_BG = 'var(--surface-2)';
 const LIGHT_TEAL = '#E6F5F3';
 const LIGHT_GOLD = '#FDF6E3';
 const LIGHT_CORAL = '#FDEEEA';
@@ -61,7 +61,7 @@ export function PlatformTab({ platforms }: PlatformTabProps) {
         accent="The highest-impact decision"
         color={TEAL}
       >
-        <p style={{ fontSize: 13, color: '#555', margin: 0 }}>
+        <p style={{ fontSize: 13, color: 'var(--muted)', margin: 0 }}>
           Picking a cordless platform locks you into a battery ecosystem for 8+ tools. The goal is
           finding the best PLATFORM at budget price — broadest coverage, best local availability,
           credible upgrade path. Click any platform to expand details.
@@ -144,7 +144,7 @@ export function PlatformTab({ platforms }: PlatformTabProps) {
             e.key === 'Enter' && setExpanded(expanded === p.name ? null : p.name)
           }
           style={{
-            background: 'white',
+            background: 'var(--surface)',
             borderRadius: 8,
             marginBottom: 8,
             overflow: 'hidden',
@@ -174,12 +174,12 @@ export function PlatformTab({ platforms }: PlatformTabProps) {
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
               <span style={{ fontSize: 13, fontWeight: 600, color: TEAL }}>{p.entryPrice}</span>
-              <span style={{ fontSize: 11, color: '#888' }}>{p.platformSize}</span>
+              <span style={{ fontSize: 11, color: 'var(--muted)' }}>{p.platformSize}</span>
               <span style={{ fontSize: 16 }}>{expanded === p.name ? '\u25B2' : '\u25BC'}</span>
             </div>
           </div>
           {expanded === p.name && (
-            <div style={{ padding: '0 16px 16px', borderTop: '1px solid #EEE' }}>
+            <div style={{ padding: '0 16px 16px', borderTop: '1px solid var(--border)' }}>
               <div
                 style={{
                   display: 'grid',
@@ -205,7 +205,7 @@ export function PlatformTab({ platforms }: PlatformTabProps) {
                     <div
                       style={{
                         fontSize: 10,
-                        color: '#888',
+                        color: 'var(--muted)',
                         fontWeight: 600,
                         marginBottom: 2,
                       }}
@@ -271,7 +271,7 @@ export function PlatformTab({ platforms }: PlatformTabProps) {
               [
                 'Wildcard: Dual Platform',
                 'Makita 18V LXT for daily + Milwaukee M18 for specialty heavy tools (impact wrench, rotary hammer). Many contractors run two platforms. Batteries stay separate but you get best-in-class for each application',
-                '#F3E8FF',
+                'var(--violet-bg)',
               ],
             ] as [string, string, string][]
           ).map(([title, desc, bg], i) => (

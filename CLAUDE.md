@@ -1,199 +1,75 @@
-# HOOOMZ OS - CLAUDE CODE REFERENCE
+# Hooomz OS
 
-> **READ THIS FIRST.** This document contains critical context that must persist across sessions. If you're about to build UI components, database schemas, or features, verify your work against these specifications.
+## What This Is
+A tech-enabled residential finishing trades platform. Full job lifecycle OS —
+from first inquiry through permanent home record — for four personas:
+Manager, Operator, Installer, Homeowner.
 
----
+## Locked Spec
+docs/architecture/2026-02-23_SPEC_app-foundation_v1.md
 
-## CRITICAL: What Hooomz IS
+## Tech Stack
+- Framework: Next.js 14.1.0 (App Router)
+- UI: React 18.2.0 + TypeScript 5.3.3
+- Styling: Tailwind CSS 3.4.1 + CSS custom properties
+  → globals.css is the authority. tailwind.config.js matches it.
+- State: TanStack React Query 5.x + React Context
+  → NOT Zustand. Zustand is not used anywhere in this codebase.
+- Client DB: IndexedDB v37, 82 stores, database name: hooomz_db
+- Remote: Supabase JS 2.39.0 (48 stores synced)
+- Package manager: pnpm workspace monorepo (10 packages)
+- Hosting: Vercel. DNS: Wix → hooomz.ca
 
-Hooomz is **NOT generic construction software**. It is the **same platform as Looops** applied to construction/home management.
+## Design System
+- Primary font: Figtree (300–700)
+- Mono font: DM Mono (400–500). No other fonts.
+- Background: #F0EDE8 (--bg)
+- Surface: #FAF8F5 (--surface)
+- Dark nav: #111010 (--dark-nav)
+- Border: #E0DCD7 (--border)
+- Text: #1A1714 (--charcoal) / #5C5349 (--mid) / #9A8E84 (--muted)
+- Status: green #16A34A / amber #D97706 / red #DC2626 / blue #4A7FA5
+- Accent: #6B6560
+- Sidebar collapses to 56px icon rail, expands to 240px
+- Left border accent on cards indicates status color
+- No heavy shadows. Border-radius max 10px.
+- globals.css is the authority. tailwind.config.js must match it.
 
-### The Test
+## The Lifecycle — DESIGN → SCRIPT
+"We DESIGN the SCRIPT." 12 stages, one language.
+DESIGN (Sales owns): D-Discover · E-Estimate · S-Survey · I-Iterations · G-Go-Ahead · N-Notify
+SCRIPT (Production owns): S-Shield · C-Clear · R-Ready · I-Install · P-Punch · T-Turnover
+N (Notify) is the handoff. Nothing enters production without a complete brief.
+Homeowner portal access is enabled at I (Iterations), not Turnover.
 
-Before building anything, ask:
-1. Could this component exist in Looops without looking out of place?
-2. Does this match the sphere-based visualization pattern?
-3. Does this avoid the "construction software" aesthetic?
+## Navigation Structure
+6 collapsible sidebar sections: SALES · PRODUCTION · FINANCE · STANDARDS · LABS · ADMIN
+Collapses to 56px icon rail. Command Centre (/) sits above all sections.
+Bottom nav (mobile only): 5 items + Quick Add FAB (19 actions).
+Sidebar accordion: only one section open at a time.
 
-If any answer is "no," you're building the wrong thing.
+## Key Rules
+- globals.css is the design token authority
+- Offline-first: all mutations → IndexedDB first → SyncQueue → Supabase
+- All repos extend BaseRepository<T>
+- ID format: prefix-based (PRJ_, TSK_, etc.)
+- Conflict resolution: last-write-wins via metadata.updatedAt
+- Portal shows progress bars NOT raw budget numbers or hourly rates
+- Customers appears in Sales, Production, and Admin — three filtered views, by design
+- Material selection → Quote integration is deferred (stores exist, connection not wired)
+- Intake form shows no auto-estimate — homeowner receives 24–48hr email response
 
----
+## Specced But Unbuilt
+- **Work Orders (WO):** Labour authorization entity — time entries and expenses hang off it.
+  Distinct from DeployedTask (task instance from SOP pipeline). `woId` fields on expenses/POs
+  are plain string references for now. When built: WO-YYYY-NNN numbering, full entity with
+  create triggers, task relationships, time entry attachment. Needs its own spec session.
+- **Property Passport:** IDB stores exist (passports, passportEntries, v35). No UI pages built.
+  Prompt written, implementation pending.
 
-## UI REQUIREMENTS (NON-NEGOTIABLE)
-
-### DO NOT BUILD:
-- ❌ Traditional nav bars with text labels
-- ❌ Card grids with icons and descriptions
-- ❌ Generic dashboard layouts with stat cards
-- ❌ Gantt charts as primary navigation
-- ❌ Dense data tables
-- ❌ Dark/industrial color schemes
-- ❌ Blue as primary color
-- ❌ Horizontal tab navigation
-
-### DO BUILD:
-- ✅ Sphere-based visualization (3D orbs with health scores 0-100)
-- ✅ Nested spheres (tap parent → see children)
-- ✅ Widget cards below spheres for metrics
-- ✅ Bottom navigation with icons only
-- ✅ Progressive disclosure (summary first, details on tap)
-- ✅ Light, warm, approachable colors
-
-### Visual Style
-```
-Aesthetic: Pixar warmth + Google clarity + Disney magic
-Spheres: Smooth matte finish, minimal gradient, score number in center
-Backgrounds: Clean white
-Shadows: Soft, not harsh
-Touch targets: 44px minimum (work gloves)
-```
-
-### Colors
-
-| Name | Hex | Usage |
-|------|-----|-------|
-| Primary Teal | #16A085 | Healthy status, primary actions |
-| Status Green | #27AE60 | Completed, verified |
-| Status Amber | #F39C12 | Attention needed |
-| Status Coral | #E74C3C | Behind, needs action |
-| Dark Slate | #2C3E50 | Text |
-
----
-
-## ARCHITECTURE REQUIREMENTS
-
-### 1. Activity Log is the Spine
-
-Every action writes to an immutable event log. This is not optional.
-```typescript
-// EVERY user action must call this
-await createActivityEvent({
-  event_type: 'task.status_changed',
-  project_id,
-  entity_type: 'task_instance',
-  entity_id: taskId,
-  event_data: { old_status, new_status }
-});
-```
-
-### 2. Nested Loop Architecture
-
-Everything is a loop containing smaller loops:
-```
-Project → Work Category → Location → Task → Checklist Item
-```
-
-Status bubbles up: worst child status becomes parent status.
-
-### 3. Three-Axis Model
-
-Tasks can be filtered by three orthogonal axes:
-- **Work Category**: FL (Flooring), PT (Paint), FC (Finish Carpentry), TL (Tile), DW (Drywall)
-- **Stage**: ST-DM (Demo), ST-PR (Prime & Prep), ST-FN (Finish), ST-PL (Punch), ST-CL (Closeout)
-- **Location**: Living Room, Kitchen, Bedroom, etc.
-
-Same task appears in all three views.
-
-### 4. Division Scoping
-
-Hooomz is an **ecosystem** with multiple business divisions. The current web app is **Hooomz Interiors**.
-
-**Divisions:**
-- `interiors` - Interior renovations (flooring, paint, trim) - **Current app**
-- `exteriors` - Exterior work (roofing, siding, decks) - Future
-- `diy` - DIY guidance platform - Future
-- `maintenance` - Ongoing home maintenance - Future
-
-**Interiors Work Categories (Bundle Types):**
-| Bundle | Trades | Target Price |
-|--------|--------|--------------|
-| Floor Refresh | FL, FC | ~$5,400 |
-| Room Refresh | FL, PT, FC | ~$8,200 |
-| Full Interior | FL, PT, FC, DW | ~$11,800 |
-| Accent Package | FC, PT | Variable |
-| Custom | User-defined | Variable |
-
-**Critical Rule:** Never delete or rename division-specific types at the ecosystem level. Instead, **scope** them to their appropriate division using the `WORK_CATEGORY_DIVISION_MAP` in `shared-contracts`.
-
----
-
-## SMART ESTIMATING (THE DIFFERENTIATOR)
-
-This is what makes Hooomz different from every other construction app.
-
-### Learning Flows
-
-1. **Receipts → Price baselines** (what materials actually cost)
-2. **Time entries → Labor baselines** (how long tasks actually take)
-3. **Completed projects → Estimate accuracy** (how good were our guesses)
-
-### Confidence Indicators
-
-Every estimate shows data confidence:
-
-| Icon | Level | Criteria |
-|------|-------|----------|
-| ✓ | Verified | 3+ data points |
-| ~ | Limited | 1-2 data points |
-| ? | Estimate | No field data |
-```
-// Display like this:
-Labor: 24 hrs ✓
-Materials: $2,400 ~
-Contingency: 10% ?
-```
-
----
-
-## 11 DECISION FILTERS
-
-Every feature must pass these:
-
-| # | Filter | Question |
-|---|--------|----------|
-| 1 | Activity Log | Does this write to the activity log? |
-| 2 | Loop as Unit | Is this organized as a nested loop? |
-| 3 | Pain Point | Does this solve a real contractor problem? |
-| 4 | Modularity | Does the system work if this module is removed? |
-| 5 | Mental Model | Does this match how contractors think? |
-| 6 | Mobile/Field | Can this be used with one hand on a job site? |
-| 7 | Traceability | Can we trace this to its origin? |
-| 8 | Post-Project | Does this create value after the project ends? |
-| 9 | Affordability | Does this make homes cheaper or contractors more profitable? |
-| 10 | Education | Does this educate the homeowner? |
-| 11 | Data Persistence | Does data stay with the home? |
-
----
-
-## BEFORE YOU BUILD
-
-### Checklist
-
-- [ ] Read HOOOMZ_VISION.md for decision criteria
-- [ ] Read HOOOMZ_UI_SPEC.md for visual requirements
-- [ ] Read HOOOMZ_ARCHITECTURE.md for technical patterns
-- [ ] Verify your component could exist in Looops
-- [ ] Verify you're using spheres, not cards/lists
-- [ ] Verify every action writes to activity log
-- [ ] Verify touch targets are 44px+
-- [ ] Verify it works offline (or explicitly doesn't need to)
-
-### Red Flags
-
-If you find yourself building:
-- A dashboard with multiple stat cards → STOP
-- A sidebar navigation → STOP
-- A data table as the main view → STOP
-- Dark colors or industrial aesthetic → STOP
-- Anything that wouldn't fit in Looops → STOP
-
----
-
-## REFERENCE DOCUMENTS
-
-Full specifications in `/docs`:
-- `HOOOMZ_VISION.md` - Vision, decision criteria, what success looks like
-- `HOOOMZ_UI_SPEC.md` - Complete UI specification with sphere details
-- `HOOOMZ_ARCHITECTURE.md` - Activity log, Smart Estimating, data model
-
-**These documents are the source of truth. When in doubt, read them.**
+## When In Doubt
+1. Does this write to the activity log?
+2. Does this fit the existing data model without a schema change?
+3. Can this work on mobile with one hand?
+4. Does globals.css support this, or does a token need to change first?
+5. Is this on the approved task list, or is it scope creep?

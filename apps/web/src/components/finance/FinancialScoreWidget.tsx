@@ -13,7 +13,7 @@ export function FinancialScoreWidget() {
 
   return (
     <div style={{
-      background: 'var(--surface-1)',
+      background: 'var(--surface)',
       border: '1px solid var(--border)',
       borderRadius: 'var(--radius)',
       padding: '16px',
@@ -27,12 +27,12 @@ export function FinancialScoreWidget() {
         }} />
         <div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
-            <span style={{ fontSize: 26, fontWeight: 700, color: 'var(--text)', lineHeight: 1 }}>
+            <span style={{ fontSize: 26, fontWeight: 700, color: 'var(--charcoal)', lineHeight: 1 }}>
               {data.score}
             </span>
-            <span style={{ fontSize: 12, color: 'var(--text-3)', fontWeight: 500 }}>/100</span>
+            <span style={{ fontSize: 12, color: 'var(--muted)', fontWeight: 500 }}>/100</span>
           </div>
-          <p style={{ fontSize: 11, color: 'var(--text-2)', marginTop: 2, fontWeight: 500 }}>
+          <p style={{ fontSize: 11, color: 'var(--mid)', marginTop: 2, fontWeight: 500 }}>
             {data.label}
           </p>
         </div>
@@ -48,8 +48,8 @@ export function FinancialScoreWidget() {
             borderTop: '1px solid var(--border)',
           }}>
             <div style={{ width: 8, height: 8, borderRadius: '50%', background: sub.hex, flexShrink: 0 }} />
-            <span style={{ fontSize: 11, color: 'var(--text-2)', flex: 1 }}>{sub.label}</span>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 600, color: 'var(--text)' }}>
+            <span style={{ fontSize: 11, color: 'var(--mid)', flex: 1 }}>{sub.label}</span>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 600, color: 'var(--charcoal)' }}>
               {sub.score}
             </span>
           </div>

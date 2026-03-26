@@ -47,7 +47,7 @@ export function calculateLeadTemperature(input: TemperatureInput): LeadTemperatu
 
 // Temperature display helpers
 export const TEMPERATURE_CONFIG: Record<LeadTemperature, { color: string; bgColor: string; label: string }> = {
-  hot:  { color: '#EF4444', bgColor: '#FEF2F2', label: 'Hot' },
-  warm: { color: '#F59E0B', bgColor: '#FFFBEB', label: 'Warm' },
-  cool: { color: '#3B82F6', bgColor: '#EFF6FF', label: 'Cool' },
+  hot:  { color: 'var(--red)', bgColor: 'var(--red-bg)', label: 'Hot' },
+  warm: { color: 'var(--yellow)', bgColor: 'var(--yellow-bg)', label: 'Warm' },
+  cool: { color: 'var(--blue)', bgColor: 'var(--blue-bg)', label: 'Cool' },
 };

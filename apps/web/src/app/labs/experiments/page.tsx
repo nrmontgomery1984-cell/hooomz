@@ -64,16 +64,16 @@ export default function ExperimentsPage() {
   ];
 
   return (
-    <div className="min-h-screen pb-24" style={{ background: '#F3F4F6' }}>
+    <div className="min-h-screen pb-24" style={{ background: 'var(--surface-2)' }}>
       {/* Header */}
-      <div style={{ background: '#FFFFFF', borderBottom: '1px solid #E5E7EB' }}>
+      <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
         <div className="max-w-lg mx-auto px-4 py-4">
           <div className="flex items-center gap-2 mb-1">
             <Link href="/labs" className="text-sm hover:underline" style={{ color: LABS_COLOR }}>Labs</Link>
-            <span className="text-xs" style={{ color: 'var(--text-3)' }}>/</span>
+            <span className="text-xs" style={{ color: 'var(--muted)' }}>/</span>
           </div>
-          <h1 className="text-xl font-bold" style={{ color: '#111827' }}>Experiments</h1>
-          <p className="text-xs" style={{ color: '#9CA3AF' }}>Structured testing of products, techniques, and methods</p>
+          <h1 className="text-xl font-bold" style={{ color: 'var(--charcoal)' }}>Experiments</h1>
+          <p className="text-xs" style={{ color: 'var(--muted)' }}>Structured testing of products, techniques, and methods</p>
         </div>
 
         {/* Filter pills */}
@@ -87,7 +87,7 @@ export default function ExperimentsPage() {
                 style={
                   filter === f.key
                     ? { background: LABS_COLOR, color: '#fff' }
-                    : { background: 'var(--surface-2)', color: 'var(--text-2)' }
+                    : { background: 'var(--surface-2)', color: 'var(--mid)' }
                 }
               >
                 {f.label}
@@ -102,19 +102,19 @@ export default function ExperimentsPage() {
         {showCategoryBanner && categorySearch && (
           <div
             className="flex items-center justify-between px-3 py-2.5 rounded-xl"
-            style={{ background: '#F0FDFA', border: '1px solid #99F6E4' }}
+            style={{ background: 'var(--accent-bg)', border: '1px solid var(--accent-bg)' }}
           >
             <div>
-              <p className="text-xs font-semibold" style={{ color: '#0F766E' }}>
+              <p className="text-xs font-semibold" style={{ color: 'var(--accent)' }}>
                 Filtered: {catLabel}
               </p>
               {actionParam === 'new' && sorted.length === 0 && (
-                <p className="text-[11px] mt-0.5" style={{ color: '#115E59' }}>
+                <p className="text-[11px] mt-0.5" style={{ color: 'var(--accent)' }}>
                   No experiments yet — design one to test {catLabel.toLowerCase()} products or techniques
                 </p>
               )}
               {actionParam === 'plan' && sorted.length === 0 && (
-                <p className="text-[11px] mt-0.5" style={{ color: '#115E59' }}>
+                <p className="text-[11px] mt-0.5" style={{ color: 'var(--accent)' }}>
                   Plan a future experiment for {catLabel.toLowerCase()} to build confidence data
                 </p>
               )}
@@ -122,7 +122,7 @@ export default function ExperimentsPage() {
             <button
               onClick={() => { setCategorySearch(''); setShowCategoryBanner(false); }}
               className="text-[11px] font-medium px-2 py-1 rounded-lg"
-              style={{ background: '#FFFFFF', color: '#6B7280', border: '1px solid #E5E7EB' }}
+              style={{ background: 'var(--surface)', color: 'var(--muted)', border: '1px solid var(--border)' }}
             >
               Clear
             </button>
@@ -131,15 +131,15 @@ export default function ExperimentsPage() {
 
         {isLoading ? (
           <div className="text-center py-8">
-            <div className="w-8 h-8 border-3 rounded-full animate-spin mx-auto mb-3" style={{ borderColor: '#E5E7EB', borderTopColor: '#0F766E' }} />
-            <p className="text-sm" style={{ color: 'var(--text-3)' }}>Loading experiments...</p>
+            <div className="w-8 h-8 border-3 rounded-full animate-spin mx-auto mb-3" style={{ borderColor: 'var(--border)', borderTopColor: 'var(--accent)' }} />
+            <p className="text-sm" style={{ color: 'var(--muted)' }}>Loading experiments...</p>
           </div>
         ) : sorted.length === 0 ? (
           <div className="text-center py-8">
-            <p className="text-sm" style={{ color: 'var(--text-3)' }}>
+            <p className="text-sm" style={{ color: 'var(--muted)' }}>
               {categorySearch ? `No experiments for ${catLabel}` : 'No experiments yet'}
             </p>
-            <p className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>
+            <p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>
               {categorySearch
                 ? 'Design an experiment to test hypotheses about this work category'
                 : 'Experiments are designed by Labs admins to test specific hypotheses'}

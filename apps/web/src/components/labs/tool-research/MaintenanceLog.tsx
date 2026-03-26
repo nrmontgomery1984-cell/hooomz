@@ -5,8 +5,8 @@ import type { ToolInventoryItem, MaintenanceEntry } from '@hooomz/shared-contrac
 import { Modal } from '@/components/ui/Modal';
 import { useAddMaintenanceEntry } from '@/lib/hooks/useLabsData';
 
-const TEAL = '#2A9D8F';
-const NAVY = '#1B2A4A';
+const TEAL = 'var(--accent)';
+const NAVY = 'var(--charcoal)';
 
 interface MaintenanceLogProps {
   isOpen: boolean;
@@ -51,7 +51,7 @@ export function MaintenanceLog({ isOpen, onClose, item }: MaintenanceLogProps) {
       <form onSubmit={handleAdd} style={{ marginBottom: 20 }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 8, marginBottom: 8 }}>
           <label>
-            <span style={{ fontSize: 11, fontWeight: 600, color: '#666', display: 'block', marginBottom: 2 }}>
+            <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--muted)', display: 'block', marginBottom: 2 }}>
               Date
             </span>
             <input
@@ -61,7 +61,7 @@ export function MaintenanceLog({ isOpen, onClose, item }: MaintenanceLogProps) {
               style={{
                 width: '100%',
                 padding: '6px 8px',
-                border: '1px solid #D1D5DB',
+                border: '1px solid var(--border)',
                 borderRadius: 4,
                 fontSize: 12,
                 minHeight: 36,
@@ -69,7 +69,7 @@ export function MaintenanceLog({ isOpen, onClose, item }: MaintenanceLogProps) {
             />
           </label>
           <label>
-            <span style={{ fontSize: 11, fontWeight: 600, color: '#666', display: 'block', marginBottom: 2 }}>
+            <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--muted)', display: 'block', marginBottom: 2 }}>
               Action
             </span>
             <input
@@ -80,7 +80,7 @@ export function MaintenanceLog({ isOpen, onClose, item }: MaintenanceLogProps) {
               style={{
                 width: '100%',
                 padding: '6px 8px',
-                border: '1px solid #D1D5DB',
+                border: '1px solid var(--border)',
                 borderRadius: 4,
                 fontSize: 12,
                 minHeight: 36,
@@ -90,7 +90,7 @@ export function MaintenanceLog({ isOpen, onClose, item }: MaintenanceLogProps) {
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
           <label style={{ flex: 1 }}>
-            <span style={{ fontSize: 11, fontWeight: 600, color: '#666', display: 'block', marginBottom: 2 }}>
+            <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--muted)', display: 'block', marginBottom: 2 }}>
               Notes (optional)
             </span>
             <input
@@ -101,7 +101,7 @@ export function MaintenanceLog({ isOpen, onClose, item }: MaintenanceLogProps) {
               style={{
                 width: '100%',
                 padding: '6px 8px',
-                border: '1px solid #D1D5DB',
+                border: '1px solid var(--border)',
                 borderRadius: 4,
                 fontSize: 12,
                 minHeight: 36,
@@ -132,7 +132,7 @@ export function MaintenanceLog({ isOpen, onClose, item }: MaintenanceLogProps) {
 
       {/* Entry list */}
       {entries.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: 20, color: '#9CA3AF', fontSize: 13 }}>
+        <div style={{ textAlign: 'center', padding: 20, color: 'var(--muted)', fontSize: 13 }}>
           No maintenance entries yet
         </div>
       ) : (
@@ -142,17 +142,17 @@ export function MaintenanceLog({ isOpen, onClose, item }: MaintenanceLogProps) {
               key={i}
               style={{
                 padding: '8px 12px',
-                background: i % 2 === 0 ? '#F9FAFB' : 'white',
+                background: i % 2 === 0 ? 'var(--surface)' : 'var(--surface)',
                 borderRadius: 6,
-                border: '1px solid #F3F4F6',
+                border: '1px solid var(--surface-2)',
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontWeight: 600, fontSize: 12, color: NAVY }}>{entry.action}</span>
-                <span style={{ fontSize: 11, color: '#9CA3AF' }}>{entry.date}</span>
+                <span style={{ fontSize: 11, color: 'var(--muted)' }}>{entry.date}</span>
               </div>
               {entry.notes && (
-                <div style={{ fontSize: 11, color: '#6B7280', marginTop: 2 }}>{entry.notes}</div>
+                <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>{entry.notes}</div>
               )}
             </div>
           ))}

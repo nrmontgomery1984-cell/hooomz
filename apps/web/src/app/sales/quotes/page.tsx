@@ -46,12 +46,12 @@ const STATUS_TABS: { value: FilterTab; label: string }[] = [
 ];
 
 const STATUS_BADGE: Record<QuoteStatus, { bg: string; text: string; label: string; icon: typeof FileText }> = {
-  draft:    { bg: '#F3F4F6', text: '#6B7280', label: 'Draft',    icon: FileText },
-  sent:     { bg: '#EFF6FF', text: '#3B82F6', label: 'Sent',     icon: Send },
-  viewed:   { bg: '#FFF7ED', text: '#F59E0B', label: 'Viewed',   icon: Eye },
-  accepted: { bg: '#ECFDF5', text: '#10B981', label: 'Accepted', icon: CheckCircle2 },
-  declined: { bg: '#FEF2F2', text: '#EF4444', label: 'Declined', icon: XCircle },
-  expired:  { bg: '#F3F4F6', text: '#9CA3AF', label: 'Expired',  icon: Clock },
+  draft:    { bg: 'var(--surface-2)', text: 'var(--muted)', label: 'Draft',    icon: FileText },
+  sent:     { bg: 'var(--blue-bg)', text: 'var(--blue)', label: 'Sent',     icon: Send },
+  viewed:   { bg: 'var(--yellow-bg)', text: 'var(--yellow)', label: 'Viewed',   icon: Eye },
+  accepted: { bg: 'var(--green-bg)', text: 'var(--green)', label: 'Accepted', icon: CheckCircle2 },
+  declined: { bg: 'var(--red-bg)', text: 'var(--red)', label: 'Declined', icon: XCircle },
+  expired:  { bg: 'var(--surface-2)', text: 'var(--muted)', label: 'Expired',  icon: Clock },
 };
 
 // ============================================================================
@@ -116,26 +116,26 @@ export default function QuotesPage() {
       <div style={{ minHeight: '100vh', paddingBottom: 96, background: 'var(--bg)' }}>
 
         {/* Header */}
-        <div style={{ background: 'var(--surface-1)', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
           <div className="max-w-lg md:max-w-full mx-auto px-4 md:px-6 py-3 md:py-4 flex items-center justify-between">
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <div style={{ width: 8, height: 8, borderRadius: '50%', background: COLOR }} />
-                <h1 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', fontFamily: 'var(--font-cond)', letterSpacing: '0.02em' }}>
+                <h1 style={{ fontSize: 16, fontWeight: 700, color: 'var(--charcoal)', fontFamily: 'var(--font-mono)', letterSpacing: '0.02em' }}>
                   Quotes
                 </h1>
               </div>
-              <p style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 2 }}>
+              <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>
                 Client-facing proposals and video walkthroughs
               </p>
             </div>
             <button
               onClick={() => setShowNewForm(true)}
               className="min-h-[40px] min-w-[40px] flex items-center justify-center rounded-xl"
-              style={{ background: COLOR }}
+              style={{ background: 'var(--green)' }}
               title="New Quote"
             >
-              <Plus size={18} color="#FFFFFF" strokeWidth={2.5} />
+              <Plus size={18} color="#fff" strokeWidth={2.5} />
             </button>
           </div>
 
@@ -144,8 +144,8 @@ export default function QuotesPage() {
             <div className="max-w-lg md:max-w-full mx-auto px-4 md:px-6 pb-3">
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                 <SummaryChip label="Active" count={summaryStats.activeCount} value={summaryStats.activeTotal} color={COLOR} />
-                <SummaryChip label="Accepted" count={summaryStats.acceptedCount} value={summaryStats.acceptedTotal} color="#10B981" />
-                <SummaryChip label="Total" count={summaryStats.totalQuotes} value={summaryStats.totalValue} color="var(--text-2)" />
+                <SummaryChip label="Accepted" count={summaryStats.acceptedCount} value={summaryStats.acceptedTotal} color="var(--green)" />
+                <SummaryChip label="Total" count={summaryStats.totalQuotes} value={summaryStats.totalValue} color="var(--mid)" />
               </div>
             </div>
           )}
@@ -160,9 +160,9 @@ export default function QuotesPage() {
                   style={{
                     minHeight: 30, padding: '0 12px',
                     borderRadius: 'var(--radius)', fontSize: 11,
-                    fontWeight: 600, fontFamily: 'var(--font-cond)', letterSpacing: '0.04em',
+                    fontWeight: 600, fontFamily: 'var(--font-mono)', letterSpacing: '0.04em',
                     background: statusFilter === tab.value ? COLOR : 'var(--bg)',
-                    color: statusFilter === tab.value ? '#FFFFFF' : 'var(--text-3)',
+                    color: statusFilter === tab.value ? '#FFFFFF' : 'var(--muted)',
                     border: statusFilter === tab.value ? 'none' : '1px solid var(--border)',
                     cursor: 'pointer', whiteSpace: 'nowrap',
                   }}
@@ -190,18 +190,18 @@ export default function QuotesPage() {
           {isLoading && (
             <div style={{ marginTop: 32, textAlign: 'center' }}>
               <div style={{ width: 32, height: 32, border: '2px solid var(--border)', borderTopColor: COLOR, borderRadius: '50%', animation: 'spin 0.7s linear infinite', margin: '0 auto 8px' }} />
-              <p style={{ fontSize: 11, color: 'var(--text-3)' }}>Loading...</p>
+              <p style={{ fontSize: 11, color: 'var(--muted)' }}>Loading...</p>
             </div>
           )}
 
           {/* Empty state */}
           {!isLoading && filteredQuotes.length === 0 && (
             <div style={{ marginTop: 48, textAlign: 'center' }}>
-              <div style={{ width: 56, height: 56, borderRadius: 'var(--radius)', background: 'var(--surface-1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+              <div style={{ width: 56, height: 56, borderRadius: 'var(--radius)', background: 'var(--surface)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
                 <FileText size={24} style={{ color: COLOR }} strokeWidth={1.5} />
               </div>
-              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-2)' }}>No quotes yet</p>
-              <p style={{ fontSize: 12, color: 'var(--text-3)', marginTop: 4 }}>
+              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--mid)' }}>No quotes yet</p>
+              <p style={{ fontSize: 12, color: 'var(--muted)', marginTop: 4 }}>
                 Create a quote from an existing estimate to send to your customer.
               </p>
             </div>
@@ -227,7 +227,7 @@ export default function QuotesPage() {
                   >
                     <div style={{
                       padding: '12px 14px', borderRadius: 'var(--radius)',
-                      background: 'var(--surface-1)', border: '1px solid var(--border)',
+                      background: 'var(--surface)', border: '1px solid var(--border)',
                       boxShadow: 'var(--shadow-card)',
                     }}>
                       {/* Top row: customer + amount + status */}
@@ -236,12 +236,12 @@ export default function QuotesPage() {
                           <span style={{ fontSize: 13, fontWeight: 600, color: COLOR }}>
                             {customerName}
                           </span>
-                          <p style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 1 }}>
+                          <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 1 }}>
                             {projectName}
                           </p>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-                          <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)', fontFamily: 'var(--font-mono, monospace)' }}>
+                          <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--charcoal)', fontFamily: 'var(--font-mono, monospace)' }}>
                             ${quote.totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                           </span>
                           <span style={{
@@ -257,27 +257,27 @@ export default function QuotesPage() {
 
                       {/* Timeline row */}
                       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 8, flexWrap: 'wrap' }}>
-                        <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'var(--text-3)' }}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'var(--muted)' }}>
                           <Clock size={10} />
                           Created {new Date(quote.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                         </span>
                         {quote.sentAt && (
-                          <span style={{ fontSize: 10, color: '#3B82F6' }}>
+                          <span style={{ fontSize: 10, color: 'var(--blue)' }}>
                             Sent {new Date(quote.sentAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                           </span>
                         )}
                         {quote.viewedAt && (
-                          <span style={{ fontSize: 10, color: '#F59E0B' }}>
+                          <span style={{ fontSize: 10, color: 'var(--yellow)' }}>
                             Viewed {new Date(quote.viewedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                           </span>
                         )}
                         {quote.respondedAt && (
-                          <span style={{ fontSize: 10, color: quote.status === 'accepted' ? '#10B981' : '#EF4444' }}>
+                          <span style={{ fontSize: 10, color: quote.status === 'accepted' ? 'var(--green)' : 'var(--red)' }}>
                             {quote.status === 'accepted' ? 'Accepted' : 'Declined'} {new Date(quote.respondedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                           </span>
                         )}
                         {quote.expiresAt && quote.status !== 'accepted' && quote.status !== 'declined' && (
-                          <span style={{ fontSize: 10, color: new Date(quote.expiresAt) < new Date() ? '#EF4444' : 'var(--text-3)' }}>
+                          <span style={{ fontSize: 10, color: new Date(quote.expiresAt) < new Date() ? 'var(--red)' : 'var(--muted)' }}>
                             Expires {new Date(quote.expiresAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                           </span>
                         )}
@@ -285,7 +285,7 @@ export default function QuotesPage() {
 
                       {/* Cover notes preview */}
                       {quote.coverNotes && (
-                        <p style={{ marginTop: 6, fontSize: 11, color: 'var(--text-3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <p style={{ marginTop: 6, fontSize: 11, color: 'var(--muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {quote.coverNotes.length > 80 ? quote.coverNotes.slice(0, 77) + '...' : quote.coverNotes}
                         </p>
                       )}
@@ -317,13 +317,13 @@ function SummaryChip({ label, count, value, color }: { label: string; count: num
       background: 'var(--bg)', border: '1px solid var(--border)',
       display: 'flex', alignItems: 'center', gap: 8,
     }}>
-      <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+      <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
         {label}
       </span>
       <span style={{ fontSize: 12, fontWeight: 700, color, fontFamily: 'var(--font-mono, monospace)' }}>
         {count}
       </span>
-      <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-2)', fontFamily: 'var(--font-mono, monospace)' }}>
+      <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--mid)', fontFamily: 'var(--font-mono, monospace)' }}>
         ${value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
       </span>
     </div>
@@ -429,20 +429,20 @@ function NewQuoteForm({
     width: '100%', minHeight: 34, padding: '0 10px',
     borderRadius: 'var(--radius)', fontSize: 12,
     background: 'var(--bg)', border: '1px solid var(--border)',
-    color: 'var(--text)', outline: 'none',
+    color: 'var(--charcoal)', outline: 'none',
   };
 
   return (
     <div style={{
       marginTop: 12, padding: 16, borderRadius: 'var(--radius)',
-      background: 'var(--surface-1)', border: `2px solid ${COLOR}40`,
+      background: 'var(--surface)', border: `2px solid ${COLOR}40`,
       boxShadow: 'var(--shadow-card)',
     }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-        <span style={{ fontFamily: 'var(--font-cond)', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: COLOR }}>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: COLOR }}>
           New Quote
         </span>
-        <button onClick={onCancel} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-3)' }}>
+        <button onClick={onCancel} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)' }}>
           <X size={16} />
         </button>
       </div>
@@ -451,20 +451,20 @@ function NewQuoteForm({
 
         {/* Customer selector */}
         <div>
-          <label style={{ display: 'block', fontSize: 10, fontWeight: 600, color: 'var(--text-3)', marginBottom: 3 }}>Customer *</label>
+          <label style={{ display: 'block', fontSize: 10, fontWeight: 600, color: 'var(--muted)', marginBottom: 3 }}>Customer *</label>
           {selectedCustomer ? (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 10px', borderRadius: 'var(--radius)', background: 'var(--bg)', border: '1px solid var(--border)' }}>
-              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)' }}>
+              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--charcoal)' }}>
                 {selectedCustomer.firstName} {selectedCustomer.lastName}
               </span>
-              <button onClick={() => { setSelectedCustomerId(null); setSelectedProjectId(null); setEstimateTotal(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-3)' }}>
+              <button onClick={() => { setSelectedCustomerId(null); setSelectedProjectId(null); setEstimateTotal(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)' }}>
                 <X size={12} />
               </button>
             </div>
           ) : (
             <div>
               <div style={{ position: 'relative' }}>
-                <Search size={12} style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-3)' }} />
+                <Search size={12} style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', color: 'var(--muted)' }} />
                 <input
                   type="text"
                   value={customerSearch}
@@ -474,20 +474,20 @@ function NewQuoteForm({
                 />
               </div>
               {customerOptions.length > 0 && (
-                <div style={{ marginTop: 4, maxHeight: 120, overflowY: 'auto', border: '1px solid var(--border)', borderRadius: 'var(--radius)', background: 'var(--surface-1)' }}>
+                <div style={{ marginTop: 4, maxHeight: 120, overflowY: 'auto', border: '1px solid var(--border)', borderRadius: 'var(--radius)', background: 'var(--surface)' }}>
                   {customerOptions.map((c) => (
                     <button
                       key={c.id}
                       onClick={() => { setSelectedCustomerId(c.id); setCustomerSearch(''); }}
                       style={{
                         display: 'block', width: '100%', textAlign: 'left',
-                        padding: '6px 10px', fontSize: 12, color: 'var(--text)',
+                        padding: '6px 10px', fontSize: 12, color: 'var(--charcoal)',
                         background: 'none', border: 'none', cursor: 'pointer',
                         borderBottom: '1px solid var(--border)',
                       }}
                     >
                       {c.firstName} {c.lastName}
-                      {c.propertyCity && <span style={{ color: 'var(--text-3)', marginLeft: 8, fontSize: 10 }}>{c.propertyCity}</span>}
+                      {c.propertyCity && <span style={{ color: 'var(--muted)', marginLeft: 8, fontSize: 10 }}>{c.propertyCity}</span>}
                     </button>
                   ))}
                 </div>
@@ -499,9 +499,9 @@ function NewQuoteForm({
         {/* Project/estimate selector */}
         {selectedCustomerId && (
           <div>
-            <label style={{ display: 'block', fontSize: 10, fontWeight: 600, color: 'var(--text-3)', marginBottom: 3 }}>Estimate (Project) *</label>
+            <label style={{ display: 'block', fontSize: 10, fontWeight: 600, color: 'var(--muted)', marginBottom: 3 }}>Estimate (Project) *</label>
             {customerProjects.length === 0 ? (
-              <p style={{ fontSize: 11, color: 'var(--text-3)', padding: '6px 0' }}>No projects linked to this customer yet</p>
+              <p style={{ fontSize: 11, color: 'var(--muted)', padding: '6px 0' }}>No projects linked to this customer yet</p>
             ) : (
               <select
                 value={selectedProjectId || ''}
@@ -526,8 +526,8 @@ function NewQuoteForm({
           }}>
             <DollarSign size={14} style={{ color: COLOR }} />
             <div>
-              <span style={{ fontSize: 10, color: 'var(--text-3)', fontWeight: 600 }}>Quote Total (from estimate)</span>
-              <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)', fontFamily: 'var(--font-mono, monospace)' }}>
+              <span style={{ fontSize: 10, color: 'var(--muted)', fontWeight: 600 }}>Quote Total (from estimate)</span>
+              <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--charcoal)', fontFamily: 'var(--font-mono, monospace)' }}>
                 {loadingTotal ? 'Loading...' : `$${(estimateTotal ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
               </p>
             </div>
@@ -536,13 +536,13 @@ function NewQuoteForm({
 
         {/* Expiry date */}
         <div>
-          <label style={{ display: 'block', fontSize: 10, fontWeight: 600, color: 'var(--text-3)', marginBottom: 3 }}>Expires (default: 30 days)</label>
+          <label style={{ display: 'block', fontSize: 10, fontWeight: 600, color: 'var(--muted)', marginBottom: 3 }}>Expires (default: 30 days)</label>
           <input type="date" value={expiresAt} onChange={(e) => setExpiresAt(e.target.value ? new Date(e.target.value).toISOString() : '')} style={inputStyle} />
         </div>
 
         {/* Cover notes */}
         <div>
-          <label style={{ display: 'block', fontSize: 10, fontWeight: 600, color: 'var(--text-3)', marginBottom: 3 }}>Cover Notes (optional)</label>
+          <label style={{ display: 'block', fontSize: 10, fontWeight: 600, color: 'var(--muted)', marginBottom: 3 }}>Cover Notes (optional)</label>
           <textarea
             value={coverNotes}
             onChange={(e) => setCoverNotes(e.target.value)}
@@ -554,7 +554,7 @@ function NewQuoteForm({
       </div>
 
       <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
-        <button onClick={onCancel} style={{ flex: 1, minHeight: 36, borderRadius: 'var(--radius)', fontSize: 12, fontWeight: 600, background: 'var(--bg)', color: 'var(--text-2)', border: '1px solid var(--border)', cursor: 'pointer' }}>
+        <button onClick={onCancel} style={{ flex: 1, minHeight: 36, borderRadius: 'var(--radius)', fontSize: 12, fontWeight: 600, background: 'var(--bg)', color: 'var(--mid)', border: '1px solid var(--border)', cursor: 'pointer' }}>
           Cancel
         </button>
         <button

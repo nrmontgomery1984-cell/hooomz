@@ -10,11 +10,27 @@ import type { Services } from './index';
 import { initializeServices } from './index';
 import type { TrainingGuide, StandardSOP } from '@hooomz/shared-contracts';
 import { seedQuoteStageDataIfEmpty } from '../data/seed';
+import { migrateCatalogProducts } from '../seed/migrateCatalogProducts';
 import { SyncEngine } from '../sync/SyncEngine';
 import { isSupabaseConfigured } from '../supabase/client';
 import { initializeStorage } from '../storage';
 import { ActivitySyncService } from '../offline/ActivitySyncService';
 import { SyncQueue } from '../repositories/SyncQueue';
+
+/** One-time migration: link crew_nathan to Nathan's Supabase Auth UUID */
+async function linkNathanAuthId(services: Services): Promise<void> {
+  try {
+    const nathan = await services.crew.findById('crew_nathan');
+    if (!nathan) return; // Nathan's crew record doesn't exist yet
+    if (nathan.supabaseUserId) return; // Already linked
+    await services.crew.update('crew_nathan', {
+      supabaseUserId: 'c24c98c7-6541-42dd-95f2-b7d4796dd13a',
+    });
+    console.info('Auth: linked crew_nathan to Supabase UUID');
+  } catch (err) {
+    console.error('Failed to link Nathan auth ID:', err);
+  }
+}
 
 async function seedTrainingGuidesIfEmpty(services: Services): Promise<void> {
   const existing = await services.trainingGuides.getAll();
@@ -142,6 +158,11 @@ export function ServicesProvider({ children }: ServicesProviderProps) {
           console.error('Failed to cleanup stale drafts:', err)
         );
 
+        // One-time: link Nathan's crew record to Supabase Auth UUID
+        linkNathanAuthId(initializedServices).catch((err) =>
+          console.error('Failed to link Nathan auth:', err)
+        );
+
         // Auto-seed training guides if empty (fire-and-forget)
         seedTrainingGuidesIfEmpty(initializedServices).catch((err) =>
           console.error('Failed to seed training guides:', err)
@@ -155,6 +176,11 @@ export function ServicesProvider({ children }: ServicesProviderProps) {
         // Auto-seed quote-stage catalog + assembly config if empty (fire-and-forget)
         seedQuoteStageDataIfEmpty(initializedServices).catch((err) =>
           console.error('Failed to seed quote stage data:', err)
+        );
+
+        // v33 catalogue migration: seed costItems + materialRecords if empty (fire-and-forget)
+        migrateCatalogProducts(initializedServices.storage).catch((err) =>
+          console.error('Failed to seed catalogue v33:', err)
         );
 
         if (mounted) {
@@ -190,7 +216,7 @@ export function ServicesProvider({ children }: ServicesProviderProps) {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-          <p className="mt-4 text-gray-600">Initializing app...</p>
+          <p className="mt-4 text-[var(--mid)]">Initializing app...</p>
         </div>
       </div>
     );
@@ -202,10 +228,10 @@ export function ServicesProvider({ children }: ServicesProviderProps) {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center max-w-md">
           <div className="text-6xl mb-4">⚠️</div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+          <h1 className="text-2xl font-bold text-[var(--charcoal)] mb-2">
             Initialization Error
           </h1>
-          <p className="text-gray-600 mb-4">{error.message}</p>
+          <p className="text-[var(--mid)] mb-4">{error.message}</p>
           <button
             onClick={() => window.location.reload()}
             className="btn-primary"

@@ -36,10 +36,10 @@ export default function SOPScriptPage() {
 
   if (sopLoading || phasesLoading) {
     return (
-      <div className="min-h-screen pb-24" style={{ background: '#F3F4F6' }}>
+      <div className="min-h-screen pb-24" style={{ background: 'var(--surface-2)' }}>
         <div className="max-w-lg mx-auto px-4 py-12 text-center">
-          <div className="w-8 h-8 border-3 rounded-full animate-spin mx-auto mb-3" style={{ borderColor: '#E5E7EB', borderTopColor: '#0F766E' }} />
-          <p className="text-sm text-gray-400">Loading SCRIPT view...</p>
+          <div className="w-8 h-8 border-3 rounded-full animate-spin mx-auto mb-3" style={{ borderColor: 'var(--border)', borderTopColor: 'var(--accent)' }} />
+          <p className="text-sm" style={{ color: 'var(--muted)' }}>Loading SCRIPT view...</p>
         </div>
       </div>
     );
@@ -47,10 +47,10 @@ export default function SOPScriptPage() {
 
   if (!sop) {
     return (
-      <div className="min-h-screen pb-24" style={{ background: '#F3F4F6' }}>
+      <div className="min-h-screen pb-24" style={{ background: 'var(--surface-2)' }}>
         <div className="max-w-lg mx-auto px-4 py-12 text-center">
-          <p className="text-sm text-gray-500">SOP not found: {paramId}</p>
-          <Link href="/labs/sops" className="text-sm text-teal-700 hover:underline mt-2 inline-block">
+          <p className="text-sm" style={{ color: 'var(--muted)' }}>SOP not found: {paramId}</p>
+          <Link href="/labs/sops" className="text-sm hover:underline mt-2 inline-block" style={{ color: 'var(--accent)' }}>
             Back to SOPs
           </Link>
         </div>
@@ -73,22 +73,22 @@ export default function SOPScriptPage() {
     : 0;
 
   return (
-    <div className="min-h-screen pb-24" style={{ background: '#F3F4F6' }}>
+    <div className="min-h-screen pb-24" style={{ background: 'var(--surface-2)' }}>
       {/* Header */}
-      <div style={{ background: '#FFFFFF', borderBottom: '1px solid #E5E7EB' }}>
+      <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
         <div className="max-w-lg mx-auto px-4 py-4">
           <div className="flex items-center gap-2 mb-1">
-            <Link href="/labs" className="text-sm text-teal-700 hover:underline">Labs</Link>
-            <span className="text-xs text-gray-400">/</span>
-            <Link href="/labs/sops" className="text-sm text-teal-700 hover:underline">SOPs</Link>
-            <span className="text-xs text-gray-400">/</span>
-            <Link href={`/labs/sops/${sopId}`} className="text-sm text-teal-700 hover:underline">{sop.sopCode}</Link>
-            <span className="text-xs text-gray-400">/</span>
+            <Link href="/labs" className="text-sm hover:underline" style={{ color: 'var(--accent)' }}>Labs</Link>
+            <span className="text-xs" style={{ color: 'var(--muted)' }}>/</span>
+            <Link href="/labs/sops" className="text-sm hover:underline" style={{ color: 'var(--accent)' }}>SOPs</Link>
+            <span className="text-xs" style={{ color: 'var(--muted)' }}>/</span>
+            <Link href={`/labs/sops/${sopId}`} className="text-sm hover:underline" style={{ color: 'var(--accent)' }}>{sop.sopCode}</Link>
+            <span className="text-xs" style={{ color: 'var(--muted)' }}>/</span>
           </div>
-          <h1 className="text-xl font-bold" style={{ color: '#111827' }}>
+          <h1 className="text-xl font-bold" style={{ color: 'var(--charcoal)' }}>
             SCRIPT View — {sop.title}
           </h1>
-          <p className="text-xs text-gray-500 mt-0.5">
+          <p className="text-xs mt-0.5" style={{ color: 'var(--muted)' }}>
             {assignedItems}/{totalItems} steps assigned to phases
           </p>
         </div>
@@ -103,11 +103,12 @@ export default function SOPScriptPage() {
             return (
               <div
                 key={phase}
-                className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-white border border-gray-200 text-xs flex-shrink-0"
+                className="flex items-center gap-1.5 px-2 py-1 rounded-full border text-xs flex-shrink-0"
+                style={{ background: 'var(--surface)', borderColor: 'var(--border)' }}
               >
                 <span className="w-2 h-2 rounded-full" style={{ backgroundColor: config.color }} />
-                <span className="text-gray-700">{config.label}</span>
-                <span className="text-gray-400">{count}</span>
+                <span style={{ color: 'var(--mid)' }}>{config.label}</span>
+                <span style={{ color: 'var(--muted)' }}>{count}</span>
               </div>
             );
           })}
@@ -136,17 +137,18 @@ export default function SOPScriptPage() {
       {/* Phase assignment modal */}
       {assigningItem && (
         <div className="fixed inset-0 bg-black/30 flex items-end justify-center z-50">
-          <div className="bg-white rounded-t-2xl w-full max-w-lg p-4 pb-8 shadow-xl">
+          <div className="rounded-t-2xl w-full max-w-lg p-4 pb-8 shadow-xl" style={{ background: 'var(--surface)' }}>
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-gray-900">Assign SCRIPT Phase</h3>
+              <h3 className="text-sm font-semibold" style={{ color: 'var(--charcoal)' }}>Assign SCRIPT Phase</h3>
               <button
                 onClick={() => setAssigningItem(null)}
-                className="text-gray-400 hover:text-gray-600 text-lg"
+                className="hover:opacity-80 text-lg"
+                style={{ color: 'var(--muted)' }}
               >
                 ×
               </button>
             </div>
-            <p className="text-xs text-gray-500 mb-4 line-clamp-2">
+            <p className="text-xs mb-4 line-clamp-2" style={{ color: 'var(--muted)' }}>
               Step {assigningItem.stepNumber}: {assigningItem.title}
             </p>
             <div className="space-y-2">
@@ -159,27 +161,27 @@ export default function SOPScriptPage() {
                     onClick={() => handleAssign(phase)}
                     disabled={assignPhase.isPending}
                     className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg border transition-colors text-left ${
-                      isCurrent ? 'border-teal-300 bg-teal-50' : 'border-gray-200 hover:bg-gray-50'
+                      isCurrent ? 'border-[var(--accent-border)] bg-[var(--accent-bg)]' : 'hover:opacity-90'
                     }`}
-                    style={{ minHeight: '44px' }}
+                    style={{ minHeight: '44px', ...(!isCurrent ? { borderColor: 'var(--border)', background: 'var(--surface)' } : {}) }}
                   >
                     <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: config.color }} />
                     <div className="flex-1">
-                      <span className="text-sm font-medium text-gray-800">{config.label}</span>
-                      <span className="text-xs text-gray-500 ml-2">{config.description}</span>
+                      <span className="text-sm font-medium" style={{ color: 'var(--charcoal)' }}>{config.label}</span>
+                      <span className="text-xs ml-2" style={{ color: 'var(--muted)' }}>{config.description}</span>
                     </div>
-                    {isCurrent && <span className="text-xs text-teal-600">Current</span>}
+                    {isCurrent && <span className="text-xs" style={{ color: 'var(--accent)' }}>Current</span>}
                   </button>
                 );
               })}
               <button
                 onClick={() => handleAssign(null)}
                 disabled={assignPhase.isPending}
-                className="w-full flex items-center gap-3 px-3 py-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors text-left"
-                style={{ minHeight: '44px' }}
+                className="w-full flex items-center gap-3 px-3 py-3 rounded-lg border hover:opacity-90 transition-colors text-left"
+                style={{ minHeight: '44px', borderColor: 'var(--border)', background: 'var(--surface)' }}
               >
-                <span className="w-3 h-3 rounded-full flex-shrink-0 bg-gray-300" />
-                <span className="text-sm text-gray-600">Unassign</span>
+                <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ background: 'var(--faint)' }} />
+                <span className="text-sm" style={{ color: 'var(--mid)' }}>Unassign</span>
               </button>
             </div>
           </div>

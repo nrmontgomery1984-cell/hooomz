@@ -1,6 +1,6 @@
 'use client';
 
-const TEAL = '#2A9D8F';
+const TEAL = 'var(--accent)';
 const ALL_RETAILERS = ['Home Depot', 'Home Hardware', 'Kent', 'Rona', 'Canadian Tire'];
 
 interface RetailerDotsProps {
@@ -26,7 +26,7 @@ export function RetailerDots({ retailers }: RetailerDotsProps) {
           />
         );
       })}
-      <span style={{ fontSize: 10, color: '#888', marginLeft: 4 }}>{retailers.length}/5</span>
+      <span style={{ fontSize: 10, color: 'var(--muted)', marginLeft: 4 }}>{retailers.length}/5</span>
     </div>
   );
 }

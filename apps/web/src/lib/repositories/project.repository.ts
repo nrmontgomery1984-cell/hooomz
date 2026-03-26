@@ -11,6 +11,7 @@ import {
   generateProjectId,
   createMetadata,
   updateMetadata,
+  deriveDesignStage,
 } from '@hooomz/shared-contracts';
 import type { StorageAdapter } from '../storage/StorageAdapter';
 import { StoreNames } from '../storage/StorageAdapter';
@@ -162,10 +163,20 @@ export class ProjectRepository {
   }
 
   async create(data: CreateProject): Promise<Project> {
+    if (!data.property_id) {
+      console.warn(
+        '[Project] Created without property_id:',
+        data.name || '(unnamed)',
+        '— property should be linked'
+      );
+    }
+
     const project: Project = {
       ...data,
       id: generateProjectId(),
       metadata: createMetadata(),
+      // Auto-derive design_stage from jobStage if not explicitly provided
+      design_stage: data.design_stage ?? deriveDesignStage(data.jobStage),
     };
 
     await this.storage.set(this.storeName, project.id, project);

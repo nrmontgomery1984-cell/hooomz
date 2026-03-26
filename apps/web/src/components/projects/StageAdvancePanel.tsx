@@ -26,7 +26,7 @@ export function StageAdvancePanel({ projectId, currentStage }: StageAdvancePanel
   if (isLoading) {
     return (
       <PanelSection label="Stage Advancement">
-        <div style={{ padding: 12, fontSize: 11, color: 'var(--text-3)' }}>Checking prerequisites…</div>
+        <div style={{ padding: 12, fontSize: 11, color: 'var(--muted)' }}>Checking prerequisites…</div>
       </PanelSection>
     );
   }
@@ -64,14 +64,14 @@ export function StageAdvancePanel({ projectId, currentStage }: StageAdvancePanel
             {gateResult.blockers.map((b, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 0' }}>
                 <AlertTriangle size={12} style={{ color: 'var(--amber)', flexShrink: 0 }} />
-                <span style={{ fontSize: 11, color: 'var(--text-2)' }}>{b}</span>
+                <span style={{ fontSize: 11, color: 'var(--mid)' }}>{b}</span>
               </div>
             ))}
           </div>
         ) : (
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
             <CheckCircle2 size={12} style={{ color: 'var(--green)' }} />
-            <span style={{ fontSize: 11, color: 'var(--text-2)' }}>All prerequisites met</span>
+            <span style={{ fontSize: 11, color: 'var(--mid)' }}>All prerequisites met</span>
           </div>
         )}
 
@@ -81,10 +81,10 @@ export function StageAdvancePanel({ projectId, currentStage }: StageAdvancePanel
             padding: '10px', marginBottom: 10, borderRadius: 'var(--radius)',
             background: 'var(--amber-dim)', border: '1px solid var(--amber)',
           }}>
-            <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>
+            <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--charcoal)', marginBottom: 6 }}>
               Prerequisites incomplete
             </p>
-            <p style={{ fontSize: 11, color: 'var(--text-2)', marginBottom: 8 }}>
+            <p style={{ fontSize: 11, color: 'var(--mid)', marginBottom: 8 }}>
               Advance anyway? This may cause issues with incomplete prerequisites.
             </p>
             <div style={{ display: 'flex', gap: 6 }}>
@@ -102,7 +102,7 @@ export function StageAdvancePanel({ projectId, currentStage }: StageAdvancePanel
                 onClick={() => setShowConfirm(false)}
                 style={{
                   padding: '7px 12px', borderRadius: 'var(--radius)', fontSize: 11, fontWeight: 600,
-                  cursor: 'pointer', background: 'none', border: '1px solid var(--border)', color: 'var(--text-3)',
+                  cursor: 'pointer', background: 'none', border: '1px solid var(--border)', color: 'var(--muted)',
                 }}
               >
                 Cancel
@@ -121,7 +121,7 @@ export function StageAdvancePanel({ projectId, currentStage }: StageAdvancePanel
               width: '100%', padding: '9px 0', borderRadius: 'var(--radius)',
               fontSize: 12, fontWeight: 600, cursor: 'pointer',
               background: hasBlockers ? 'var(--surface-2)' : 'var(--blue)',
-              color: hasBlockers ? 'var(--text-2)' : '#fff',
+              color: hasBlockers ? 'var(--mid)' : '#fff',
               border: hasBlockers ? '1px solid var(--border)' : 'none',
             }}
           >

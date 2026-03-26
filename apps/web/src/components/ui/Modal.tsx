@@ -84,7 +84,7 @@ export function Modal({
     >
       <div
         ref={modalRef}
-        className={`bg-white rounded-lg shadow-xl w-full ${sizeStyles[size]} max-h-[90vh] overflow-y-auto`}
+        className={`bg-[var(--surface)] rounded-lg shadow-xl w-full ${sizeStyles[size]} max-h-[90vh] overflow-y-auto`}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -92,11 +92,11 @@ export function Modal({
       >
         {/* Header */}
         {(title || showCloseButton) && (
-          <div className="flex items-center justify-between p-6 border-b border-gray-200">
+          <div className="flex items-center justify-between p-6 border-b border-[var(--border)]">
             {title && (
               <h2
                 id="modal-title"
-                className="text-xl font-bold text-gray-900"
+                className="text-xl font-bold text-[var(--charcoal)]"
               >
                 {title}
               </h2>
@@ -104,7 +104,7 @@ export function Modal({
             {showCloseButton && (
               <button
                 onClick={onClose}
-                className="p-2 text-gray-400 hover:text-gray-600 transition-colors rounded-lg hover:bg-gray-100 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                className="p-2 text-[var(--muted)] hover:text-[var(--mid)] transition-colors rounded-lg hover:bg-[var(--surface)] min-h-[44px] min-w-[44px] flex items-center justify-center"
                 aria-label="Close modal"
               >
                 <svg

@@ -122,7 +122,7 @@ export function EstimateFilterBar({
       {/* Row 1: Group mode segmented control */}
       <div
         className="inline-flex rounded-lg overflow-hidden"
-        style={{ border: '1px solid #E5E7EB' }}
+        style={{ border: '1px solid var(--border)' }}
       >
         {GROUP_MODES.map(({ key, label }) => (
           <button
@@ -131,9 +131,9 @@ export function EstimateFilterBar({
             className="text-[11px] font-medium px-3 py-1.5 transition-colors"
             style={{
               minHeight: '30px',
-              background: groupMode === key ? '#0F766E' : '#FFFFFF',
-              color: groupMode === key ? '#FFFFFF' : '#374151',
-              borderRight: key !== 'stage' ? '1px solid #E5E7EB' : 'none',
+              background: groupMode === key ? 'var(--accent)' : 'var(--surface)',
+              color: groupMode === key ? '#fff' : 'var(--mid)',
+              borderRight: key !== 'stage' ? '1px solid var(--border)' : 'none',
             }}
           >
             {label}
@@ -156,9 +156,9 @@ export function EstimateFilterBar({
                   className="text-[11px] font-medium px-2.5 py-1.5 rounded-full transition-colors"
                   style={{
                     minHeight: '30px',
-                    background: isActive ? '#0F766E' : '#FFFFFF',
-                    color: isActive ? '#FFFFFF' : '#374151',
-                    border: isActive ? '1px solid #0F766E' : '1px solid #E5E7EB',
+                    background: isActive ? 'var(--accent)' : 'var(--surface)',
+                    color: isActive ? '#fff' : 'var(--mid)',
+                    border: isActive ? '1px solid var(--accent)' : '1px solid var(--border)',
                   }}
                 >
                   {meta?.icon} {meta?.name || code}
@@ -181,9 +181,9 @@ export function EstimateFilterBar({
                 className="text-[11px] font-medium px-2.5 py-1.5 rounded-full transition-colors"
                 style={{
                   minHeight: '30px',
-                  background: isActive ? color : '#FFFFFF',
-                  color: isActive ? '#FFFFFF' : '#374151',
-                  border: isActive ? `1px solid ${color}` : '1px solid #E5E7EB',
+                  background: isActive ? color : 'var(--surface)',
+                  color: isActive ? '#fff' : 'var(--mid)',
+                  border: isActive ? `1px solid ${color}` : '1px solid var(--border)',
                 }}
               >
                 {meta?.name || code}
@@ -199,9 +199,9 @@ export function EstimateFilterBar({
               className="text-[11px] font-medium px-2.5 py-1.5 rounded-full appearance-none cursor-pointer"
               style={{
                 minHeight: '30px',
-                background: filters.locationLabel ? '#0F766E' : '#FFFFFF',
-                color: filters.locationLabel ? '#FFFFFF' : '#374151',
-                border: filters.locationLabel ? '1px solid #0F766E' : '1px solid #E5E7EB',
+                background: filters.locationLabel ? 'var(--accent)' : 'var(--surface)',
+                color: filters.locationLabel ? '#fff' : 'var(--mid)',
+                border: filters.locationLabel ? '1px solid var(--accent)' : '1px solid var(--border)',
                 paddingRight: '20px',
               }}
             >
@@ -221,9 +221,9 @@ export function EstimateFilterBar({
               className="text-[11px] font-medium px-2 py-1.5 rounded-full flex items-center gap-1 transition-colors"
               style={{
                 minHeight: '30px',
-                color: '#EF4444',
-                background: '#FEF2F2',
-                border: '1px solid #FECACA',
+                color: 'var(--red)',
+                background: 'var(--red-bg)',
+                border: '1px solid var(--red-bg)',
               }}
             >
               <X size={10} />

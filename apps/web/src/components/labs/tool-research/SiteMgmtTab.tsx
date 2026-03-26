@@ -9,8 +9,8 @@ import { InlineEditCell } from './InlineEditCell';
 import { PurchaseModal } from './PurchaseModal';
 import { ContentStatusBadge } from './ContentStatusBadge';
 
-const TEAL = '#2A9D8F';
-const GOLD = '#E9C46A';
+const TEAL = 'var(--accent)';
+const GOLD = '#E9C46A'; /* tool-research category — no canonical equivalent */
 
 interface SiteMgmtTabProps {
   items: ToolResearchItem[];
@@ -23,7 +23,7 @@ export function SiteMgmtTab({ items }: SiteMgmtTabProps) {
   const [purchaseItem, setPurchaseItem] = useState<ToolResearchItem | null>(null);
 
   const purchasedRowStyle = (row: ToolResearchItem) =>
-    row.purchased ? { background: '#E8F5E9' } : undefined;
+    row.purchased ? { background: 'var(--green-bg)' } : undefined;
 
   return (
     <>
@@ -32,7 +32,7 @@ export function SiteMgmtTab({ items }: SiteMgmtTabProps) {
         accent="Shop vac = most used site tool"
         color={GOLD}
       >
-        <p style={{ fontSize: 12, color: '#666', margin: '0 0 12px' }}>
+        <p style={{ fontSize: 12, color: 'var(--muted)', margin: '0 0 12px' }}>
           Two tiers of dust management: budget wet/dry vac for rough work, Festool CT extractor for
           finish work paired with track saw and sanders. The Festool is an investment but it&apos;s
           tool-triggered, HEPA, and defines the standard for client-home interior work. Makita&apos;s
@@ -83,7 +83,7 @@ export function SiteMgmtTab({ items }: SiteMgmtTabProps) {
               nowrap: true,
               render: (_: unknown, row: ToolResearchItem) =>
                 row.purchased ? (
-                  <span style={{ color: '#2E7D32', fontSize: 11, fontWeight: 600 }}>Purchased</span>
+                  <span style={{ color: 'var(--green)', fontSize: 11, fontWeight: 600 }}>Purchased</span>
                 ) : (
                   <button
                     onClick={(e) => { e.stopPropagation(); setPurchaseItem(row); }}
@@ -91,7 +91,7 @@ export function SiteMgmtTab({ items }: SiteMgmtTabProps) {
                       padding: '4px 10px',
                       border: `1px solid ${TEAL}`,
                       borderRadius: 6,
-                      background: 'white',
+                      background: 'var(--surface)',
                       color: TEAL,
                       fontSize: 11,
                       fontWeight: 600,

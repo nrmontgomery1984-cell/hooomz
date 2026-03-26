@@ -70,17 +70,17 @@ export function PendingSyncSheet({ isVisible, onClose }: PendingSyncSheetProps) 
         <div className="bg-white rounded-t-2xl shadow-xl max-h-[70vh] flex flex-col">
           {/* Handle */}
           <div className="flex justify-center pt-3 pb-2">
-            <div className="w-10 h-1 rounded-full bg-slate-300" />
+            <div className="w-10 h-1 rounded-full bg-[var(--border)]" />
           </div>
 
           {/* Header */}
-          <div className="px-4 pb-3 border-b border-slate-100">
+          <div className="px-4 pb-3 border-b border-[var(--border)]">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-semibold text-slate-800">
+                <h2 className="text-lg font-semibold text-[var(--charcoal)]">
                   Pending Sync
                 </h2>
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-[var(--muted)]">
                   {!isOnline ? (
                     'Offline - will sync when connected'
                   ) : pendingCount === 0 && failedCount === 0 ? (
@@ -94,7 +94,7 @@ export function PendingSyncSheet({ isVisible, onClose }: PendingSyncSheetProps) 
               {/* Close button */}
               <button
                 onClick={onClose}
-                className="min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors"
+                className="min-w-[44px] min-h-[44px] flex items-center justify-center text-[var(--muted)] hover:text-[var(--mid)] transition-colors"
                 aria-label="Close"
               >
                 <svg
@@ -113,12 +113,12 @@ export function PendingSyncSheet({ isVisible, onClose }: PendingSyncSheetProps) 
           <div className="flex-1 overflow-y-auto px-4 py-3">
             {isLoading ? (
               <div className="flex items-center justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal" />
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--accent)]" />
               </div>
             ) : pendingEvents.length === 0 ? (
               <div className="text-center py-8">
                 <div className="text-4xl mb-2">✓</div>
-                <p className="text-slate-500">All events synced</p>
+                <p className="text-[var(--muted)]">All events synced</p>
               </div>
             ) : (
               <div className="space-y-2">
@@ -130,7 +130,7 @@ export function PendingSyncSheet({ isVisible, onClose }: PendingSyncSheetProps) 
           </div>
 
           {/* Actions */}
-          <div className="px-4 py-4 border-t border-slate-100 space-y-2">
+          <div className="px-4 py-4 border-t border-[var(--border)] space-y-2">
             {/* Sync now button */}
             {isOnline && pendingCount > 0 && (
               <button
@@ -138,9 +138,9 @@ export function PendingSyncSheet({ isVisible, onClose }: PendingSyncSheetProps) 
                 disabled={isSyncing}
                 className="
                   w-full min-h-[48px] px-4
-                  bg-teal text-white font-medium
+                  bg-[var(--accent)] text-white font-medium
                   rounded-xl
-                  hover:bg-teal/90 active:scale-[0.98]
+                  hover:bg-[var(--accent)] active:scale-[0.98]
                   disabled:opacity-50 disabled:cursor-not-allowed
                   transition-all duration-200
                   flex items-center justify-center gap-2
@@ -204,7 +204,7 @@ export function PendingSyncSheet({ isVisible, onClose }: PendingSyncSheetProps) 
 
             {/* Offline notice */}
             {!isOnline && (
-              <div className="flex items-center justify-center gap-2 py-2 text-slate-500">
+              <div className="flex items-center justify-center gap-2 py-2 text-[var(--muted)]">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
@@ -245,15 +245,15 @@ function PendingEventRow({ event }: { event: SyncQueueItem }) {
     <div
       className={`
         p-3 rounded-lg
-        ${isFailed ? 'bg-coral/10' : hasError ? 'bg-amber/10' : 'bg-slate-50'}
+        ${isFailed ? 'bg-coral/10' : hasError ? 'bg-amber/10' : 'bg-[var(--surface)]'}
       `}
     >
       <div className="flex items-start justify-between">
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-slate-800 truncate">
+          <p className="text-sm font-medium text-[var(--charcoal)] truncate">
             {eventLabel}
           </p>
-          <p className="text-xs text-slate-500 mt-0.5">{timeAgo}</p>
+          <p className="text-xs text-[var(--muted)] mt-0.5">{timeAgo}</p>
           {event.error && (
             <p className="text-xs text-coral mt-1 truncate">{event.error}</p>
           )}
@@ -268,7 +268,7 @@ function PendingEventRow({ event }: { event: SyncQueueItem }) {
               Retry {event.retryCount}/3
             </span>
           ) : (
-            <span className="text-xs text-slate-400">Pending</span>
+            <span className="text-xs text-[var(--muted)]">Pending</span>
           )}
         </div>
       </div>

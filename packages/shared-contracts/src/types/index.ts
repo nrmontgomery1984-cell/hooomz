@@ -447,6 +447,23 @@ export const SCRIPT_STAGES: JobStage[] = [
   JobStage.TURNOVER,
 ];
 
+export type DesignStage = 'D' | 'E' | 'S' | 'I' | 'G' | 'N';
+
+/** Maps JobStage values in the sales pipeline to DESIGN funnel letters */
+export const JOB_STAGE_TO_DESIGN: Partial<Record<JobStage, DesignStage>> = {
+  [JobStage.LEAD]: 'D',
+  [JobStage.ESTIMATE]: 'E',
+  [JobStage.CONSULTATION]: 'S',
+  [JobStage.QUOTE]: 'I',
+  [JobStage.CONTRACT]: 'G',
+};
+
+/** Derive design_stage from jobStage. Returns undefined if in SCRIPT (production). */
+export function deriveDesignStage(jobStage?: JobStage): DesignStage | undefined {
+  if (!jobStage) return undefined;
+  return JOB_STAGE_TO_DESIGN[jobStage];
+}
+
 export const JOB_STAGE_META: Record<JobStage, { label: string; order: number }> = {
   [JobStage.LEAD]: { label: 'Lead', order: 1 },
   [JobStage.ESTIMATE]: { label: 'Estimate', order: 2 },
@@ -487,10 +504,95 @@ export interface CustomerRecord {
   notes: string;
   status: CustomerStatus;
   jobIds: string[];
+  property_ids?: string[];
   tags?: string[];
   preferredContactMethod?: CustomerContactMethod;
   customerSince?: string;                 // ISO date — set when first job starts
+  household_members: HouseholdMember[];   // Children, pets — used for scheduling notes
   _seeded?: boolean;                      // Marks seed-generated records for bulk wipe
+}
+
+// ============================================================================
+// Household Member — children/pets linked to a customer
+// ============================================================================
+
+export interface HouseholdMember {
+  id: string;
+  type: 'child' | 'pet';
+  name: string;
+  details?: string;
+  notes?: string;
+}
+
+// ============================================================================
+// Property — physical address linked to a customer
+// ============================================================================
+
+export interface Property {
+  id: string;
+  org_id: string;
+  customer_id: string;
+  address_line_1: string;
+  address_line_2?: string;
+  city: string;
+  province: string;
+  postal_code: string;
+  property_type: 'residential' | 'multi-unit' | 'commercial';
+  year_built?: number;
+  sqft_total?: number;
+  passport_id?: string;
+  notes?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// ============================================================================
+// Passport — digital home passport linked to a property
+// ============================================================================
+
+export interface Passport {
+  id: string;
+  org_id: string;
+  property_id: string;
+  entry_ids: string[];
+  homeowner_access_enabled: boolean;
+  homeowner_portal_token?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PassportEntry {
+  id: string;
+  org_id: string;
+  passport_id: string;
+  project_id: string;
+  property_id: string;
+  title: string;
+  trades: string[];
+  status: 'building' | 'published' | 'archived';
+  material_selection_ids: string[];
+  line_item_ids: string[];
+  change_order_ids: string[];
+  care_guide_generated: boolean;
+  care_guide_url?: string;
+  published_at?: string;
+  homeowner_visible_from: string;
+  recommendation_data?: {
+    paint_colours: RecommendationItem[];
+    trim_profiles: RecommendationItem[];
+    hardware_finishes: RecommendationItem[];
+    flooring_specs: RecommendationItem[];
+  };
+  created_at: string;
+  updated_at: string;
+}
+
+export interface RecommendationItem {
+  label: string;
+  value: string;
+  room?: string;
+  project_id: string;
+  locked_at: string;
 }
 
 // ============================================================================
@@ -540,6 +642,10 @@ export interface QuoteRecord {
   checklistCompletions?: Record<string, { checked: boolean; checkedAt?: string }>;  // Sales checklist state
   depositPercentage?: number;             // e.g. 25 = 25%. Configurable before sending. Default 25.
   contractGeneratedAt?: string;           // ISO — set when quote is first marked 'sent'
+  validityDays?: number;                  // Days from creation until expiry. Default 30.
+  scheduleType?: 'simple' | 'progress' | 'custom';  // Payment schedule type. Default 'simple'.
+  customMilestones?: Array<{ label: string; pct: number }>;  // Custom milestone definitions (custom schedule only)
+  generalTerms?: string[];                // Editable legal/general terms shown on quote
   _seeded?: boolean;                      // Marks seed-generated records for bulk wipe
 }
 

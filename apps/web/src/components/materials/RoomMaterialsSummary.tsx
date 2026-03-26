@@ -55,14 +55,14 @@ export function RoomMaterialsSummary({ roomId, projectId }: RoomMaterialsSummary
     return (
       <div
         style={{
-          background: 'var(--surface-1)',
+          background: 'var(--surface)',
           border: '1px solid var(--border)',
           borderRadius: 12,
           padding: 20,
           minHeight: 120,
         }}
       >
-        <div style={{ color: 'var(--text-3)', fontSize: 13 }}>Loading summary…</div>
+        <div style={{ color: 'var(--muted)', fontSize: 13 }}>Loading summary…</div>
       </div>
     );
   }
@@ -79,7 +79,7 @@ export function RoomMaterialsSummary({ roomId, projectId }: RoomMaterialsSummary
   return (
     <div
       style={{
-        background: 'var(--surface-1)',
+        background: 'var(--surface)',
         border: '1px solid var(--border)',
         borderRadius: 12,
         overflow: 'hidden',
@@ -95,7 +95,7 @@ export function RoomMaterialsSummary({ roomId, projectId }: RoomMaterialsSummary
           alignItems: 'baseline',
         }}
       >
-        <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-3)' }}>
+        <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)' }}>
           Room Total
         </div>
         <div style={{ fontSize: 22, fontWeight: 800 }}>
@@ -122,14 +122,14 @@ export function RoomMaterialsSummary({ roomId, projectId }: RoomMaterialsSummary
             >
               <div>
                 <div style={{ fontWeight: 600, textTransform: 'capitalize' }}>{trade}</div>
-                <div style={{ fontSize: 11, color: 'var(--text-3)' }}>
+                <div style={{ fontSize: 11, color: 'var(--muted)' }}>
                   {selection!.productName}
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
                 <div style={{ fontWeight: 700 }}>${selection!.totalPrice.toFixed(0)}</div>
                 {selection!.status === 'confirmed' && (
-                  <div style={{ fontSize: 10, color: '#10B981', display: 'flex', alignItems: 'center', gap: 2, justifyContent: 'flex-end' }}>
+                  <div style={{ fontSize: 10, color: 'var(--green)', display: 'flex', alignItems: 'center', gap: 2, justifyContent: 'flex-end' }}>
                     <Check size={9} /> Confirmed
                   </div>
                 )}
@@ -138,7 +138,7 @@ export function RoomMaterialsSummary({ roomId, projectId }: RoomMaterialsSummary
           ))}
 
         {!hasSelections && (
-          <div style={{ color: 'var(--text-3)', fontSize: 13, textAlign: 'center', padding: '8px 0' }}>
+          <div style={{ color: 'var(--muted)', fontSize: 13, textAlign: 'center', padding: '8px 0' }}>
             No materials selected yet
           </div>
         )}
@@ -154,9 +154,9 @@ export function RoomMaterialsSummary({ roomId, projectId }: RoomMaterialsSummary
               justifyContent: 'center',
               gap: 6,
               padding: '10px',
-              background: 'rgba(16,185,129,0.1)',
+              background: 'var(--green-bg)',
               borderRadius: 8,
-              color: '#10B981',
+              color: 'var(--green)',
               fontSize: 13,
               fontWeight: 700,
             }}
@@ -172,7 +172,7 @@ export function RoomMaterialsSummary({ roomId, projectId }: RoomMaterialsSummary
                 alignItems: 'center',
                 gap: 6,
                 fontSize: 12,
-                color: '#F59E0B',
+                color: 'var(--yellow)',
                 marginBottom: 10,
               }}
             >
@@ -186,7 +186,7 @@ export function RoomMaterialsSummary({ roomId, projectId }: RoomMaterialsSummary
                 display: 'block',
                 width: '100%',
                 padding: '10px',
-                background: '#1E3A8A',
+                background: 'var(--blue)',
                 color: '#fff',
                 border: 'none',
                 borderRadius: 8,
@@ -213,9 +213,9 @@ export function RoomMaterialsSummary({ roomId, projectId }: RoomMaterialsSummary
               justifyContent: 'center',
               gap: 6,
               padding: '10px',
-              background: hasExisting ? 'var(--surface-1)' : '#0F766E',
-              color: hasExisting ? '#0F766E' : '#fff',
-              border: hasExisting ? '2px solid #0F766E' : 'none',
+              background: hasExisting ? 'var(--surface)' : 'var(--accent)',
+              color: hasExisting ? 'var(--accent)' : '#fff',
+              border: hasExisting ? '2px solid var(--accent)' : 'none',
               borderRadius: 8,
               fontSize: 13,
               fontWeight: 700,

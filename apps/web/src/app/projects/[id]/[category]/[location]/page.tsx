@@ -30,7 +30,7 @@ interface Task {
 
 function TaskItem({ task, onToggle }: { task: Task; onToggle: () => void }) {
   const statusStyles: Record<TaskStatus, string> = {
-    not_started: 'bg-slate-50 border-slate-200',
+    not_started: 'bg-[var(--surface)] border-[var(--border)]',
     in_progress: 'bg-progress/5 border-progress/30',
     blocked: 'bg-blocked/5 border-blocked/30',
     complete: 'bg-healthy/5 border-healthy/30',
@@ -43,9 +43,9 @@ function TaskItem({ task, onToggle }: { task: Task; onToggle: () => void }) {
           onClick={onToggle}
           className="w-7 h-7 rounded-full border-2 flex items-center justify-center flex-shrink-0 min-h-[48px] min-w-[48px]"
           style={{
-            borderColor: task.status === 'complete' ? 'var(--theme-status-green, #10b981)' : '#cbd5e1',
+            borderColor: task.status === 'complete' ? 'var(--green)' : 'var(--border)',
             backgroundColor:
-              task.status === 'complete' ? 'var(--theme-status-green, #10b981)' : 'transparent',
+              task.status === 'complete' ? 'var(--green)' : 'transparent',
           }}
         >
           {task.status === 'complete' && (
@@ -56,13 +56,13 @@ function TaskItem({ task, onToggle }: { task: Task; onToggle: () => void }) {
           <span
             className={
               task.status === 'complete'
-                ? 'line-through text-slate-400'
-                : 'text-slate-700'
+                ? 'line-through text-[var(--muted)]'
+                : 'text-[var(--mid)]'
             }
           >
             {task.name}
           </span>
-          <div className="flex items-center gap-2 mt-1 text-sm text-slate-500">
+          <div className="flex items-center gap-2 mt-1 text-sm text-[var(--mid)]">
             {task.estimated_hours && (
               <span className="flex items-center gap-1">
                 {task.estimated_hours}h
@@ -180,14 +180,14 @@ export default function LocationDetailPage() {
   const statusColors: Record<TaskStatus, string> = {
     blocked: 'text-blocked',
     in_progress: 'text-progress',
-    not_started: 'text-slate-400',
+    not_started: 'text-[var(--muted)]',
     complete: 'text-healthy',
   };
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-cream flex items-center justify-center">
-        <div className="w-32 h-32 rounded-full border-2 border-slate-200 animate-pulse" />
+        <div className="w-32 h-32 rounded-full border-2 border-[var(--border)] animate-pulse" />
       </div>
     );
   }
@@ -204,12 +204,12 @@ export default function LocationDetailPage() {
         <button
           onClick={handleBackToCategory}
           className="w-16 h-16 rounded-full flex items-center justify-center text-white text-lg font-light"
-          style={{ backgroundColor: healthScore >= 70 ? '#10b981' : healthScore >= 40 ? '#3B82F6' : healthScore >= 20 ? '#f59e0b' : '#ef4444' }}
+          style={{ backgroundColor: healthScore >= 70 ? 'var(--green)' : healthScore >= 40 ? 'var(--blue)' : healthScore >= 20 ? 'var(--yellow)' : 'var(--red)' }}
         >
           {healthScore}
         </button>
-        <span className="text-sm text-slate-600 font-medium mt-2">{locationName}</span>
-        <p className="text-sm text-slate-500 mt-1">
+        <span className="text-sm text-[var(--mid)] font-medium mt-2">{locationName}</span>
+        <p className="text-sm text-[var(--mid)] mt-1">
           {completedCount} of {tasks.length} tasks complete
         </p>
       </div>
@@ -217,7 +217,7 @@ export default function LocationDetailPage() {
       {/* Task List */}
       <div className="px-4">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-medium text-slate-500 uppercase">Tasks</h2>
+          <h2 className="text-sm font-medium text-[var(--mid)] uppercase">Tasks</h2>
           <button className="text-sm text-coral font-medium min-h-[48px] px-4">
             + Add Task
           </button>

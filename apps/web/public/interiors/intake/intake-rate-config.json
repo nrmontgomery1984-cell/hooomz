@@ -1,0 +1,265 @@
+{
+  "generated_at": "2026-03-16T17:41:23.885Z",
+  "derived_from": "catalogue-export.json",
+  "confidence_note": "Rates derived from single_job confidence items unless noted",
+  "waste_factors": {
+    "lvp": 1.1,
+    "laminate": 1.1,
+    "hardwood_floating": 1.1,
+    "hardwood_nail": 1.12,
+    "tile_standard": 1.15,
+    "tile_diagonal": 1.2,
+    "carpet": 1.1,
+    "paint_wall": 1,
+    "trim_baseboard": 1.1
+  },
+  "flooring_types": {
+    "lvp": {
+      "label": "LVP / Vinyl Plank",
+      "catalogue_refs": [
+        "FLR-020",
+        "FLR-006"
+      ],
+      "rate_per_sqft": {
+        "low": 5.5,
+        "high": 9.1,
+        "confidence": "single_job"
+      },
+      "includes": [
+        "supply",
+        "install",
+        "underlayment"
+      ],
+      "excludes": [
+        "demo",
+        "subfloor_repair",
+        "transitions"
+      ]
+    },
+    "hardwood_eng": {
+      "label": "Engineered Hardwood",
+      "catalogue_refs": [
+        "FLR-015",
+        "FLR-006"
+      ],
+      "rate_per_sqft": {
+        "low": 8,
+        "high": 16.6,
+        "confidence": "single_job"
+      },
+      "includes": [
+        "supply",
+        "install",
+        "underlayment"
+      ],
+      "excludes": [
+        "demo",
+        "subfloor_repair",
+        "transitions",
+        "sand_finish"
+      ]
+    },
+    "hardwood_solid": {
+      "label": "Solid Hardwood",
+      "catalogue_refs": [
+        "FLR-016",
+        "FLR-006"
+      ],
+      "rate_per_sqft": {
+        "low": 10,
+        "high": 21.6,
+        "confidence": "single_job"
+      },
+      "includes": [
+        "supply",
+        "install",
+        "underlayment"
+      ],
+      "excludes": [
+        "demo",
+        "subfloor_repair",
+        "transitions",
+        "sand_finish"
+      ]
+    },
+    "laminate": {
+      "label": "Laminate",
+      "catalogue_refs": [
+        "FLR-024",
+        "FLR-006"
+      ],
+      "rate_per_sqft": {
+        "low": 5.5,
+        "high": 10.1,
+        "confidence": "single_job"
+      },
+      "includes": [
+        "supply",
+        "install",
+        "underlayment"
+      ],
+      "excludes": [
+        "demo",
+        "subfloor_repair",
+        "transitions"
+      ]
+    },
+    "tile": {
+      "label": "Tile (Standard & Large Format)",
+      "catalogue_refs": [
+        "FLR-027",
+        "FLR-028"
+      ],
+      "rate_per_sqft": {
+        "low": 9,
+        "high": 27,
+        "confidence": "single_job"
+      },
+      "includes": [
+        "supply",
+        "install",
+        "thinset"
+      ],
+      "excludes": [
+        "demo",
+        "subfloor_repair",
+        "heated_floor",
+        "grout_seal",
+        "waterproofing"
+      ]
+    },
+    "carpet": {
+      "label": "Carpet",
+      "catalogue_refs": [
+        "FLR-025"
+      ],
+      "rate_per_sqft": {
+        "low": 3.8,
+        "high": 7.8,
+        "confidence": "single_job"
+      },
+      "includes": [
+        "supply",
+        "install",
+        "pad"
+      ],
+      "excludes": [
+        "demo",
+        "stairs",
+        "stretching"
+      ]
+    },
+    "notsure": {
+      "label": "Not Sure / Mixed",
+      "catalogue_refs": [
+        "FLR-020",
+        "FLR-006",
+        "FLR-016"
+      ],
+      "rate_per_sqft": {
+        "low": 5.5,
+        "high": 21.6,
+        "confidence": "single_job"
+      },
+      "includes": [
+        "supply",
+        "install",
+        "underlayment"
+      ],
+      "excludes": [
+        "demo",
+        "subfloor_repair",
+        "transitions"
+      ],
+      "note": "Range spans LVP (low) to solid hardwood (high) to cover unknowns"
+    }
+  },
+  "paint": {
+    "walls_per_sqft": {
+      "catalogue_refs": [
+        "PNT-006"
+      ],
+      "rate_per_sqft": {
+        "low": 1.1,
+        "high": 1.4,
+        "confidence": "single_job"
+      },
+      "basis": "floor_area_multiplier",
+      "floor_to_wall_factor": 2.8,
+      "note": "Wall sqft estimated as floor_sqft × 2.8 for 8ft ceilings. Rate is per wall sqft — multiply by floor_to_wall_factor for per-floor-sqft cost."
+    },
+    "walls_and_ceiling_per_sqft": {
+      "catalogue_refs": [
+        "PNT-006",
+        "PNT-009"
+      ],
+      "rate_per_sqft": {
+        "low": 4.38,
+        "high": 5.52,
+        "confidence": "single_job"
+      },
+      "basis": "floor_area_combined",
+      "floor_to_wall_factor": 2.8,
+      "note": "Combined rate per floor sqft: (wall rate × 2.8) + ceiling rate. Assumes 8ft ceilings."
+    },
+    "ceiling_height_multipliers": {
+      "8ft": 1,
+      "9ft": 1.12,
+      "10ft": 1.25,
+      "vaulted": 1.45,
+      "mixed": 1.2,
+      "notsure": 1.1
+    }
+  },
+  "trim": {
+    "baseboard_per_sqft": {
+      "catalogue_refs": [
+        "TRM-002",
+        "TRM-003"
+      ],
+      "rate_per_sqft": {
+        "low": 2.48,
+        "high": 3.74,
+        "confidence": "single_job"
+      },
+      "basis": "floor_area_to_lnft",
+      "floor_to_lnft_factor": 0.55,
+      "note": "Linear ft estimated as floor_sqft × 0.55 (accounts for doors/openings). Rate = (supply+install + caulk+paint) per lnft × factor."
+    },
+    "door_casing_each": {
+      "catalogue_refs": [
+        "TRM-005",
+        "TRM-006"
+      ],
+      "rate_each": {
+        "low": 95,
+        "high": 153,
+        "confidence": "single_job"
+      }
+    }
+  },
+  "feature_wall": {
+    "per_sqft": {
+      "catalogue_refs": [
+        "ACC-006",
+        "ACC-007",
+        "ACC-008",
+        "ACC-009"
+      ],
+      "rate_per_sqft": {
+        "low": 5.3,
+        "high": 38,
+        "confidence": "single_job"
+      },
+      "note": "Range: shiplap (ACC-006) low to stone veneer (ACC-009) high. Covers wood slat, tile, and stone accent walls."
+    }
+  },
+  "global_adjustments": {
+    "complexity_multiplier": {
+      "low": 1,
+      "high": 1.25
+    },
+    "note": "High end of range accounts for typical site complexity unknown at intake stage"
+  },
+  "gaps": []
+}

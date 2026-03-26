@@ -91,7 +91,7 @@ export function HomeownerActivityEventRow({
         group cursor-pointer select-none
         transition-all duration-200 ease-out
         min-h-[56px] py-4 px-2
-        ${isExpanded ? 'bg-slate-50/50 -mx-2 px-4 rounded-xl' : ''}
+        ${isExpanded ? 'bg-[var(--surface)]/50 -mx-2 px-4 rounded-xl' : ''}
         ${isCelebration ? 'bg-green/5 rounded-xl' : ''}
       `}
     >
@@ -114,7 +114,7 @@ export function HomeownerActivityEventRow({
           {/* Message */}
           <p className={`
             text-base leading-relaxed
-            ${isCelebration ? 'text-green font-medium' : 'text-slate-700'}
+            ${isCelebration ? 'text-green font-medium' : 'text-[var(--mid)]'}
           `}>
             {message}
           </p>
@@ -122,7 +122,7 @@ export function HomeownerActivityEventRow({
           {/* Time */}
           <time
             dateTime={event.timestamp}
-            className="text-sm text-slate-400 mt-1 block"
+            className="text-sm text-[var(--muted)] mt-1 block"
           >
             {relativeTime}
           </time>
@@ -140,8 +140,8 @@ export function HomeownerActivityEventRow({
             className="
               flex-shrink-0
               w-14 h-14 rounded-lg overflow-hidden
-              bg-slate-100
-              hover:ring-2 hover:ring-teal/30 transition-all
+              bg-[var(--surface)]
+              hover:ring-2 hover:ring-[var(--accent)] transition-all
             "
           >
             <img
@@ -156,7 +156,7 @@ export function HomeownerActivityEventRow({
         {hasExpandedContent && !photoUrl && !thumbnailUrl && (
           <span
             className={`
-              text-slate-300 text-sm transition-transform duration-200
+              text-[var(--border)] text-sm transition-transform duration-200
               ${isExpanded ? 'rotate-180' : ''}
             `}
           >
@@ -170,7 +170,7 @@ export function HomeownerActivityEventRow({
         <div className="mt-4 ml-10 space-y-4 animate-in fade-in slide-in-from-top-1 duration-200">
           {/* Notes/Details */}
           {(details || notes) && (
-            <p className="text-sm text-slate-600 leading-relaxed">
+            <p className="text-sm text-[var(--mid)] leading-relaxed">
               {details || notes}
             </p>
           )}
@@ -190,8 +190,8 @@ export function HomeownerActivityEventRow({
                   className="
                     flex-shrink-0
                     w-32 h-32 rounded-xl overflow-hidden
-                    bg-slate-100
-                    hover:ring-2 hover:ring-teal/30 transition-all
+                    bg-[var(--surface)]
+                    hover:ring-2 hover:ring-[var(--accent)] transition-all
                   "
                 >
                   <img
@@ -213,9 +213,9 @@ export function HomeownerActivityEventRow({
                   className="
                     flex-shrink-0
                     w-20 h-20 rounded-lg overflow-hidden
-                    bg-slate-100
-                    hover:ring-2 hover:ring-teal/30 transition-all
-                    flex items-center justify-center text-slate-400
+                    bg-[var(--surface)]
+                    hover:ring-2 hover:ring-[var(--accent)] transition-all
+                    flex items-center justify-center text-[var(--muted)]
                   "
                 >
                   {/* Placeholder if no thumbnail */}
@@ -236,10 +236,10 @@ export function HomeownerActivityEventRow({
 export function HomeownerActivityEventRowSkeleton() {
   return (
     <div className="flex items-start gap-4 py-4 px-2 animate-pulse">
-      <div className="w-8 h-8 rounded-full bg-slate-200" />
+      <div className="w-8 h-8 rounded-full bg-[var(--surface-2)]" />
       <div className="flex-1 space-y-2">
-        <div className="h-5 bg-slate-200 rounded w-3/4" />
-        <div className="h-4 bg-slate-100 rounded w-1/3" />
+        <div className="h-5 bg-[var(--surface-2)] rounded w-3/4" />
+        <div className="h-4 bg-[var(--surface)] rounded w-1/3" />
       </div>
     </div>
   );

@@ -81,17 +81,17 @@ export function ObservationConfirmCard({
   );
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+    <div className="bg-white rounded-xl border border-[var(--border)] p-4 shadow-sm">
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
-        <span className="inline-flex px-2 py-0.5 text-xs font-medium rounded-full bg-teal-100 text-teal-800">
+        <span className="inline-flex px-2 py-0.5 text-xs font-medium rounded-full bg-[var(--accent-bg)] text-[var(--accent)]">
           {typeLabel}
         </span>
         {onSkip && (
           <button
             onClick={onSkip}
             disabled={isPending}
-            className="text-xs text-gray-400 hover:text-gray-600"
+            className="text-xs text-[var(--muted)] hover:text-[var(--mid)]"
             style={{ minHeight: '36px', minWidth: '36px' }}
           >
             Skip
@@ -100,20 +100,20 @@ export function ObservationConfirmCard({
       </div>
 
       {stepTitle && (
-        <p className="text-sm font-medium text-gray-900 mb-2">{stepTitle}</p>
+        <p className="text-sm font-medium text-[var(--charcoal)] mb-2">{stepTitle}</p>
       )}
 
       {/* Pre-filled defaults display */}
       {(draft.productId || draft.techniqueId || draft.toolMethodId) && (
         <div className="flex flex-wrap gap-1.5 mb-3">
           {draft.productId && (
-            <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">Product: {draft.productId}</span>
+            <span className="text-xs bg-[var(--surface)] text-[var(--mid)] px-2 py-0.5 rounded">Product: {draft.productId}</span>
           )}
           {draft.techniqueId && (
-            <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">Technique: {draft.techniqueId}</span>
+            <span className="text-xs bg-[var(--surface)] text-[var(--mid)] px-2 py-0.5 rounded">Technique: {draft.techniqueId}</span>
           )}
           {draft.toolMethodId && (
-            <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">Tool: {draft.toolMethodId}</span>
+            <span className="text-xs bg-[var(--surface)] text-[var(--mid)] px-2 py-0.5 rounded">Tool: {draft.toolMethodId}</span>
           )}
         </div>
       )}
@@ -121,7 +121,7 @@ export function ObservationConfirmCard({
       {/* Condition Assessment (detailed mode) */}
       {draft.requiresCondition && (
         <div className="mb-3">
-          <label className="text-xs font-medium text-gray-700 mb-1.5 block">
+          <label className="text-xs font-medium text-[var(--mid)] mb-1.5 block">
             Condition *
           </label>
           <div className="flex gap-2">
@@ -131,7 +131,7 @@ export function ObservationConfirmCard({
                 type="button"
                 onClick={() => setCondition(opt.value)}
                 className={`flex-1 px-2 py-2 text-xs font-medium rounded-lg border transition-colors ${
-                  condition === opt.value ? opt.color : 'border-gray-200 text-gray-500'
+                  condition === opt.value ? opt.color : 'border-[var(--border)] text-[var(--muted)]'
                 }`}
                 style={{ minHeight: '44px' }}
               >
@@ -145,7 +145,7 @@ export function ObservationConfirmCard({
       {/* Notes (standard + detailed modes) */}
       {(draft.requiresNotes || !isDeviating) && (
         <div className="mb-3">
-          <label className="text-xs font-medium text-gray-700 mb-1 block">
+          <label className="text-xs font-medium text-[var(--mid)] mb-1 block">
             Notes {draft.requiresNotes ? '*' : '(optional)'}
           </label>
           <textarea
@@ -153,7 +153,7 @@ export function ObservationConfirmCard({
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Add notes..."
             rows={2}
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-600 resize-none"
+            className="w-full px-3 py-2 text-sm border border-[var(--border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--accent)] resize-none"
           />
         </div>
       )}
@@ -183,7 +183,7 @@ export function ObservationConfirmCard({
               onClick={handleConfirm}
               disabled={!canConfirm}
               className="flex-1 py-3 text-sm font-semibold text-white rounded-xl transition-colors disabled:opacity-50"
-              style={{ background: '#0F766E', minHeight: '48px' }}
+              style={{ background: 'var(--accent)', minHeight: '48px' }}
             >
               {isPending ? 'Saving...' : 'Confirm'}
             </button>
@@ -202,14 +202,14 @@ export function ObservationConfirmCard({
               onClick={handleDeviate}
               disabled={isPending}
               className="flex-1 py-3 text-sm font-semibold text-white rounded-xl transition-colors disabled:opacity-50"
-              style={{ background: '#D97706', minHeight: '48px' }}
+              style={{ background: 'var(--yellow)', minHeight: '48px' }}
             >
               {isPending ? 'Saving...' : 'Confirm Deviation'}
             </button>
             <button
               onClick={() => setIsDeviating(false)}
               disabled={isPending}
-              className="px-4 py-3 text-sm font-medium text-gray-600 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+              className="px-4 py-3 text-sm font-medium text-[var(--mid)] border border-[var(--border)] rounded-xl hover:bg-[var(--surface)] transition-colors"
               style={{ minHeight: '48px' }}
             >
               Back

@@ -252,13 +252,13 @@ function ProjectInfoStep({ data, updateData, onProjectTypeChange }: StepProps) {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-slate-800 mb-2">Project Information</h2>
-        <p className="text-slate-500">Basic details about the project</p>
+        <h2 className="text-xl font-semibold mb-2" style={{color:'var(--charcoal)'}}>Project Information</h2>
+        <p style={{color:'var(--muted)'}}>Basic details about the project</p>
       </div>
 
       {/* Project Name */}
       <div>
-        <label className="block text-sm font-medium text-slate-600 mb-2">Project Name *</label>
+        <label className="block text-sm font-medium mb-2" style={{color:'var(--mid)'}}>Project Name *</label>
         <input
           type="text"
           value={project.name}
@@ -270,7 +270,7 @@ function ProjectInfoStep({ data, updateData, onProjectTypeChange }: StepProps) {
 
       {/* Address */}
       <div>
-        <label className="block text-sm font-medium text-slate-600 mb-2">Project Address *</label>
+        <label className="block text-sm font-medium mb-2" style={{color:'var(--mid)'}}>Project Address *</label>
         <input
           type="text"
           value={project.address.street}
@@ -313,8 +313,8 @@ function ProjectInfoStep({ data, updateData, onProjectTypeChange }: StepProps) {
 
       {/* Project Type */}
       <div>
-        <label className="block text-sm font-medium text-slate-600 mb-2">Project Type *</label>
-        <p className="text-xs text-slate-400 mb-2">Selecting a type will pre-populate trades and phases</p>
+        <label className="block text-sm font-medium mb-2" style={{color:'var(--mid)'}}>Project Type *</label>
+        <p className="text-xs mb-2" style={{color:'var(--muted)'}}>Selecting a type will pre-populate trades and phases</p>
         <div className="grid grid-cols-2 gap-2">
           {projectTypes.map((type) => (
             <button
@@ -325,8 +325,9 @@ function ProjectInfoStep({ data, updateData, onProjectTypeChange }: StepProps) {
                 'min-h-[48px] px-4 rounded-xl text-sm font-medium transition-colors text-left',
                 project.project_type === type.value
                   ? 'bg-coral text-white'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  : 'hover:opacity-80'
               )}
+              style={project.project_type !== type.value ? {background:'var(--surface-2)',color:'var(--mid)'} : undefined}
             >
               {type.label}
             </button>
@@ -336,7 +337,7 @@ function ProjectInfoStep({ data, updateData, onProjectTypeChange }: StepProps) {
 
       {/* Spec Level */}
       <div>
-        <label className="block text-sm font-medium text-slate-600 mb-2">Spec Level</label>
+        <label className="block text-sm font-medium mb-2" style={{color:'var(--mid)'}}>Spec Level</label>
         <div className="grid grid-cols-2 gap-2">
           {specLevels.map((level) => (
             <button
@@ -347,15 +348,17 @@ function ProjectInfoStep({ data, updateData, onProjectTypeChange }: StepProps) {
                 'p-3 rounded-xl text-left transition-colors',
                 project.spec_level === level.value
                   ? 'bg-coral text-white'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  : 'hover:opacity-80'
               )}
+              style={project.spec_level !== level.value ? {background:'var(--surface-2)',color:'var(--mid)'} : undefined}
             >
               <span className="font-medium">{level.label}</span>
               <p
                 className={cn(
                   'text-xs mt-0.5',
-                  project.spec_level === level.value ? 'text-white/80' : 'text-slate-500'
+                  project.spec_level === level.value ? 'text-white/80' : ''
                 )}
+              style={project.spec_level !== level.value ? {color:'var(--muted)'} : undefined}
               >
                 {level.desc}
               </p>
@@ -367,7 +370,7 @@ function ProjectInfoStep({ data, updateData, onProjectTypeChange }: StepProps) {
       {/* Building Info */}
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-slate-600 mb-2">Storeys</label>
+          <label className="block text-sm font-medium mb-2" style={{color:'var(--mid)'}}>Storeys</label>
           <div className="flex gap-2">
             {[1, 2, 3].map((num) => (
               <button
@@ -378,8 +381,9 @@ function ProjectInfoStep({ data, updateData, onProjectTypeChange }: StepProps) {
                   'flex-1 min-h-[48px] rounded-xl font-medium transition-colors',
                   project.storeys === num
                     ? 'bg-coral text-white'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    : 'hover:opacity-80'
                 )}
+                style={project.storeys !== num ? {background:'var(--surface-2)',color:'var(--mid)'} : undefined}
               >
                 {num}
               </button>
@@ -388,7 +392,7 @@ function ProjectInfoStep({ data, updateData, onProjectTypeChange }: StepProps) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-600 mb-2">Basement</label>
+          <label className="block text-sm font-medium mb-2" style={{color:'var(--mid)'}}>Basement</label>
           <div className="flex gap-2">
             <button
               type="button"
@@ -397,8 +401,9 @@ function ProjectInfoStep({ data, updateData, onProjectTypeChange }: StepProps) {
                 'flex-1 min-h-[48px] rounded-xl font-medium transition-colors',
                 !project.has_basement
                   ? 'bg-coral text-white'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  : 'hover:opacity-80'
               )}
+              style={project.has_basement ? {background:'var(--surface-2)',color:'var(--mid)'} : undefined}
             >
               No
             </button>
@@ -409,8 +414,9 @@ function ProjectInfoStep({ data, updateData, onProjectTypeChange }: StepProps) {
                 'flex-1 min-h-[48px] rounded-xl font-medium transition-colors',
                 project.has_basement
                   ? 'bg-coral text-white'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  : 'hover:opacity-80'
               )}
+              style={!project.has_basement ? {background:'var(--surface-2)',color:'var(--mid)'} : undefined}
             >
               Yes
             </button>
@@ -419,8 +425,8 @@ function ProjectInfoStep({ data, updateData, onProjectTypeChange }: StepProps) {
       </div>
 
       {/* Client Info (Optional) */}
-      <div className="border-t border-slate-100 pt-6">
-        <h3 className="text-sm font-semibold text-slate-800 mb-4">Client Information (Optional)</h3>
+      <div className="border-t pt-6" style={{borderColor:'var(--border)'}}>
+        <h3 className="text-sm font-semibold mb-4" style={{color:'var(--charcoal)'}}>Client Information (Optional)</h3>
         <div className="space-y-3">
           <input
             type="text"
@@ -450,7 +456,7 @@ function ProjectInfoStep({ data, updateData, onProjectTypeChange }: StepProps) {
 
       {/* Notes */}
       <div>
-        <label className="block text-sm font-medium text-slate-600 mb-2">Project Notes</label>
+        <label className="block text-sm font-medium mb-2" style={{color:'var(--mid)'}}>Project Notes</label>
         <textarea
           value={project.notes || ''}
           onChange={(e) => updateData('project', { ...project, notes: e.target.value })}
@@ -482,15 +488,15 @@ function ScopeStep({ data, updateData, errors }: StepProps) {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold" style={{ color: '#111827' }}>Project Scope</h2>
-        <p className="text-sm mt-1" style={{ color: '#6B7280' }}>
+        <h2 className="text-xl font-semibold" style={{ color: 'var(--charcoal)' }}>Project Scope</h2>
+        <p className="text-sm mt-1" style={{ color: 'var(--muted)' }}>
           Select trades, then add rooms with measurements and per-room details.
         </p>
       </div>
 
       {/* Trade Selection */}
       <div>
-        <p className="text-[11px] font-semibold uppercase tracking-wider mb-2" style={{ color: '#9CA3AF' }}>
+        <p className="text-[11px] font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--muted)' }}>
           Trades Involved
         </p>
         <div className="grid grid-cols-3 gap-2">
@@ -503,9 +509,9 @@ function ScopeStep({ data, updateData, errors }: StepProps) {
                 onClick={() => toggleTrade(code)}
                 className="min-h-[48px] px-3 rounded-xl text-sm font-medium transition-colors flex items-center gap-2"
                 style={{
-                  background: isEnabled ? '#F0FDFA' : '#F3F4F6',
-                  color: isEnabled ? '#0F766E' : '#6B7280',
-                  border: isEnabled ? '2px solid #0F766E' : '2px solid transparent',
+                  background: isEnabled ? 'var(--green-bg)' : 'var(--surface-2)',
+                  color: isEnabled ? 'var(--accent)' : 'var(--muted)',
+                  border: isEnabled ? '2px solid var(--accent)' : '2px solid transparent',
                 }}
               >
                 <span>{trade.icon}</span>
@@ -517,7 +523,7 @@ function ScopeStep({ data, updateData, errors }: StepProps) {
       </div>
 
       {errors?.['scope.trades'] && (
-        <p className="text-xs" style={{ color: '#EF4444' }}>{errors['scope.trades']}</p>
+        <p className="text-xs" style={{ color: 'var(--red)' }}>{errors['scope.trades']}</p>
       )}
 
       {/* Room Scope Builder */}
@@ -562,14 +568,14 @@ function ScheduleStep({ data, updateData }: StepProps) {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-slate-800 mb-2">Project Schedule</h2>
-        <p className="text-slate-500">Set timeline and phases</p>
+        <h2 className="text-xl font-semibold mb-2" style={{color:'var(--charcoal)'}}>Project Schedule</h2>
+        <p style={{color:'var(--muted)'}}>Set timeline and phases</p>
       </div>
 
       {/* Start Date */}
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-slate-600 mb-2">Estimated Start</label>
+          <label className="block text-sm font-medium mb-2" style={{color:'var(--mid)'}}>Estimated Start</label>
           <input
             type="date"
             value={schedule.estimated_start || ''}
@@ -578,7 +584,7 @@ function ScheduleStep({ data, updateData }: StepProps) {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-600 mb-2">Est. Duration (weeks)</label>
+          <label className="block text-sm font-medium mb-2" style={{color:'var(--mid)'}}>Est. Duration (weeks)</label>
           <input
             type="number"
             min={1}
@@ -598,7 +604,7 @@ function ScheduleStep({ data, updateData }: StepProps) {
       {/* Phases */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <label className="block text-sm font-medium text-slate-600">Project Phases</label>
+          <label className="block text-sm font-medium" style={{color:'var(--mid)'}}>Project Phases</label>
           <button
             type="button"
             onClick={addPhase}
@@ -609,8 +615,8 @@ function ScheduleStep({ data, updateData }: StepProps) {
         </div>
 
         {(schedule.phases || []).length === 0 ? (
-          <div className="text-center py-8 bg-slate-50 rounded-xl">
-            <p className="text-slate-500 mb-3">No phases defined yet</p>
+          <div className="text-center py-8 rounded-xl" style={{background:'var(--surface)'}}>
+            <p className="mb-3" style={{color:'var(--muted)'}}>No phases defined yet</p>
             <button type="button" onClick={addPhase} className="btn btn-primary">
               Add First Phase
             </button>
@@ -629,7 +635,7 @@ function ScheduleStep({ data, updateData }: StepProps) {
                       placeholder="Phase name"
                     />
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-slate-600">Duration:</span>
+                      <span className="text-sm" style={{color:'var(--mid)'}}>Duration:</span>
                       <input
                         type="number"
                         min={1}
@@ -639,13 +645,14 @@ function ScheduleStep({ data, updateData }: StepProps) {
                         }
                         className="input w-20 text-center"
                       />
-                      <span className="text-sm text-slate-600">weeks</span>
+                      <span className="text-sm" style={{color:'var(--mid)'}}>weeks</span>
                     </div>
                   </div>
                   <button
                     type="button"
                     onClick={() => removePhase(index)}
-                    className="text-slate-400 hover:text-coral min-w-[44px] min-h-[44px] flex items-center justify-center"
+                    className="hover:text-coral min-w-[44px] min-h-[44px] flex items-center justify-center"
+                    style={{color:'var(--muted)'}}
                   >
                     ×
                   </button>
@@ -655,7 +662,7 @@ function ScheduleStep({ data, updateData }: StepProps) {
 
             {/* Total Duration */}
             <div className="bg-sage/10 rounded-xl p-4 text-center">
-              <p className="text-sm text-slate-600">Total Duration</p>
+              <p className="text-sm" style={{color:'var(--mid)'}}>Total Duration</p>
               <p className="text-xl font-semibold text-sage-dark">{totalWeeks} weeks</p>
             </div>
           </div>
@@ -675,46 +682,46 @@ function ReviewStep({ data }: StepProps) {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold" style={{ color: '#111827' }}>Review & Submit</h2>
-        <p className="text-sm mt-1" style={{ color: '#6B7280' }}>Confirm project details before creating</p>
+        <h2 className="text-xl font-semibold" style={{ color: 'var(--charcoal)' }}>Review & Submit</h2>
+        <p className="text-sm mt-1" style={{ color: 'var(--muted)' }}>Confirm project details before creating</p>
       </div>
 
       {/* Project Summary */}
-      <div className="rounded-xl p-4" style={{ background: '#F3F4F6', border: '1px solid #E5E7EB' }}>
-        <h3 className="font-semibold mb-3" style={{ color: '#111827' }}>Project</h3>
+      <div className="rounded-xl p-4" style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}>
+        <h3 className="font-semibold mb-3" style={{ color: 'var(--charcoal)' }}>Project</h3>
         <dl className="space-y-2 text-sm">
           <div className="flex justify-between">
-            <dt style={{ color: '#6B7280' }}>Name</dt>
-            <dd className="font-medium" style={{ color: '#111827' }}>{data.project.name || '-'}</dd>
+            <dt style={{ color: 'var(--muted)' }}>Name</dt>
+            <dd className="font-medium" style={{ color: 'var(--charcoal)' }}>{data.project.name || '-'}</dd>
           </div>
           <div className="flex justify-between">
-            <dt style={{ color: '#6B7280' }}>Type</dt>
-            <dd style={{ color: '#111827' }}>{data.project.project_type.replace('_', ' ')}</dd>
+            <dt style={{ color: 'var(--muted)' }}>Type</dt>
+            <dd style={{ color: 'var(--charcoal)' }}>{data.project.project_type.replace('_', ' ')}</dd>
           </div>
           <div className="flex justify-between">
-            <dt style={{ color: '#6B7280' }}>Address</dt>
-            <dd className="text-right" style={{ color: '#111827' }}>{data.project.address.street || '-'}</dd>
+            <dt style={{ color: 'var(--muted)' }}>Address</dt>
+            <dd className="text-right" style={{ color: 'var(--charcoal)' }}>{data.project.address.street || '-'}</dd>
           </div>
           <div className="flex justify-between">
-            <dt style={{ color: '#6B7280' }}>Spec Level</dt>
-            <dd className="capitalize" style={{ color: '#111827' }}>{data.project.spec_level}</dd>
+            <dt style={{ color: 'var(--muted)' }}>Spec Level</dt>
+            <dd className="capitalize" style={{ color: 'var(--charcoal)' }}>{data.project.spec_level}</dd>
           </div>
         </dl>
       </div>
 
       {/* Client Summary */}
       {data.client?.name && (
-        <div className="rounded-xl p-4" style={{ background: '#F3F4F6', border: '1px solid #E5E7EB' }}>
-          <h3 className="font-semibold mb-3" style={{ color: '#111827' }}>Client</h3>
+        <div className="rounded-xl p-4" style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}>
+          <h3 className="font-semibold mb-3" style={{ color: 'var(--charcoal)' }}>Client</h3>
           <dl className="space-y-2 text-sm">
             <div className="flex justify-between">
-              <dt style={{ color: '#6B7280' }}>Name</dt>
-              <dd style={{ color: '#111827' }}>{data.client.name}</dd>
+              <dt style={{ color: 'var(--muted)' }}>Name</dt>
+              <dd style={{ color: 'var(--charcoal)' }}>{data.client.name}</dd>
             </div>
             {data.client.email && (
               <div className="flex justify-between">
-                <dt style={{ color: '#6B7280' }}>Email</dt>
-                <dd style={{ color: '#111827' }}>{data.client.email}</dd>
+                <dt style={{ color: 'var(--muted)' }}>Email</dt>
+                <dd style={{ color: 'var(--charcoal)' }}>{data.client.email}</dd>
               </div>
             )}
           </dl>
@@ -722,20 +729,20 @@ function ReviewStep({ data }: StepProps) {
       )}
 
       {/* Scope Summary */}
-      <div className="rounded-xl p-4" style={{ background: '#F3F4F6', border: '1px solid #E5E7EB' }}>
-        <h3 className="font-semibold mb-3" style={{ color: '#111827' }}>Scope</h3>
+      <div className="rounded-xl p-4" style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}>
+        <h3 className="font-semibold mb-3" style={{ color: 'var(--charcoal)' }}>Scope</h3>
         <div className="grid grid-cols-3 gap-3">
-          <div className="rounded-lg p-3 text-center" style={{ background: '#FFFFFF' }}>
-            <p className="text-xl font-bold" style={{ color: '#0F766E' }}>{tradeCount}</p>
-            <p className="text-xs" style={{ color: '#6B7280' }}>Trades</p>
+          <div className="rounded-lg p-3 text-center" style={{ background: 'var(--surface)' }}>
+            <p className="text-xl font-bold" style={{ color: 'var(--accent)' }}>{tradeCount}</p>
+            <p className="text-xs" style={{ color: 'var(--muted)' }}>Trades</p>
           </div>
-          <div className="rounded-lg p-3 text-center" style={{ background: '#FFFFFF' }}>
-            <p className="text-xl font-bold" style={{ color: '#0F766E' }}>{roomScopes.length}</p>
-            <p className="text-xs" style={{ color: '#6B7280' }}>Rooms</p>
+          <div className="rounded-lg p-3 text-center" style={{ background: 'var(--surface)' }}>
+            <p className="text-xl font-bold" style={{ color: 'var(--accent)' }}>{roomScopes.length}</p>
+            <p className="text-xs" style={{ color: 'var(--muted)' }}>Rooms</p>
           </div>
-          <div className="rounded-lg p-3 text-center" style={{ background: '#FFFFFF' }}>
-            <p className="text-xl font-bold" style={{ color: '#0F766E' }}>{totalSqft > 0 ? totalSqft.toLocaleString() : '-'}</p>
-            <p className="text-xs" style={{ color: '#6B7280' }}>Sqft</p>
+          <div className="rounded-lg p-3 text-center" style={{ background: 'var(--surface)' }}>
+            <p className="text-xl font-bold" style={{ color: 'var(--accent)' }}>{totalSqft > 0 ? totalSqft.toLocaleString() : '-'}</p>
+            <p className="text-xs" style={{ color: 'var(--muted)' }}>Sqft</p>
           </div>
         </div>
 
@@ -749,12 +756,12 @@ function ReviewStep({ data }: StepProps) {
               return (
                 <div key={room.id} className="text-sm">
                   <div className="flex items-center gap-2">
-                    <span className="font-medium" style={{ color: '#111827' }}>{room.name}</span>
+                    <span className="font-medium" style={{ color: 'var(--charcoal)' }}>{room.name}</span>
                     {room.measurements.sqft != null && room.measurements.sqft > 0 && (
-                      <span style={{ color: '#9CA3AF' }}>{room.measurements.sqft} sqft</span>
+                      <span style={{ color: 'var(--muted)' }}>{room.measurements.sqft} sqft</span>
                     )}
                     {photoCount > 0 && (
-                      <span style={{ color: '#6B7280' }} className="text-xs">
+                      <span style={{ color: 'var(--muted)' }} className="text-xs">
                         {photoCount} photo{photoCount !== 1 ? 's' : ''}
                       </span>
                     )}
@@ -763,7 +770,7 @@ function ReviewStep({ data }: StepProps) {
                         <span
                           key={code}
                           className="text-[10px] font-medium px-1.5 py-0.5 rounded"
-                          style={{ background: '#F0FDFA', color: '#0F766E' }}
+                          style={{ background: 'var(--green-bg)', color: 'var(--accent)' }}
                         >
                           {code}
                         </span>
@@ -774,7 +781,7 @@ function ReviewStep({ data }: StepProps) {
                   {mat && (
                     <div className="ml-2 mt-0.5 space-y-0.5">
                       {mat.flooring?.product && (
-                        <p className="text-xs" style={{ color: '#6B7280' }}>
+                        <p className="text-xs" style={{ color: 'var(--muted)' }}>
                           Flooring: {mat.flooring.product}
                           {mat.flooring.color ? ` (${mat.flooring.color})` : ''}
                           {mat.flooring.grade ? `, ${mat.flooring.grade}` : ''}
@@ -782,20 +789,20 @@ function ReviewStep({ data }: StepProps) {
                         </p>
                       )}
                       {mat.paint?.brand && (
-                        <p className="text-xs" style={{ color: '#6B7280' }}>
+                        <p className="text-xs" style={{ color: 'var(--muted)' }}>
                           Paint: {mat.paint.brand}{mat.paint.product ? ` ${mat.paint.product}` : ''}, {mat.paint.finish}
                           {mat.paint.colors.walls ? ` | Walls: ${mat.paint.colors.walls}` : ''}
                           {mat.paint.colors.ceiling ? ` | Ceiling: ${mat.paint.colors.ceiling}` : ''}
                         </p>
                       )}
                       {mat.trim?.profile && (
-                        <p className="text-xs" style={{ color: '#6B7280' }}>
+                        <p className="text-xs" style={{ color: 'var(--muted)' }}>
                           Trim: {mat.trim.profile}, {mat.trim.material}, {mat.trim.finish.replace('_', ' ')}
                           {mat.trim.width ? ` (${mat.trim.width})` : ''}
                         </p>
                       )}
                       {mat.tile?.type && (
-                        <p className="text-xs" style={{ color: '#6B7280' }}>
+                        <p className="text-xs" style={{ color: 'var(--muted)' }}>
                           Tile: {mat.tile.type}{mat.tile.size ? ` ${mat.tile.size}` : ''}
                           {mat.tile.color ? `, ${mat.tile.color}` : ''}
                           {mat.tile.pattern ? `, ${mat.tile.pattern}` : ''}
@@ -811,50 +818,50 @@ function ReviewStep({ data }: StepProps) {
       </div>
 
       {/* Schedule Summary */}
-      <div className="rounded-xl p-4" style={{ background: '#F3F4F6', border: '1px solid #E5E7EB' }}>
-        <h3 className="font-semibold mb-3" style={{ color: '#111827' }}>Schedule</h3>
+      <div className="rounded-xl p-4" style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}>
+        <h3 className="font-semibold mb-3" style={{ color: 'var(--charcoal)' }}>Schedule</h3>
         <dl className="space-y-2 text-sm">
           {data.schedule.estimated_start && (
             <div className="flex justify-between">
-              <dt style={{ color: '#6B7280' }}>Start Date</dt>
-              <dd style={{ color: '#111827' }}>{data.schedule.estimated_start}</dd>
+              <dt style={{ color: 'var(--muted)' }}>Start Date</dt>
+              <dd style={{ color: 'var(--charcoal)' }}>{data.schedule.estimated_start}</dd>
             </div>
           )}
           <div className="flex justify-between">
-            <dt style={{ color: '#6B7280' }}>Duration</dt>
-            <dd style={{ color: '#111827' }}>
+            <dt style={{ color: 'var(--muted)' }}>Duration</dt>
+            <dd style={{ color: 'var(--charcoal)' }}>
               {data.schedule.estimated_duration_weeks || totalWeeks || '-'} weeks
             </dd>
           </div>
           <div className="flex justify-between">
-            <dt style={{ color: '#6B7280' }}>Phases</dt>
-            <dd style={{ color: '#111827' }}>{(data.schedule.phases || []).length}</dd>
+            <dt style={{ color: 'var(--muted)' }}>Phases</dt>
+            <dd style={{ color: 'var(--charcoal)' }}>{(data.schedule.phases || []).length}</dd>
           </div>
         </dl>
       </div>
 
       {/* Estimate Summary */}
       {data.estimates ? (
-        <div className="rounded-xl p-4" style={{ background: '#F0FDFA', border: '2px solid #D1FAE5' }}>
-          <h3 className="font-semibold mb-3" style={{ color: '#111827' }}>Preliminary Estimate</h3>
+        <div className="rounded-xl p-4" style={{ background: 'var(--green-bg)', border: '2px solid var(--green-bg)' }}>
+          <h3 className="font-semibold mb-3" style={{ color: 'var(--charcoal)' }}>Preliminary Estimate</h3>
           <div className="text-center py-4">
-            <p className="text-sm mb-1" style={{ color: '#6B7280' }}>Estimated Range</p>
-            <p className="text-3xl font-bold" style={{ color: '#0F766E' }}>
+            <p className="text-sm mb-1" style={{ color: 'var(--muted)' }}>Estimated Range</p>
+            <p className="text-3xl font-bold" style={{ color: 'var(--accent)' }}>
               ${data.estimates.low.toLocaleString()} - ${data.estimates.high.toLocaleString()}
             </p>
-            <p className="text-xs mt-2" style={{ color: '#9CA3AF' }}>
+            <p className="text-xs mt-2" style={{ color: 'var(--muted)' }}>
               Based on template quantities · Refine in Estimate Builder
             </p>
           </div>
-          <div className="pt-3 mt-3" style={{ borderTop: '1px solid #D1FAE5' }}>
-            <p className="text-xs text-center" style={{ color: '#6B7280' }}>
+          <div className="pt-3 mt-3" style={{ borderTop: '1px solid var(--green-bg)' }}>
+            <p className="text-xs text-center" style={{ color: 'var(--muted)' }}>
               Includes 15-25% contingency · Based on NB market rates
             </p>
           </div>
         </div>
       ) : (
-        <div className="rounded-xl p-4" style={{ background: '#FFFBEB' }}>
-          <p className="text-sm" style={{ color: '#92400E' }}>
+        <div className="rounded-xl p-4" style={{ background: 'var(--yellow-bg)' }}>
+          <p className="text-sm" style={{ color: 'var(--yellow)' }}>
             <strong>Note:</strong> A detailed estimate will be generated after you submit. You can
             refine it in the Estimate Builder.
           </p>
@@ -1058,22 +1065,23 @@ export function ContractorIntakeWizard({
   return (
     <div className="min-h-screen bg-cream">
       {/* Header with Progress */}
-      <div className="sticky top-0 bg-white border-b border-slate-100 z-10">
+      <div className="sticky top-0 border-b z-10" style={{background:'var(--surface)',borderColor:'var(--border)'}}>
         <div className="max-w-lg mx-auto px-4 py-4">
           <div className="flex items-center justify-between mb-3">
             <button
               onClick={handleBack}
-              className="text-slate-500 hover:text-slate-700 min-h-[48px] min-w-[48px] flex items-center justify-center"
+              className="min-h-[48px] min-w-[48px] flex items-center justify-center"
+              style={{color:'var(--muted)'}}
             >
               ← {currentStep === 0 ? 'Cancel' : 'Back'}
             </button>
-            <span className="text-sm text-slate-500">
+            <span className="text-sm" style={{color:'var(--muted)'}}>
               Step {currentStep + 1} of {STEPS.length}
             </span>
           </div>
 
           {/* Progress Bar */}
-          <div className="h-1 bg-slate-100 rounded-full overflow-hidden">
+          <div className="h-1 rounded-full overflow-hidden" style={{background:'var(--surface-2)'}}>
             <div
               className="h-full bg-coral transition-all duration-300"
               style={{ width: `${progress}%` }}
@@ -1091,8 +1099,9 @@ export function ContractorIntakeWizard({
                     ? 'bg-coral text-white'
                     : index < currentStep
                       ? 'bg-sage/20 text-sage-dark'
-                      : 'bg-slate-100 text-slate-400'
+                      : ''
                 )}
+                style={index > currentStep ? {background:'var(--surface-2)',color:'var(--muted)'} : undefined}
               >
                 {step.name}
               </div>
@@ -1112,7 +1121,7 @@ export function ContractorIntakeWizard({
       </div>
 
       {/* Footer with Actions */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 pb-safe">
+      <div className="fixed bottom-0 left-0 right-0 border-t pb-safe" style={{background:'var(--surface)',borderColor:'var(--border)'}}>
         <div className="max-w-lg mx-auto px-4 py-4">
           <button onClick={handleNext} className="btn btn-primary w-full">
             {currentStep === STEPS.length - 1 ? 'Create Project' : 'Continue'}

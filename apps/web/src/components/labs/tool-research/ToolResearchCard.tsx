@@ -2,7 +2,7 @@
 
 import type { ReactNode } from 'react';
 
-const NAVY = '#1B2A4A';
+const NAVY = 'var(--charcoal)';
 
 interface ToolResearchCardProps {
   title?: string;
@@ -20,7 +20,7 @@ export function ToolResearchCard({
   return (
     <div
       style={{
-        background: 'white',
+        background: 'var(--surface)',
         borderRadius: 8,
         marginBottom: 16,
         overflow: 'hidden',

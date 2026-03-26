@@ -33,13 +33,13 @@ function formatCurrency(amount: number): string {
 }
 
 const STATUS_COLORS: Record<InvoiceStatus, { bg: string; text: string }> = {
-  draft: { bg: '#F3F4F6', text: '#6B7280' },
-  sent: { bg: '#DBEAFE', text: '#2563EB' },
-  viewed: { bg: '#DBEAFE', text: '#2563EB' },
-  partial: { bg: '#FEF3C7', text: '#D97706' },
-  paid: { bg: '#D1FAE5', text: '#059669' },
-  overdue: { bg: '#FEE2E2', text: '#DC2626' },
-  cancelled: { bg: '#F3F4F6', text: '#9CA3AF' },
+  draft: { bg: 'var(--surface-2)', text: 'var(--muted)' },
+  sent: { bg: '#DBEAFE', text: 'var(--blue)' },
+  viewed: { bg: '#DBEAFE', text: 'var(--blue)' },
+  partial: { bg: 'var(--yellow-bg)', text: 'var(--yellow)' },
+  paid: { bg: 'var(--green-bg)', text: 'var(--green)' },
+  overdue: { bg: 'var(--red-bg)', text: 'var(--red)' },
+  cancelled: { bg: 'var(--surface-2)', text: 'var(--muted)' },
 };
 
 const TYPE_LABELS: Record<string, string> = {
@@ -104,7 +104,7 @@ export default function InvoicesPage() {
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}>
         <div style={{ textAlign: 'center' }}>
           <div style={{ width: 32, height: 32, border: '2px solid var(--border)', borderTopColor: COLOR, borderRadius: '50%', animation: 'spin 0.7s linear infinite', margin: '0 auto 8px' }} />
-          <p style={{ fontSize: 11, color: 'var(--text-3)' }}>Loading...</p>
+          <p style={{ fontSize: 11, color: 'var(--muted)' }}>Loading...</p>
         </div>
       </div>
     );
@@ -117,20 +117,20 @@ export default function InvoicesPage() {
       <div style={{ minHeight: '100vh', paddingBottom: 96, background: 'var(--bg)' }}>
 
         {/* Header */}
-        <div style={{ background: 'var(--surface-1)', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
           <div className="max-w-lg md:max-w-full mx-auto px-4 md:px-6 py-3 md:py-4">
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <button
                 onClick={() => router.push('/finance')}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-3)', padding: 0, minWidth: 28, minHeight: 28, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)', padding: 0, minWidth: 28, minHeight: 28, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
                 <ArrowLeft size={18} />
               </button>
               <div>
-                <h1 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', fontFamily: 'var(--font-cond)', letterSpacing: '0.02em' }}>
+                <h1 style={{ fontSize: 16, fontWeight: 700, color: 'var(--charcoal)', fontFamily: 'var(--font-mono)', letterSpacing: '0.02em' }}>
                   Invoices
                 </h1>
-                <p style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 1 }}>
+                <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 1 }}>
                   {totalCount} invoice{totalCount !== 1 ? 's' : ''} &middot; {formatCurrency(aging.totalOutstanding)} outstanding
                 </p>
               </div>
@@ -142,10 +142,10 @@ export default function InvoicesPage() {
 
           {/* Aging Summary Cards */}
           <div style={{ marginTop: 16, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
-            <AgingCard label="Current" amount={aging.current} color="#10B981" />
-            <AgingCard label="1-30 Days" amount={aging.days30} color="#F59E0B" />
-            <AgingCard label="31-60 Days" amount={aging.days60} color="#F97316" />
-            <AgingCard label="61+ Days" amount={aging.days90plus} color="#EF4444" />
+            <AgingCard label="Current" amount={aging.current} color="var(--green)" />
+            <AgingCard label="1-30 Days" amount={aging.days30} color="var(--yellow)" />
+            <AgingCard label="31-60 Days" amount={aging.days60} color="var(--yellow)" />
+            <AgingCard label="61+ Days" amount={aging.days90plus} color="var(--red)" />
           </div>
 
           {/* Status Filter Tabs */}
@@ -161,13 +161,13 @@ export default function InvoicesPage() {
                     borderRadius: 99,
                     fontSize: 11,
                     fontWeight: 600,
-                    fontFamily: 'var(--font-cond)',
+                    fontFamily: 'var(--font-mono)',
                     letterSpacing: '0.04em',
                     border: 'none',
                     cursor: 'pointer',
                     whiteSpace: 'nowrap',
-                    background: isActive ? `${COLOR}18` : 'var(--surface-1)',
-                    color: isActive ? COLOR : 'var(--text-3)',
+                    background: isActive ? `${COLOR}18` : 'var(--surface)',
+                    color: isActive ? COLOR : 'var(--muted)',
                   }}
                 >
                   {tab.label}
@@ -180,11 +180,11 @@ export default function InvoicesPage() {
           <div style={{ marginTop: 12 }}>
             {sortedInvoices.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '48px 16px' }}>
-                <FileText size={24} style={{ color: 'var(--text-3)', margin: '0 auto 8px' }} />
-                <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-2)' }}>
+                <FileText size={24} style={{ color: 'var(--muted)', margin: '0 auto 8px' }} />
+                <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--mid)' }}>
                   {filter === 'all' ? 'No invoices yet' : `No ${filter} invoices`}
                 </p>
-                <p style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 4 }}>
+                <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4 }}>
                   {filter === 'all'
                     ? 'Create invoices from project detail pages'
                     : 'Try a different filter'}
@@ -208,7 +208,7 @@ export default function InvoicesPage() {
                         gap: 8,
                         padding: '10px 14px',
                         borderRadius: 'var(--radius)',
-                        background: 'var(--surface-1)',
+                        background: 'var(--surface)',
                         border: '1px solid var(--border)',
                         boxShadow: 'var(--shadow-card)',
                         cursor: 'pointer',
@@ -223,17 +223,17 @@ export default function InvoicesPage() {
                             fontFamily: 'var(--font-mono)',
                             fontSize: 11,
                             fontWeight: 600,
-                            color: 'var(--text)',
+                            color: 'var(--charcoal)',
                           }}>
                             {inv.invoiceNumber}
                           </span>
                           {/* Type pill */}
                           <span style={{
-                            fontFamily: 'var(--font-cond)',
+                            fontFamily: 'var(--font-mono)',
                             fontSize: 8,
                             fontWeight: 700,
                             letterSpacing: '0.06em',
-                            color: 'var(--text-3)',
+                            color: 'var(--muted)',
                             background: 'var(--surface-2)',
                             padding: '1px 5px',
                             borderRadius: 3,
@@ -242,7 +242,7 @@ export default function InvoicesPage() {
                           </span>
                           {/* Status badge */}
                           <span style={{
-                            fontFamily: 'var(--font-cond)',
+                            fontFamily: 'var(--font-mono)',
                             fontSize: 8,
                             fontWeight: 700,
                             letterSpacing: '0.06em',
@@ -257,7 +257,7 @@ export default function InvoicesPage() {
                         </div>
                         <span style={{
                           fontSize: 10,
-                          color: 'var(--text-3)',
+                          color: 'var(--muted)',
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
                           whiteSpace: 'nowrap',
@@ -274,12 +274,12 @@ export default function InvoicesPage() {
                           fontFamily: 'var(--font-mono)',
                           fontSize: 12,
                           fontWeight: 700,
-                          color: inv.status === 'paid' ? '#059669' : inv.status === 'overdue' ? '#DC2626' : 'var(--text)',
+                          color: inv.status === 'paid' ? 'var(--green)' : inv.status === 'overdue' ? 'var(--red)' : 'var(--charcoal)',
                           display: 'block',
                         }}>
                           {formatCurrency(inv.status === 'paid' ? inv.totalAmount : inv.balanceDue)}
                         </span>
-                        <span style={{ fontSize: 9, color: 'var(--text-3)' }}>
+                        <span style={{ fontSize: 9, color: 'var(--muted)' }}>
                           {inv.status === 'paid' ? 'paid' : `due ${dueDateStr}`}
                         </span>
                       </div>
@@ -306,7 +306,7 @@ function AgingCard({ label, amount, color }: { label: string; amount: number; co
     <div style={{
       padding: '10px 8px',
       borderRadius: 'var(--radius)',
-      background: 'var(--surface-1)',
+      background: 'var(--surface)',
       border: '1px solid var(--border)',
       boxShadow: 'var(--shadow-card)',
       textAlign: 'center',
@@ -315,18 +315,18 @@ function AgingCard({ label, amount, color }: { label: string; amount: number; co
         fontFamily: 'var(--font-mono)',
         fontSize: 16,
         fontWeight: 700,
-        color: amount > 0 ? color : 'var(--text-3)',
+        color: amount > 0 ? color : 'var(--muted)',
         lineHeight: 1,
       }}>
         {amount > 0 ? formatCurrency(amount) : '$0'}
       </p>
       <p style={{
-        fontFamily: 'var(--font-cond)',
+        fontFamily: 'var(--font-mono)',
         fontSize: 9,
         fontWeight: 700,
         letterSpacing: '0.1em',
         textTransform: 'uppercase',
-        color: 'var(--text-3)',
+        color: 'var(--muted)',
         marginTop: 6,
       }}>
         {label}

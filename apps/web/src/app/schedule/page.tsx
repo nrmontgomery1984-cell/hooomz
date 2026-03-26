@@ -79,10 +79,10 @@ export default function SchedulePage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen" style={{ background: 'var(--bg, #F3F4F6)' }}>
+      <div className="min-h-screen" style={{ background: 'var(--bg)' }}>
         <div className="max-w-lg md:max-w-full mx-auto px-4 md:px-6 py-12 text-center">
-          <div className="w-8 h-8 border-3 rounded-full animate-spin mx-auto mb-3" style={{ borderColor: '#E5E7EB', borderTopColor: '#0F766E' }} />
-          <p className="text-sm" style={{ color: 'var(--text-3, #9CA3AF)' }}>Loading schedule...</p>
+          <div className="w-8 h-8 border-3 rounded-full animate-spin mx-auto mb-3" style={{ borderColor: 'var(--border)', borderTopColor: 'var(--accent)' }} />
+          <p className="text-sm" style={{ color: 'var(--muted)' }}>Loading schedule...</p>
         </div>
       </div>
     );
@@ -92,17 +92,17 @@ export default function SchedulePage() {
     <div
       className="min-h-screen pb-24 md:pb-0"
       style={{
-        background: 'var(--bg, #F3F4F6)',
+        background: 'var(--bg)',
         ...(isDesktop ? { display: 'flex', flexDirection: 'column' as const, height: '100vh', overflow: 'hidden' } : {}),
       }}
     >
       {/* Header */}
-      <div style={{ background: 'var(--surface-1, #FFFFFF)', borderBottom: '1px solid var(--border, #E5E7EB)' }}>
+      <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
         <div className="max-w-lg md:max-w-full mx-auto px-4 md:px-6 py-3">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-bold" style={{ color: 'var(--text, #111827)' }}>Schedule</h1>
-              <p className="text-xs" style={{ color: 'var(--text-3, #9CA3AF)' }}>
+              <h1 className="text-xl font-bold" style={{ color: 'var(--charcoal)' }}>Schedule</h1>
+              <p className="text-xs" style={{ color: 'var(--muted)' }}>
                 {viewMode === 'my' ? (crewMemberName ?? 'Select crew member') : 'All crew'}
               </p>
             </div>
@@ -112,10 +112,10 @@ export default function SchedulePage() {
                 <div className="flex gap-2">
                   <Link
                     href={`/schedule/day/${format(selectedDate, 'yyyy-MM-dd')}`}
-                    className="px-3 py-1.5 text-xs font-medium rounded-lg transition-colors hover:bg-gray-50"
+                    className="px-3 py-1.5 text-xs font-medium rounded-lg transition-colors hover:bg-[var(--surface)]"
                     style={{
-                      color: 'var(--blue, #2563EB)',
-                      border: '1px solid var(--border, #E5E7EB)',
+                      color: 'var(--blue)',
+                      border: '1px solid var(--border)',
                       minHeight: 36,
                       display: 'flex',
                       alignItems: 'center',
@@ -125,10 +125,10 @@ export default function SchedulePage() {
                   </Link>
                   <Link
                     href="/schedule/assign"
-                    className="px-3 py-1.5 text-xs font-medium rounded-lg transition-colors hover:bg-gray-50"
+                    className="px-3 py-1.5 text-xs font-medium rounded-lg transition-colors hover:bg-[var(--surface)]"
                     style={{
-                      color: 'var(--blue, #2563EB)',
-                      border: '1px solid var(--border, #E5E7EB)',
+                      color: 'var(--blue)',
+                      border: '1px solid var(--border)',
                       minHeight: 36,
                       display: 'flex',
                       alignItems: 'center',
@@ -139,13 +139,13 @@ export default function SchedulePage() {
                 </div>
               )}
               {/* View toggle */}
-              <div className="flex border rounded-lg overflow-hidden" style={{ borderColor: 'var(--border, #E5E7EB)' }}>
+              <div className="flex border rounded-lg overflow-hidden" style={{ borderColor: 'var(--border)' }}>
                 <button
                   onClick={() => setViewMode('my')}
                   className="px-3 py-1.5 text-xs font-medium transition-colors"
                   style={{
-                    background: viewMode === 'my' ? 'var(--text, #111827)' : 'transparent',
-                    color: viewMode === 'my' ? 'white' : 'var(--text-2, #6B7280)',
+                    background: viewMode === 'my' ? 'var(--charcoal)' : 'transparent',
+                    color: viewMode === 'my' ? 'white' : 'var(--mid)',
                     minHeight: 36,
                   }}
                 >
@@ -155,8 +155,8 @@ export default function SchedulePage() {
                   onClick={() => setViewMode('team')}
                   className="px-3 py-1.5 text-xs font-medium transition-colors"
                   style={{
-                    background: viewMode === 'team' ? 'var(--text, #111827)' : 'transparent',
-                    color: viewMode === 'team' ? 'white' : 'var(--text-2, #6B7280)',
+                    background: viewMode === 'team' ? 'var(--charcoal)' : 'transparent',
+                    color: viewMode === 'team' ? 'white' : 'var(--mid)',
                     minHeight: 36,
                   }}
                 >
@@ -170,16 +170,16 @@ export default function SchedulePage() {
 
       {/* Crew filter pills — team view only */}
       {viewMode === 'team' && crewMembers.length > 0 && (
-        <div className="overflow-x-auto" style={{ background: 'var(--surface-1, #FFFFFF)', borderBottom: '1px solid var(--border, #E5E7EB)' }}>
+        <div className="overflow-x-auto" style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
           <div className="max-w-lg md:max-w-full mx-auto px-4 md:px-6 py-2 flex gap-2">
             <button
               onClick={() => setFilterCrewId(null)}
               className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
                 filterCrewId === null
                   ? 'text-white'
-                  : 'text-gray-600 bg-gray-100 hover:bg-gray-200'
+                  : 'text-[var(--mid)] bg-[var(--surface)] hover:bg-[var(--surface-2)]'
               }`}
-              style={filterCrewId === null ? { backgroundColor: '#0F766E', minHeight: '36px' } : { minHeight: '36px' }}
+              style={filterCrewId === null ? { backgroundColor: 'var(--accent)', minHeight: '36px' } : { minHeight: '36px' }}
             >
               All
             </button>
@@ -190,9 +190,9 @@ export default function SchedulePage() {
                 className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
                   filterCrewId === m.id
                     ? 'text-white'
-                    : 'text-gray-600 bg-gray-100 hover:bg-gray-200'
+                    : 'text-[var(--mid)] bg-[var(--surface)] hover:bg-[var(--surface-2)]'
                 }`}
-                style={filterCrewId === m.id ? { backgroundColor: '#0F766E', minHeight: '36px' } : { minHeight: '36px' }}
+                style={filterCrewId === m.id ? { backgroundColor: 'var(--accent)', minHeight: '36px' } : { minHeight: '36px' }}
               >
                 {m.name}
               </button>
@@ -231,11 +231,11 @@ export default function SchedulePage() {
                   key={dateStr}
                   onClick={() => setSelectedDate(day)}
                   style={{
-                    borderRight: '1px solid var(--border, #E5E7EB)',
+                    borderRight: '1px solid var(--border)',
                     overflowY: 'auto',
                     padding: '12px 8px',
                     cursor: 'pointer',
-                    background: isSelected ? 'var(--surface-2, #F7F9FC)' : 'transparent',
+                    background: isSelected ? 'var(--surface-2)' : 'transparent',
                     transition: 'background 0.15s',
                   }}
                 >
@@ -252,7 +252,7 @@ export default function SchedulePage() {
           </div>
 
           {/* Unscheduled tasks — pinned bar at bottom */}
-          <div style={{ borderTop: '1px solid var(--border, #E5E7EB)', background: 'var(--surface-1, #FFFFFF)' }}>
+          <div style={{ borderTop: '1px solid var(--border)', background: 'var(--surface)' }}>
             <div className="px-6">
               <UnscheduledTaskList
                 tasks={unscheduled}
@@ -304,10 +304,10 @@ export default function SchedulePage() {
           <div className="flex gap-2">
             <Link
               href={`/schedule/day/${format(selectedDate, 'yyyy-MM-dd')}`}
-              className="flex-1 text-center py-2 text-sm font-medium rounded-lg transition-colors hover:bg-teal-50"
+              className="flex-1 text-center py-2 text-sm font-medium rounded-lg transition-colors hover:bg-[var(--accent-bg)]"
               style={{
-                color: 'var(--blue, #2563EB)',
-                border: '1px solid var(--border, #E5E7EB)',
+                color: 'var(--blue)',
+                border: '1px solid var(--border)',
                 minHeight: 44,
                 display: 'flex',
                 alignItems: 'center',
@@ -318,10 +318,10 @@ export default function SchedulePage() {
             </Link>
             <Link
               href="/schedule/assign"
-              className="flex-1 text-center py-2 text-sm font-medium rounded-lg transition-colors hover:bg-teal-50"
+              className="flex-1 text-center py-2 text-sm font-medium rounded-lg transition-colors hover:bg-[var(--accent-bg)]"
               style={{
-                color: 'var(--blue, #2563EB)',
-                border: '1px solid var(--border, #E5E7EB)',
+                color: 'var(--blue)',
+                border: '1px solid var(--border)',
                 minHeight: 44,
                 display: 'flex',
                 alignItems: 'center',

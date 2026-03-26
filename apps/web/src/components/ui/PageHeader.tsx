@@ -9,8 +9,8 @@ export function PageHeader({ title, description, action }: PageHeaderProps) {
     <div className="mb-6">
       <div className="flex justify-between items-start">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">{title}</h1>
-          {description && <p className="text-gray-600">{description}</p>}
+          <h1 className="text-2xl font-bold text-[var(--charcoal)] mb-2">{title}</h1>
+          {description && <p className="text-[var(--mid)]">{description}</p>}
         </div>
         {action && <div>{action}</div>}
       </div>

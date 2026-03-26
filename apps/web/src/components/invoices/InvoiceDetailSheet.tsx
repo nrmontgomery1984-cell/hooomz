@@ -29,13 +29,13 @@ function formatDate(iso: string): string {
 }
 
 const STATUS_COLORS: Record<InvoiceStatus, { bg: string; text: string }> = {
-  draft: { bg: '#F3F4F6', text: '#6B7280' },
-  sent: { bg: '#DBEAFE', text: '#2563EB' },
-  viewed: { bg: '#DBEAFE', text: '#2563EB' },
-  partial: { bg: '#FEF3C7', text: '#D97706' },
-  paid: { bg: '#D1FAE5', text: '#059669' },
-  overdue: { bg: '#FEE2E2', text: '#DC2626' },
-  cancelled: { bg: '#F3F4F6', text: '#9CA3AF' },
+  draft: { bg: 'var(--surface-2)', text: 'var(--muted)' },
+  sent: { bg: 'var(--blue-bg)', text: 'var(--blue)' },
+  viewed: { bg: 'var(--blue-bg)', text: 'var(--blue)' },
+  partial: { bg: 'var(--yellow-bg)', text: 'var(--yellow)' },
+  paid: { bg: 'var(--green-bg)', text: 'var(--green)' },
+  overdue: { bg: 'var(--red-bg)', text: 'var(--red)' },
+  cancelled: { bg: 'var(--surface-2)', text: 'var(--muted)' },
 };
 
 interface InvoiceDetailSheetProps {
@@ -71,12 +71,12 @@ export function InvoiceDetailSheet({ invoice, isOpen, onClose }: InvoiceDetailSh
   };
 
   const labelStyle = {
-    fontFamily: 'var(--font-cond)',
+    fontFamily: 'var(--font-mono)',
     fontSize: 9,
     fontWeight: 600,
     letterSpacing: '0.08em',
     textTransform: 'uppercase' as const,
-    color: '#6B7280',
+    color: 'var(--muted)',
   };
 
   return (
@@ -94,7 +94,7 @@ export function InvoiceDetailSheet({ invoice, isOpen, onClose }: InvoiceDetailSh
               {invoice.invoiceType}
             </span>
             <span style={{
-              fontFamily: 'var(--font-cond)',
+              fontFamily: 'var(--font-mono)',
               fontSize: 9,
               fontWeight: 700,
               textTransform: 'uppercase',
@@ -105,7 +105,7 @@ export function InvoiceDetailSheet({ invoice, isOpen, onClose }: InvoiceDetailSh
             }}>
               {invoice.status}
             </span>
-            <span style={{ marginLeft: 'auto', fontSize: 10, color: '#6B7280' }}>
+            <span style={{ marginLeft: 'auto', fontSize: 10, color: 'var(--muted)' }}>
               Due {formatDate(invoice.dueDate)}
             </span>
           </div>
@@ -115,7 +115,7 @@ export function InvoiceDetailSheet({ invoice, isOpen, onClose }: InvoiceDetailSh
             <div>
               <div style={{ ...labelStyle, marginBottom: 6 }}>Line Items</div>
               <div style={{
-                border: '1px solid #E5E7EB',
+                border: '1px solid var(--border)',
                 borderRadius: 8,
                 overflow: 'hidden',
               }}>
@@ -127,15 +127,15 @@ export function InvoiceDetailSheet({ invoice, isOpen, onClose }: InvoiceDetailSh
                       alignItems: 'center',
                       gap: 6,
                       padding: '6px 10px',
-                      borderBottom: i < invoice.lineItems.length - 1 ? '1px solid #F3F4F6' : undefined,
+                      borderBottom: i < invoice.lineItems.length - 1 ? '1px solid var(--surface-2)' : undefined,
                       fontSize: 11,
                     }}
                   >
-                    <span style={{ flex: 1, color: '#374151' }}>{li.description}</span>
-                    <span style={{ fontFamily: 'var(--font-mono)', color: '#6B7280', fontSize: 10, flexShrink: 0 }}>
+                    <span style={{ flex: 1, color: 'var(--mid)' }}>{li.description}</span>
+                    <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--muted)', fontSize: 10, flexShrink: 0 }}>
                       {li.quantity} × {formatCurrency(li.unitCost)}
                     </span>
-                    <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: '#111827', fontSize: 10, width: 70, textAlign: 'right', flexShrink: 0 }}>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: 'var(--charcoal)', fontSize: 10, width: 70, textAlign: 'right', flexShrink: 0 }}>
                       {formatCurrency(li.totalCost)}
                     </span>
                   </div>
@@ -146,7 +146,7 @@ export function InvoiceDetailSheet({ invoice, isOpen, onClose }: InvoiceDetailSh
 
           {/* Totals */}
           <div style={{
-            background: '#F9FAFB',
+            background: 'var(--surface)',
             borderRadius: 8,
             padding: '10px 12px',
             display: 'flex',
@@ -154,26 +154,26 @@ export function InvoiceDetailSheet({ invoice, isOpen, onClose }: InvoiceDetailSh
             gap: 4,
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11 }}>
-              <span style={{ color: '#6B7280' }}>Subtotal</span>
-              <span style={{ fontFamily: 'var(--font-mono)', color: '#374151' }}>{formatCurrency(invoice.subtotal)}</span>
+              <span style={{ color: 'var(--muted)' }}>Subtotal</span>
+              <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--mid)' }}>{formatCurrency(invoice.subtotal)}</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11 }}>
-              <span style={{ color: '#6B7280' }}>Tax ({(invoice.taxRate * 100).toFixed(0)}%)</span>
-              <span style={{ fontFamily: 'var(--font-mono)', color: '#374151' }}>{formatCurrency(invoice.taxAmount)}</span>
+              <span style={{ color: 'var(--muted)' }}>Tax ({(invoice.taxRate * 100).toFixed(0)}%)</span>
+              <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--mid)' }}>{formatCurrency(invoice.taxAmount)}</span>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, fontWeight: 700, borderTop: '1px solid #E5E7EB', paddingTop: 4 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, fontWeight: 700, borderTop: '1px solid var(--border)', paddingTop: 4 }}>
               <span>Total</span>
               <span style={{ fontFamily: 'var(--font-mono)' }}>{formatCurrency(invoice.totalAmount)}</span>
             </div>
             {invoice.amountPaid > 0 && (
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11 }}>
-                <span style={{ color: '#059669' }}>Paid</span>
-                <span style={{ fontFamily: 'var(--font-mono)', color: '#059669' }}>−{formatCurrency(invoice.amountPaid)}</span>
+                <span style={{ color: 'var(--green)' }}>Paid</span>
+                <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--green)' }}>−{formatCurrency(invoice.amountPaid)}</span>
               </div>
             )}
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, fontWeight: 700, borderTop: '1px solid #E5E7EB', paddingTop: 4 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, fontWeight: 700, borderTop: '1px solid var(--border)', paddingTop: 4 }}>
               <span>Balance Due</span>
-              <span style={{ fontFamily: 'var(--font-mono)', color: invoice.balanceDue > 0 ? '#DC2626' : '#059669' }}>
+              <span style={{ fontFamily: 'var(--font-mono)', color: invoice.balanceDue > 0 ? 'var(--red)' : 'var(--green)' }}>
                 {formatCurrency(invoice.balanceDue)}
               </span>
             </div>
@@ -194,25 +194,25 @@ export function InvoiceDetailSheet({ invoice, isOpen, onClose }: InvoiceDetailSh
                     fontSize: 11,
                   }}
                 >
-                  <span style={{ fontFamily: 'var(--font-mono)', color: '#059669', fontWeight: 600, width: 70, flexShrink: 0 }}>
+                  <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--green)', fontWeight: 600, width: 70, flexShrink: 0 }}>
                     {formatCurrency(p.amount)}
                   </span>
                   <span style={{
-                    fontFamily: 'var(--font-cond)',
+                    fontFamily: 'var(--font-mono)',
                     fontSize: 8,
                     fontWeight: 700,
                     letterSpacing: '0.06em',
                     textTransform: 'uppercase',
-                    color: '#6B7280',
-                    background: '#F3F4F6',
+                    color: 'var(--muted)',
+                    background: 'var(--surface-2)',
                     padding: '1px 5px',
                     borderRadius: 3,
                   }}>
                     {p.method}
                   </span>
-                  <span style={{ fontSize: 10, color: '#9CA3AF' }}>{formatDate(p.date)}</span>
+                  <span style={{ fontSize: 10, color: 'var(--muted)' }}>{formatDate(p.date)}</span>
                   {p.reference && (
-                    <span style={{ fontSize: 9, color: '#9CA3AF', marginLeft: 'auto' }}>#{p.reference}</span>
+                    <span style={{ fontSize: 9, color: 'var(--muted)', marginLeft: 'auto' }}>#{p.reference}</span>
                   )}
                 </div>
               ))}
@@ -223,7 +223,7 @@ export function InvoiceDetailSheet({ invoice, isOpen, onClose }: InvoiceDetailSh
           {invoice.notes && (
             <div>
               <div style={{ ...labelStyle, marginBottom: 4 }}>Notes</div>
-              <p style={{ fontSize: 11, color: '#6B7280', margin: 0 }}>{invoice.notes}</p>
+              <p style={{ fontSize: 11, color: 'var(--muted)', margin: 0 }}>{invoice.notes}</p>
             </div>
           )}
 
@@ -241,12 +241,12 @@ export function InvoiceDetailSheet({ invoice, isOpen, onClose }: InvoiceDetailSh
                     alignItems: 'center',
                     justifyContent: 'center',
                     gap: 6,
-                    fontFamily: 'var(--font-cond)',
+                    fontFamily: 'var(--font-mono)',
                     fontSize: 11,
                     fontWeight: 600,
                     letterSpacing: '0.04em',
-                    color: '#FFFFFF',
-                    background: '#3B82F6',
+                    color: '#fff',
+                    background: 'var(--blue)',
                     borderRadius: 8,
                     border: 'none',
                     cursor: 'pointer',
@@ -265,12 +265,12 @@ export function InvoiceDetailSheet({ invoice, isOpen, onClose }: InvoiceDetailSh
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: 6,
-                  fontFamily: 'var(--font-cond)',
+                  fontFamily: 'var(--font-mono)',
                   fontSize: 11,
                   fontWeight: 600,
                   letterSpacing: '0.04em',
-                  color: '#FFFFFF',
-                  background: '#0F766E',
+                  color: '#fff',
+                  background: 'var(--accent)',
                   borderRadius: 8,
                   border: 'none',
                   cursor: 'pointer',
@@ -288,14 +288,14 @@ export function InvoiceDetailSheet({ invoice, isOpen, onClose }: InvoiceDetailSh
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: 4,
-                  fontFamily: 'var(--font-cond)',
+                  fontFamily: 'var(--font-mono)',
                   fontSize: 11,
                   fontWeight: 600,
                   letterSpacing: '0.04em',
-                  color: '#EF4444',
+                  color: 'var(--red)',
                   background: 'none',
                   borderRadius: 8,
-                  border: '1px solid #FCA5A5',
+                  border: '1px solid var(--red-bg)',
                   cursor: 'pointer',
                   padding: '0 12px',
                 }}

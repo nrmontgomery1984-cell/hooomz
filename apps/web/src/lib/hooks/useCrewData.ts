@@ -62,6 +62,73 @@ export function useActiveCrewMembers() {
   });
 }
 
+export function useCreateCrewMember() {
+  const queryClient = useQueryClient();
+  const { services } = useServicesContext();
+  return useMutation({
+    mutationFn: async (data: {
+      name: string; role: string; authRole: 'owner' | 'operator' | 'installer';
+      tier: 'learner' | 'proven' | 'lead' | 'master'; tradeSpecialties: string[];
+      wageRate: number; chargedRate: number;
+      email?: string; phone?: string; password?: string;
+      emergencyContact?: { name: string; relationship: string; phone: string };
+      structuredCertifications?: Array<{ name: string; issuedBy?: string; issuedAt?: string; expiresAt?: string; status: 'active' | 'expired' | 'pending' }>;
+    }) => {
+      let supabaseUserId: string | undefined;
+
+      // If email + password provided, create Supabase Auth account
+      if (data.email && data.password) {
+        try {
+          const res = await fetch('/api/crew', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: data.email,
+              password: data.password,
+              fullName: data.name,
+              role: data.authRole,
+            }),
+          });
+          const json = await res.json();
+          if (res.ok && json.userId) {
+            supabaseUserId = json.userId;
+          } else {
+            throw new Error(json.error || 'Failed to create auth account');
+          }
+        } catch (err) {
+          throw err; // Let the UI handle the error
+        }
+      }
+
+      return services!.crew.create({
+        ...data,
+        supabaseUserId,
+        isActive: true,
+        startDate: new Date().toISOString().split('T')[0],
+        certifications: (data.structuredCertifications || []).map(c => c.name),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: CREW_QUERY_KEYS.members.all });
+      queryClient.invalidateQueries({ queryKey: CREW_QUERY_KEYS.members.active });
+    },
+  });
+}
+
+export function useUpdateCrewMember() {
+  const queryClient = useQueryClient();
+  const { services } = useServicesContext();
+  return useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: Partial<Record<string, unknown>> }) => {
+      return services!.crew.update(id, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: CREW_QUERY_KEYS.members.all });
+      queryClient.invalidateQueries({ queryKey: CREW_QUERY_KEYS.members.active });
+    },
+  });
+}
+
 export function useCrewMember(id: string | null) {
   const { services, isLoading: servicesLoading } = useServicesContext();
   return useQuery({

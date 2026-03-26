@@ -14,17 +14,17 @@ export default function ForecastLayout({ children }: { children: React.ReactNode
   const pathname = usePathname();
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg, #F9FAFB)' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
       {/* Header */}
-      <div style={{ background: 'var(--surface-1, #FFFFFF)', borderBottom: '1px solid var(--border, #E5E7EB)' }}>
+      <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '24px 16px 0' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 4 }}>
-            <TrendingUp size={24} style={{ color: 'var(--blue, #3B82F6)' }} />
-            <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text, #111827)', margin: 0, fontFamily: 'var(--font-sans)' }}>
+            <TrendingUp size={24} style={{ color: 'var(--blue)' }} />
+            <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--charcoal)', margin: 0, fontFamily: 'var(--font-body)' }}>
               Financial Forecast
             </h1>
           </div>
-          <p style={{ fontSize: 13, color: 'var(--text-3, #9CA3AF)', margin: '0 0 16px', fontFamily: 'var(--font-sans)' }}>
+          <p style={{ fontSize: 13, color: 'var(--muted)', margin: '0 0 16px', fontFamily: 'var(--font-body)' }}>
             Revenue tracking, projections, and variance analysis
           </p>
 
@@ -40,10 +40,10 @@ export default function ForecastLayout({ children }: { children: React.ReactNode
                     padding: '10px 20px',
                     fontSize: 13,
                     fontWeight: isActive ? 600 : 500,
-                    color: isActive ? 'var(--blue, #3B82F6)' : 'var(--text-2, #6B7280)',
-                    borderBottom: isActive ? '2px solid var(--blue, #3B82F6)' : '2px solid transparent',
+                    color: isActive ? 'var(--blue)' : 'var(--mid)',
+                    borderBottom: isActive ? '2px solid var(--blue)' : '2px solid transparent',
                     textDecoration: 'none',
-                    fontFamily: 'var(--font-sans)',
+                    fontFamily: 'var(--font-body)',
                     transition: 'color 0.15s, border-color 0.15s',
                   }}
                 >

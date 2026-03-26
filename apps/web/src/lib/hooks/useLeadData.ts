@@ -40,6 +40,7 @@ import {
 } from '@hooomz/shared-contracts';
 import type { Customer, Project, CreateCustomer, UpdateCustomer } from '@hooomz/shared-contracts';
 import { calculateEstimateBreakdown } from '../instantEstimate';
+import { createProperty } from '../db/properties';
 
 // ============================================================================
 // Types
@@ -90,6 +91,12 @@ export interface CreateLeadInput {
   instantEstimate?: { low: number; mid: number; high: number };
   referralSource?: string;
   notes?: string;
+  // Property address fields
+  propertyAddress?: string;
+  propertyCity?: string;
+  propertyProvince?: string;
+  propertyPostalCode?: string;
+  propertyType?: 'residential' | 'multi-unit' | 'commercial';
 }
 
 // ============================================================================
@@ -526,19 +533,54 @@ export function useCreateLead() {
       // Email is required by schema — use placeholder if not provided
       const email = input.email || `lead-${Date.now()}@noemail.hooomz.local`;
 
+      // Use property address for legacy address field if provided
+      const address = input.propertyAddress
+        ? {
+            street: input.propertyAddress,
+            city: input.propertyCity || 'Moncton',
+            province: input.propertyProvince || 'NB',
+            postalCode: input.propertyPostalCode || '',
+            country: 'CA' as const,
+          }
+        : PLACEHOLDER_ADDRESS;
+
       const data: CreateCustomer = {
         firstName,
         lastName,
         email,
         phone: input.phone || '',
         type: 'residential',
-        address: PLACEHOLDER_ADDRESS,
+        address,
         tags,
         notes: input.notes || undefined,
         preferredContactMethod: CONTACT_METHOD_MAP[input.preferredContact] || ContactMethod.PHONE,
       };
 
-      return loggedServices.customers.create(data);
+      const customer = await loggedServices.customers.create(data);
+
+      // Create property record if address was provided
+      // createProperty() auto-creates passport and updates customer.property_ids
+      if (input.propertyAddress) {
+        try {
+          const services = getServices();
+          if (services) {
+            await createProperty(services.storage, {
+              customer_id: customer.id,
+              org_id: 'default',
+              address_line_1: input.propertyAddress,
+              city: input.propertyCity || 'Moncton',
+              province: input.propertyProvince || 'NB',
+              postal_code: input.propertyPostalCode || '',
+              property_type: input.propertyType || 'residential',
+            });
+          }
+        } catch (err) {
+          console.warn('[useCreateLead] Property creation failed:', err);
+          // Non-blocking — customer/lead is already saved
+        }
+      }
+
+      return customer;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: LEAD_QUERY_KEY });

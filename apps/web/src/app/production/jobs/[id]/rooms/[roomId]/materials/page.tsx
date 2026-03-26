@@ -50,7 +50,7 @@ export default function RoomMaterialsPage() {
           alignItems: 'center',
           justifyContent: 'center',
           background: 'var(--bg)',
-          color: 'var(--text-3)',
+          color: 'var(--muted)',
           fontSize: 14,
         }}
       >
@@ -68,7 +68,7 @@ export default function RoomMaterialsPage() {
           alignItems: 'center',
           justifyContent: 'center',
           background: 'var(--bg)',
-          color: 'var(--text-3)',
+          color: 'var(--muted)',
           fontSize: 14,
         }}
       >
@@ -78,7 +78,7 @@ export default function RoomMaterialsPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--charcoal)' }}>
       {/* Header */}
       <div
         style={{
@@ -87,7 +87,7 @@ export default function RoomMaterialsPage() {
           display: 'flex',
           alignItems: 'center',
           gap: 12,
-          background: 'var(--surface-1)',
+          background: 'var(--surface)',
         }}
       >
         <button
@@ -96,7 +96,7 @@ export default function RoomMaterialsPage() {
             background: 'none',
             border: 'none',
             cursor: 'pointer',
-            color: 'var(--text-3)',
+            color: 'var(--muted)',
             display: 'flex',
             alignItems: 'center',
             padding: 4,
@@ -114,7 +114,7 @@ export default function RoomMaterialsPage() {
               alignItems: 'center',
               gap: 6,
               fontSize: 11,
-              color: 'var(--text-3)',
+              color: 'var(--muted)',
               fontWeight: 500,
               letterSpacing: '0.04em',
               textTransform: 'uppercase',
@@ -127,7 +127,7 @@ export default function RoomMaterialsPage() {
           <h1 style={{ fontSize: 17, fontWeight: 700, margin: 0 }}>
             {room.name}
           </h1>
-          <div style={{ fontSize: 12, color: 'var(--text-3)', marginTop: 2 }}>
+          <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>
             {sqmmToSqft(room.polygon.area_sqmm)} ft²
           </div>
         </div>

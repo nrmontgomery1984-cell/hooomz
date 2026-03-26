@@ -2,7 +2,7 @@
 
 /**
  * StarRating — Reusable 5-star rating input
- * 44px touch targets, teal filled / gray empty
+ * 44px touch targets, accent filled / gray empty
  */
 
 interface StarRatingProps {
@@ -25,8 +25,8 @@ export function StarRating({ value, onChange, size = 24 }: StarRatingProps) {
             width={size}
             height={size}
             viewBox="0 0 24 24"
-            fill={star <= value ? '#0F766E' : 'none'}
-            stroke={star <= value ? '#0F766E' : '#D1D5DB'}
+            fill={star <= value ? 'var(--accent)' : 'none'}
+            stroke={star <= value ? 'var(--accent)' : 'var(--border)'}
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"

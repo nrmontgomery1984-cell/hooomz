@@ -23,7 +23,7 @@ import {
   Users,
 } from 'lucide-react';
 import { useCustomers, useCustomerSearch, useCreateCustomerV2 } from '@/lib/hooks/useCustomersV2';
-import type { CustomerStatus, CustomerLeadSource } from '@hooomz/shared-contracts';
+import type { CustomerStatus, CustomerLeadSource, HouseholdMember } from '@hooomz/shared-contracts';
 
 // ============================================================================
 // Props
@@ -56,9 +56,9 @@ const STATUS_TABS: { value: CustomerStatus | 'all'; label: string }[] = [
 ];
 
 const STATUS_BADGE: Record<CustomerStatus, { bg: string; text: string; label: string }> = {
-  lead: { bg: '#EFF6FF', text: '#3B82F6', label: 'Lead' },
-  active: { bg: '#ECFDF5', text: '#10B981', label: 'Active' },
-  past: { bg: '#F3F4F6', text: '#9CA3AF', label: 'Past' },
+  lead: { bg: 'var(--blue-bg)', text: 'var(--blue)', label: 'Lead' },
+  active: { bg: 'var(--green-bg)', text: 'var(--green)', label: 'Active' },
+  past: { bg: 'var(--surface-2)', text: 'var(--muted)', label: 'Past' },
 };
 
 const SOURCE_LABELS: Record<CustomerLeadSource, string> = {
@@ -105,16 +105,16 @@ export function CustomerListView({
     <div style={{ minHeight: '100vh', paddingBottom: 96, background: 'var(--bg)' }}>
 
       {/* Header */}
-      <div style={{ background: 'var(--surface-1)', borderBottom: '1px solid var(--border)' }}>
+      <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
         <div className="max-w-lg md:max-w-full mx-auto px-4 md:px-6 py-3 md:py-4 flex items-center justify-between">
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <div style={{ width: 8, height: 8, borderRadius: '50%', background: color }} />
-              <h1 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', fontFamily: 'var(--font-cond)', letterSpacing: '0.02em' }}>
+              <h1 style={{ fontSize: 16, fontWeight: 700, color: 'var(--charcoal)', fontFamily: 'var(--font-mono)', letterSpacing: '0.02em' }}>
                 {title}
               </h1>
             </div>
-            <p style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 2 }}>
+            <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>
               {filteredCustomers.length} customer{filteredCustomers.length !== 1 ? 's' : ''} · {subtitle}
             </p>
           </div>
@@ -132,7 +132,7 @@ export function CustomerListView({
         {/* Search */}
         <div className="max-w-lg md:max-w-full mx-auto px-4 md:px-6 pb-3">
           <div style={{ position: 'relative' }}>
-            <Search size={14} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-3)' }} />
+            <Search size={14} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--muted)' }} />
             <input
               type="text"
               value={searchQuery}
@@ -143,13 +143,13 @@ export function CustomerListView({
                 paddingRight: searchQuery ? 32 : 12,
                 borderRadius: 'var(--radius)', fontSize: 12,
                 background: 'var(--bg)', border: '1px solid var(--border)',
-                color: 'var(--text)', outline: 'none',
+                color: 'var(--charcoal)', outline: 'none',
               }}
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-3)', background: 'none', border: 'none', cursor: 'pointer' }}
+                style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer' }}
               >
                 <X size={14} />
               </button>
@@ -168,9 +168,9 @@ export function CustomerListView({
                   style={{
                     minHeight: 30, padding: '0 12px',
                     borderRadius: 'var(--radius)', fontSize: 11,
-                    fontWeight: 600, fontFamily: 'var(--font-cond)', letterSpacing: '0.04em',
+                    fontWeight: 600, fontFamily: 'var(--font-mono)', letterSpacing: '0.04em',
                     background: statusFilter === tab.value ? color : 'var(--bg)',
-                    color: statusFilter === tab.value ? '#FFFFFF' : 'var(--text-3)',
+                    color: statusFilter === tab.value ? '#FFFFFF' : 'var(--muted)',
                     border: statusFilter === tab.value ? 'none' : '1px solid var(--border)',
                     cursor: 'pointer', whiteSpace: 'nowrap',
                   }}
@@ -203,20 +203,20 @@ export function CustomerListView({
         {isLoading && (
           <div style={{ marginTop: 32, textAlign: 'center' }}>
             <div style={{ width: 32, height: 32, border: '2px solid var(--border)', borderTopColor: color, borderRadius: '50%', animation: 'spin 0.7s linear infinite', margin: '0 auto 8px' }} />
-            <p style={{ fontSize: 11, color: 'var(--text-3)' }}>Loading...</p>
+            <p style={{ fontSize: 11, color: 'var(--muted)' }}>Loading...</p>
           </div>
         )}
 
         {/* Empty state */}
         {!isLoading && filteredCustomers.length === 0 && (
           <div style={{ marginTop: 48, textAlign: 'center' }}>
-            <div style={{ width: 56, height: 56, borderRadius: 'var(--radius)', background: 'var(--surface-1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+            <div style={{ width: 56, height: 56, borderRadius: 'var(--radius)', background: 'var(--surface)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
               <Users size={24} style={{ color }} strokeWidth={1.5} />
             </div>
-            <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-2)' }}>
+            <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--mid)' }}>
               {isSearching ? 'No customers found' : 'No customers yet'}
             </p>
-            <p style={{ fontSize: 12, color: 'var(--text-3)', marginTop: 4 }}>
+            <p style={{ fontSize: 12, color: 'var(--muted)', marginTop: 4 }}>
               {isSearching ? 'Try a different search term' : 'Create your first customer record'}
             </p>
           </div>
@@ -234,7 +234,7 @@ export function CustomerListView({
                   href={`/customers/${customer.id}`}
                   style={{
                     display: 'block', padding: '12px 14px',
-                    borderRadius: 'var(--radius)', background: 'var(--surface-1)',
+                    borderRadius: 'var(--radius)', background: 'var(--surface)',
                     border: '1px solid var(--border)', boxShadow: 'var(--shadow-card)',
                     textDecoration: 'none', cursor: 'pointer',
                   }}
@@ -251,7 +251,7 @@ export function CustomerListView({
                         </span>
                       </div>
                       <div style={{ minWidth: 0 }}>
-                        <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--charcoal)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {fullName}
                         </p>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
@@ -263,36 +263,36 @@ export function CustomerListView({
                             {badge.label}
                           </span>
                           {customer.leadSource && customer.leadSource !== 'other' && (
-                            <span style={{ fontSize: 10, color: 'var(--text-3)' }}>
+                            <span style={{ fontSize: 10, color: 'var(--muted)' }}>
                               {SOURCE_LABELS[customer.leadSource]}
                             </span>
                           )}
                         </div>
                       </div>
                     </div>
-                    <ChevronRight size={14} style={{ color: 'var(--border-strong, #d1d5db)', flexShrink: 0 }} />
+                    <ChevronRight size={14} style={{ color: 'var(--border-strong)', flexShrink: 0 }} />
                   </div>
 
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 8, flexWrap: 'wrap' }}>
                     {customer.phone && (
-                      <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'var(--text-2)' }}>
-                        <Phone size={10} style={{ color: 'var(--text-3)' }} /> {customer.phone}
+                      <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'var(--mid)' }}>
+                        <Phone size={10} style={{ color: 'var(--muted)' }} /> {customer.phone}
                       </span>
                     )}
                     {customer.email && (
-                      <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'var(--text-2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        <Mail size={10} style={{ color: 'var(--text-3)' }} /> {customer.email}
+                      <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'var(--mid)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <Mail size={10} style={{ color: 'var(--muted)' }} /> {customer.email}
                       </span>
                     )}
                     {customer.propertyCity && (
-                      <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'var(--text-2)' }}>
-                        <MapPin size={10} style={{ color: 'var(--text-3)' }} /> {customer.propertyCity}
+                      <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'var(--mid)' }}>
+                        <MapPin size={10} style={{ color: 'var(--muted)' }} /> {customer.propertyCity}
                       </span>
                     )}
                   </div>
 
                   {customer.jobIds.length > 0 && (
-                    <p style={{ marginTop: 6, fontSize: 10, color: 'var(--text-3)' }}>
+                    <p style={{ marginTop: 6, fontSize: 10, color: 'var(--muted)' }}>
                       {customer.jobIds.length} job{customer.jobIds.length !== 1 ? 's' : ''}
                     </p>
                   )}
@@ -325,6 +325,7 @@ function NewCustomerInlineForm({
     firstName: string; lastName: string; email: string; phone: string;
     propertyAddress: string; propertyCity: string; leadSource: CustomerLeadSource;
     notes: string; status: CustomerStatus; jobIds: string[];
+    household_members: HouseholdMember[];
   }) => Promise<{ id: string }>;
 }) {
   const [firstName, setFirstName] = useState('');
@@ -349,6 +350,7 @@ function NewCustomerInlineForm({
       notes: '',
       status: 'lead',
       jobIds: [],
+      household_members: [],
     });
     onCreated(result.id);
   };
@@ -357,20 +359,20 @@ function NewCustomerInlineForm({
     width: '100%', minHeight: 34, padding: '0 10px',
     borderRadius: 'var(--radius)', fontSize: 12,
     background: 'var(--bg)', border: '1px solid var(--border)',
-    color: 'var(--text)', outline: 'none',
+    color: 'var(--charcoal)', outline: 'none',
   };
 
   return (
     <div style={{
       marginTop: 12, padding: 14, borderRadius: 'var(--radius)',
-      background: 'var(--surface-1)', border: `2px solid ${color}40`,
+      background: 'var(--surface)', border: `2px solid ${color}40`,
       boxShadow: 'var(--shadow-card)',
     }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-        <span style={{ fontFamily: 'var(--font-cond)', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color }}>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color }}>
           Quick Add Customer
         </span>
-        <button onClick={onCancel} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-3)' }}>
+        <button onClick={onCancel} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)' }}>
           <X size={14} />
         </button>
       </div>
@@ -396,7 +398,7 @@ function NewCustomerInlineForm({
         </div>
       </div>
       <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
-        <button onClick={onCancel} style={{ flex: 1, minHeight: 34, borderRadius: 'var(--radius)', fontSize: 12, fontWeight: 600, background: 'var(--bg)', color: 'var(--text-2)', border: '1px solid var(--border)', cursor: 'pointer' }}>
+        <button onClick={onCancel} style={{ flex: 1, minHeight: 34, borderRadius: 'var(--radius)', fontSize: 12, fontWeight: 600, background: 'var(--bg)', color: 'var(--mid)', border: '1px solid var(--border)', cursor: 'pointer' }}>
           Cancel
         </button>
         <button onClick={handleSubmit} disabled={!canSubmit || isCreating} style={{ flex: 1, minHeight: 34, borderRadius: 'var(--radius)', fontSize: 12, fontWeight: 600, background: color, color: '#FFFFFF', border: 'none', cursor: canSubmit ? 'pointer' : 'default', opacity: canSubmit && !isCreating ? 1 : 0.5 }}>

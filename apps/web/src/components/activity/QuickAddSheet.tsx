@@ -351,7 +351,7 @@ const QUICK_DURATIONS = [
 function DurationPicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   return (
     <div>
-      <label className="block text-sm font-medium mb-2" style={{ color: 'var(--theme-secondary)' }}>
+      <label className="block text-sm font-medium mb-2" style={{ color: 'var(--mid)' }}>
         Duration
       </label>
       <div className="flex gap-2 mb-2">
@@ -362,9 +362,9 @@ function DurationPicker({ value, onChange }: { value: string; onChange: (v: stri
             onClick={() => onChange(d.value)}
             className="flex-1 min-h-[44px] rounded-xl text-sm font-medium transition-colors border"
             style={{
-              borderColor: value === d.value ? 'var(--theme-accent)' : 'var(--theme-border)',
-              backgroundColor: value === d.value ? 'var(--theme-accent-light)' : 'var(--theme-background)',
-              color: value === d.value ? 'var(--theme-accent)' : 'var(--theme-secondary)',
+              borderColor: value === d.value ? 'var(--accent)' : 'var(--border)',
+              backgroundColor: value === d.value ? 'var(--accent-bg)' : 'var(--bg)',
+              color: value === d.value ? 'var(--accent)' : 'var(--mid)',
             }}
           >
             {d.label}
@@ -513,15 +513,15 @@ export function QuickAddSheet() {
         ref={sheetRef}
         className="absolute bottom-0 left-0 right-0 max-h-[70vh] overflow-y-auto animate-slide-up"
         style={{
-          backgroundColor: 'var(--theme-background)',
+          backgroundColor: 'var(--bg)',
           borderTopLeftRadius: '16px',
           borderTopRightRadius: '16px',
         }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Drag Handle */}
-        <div className="flex justify-center py-3 sticky top-0 z-10" style={{ backgroundColor: 'var(--theme-background)', borderTopLeftRadius: '16px', borderTopRightRadius: '16px' }}>
-          <div className="w-10 h-1 rounded-full" style={{ backgroundColor: 'var(--theme-muted)' }} />
+        <div className="flex justify-center py-3 sticky top-0 z-10" style={{ backgroundColor: 'var(--bg)', borderTopLeftRadius: '16px', borderTopRightRadius: '16px' }}>
+          <div className="w-10 h-1 rounded-full" style={{ backgroundColor: 'var(--muted)' }} />
         </div>
 
         {/* ================================================================ */}
@@ -531,7 +531,7 @@ export function QuickAddSheet() {
           <div className="px-4 pb-8">
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold" style={{ color: 'var(--theme-primary)' }}>
+              <h2 className="text-lg font-semibold" style={{ color: 'var(--charcoal)' }}>
                 Quick Add
               </h2>
               <button
@@ -539,7 +539,7 @@ export function QuickAddSheet() {
                 className="p-2 rounded-full min-w-[44px] min-h-[44px] flex items-center justify-center"
                 aria-label="Close"
               >
-                <X size={20} style={{ color: 'var(--theme-muted)' }} strokeWidth={1.5} />
+                <X size={20} style={{ color: 'var(--muted)' }} strokeWidth={1.5} />
               </button>
             </div>
 
@@ -557,8 +557,8 @@ export function QuickAddSheet() {
                   onClick={() => setShowMore(!showMore)}
                   className="w-full py-3 mb-4 flex items-center justify-center gap-2 text-sm font-medium rounded-xl border transition-colors"
                   style={{
-                    color: 'var(--theme-secondary)',
-                    borderColor: 'var(--theme-border)',
+                    color: 'var(--mid)',
+                    borderColor: 'var(--border)',
                   }}
                 >
                   <span>{showMore ? 'Less' : 'More Actions'}</span>
@@ -566,7 +566,7 @@ export function QuickAddSheet() {
                     size={16}
                     strokeWidth={1.5}
                     className={`transition-transform ${showMore ? 'rotate-180' : ''}`}
-                    style={{ color: 'var(--theme-secondary)' }}
+                    style={{ color: 'var(--mid)' }}
                   />
                 </button>
 
@@ -605,9 +605,9 @@ export function QuickAddSheet() {
                 className="p-2 -ml-2 min-w-[44px] min-h-[44px] flex items-center justify-center"
                 aria-label="Back"
               >
-                <ArrowLeft size={20} strokeWidth={1.5} style={{ color: 'var(--theme-muted)' }} />
+                <ArrowLeft size={20} strokeWidth={1.5} style={{ color: 'var(--muted)' }} />
               </button>
-              <h2 className="text-lg font-semibold" style={{ color: 'var(--theme-primary)' }}>
+              <h2 className="text-lg font-semibold" style={{ color: 'var(--charcoal)' }}>
                 {config.title}
               </h2>
             </div>
@@ -651,7 +651,7 @@ export function QuickAddSheet() {
                 onClick={handleSubmit}
                 disabled={isSubmitting || !selectedProjectId}
                 className="flex-1 min-h-[48px] rounded-xl font-medium text-white transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
-                style={{ backgroundColor: 'var(--theme-accent)', borderRadius: 'var(--theme-radius)' }}
+                style={{ backgroundColor: 'var(--accent)', borderRadius: 'var(--radius)' }}
               >
                 {isSubmitting ? 'Saving...' : config.submitLabel}
               </button>
@@ -681,16 +681,16 @@ function TaskSelector({
 
   return (
     <div className="mb-4">
-      <label className="block text-sm font-medium mb-1" style={{ color: 'var(--theme-secondary)' }}>
-        Task <span style={{ color: 'var(--theme-status-red)' }} className="ml-1">*</span>
+      <label className="block text-sm font-medium mb-1" style={{ color: 'var(--mid)' }}>
+        Task <span style={{ color: 'var(--red)' }} className="ml-1">*</span>
       </label>
 
       {!projectId ? (
-        <p className="text-sm" style={{ color: 'var(--theme-muted)' }}>Select a project first</p>
+        <p className="text-sm" style={{ color: 'var(--muted)' }}>Select a project first</p>
       ) : isLoading ? (
-        <p className="text-sm" style={{ color: 'var(--theme-muted)' }}>Loading tasks...</p>
+        <p className="text-sm" style={{ color: 'var(--muted)' }}>Loading tasks...</p>
       ) : tasks.length === 0 ? (
-        <p className="text-sm" style={{ color: 'var(--theme-muted)' }}>No active tasks for this project</p>
+        <p className="text-sm" style={{ color: 'var(--muted)' }}>No active tasks for this project</p>
       ) : (
         <select
           value={value}
@@ -720,8 +720,8 @@ function ActionButton({ action, onClick }: { action: QuickAddAction; onClick: ()
       onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.04)'; }}
       onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
     >
-      <Icon size={24} strokeWidth={1.5} style={{ color: 'var(--theme-primary)' }} />
-      <span className="text-[11px] mt-1.5 font-medium text-center leading-tight" style={{ color: 'var(--theme-secondary)' }}>
+      <Icon size={24} strokeWidth={1.5} style={{ color: 'var(--charcoal)' }} />
+      <span className="text-[11px] mt-1.5 font-medium text-center leading-tight" style={{ color: 'var(--mid)' }}>
         {action.label}
       </span>
     </button>
@@ -812,11 +812,11 @@ function LabsCaptureForm({
           className="p-2 -ml-2 min-w-[44px] min-h-[44px] flex items-center justify-center"
           aria-label="Back"
         >
-          <ArrowLeft size={20} strokeWidth={1.5} style={{ color: 'var(--theme-muted)' }} />
+          <ArrowLeft size={20} strokeWidth={1.5} style={{ color: 'var(--muted)' }} />
         </button>
         <div className="flex items-center gap-2">
-          <FlaskConical size={20} strokeWidth={1.5} style={{ color: 'var(--theme-accent)' }} />
-          <h2 className="text-lg font-semibold" style={{ color: 'var(--theme-primary)' }}>
+          <FlaskConical size={20} strokeWidth={1.5} style={{ color: 'var(--accent)' }} />
+          <h2 className="text-lg font-semibold" style={{ color: 'var(--charcoal)' }}>
             {step === 'category' ? 'Labs Observation' : selectedCategory?.label}
           </h2>
         </div>
@@ -825,7 +825,7 @@ function LabsCaptureForm({
       {/* Category picker */}
       {step === 'category' && (
         <>
-          <p className="text-sm mb-4" style={{ color: 'var(--theme-secondary)' }}>
+          <p className="text-sm mb-4" style={{ color: 'var(--mid)' }}>
             What did you notice?
           </p>
           <div className="grid grid-cols-2 gap-2">
@@ -835,9 +835,9 @@ function LabsCaptureForm({
                 onClick={() => handleSelectCategory(cat)}
                 className="min-h-[52px] px-3 py-3 rounded-xl text-sm font-medium text-left transition-colors border"
                 style={{
-                  backgroundColor: 'var(--theme-background)',
-                  color: 'var(--theme-primary)',
-                  borderColor: 'var(--theme-border)',
+                  backgroundColor: 'var(--bg)',
+                  color: 'var(--charcoal)',
+                  borderColor: 'var(--border)',
                 }}
               >
                 {cat.label}
@@ -858,8 +858,8 @@ function LabsCaptureForm({
 
           {/* Notes */}
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-1" style={{ color: 'var(--theme-secondary)' }}>
-              Notes <span style={{ color: 'var(--theme-status-red)' }} className="ml-1">*</span>
+            <label className="block text-sm font-medium mb-1" style={{ color: 'var(--mid)' }}>
+              Notes <span style={{ color: 'var(--red)' }} className="ml-1">*</span>
             </label>
             <textarea
               value={notes}
@@ -873,7 +873,7 @@ function LabsCaptureForm({
 
           {/* Star rating */}
           <div className="flex items-center justify-between mb-4">
-            <span className="text-sm font-medium" style={{ color: 'var(--theme-secondary)' }}>
+            <span className="text-sm font-medium" style={{ color: 'var(--mid)' }}>
               Quality (optional)
             </span>
             <StarRating value={rating} onChange={setRating} size={20} />
@@ -892,7 +892,7 @@ function LabsCaptureForm({
               onClick={handleSave}
               disabled={isSubmitting || !notes.trim() || !effectiveProjectId || !crewMemberId}
               className="flex-1 min-h-[48px] rounded-xl font-medium text-white transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
-              style={{ backgroundColor: 'var(--theme-accent)', borderRadius: 'var(--theme-radius)' }}
+              style={{ backgroundColor: 'var(--accent)', borderRadius: 'var(--radius)' }}
             >
               {isSubmitting ? 'Saving...' : 'Save'}
             </button>
@@ -910,9 +910,9 @@ function FormFieldRenderer({ field, value, onChange }: { field: FormField; value
 
   return (
     <div>
-      <label className="block text-sm font-medium mb-1" style={{ color: 'var(--theme-secondary)' }}>
+      <label className="block text-sm font-medium mb-1" style={{ color: 'var(--mid)' }}>
         {field.label}
-        {field.required && <span style={{ color: 'var(--theme-status-red)' }} className="ml-1">*</span>}
+        {field.required && <span style={{ color: 'var(--red)' }} className="ml-1">*</span>}
       </label>
 
       {field.type === 'textarea' ? (

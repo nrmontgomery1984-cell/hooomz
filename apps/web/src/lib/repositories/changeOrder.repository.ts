@@ -64,10 +64,18 @@ export class ChangeOrderRepository {
     );
   }
 
-  async getNextCoNumber(projectId: string): Promise<string> {
-    const existing = await this.findByProject(projectId);
-    const nextNum = existing.length + 1;
-    return `CO-${String(nextNum).padStart(3, '0')}`;
+  async getNextCoNumber(_projectId: string): Promise<string> {
+    const all = await this.findAll();
+    const year = new Date().getFullYear();
+    const prefix = `CO-${year}-`;
+    const maxSeq = all.reduce((max, co) => {
+      if (co.coNumber && co.coNumber.startsWith(prefix)) {
+        const n = parseInt(co.coNumber.slice(prefix.length), 10);
+        return isNaN(n) ? max : Math.max(max, n);
+      }
+      return max;
+    }, 0);
+    return `${prefix}${String(maxSeq + 1).padStart(3, '0')}`;
   }
 
   async update(id: string, data: Partial<Omit<ChangeOrder, 'id' | 'metadata'>>): Promise<ChangeOrder | null> {

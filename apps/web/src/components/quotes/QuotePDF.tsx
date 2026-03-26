@@ -46,7 +46,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 // Styles
 // ============================================================================
 
-const TEAL = '#0F766E';
+const ACCENT = '#6B6560';
 
 const styles = StyleSheet.create({
   page: {
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 24,
     borderBottomWidth: 2,
-    borderBottomColor: TEAL,
+    borderBottomColor: ACCENT,
     paddingBottom: 12,
   },
   brandName: {
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
   docType: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: TEAL,
+    color: ACCENT,
     textAlign: 'right' as const,
   },
   dateText: {
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
   tradeHeader: {
     fontSize: 10,
     fontWeight: 'bold',
-    color: TEAL,
+    color: ACCENT,
     marginTop: 10,
     marginBottom: 4,
     paddingBottom: 2,
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     paddingTop: 10,
     borderTopWidth: 2,
-    borderTopColor: TEAL,
+    borderTopColor: ACCENT,
   },
   totalRow: {
     flexDirection: 'row',
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textTransform: 'uppercase',
     letterSpacing: 1,
-    color: TEAL,
+    color: ACCENT,
     marginBottom: 6,
   },
   paymentRow: {
@@ -247,11 +247,47 @@ interface TradeGroup {
 // Document
 // ============================================================================
 
-function QuoteDocument({ quote, project, customer, lineItems }: QuotePDFProps) {
+function computeMilestones(quote: QuoteRecord, tradeGroups: TradeGroup[]): { label: string; amount: number }[] {
   const depositPct = quote.depositPercentage ?? 25;
-  const depositAmount = Math.round(quote.totalAmount * (depositPct / 100) * 100) / 100;
-  const progressAmount = Math.round(quote.totalAmount * 0.40 * 100) / 100;
-  const finalAmount = Math.round((quote.totalAmount - depositAmount - progressAmount) * 100) / 100;
+  const total = quote.totalAmount;
+  const depositAmount = Math.round(total * (depositPct / 100) * 100) / 100;
+  const remainingPct = 100 - depositPct;
+  const scheduleType = quote.scheduleType ?? 'simple';
+  const milestones: { label: string; amount: number }[] = [];
+
+  milestones.push({ label: `Deposit (${depositPct}%) — due at signing`, amount: depositAmount });
+
+  if (scheduleType === 'simple') {
+    milestones.push({ label: 'Final payment — at completion', amount: Math.round((total - depositAmount) * 100) / 100 });
+  } else if (scheduleType === 'progress') {
+    const subtotal = tradeGroups.reduce((s, g) => s + g.total, 0) || 1;
+    for (const trade of tradeGroups) {
+      const tradePct = (trade.total / subtotal) * remainingPct;
+      milestones.push({
+        label: `${trade.label} — on completion`,
+        amount: Math.round(total * (tradePct / 100) * 100) / 100,
+      });
+    }
+  } else {
+    const customMs = quote.customMilestones ?? [];
+    for (const cm of customMs) {
+      milestones.push({
+        label: cm.label,
+        amount: Math.round(total * (cm.pct / 100) * 100) / 100,
+      });
+    }
+    const usedPct = depositPct + customMs.reduce((s, m) => s + m.pct, 0);
+    const finalPct = Math.max(0, 100 - usedPct);
+    milestones.push({
+      label: 'Final payment — at completion',
+      amount: Math.round(total * (finalPct / 100) * 100) / 100,
+    });
+  }
+
+  return milestones;
+}
+
+function QuoteDocument({ quote, project, customer, lineItems }: QuotePDFProps) {
 
   const customerAddr = [customer.propertyAddress, customer.propertyCity, customer.propertyProvince].filter(Boolean).join(', ');
   const projectAddr = project.address
@@ -405,22 +441,35 @@ function QuoteDocument({ quote, project, customer, lineItems }: QuotePDFProps) {
           </Text>
         </View>
 
-        {/* Payment Schedule */}
-        <View style={styles.paymentSection}>
-          <Text style={styles.paymentTitle}>Payment Schedule</Text>
-          <View style={styles.paymentRow}>
-            <Text style={{ fontSize: 10 }}>Deposit ({depositPct}%) — due at signing</Text>
-            <Text style={{ fontSize: 10, fontFamily: 'Courier', fontWeight: 'bold' }}>{formatCurrency(depositAmount)}</Text>
+        {/* Payment Schedule — dynamic from quote.scheduleType */}
+        {(() => {
+          // Collect all trade groups across all sources for milestone computation
+          const allTradeGroups = sourceGroups.flatMap((sg) => sg.tradeGroups);
+          const milestones = computeMilestones(quote, allTradeGroups);
+          return (
+            <View style={styles.paymentSection}>
+              <Text style={styles.paymentTitle}>Payment Schedule</Text>
+              {milestones.map((ms, i) => (
+                <View key={i} style={styles.paymentRow}>
+                  <Text style={{ fontSize: 10 }}>{ms.label}</Text>
+                  <Text style={{ fontSize: 10, fontFamily: 'Courier', fontWeight: 'bold' }}>{formatCurrency(ms.amount)}</Text>
+                </View>
+              ))}
+            </View>
+          );
+        })()}
+
+        {/* General Terms */}
+        {quote.generalTerms && quote.generalTerms.length > 0 && (
+          <View style={styles.notesSection}>
+            <Text style={styles.notesTitle}>Terms &amp; Conditions</Text>
+            {quote.generalTerms.map((term, i) => (
+              <Text key={i} style={[styles.notesText, { marginBottom: 2 }]}>
+                {i + 1}. {term}
+              </Text>
+            ))}
           </View>
-          <View style={styles.paymentRow}>
-            <Text style={{ fontSize: 10 }}>Progress payment (40%) — mid-project</Text>
-            <Text style={{ fontSize: 10, fontFamily: 'Courier', fontWeight: 'bold' }}>{formatCurrency(progressAmount)}</Text>
-          </View>
-          <View style={styles.paymentRow}>
-            <Text style={{ fontSize: 10 }}>Final payment — at completion</Text>
-            <Text style={{ fontSize: 10, fontFamily: 'Courier', fontWeight: 'bold' }}>{formatCurrency(finalAmount)}</Text>
-          </View>
-        </View>
+        )}
 
         {/* Cover Notes */}
         {quote.coverNotes && (
@@ -498,10 +547,10 @@ export function DownloadQuotePDF({
               gap: 6,
               fontSize: 12,
               fontWeight: 600,
-              color: TEAL,
+              color: ACCENT,
               background: '#FFFFFF',
               borderRadius: 'var(--radius, 12px)',
-              border: `2px solid ${TEAL}`,
+              border: `2px solid ${ACCENT}`,
               cursor: loading ? 'not-allowed' : 'pointer',
               padding: '0 16px',
               opacity: loading ? 0.6 : 1,

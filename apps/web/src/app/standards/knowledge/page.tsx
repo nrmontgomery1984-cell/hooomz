@@ -34,16 +34,11 @@ const COLOR = SECTION_COLORS.standards;
 type Tab = 'guides' | 'sops' | 'checklists' | 'profile';
 
 const TRADE_STYLES: Record<string, { bg: string; text: string }> = {
-  Flooring: { bg: '#FEF3C7', text: '#92400E' },
-  Painting: { bg: '#DBEAFE', text: '#1E40AF' },
-  'Finish Carpentry': { bg: '#FFEDD5', text: '#9A3412' },
-  Doors: { bg: '#E0E7FF', text: '#3730A3' },
-  Drywall: { bg: '#F3F4F6', text: '#374151' },
-  Tile: { bg: '#CCFBF1', text: '#115E59' },
+  default: { bg: 'var(--accent-bg)', text: 'var(--accent)' },
 };
 
 function getTradeStyle(trade: string) {
-  return TRADE_STYLES[trade] ?? { bg: '#F3F4F6', text: '#374151' };
+  return TRADE_STYLES[trade] ?? TRADE_STYLES.default;
 }
 
 // ============================================================================
@@ -71,7 +66,7 @@ export default function KnowledgeBasePage() {
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}>
         <div style={{ textAlign: 'center' }}>
           <div style={{ width: 32, height: 32, border: '2px solid var(--border)', borderTopColor: COLOR, borderRadius: '50%', animation: 'spin 0.7s linear infinite', margin: '0 auto 8px' }} />
-          <p style={{ fontSize: 11, color: 'var(--text-3)' }}>Loading...</p>
+          <p style={{ fontSize: 11, color: 'var(--muted)' }}>Loading...</p>
         </div>
       </div>
     );
@@ -89,15 +84,15 @@ export default function KnowledgeBasePage() {
       <div style={{ minHeight: '100vh', paddingBottom: 96, background: 'var(--bg)' }}>
 
         {/* Header */}
-        <div style={{ background: 'var(--surface-1)', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
           <div className="max-w-lg md:max-w-full mx-auto px-4 md:px-6 py-3 md:py-4">
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <div style={{ width: 8, height: 8, borderRadius: '50%', background: COLOR }} />
-              <h1 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', fontFamily: 'var(--font-cond)', letterSpacing: '0.02em' }}>
+              <h1 style={{ fontSize: 16, fontWeight: 700, color: 'var(--charcoal)', fontFamily: 'var(--font-mono)', letterSpacing: '0.02em' }}>
                 Knowledge Base
               </h1>
             </div>
-            <p style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 2 }}>
+            <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>
               Training guides, SOPs, checklists, and training profiles
             </p>
           </div>
@@ -116,7 +111,7 @@ export default function KnowledgeBasePage() {
                     padding: '8px 14px', minHeight: 40,
                     background: 'none', border: 'none', cursor: 'pointer',
                     borderBottom: active ? `2px solid ${COLOR}` : '2px solid transparent',
-                    color: active ? COLOR : 'var(--text-3)',
+                    color: active ? COLOR : 'var(--muted)',
                     fontSize: 12, fontWeight: active ? 700 : 500,
                     transition: 'color 150ms',
                   }}
@@ -128,7 +123,7 @@ export default function KnowledgeBasePage() {
                       fontSize: 9, fontWeight: 700, fontFamily: 'var(--font-mono)',
                       padding: '1px 4px', borderRadius: 3,
                       background: active ? COLOR : 'var(--surface-3)',
-                      color: active ? '#fff' : 'var(--text-3)',
+                      color: active ? '#fff' : 'var(--muted)',
                     }}>
                       {tab.count}
                     </span>
@@ -194,7 +189,7 @@ function TrainingGuidesTab({ guides, onNavigate }: { guides: TrainingGuide[]; on
               <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 4, background: style.bg, color: style.text }}>
                 {trade}
               </span>
-              <span style={{ fontSize: 10, color: 'var(--text-3)' }}>{tradeGuides.length} guide{tradeGuides.length !== 1 ? 's' : ''}</span>
+              <span style={{ fontSize: 10, color: 'var(--muted)' }}>{tradeGuides.length} guide{tradeGuides.length !== 1 ? 's' : ''}</span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {tradeGuides.map((g) => {
@@ -205,7 +200,7 @@ function TrainingGuidesTab({ guides, onNavigate }: { guides: TrainingGuide[]; on
                     onClick={() => onNavigate(g.id)}
                     style={{
                       width: '100%', textAlign: 'left', padding: '12px 14px',
-                      background: 'var(--surface-1)', border: '1px solid var(--border)',
+                      background: 'var(--surface)', border: '1px solid var(--border)',
                       borderRadius: 10, cursor: 'pointer',
                       display: 'flex', alignItems: 'center', gap: 12,
                     }}
@@ -218,9 +213,9 @@ function TrainingGuidesTab({ guides, onNavigate }: { guides: TrainingGuide[]; on
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                         <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600, color: COLOR }}>{g.code}</span>
-                        <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{g.title}</span>
+                        <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--charcoal)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{g.title}</span>
                       </div>
-                      <span style={{ fontSize: 11, color: 'var(--text-3)' }}>
+                      <span style={{ fontSize: 11, color: 'var(--muted)' }}>
                         {g.modules.length} modules · {sopCount} SOPs
                       </span>
                     </div>
@@ -256,7 +251,7 @@ function SOPsTab({ sops, onNavigate }: { sops: StandardSOP[]; onNavigate: (id: s
       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 14 }}>
         {['all', ...trades].map((t) => {
           const active = tradeFilter === t;
-          const style = t === 'all' ? { bg: 'var(--surface-3)', text: 'var(--text-2)' } : getTradeStyle(t);
+          const style = t === 'all' ? { bg: 'var(--surface-3)', text: 'var(--mid)' } : getTradeStyle(t);
           return (
             <button
               key={t}
@@ -265,7 +260,7 @@ function SOPsTab({ sops, onNavigate }: { sops: StandardSOP[]; onNavigate: (id: s
                 padding: '4px 10px', borderRadius: 6, border: 'none', cursor: 'pointer',
                 fontSize: 11, fontWeight: active ? 700 : 500,
                 background: active ? style.bg : 'var(--surface-2)',
-                color: active ? style.text : 'var(--text-3)',
+                color: active ? style.text : 'var(--muted)',
                 outline: active ? `2px solid ${COLOR}` : 'none',
                 outlineOffset: 1,
               }}
@@ -286,7 +281,7 @@ function SOPsTab({ sops, onNavigate }: { sops: StandardSOP[]; onNavigate: (id: s
               onClick={() => onNavigate(sop.id)}
               style={{
                 width: '100%', textAlign: 'left', padding: '10px 14px',
-                background: 'var(--surface-1)', border: '1px solid var(--border)',
+                background: 'var(--surface)', border: '1px solid var(--border)',
                 borderRadius: 10, cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 12,
               }}
@@ -296,12 +291,12 @@ function SOPsTab({ sops, onNavigate }: { sops: StandardSOP[]; onNavigate: (id: s
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600, color: COLOR, flexShrink: 0 }}>{sop.code}</span>
-                  <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{sop.title}</span>
+                  <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--charcoal)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{sop.title}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 3 }}>
                   <span style={{ fontSize: 10, fontWeight: 600, color: tradeStyle.text, background: tradeStyle.bg, padding: '1px 5px', borderRadius: 3 }}>{sop.trade}</span>
                   {stopCount > 0 && (
-                    <span style={{ fontSize: 10, color: '#EF4444', fontWeight: 600 }}>{stopCount} stop condition{stopCount !== 1 ? 's' : ''}</span>
+                    <span style={{ fontSize: 10, color: 'var(--red)', fontWeight: 600 }}>{stopCount} stop condition{stopCount !== 1 ? 's' : ''}</span>
                   )}
                 </div>
               </div>
@@ -385,34 +380,34 @@ function ChecklistRow({ submission: cl, showTechnician }: { submission: Checklis
 
   return (
     <div style={{
-      padding: '10px 14px', background: 'var(--surface-1)', border: '1px solid var(--border)',
+      padding: '10px 14px', background: 'var(--surface)', border: '1px solid var(--border)',
       borderRadius: 10, display: 'flex', alignItems: 'center', gap: 12,
     }}>
       <div style={{
         width: 28, height: 28, borderRadius: 6, flexShrink: 0,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: cl.allPassed ? 'var(--green-dim)' : 'rgba(239,68,68,0.08)',
+        background: cl.allPassed ? 'var(--green-dim)' : 'var(--red-bg)',
       }}>
         {cl.allPassed
           ? <Check size={14} style={{ color: 'var(--green)' }} />
-          : <X size={14} style={{ color: '#EF4444' }} />
+          : <X size={14} style={{ color: 'var(--red)' }} />
         }
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600, color: COLOR }}>{cl.sopCode}</span>
           {showTechnician && (
-            <span style={{ fontSize: 12, color: 'var(--text-2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{cl.technicianName}</span>
+            <span style={{ fontSize: 12, color: 'var(--mid)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{cl.technicianName}</span>
           )}
         </div>
-        <span style={{ fontSize: 10, color: 'var(--text-3)' }}>{date}</span>
+        <span style={{ fontSize: 10, color: 'var(--muted)' }}>{date}</span>
       </div>
       <span style={{
-        fontFamily: 'var(--font-cond)', fontSize: 9, fontWeight: 700,
+        fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 700,
         letterSpacing: '0.06em', textTransform: 'uppercase',
         padding: '2px 6px', borderRadius: 3,
         background: isComplete ? 'var(--green-dim)' : 'var(--surface-3)',
-        color: isComplete ? 'var(--green)' : 'var(--text-3)', flexShrink: 0,
+        color: isComplete ? 'var(--green)' : 'var(--muted)', flexShrink: 0,
       }}>
         {cl.status}
       </span>
@@ -454,7 +449,7 @@ function TrainingProfileTab({
     return (
       <div>
         <div style={{ marginBottom: 14 }}>
-          <span style={{ fontFamily: 'var(--font-cond)', fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-3)' }}>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)' }}>
             Crew Training Coverage — {totalSops} SOPs total
           </span>
         </div>
@@ -464,7 +459,7 @@ function TrainingProfileTab({
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {crewStats.map((member) => (
-              <div key={member.id} style={{ padding: '14px 16px', background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 10 }}>
+              <div key={member.id} style={{ padding: '14px 16px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10 }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                     <div style={{
@@ -472,20 +467,20 @@ function TrainingProfileTab({
                       background: member.pct >= 80 ? 'var(--green-dim)' : 'var(--surface-3)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       fontSize: 11, fontWeight: 700,
-                      color: member.pct >= 80 ? 'var(--green)' : 'var(--text-3)',
+                      color: member.pct >= 80 ? 'var(--green)' : 'var(--muted)',
                     }}>
                       {member.name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)}
                     </div>
                     <div>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>{member.name}</div>
-                      <div style={{ fontSize: 10, color: 'var(--text-3)' }}>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--charcoal)' }}>{member.name}</div>
+                      <div style={{ fontSize: 10, color: 'var(--muted)' }}>
                         {member.uniqueSops} of {totalSops} SOPs · {member.submitted} submission{member.submitted !== 1 ? 's' : ''}
                       </div>
                     </div>
                   </div>
                   <span style={{
                     fontFamily: 'var(--font-mono)', fontSize: 16, fontWeight: 700,
-                    color: member.pct >= 80 ? 'var(--green)' : member.pct >= 50 ? 'var(--amber)' : 'var(--text-3)',
+                    color: member.pct >= 80 ? 'var(--green)' : member.pct >= 50 ? 'var(--amber)' : 'var(--muted)',
                   }}>
                     {member.pct}%
                   </span>
@@ -532,17 +527,17 @@ function TrainingProfileTab({
   return (
     <div>
       {/* Summary */}
-      <div style={{ padding: '16px', background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 12, marginBottom: 20 }}>
+      <div style={{ padding: '16px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12, marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
           <div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)' }}>My Training</div>
-            <div style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 2 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--charcoal)' }}>My Training</div>
+            <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>
               {myUniqueSops.size} of {totalSops} SOPs completed
             </div>
           </div>
           <span style={{
             fontFamily: 'var(--font-mono)', fontSize: 28, fontWeight: 700,
-            color: myPct >= 80 ? 'var(--green)' : myPct >= 50 ? 'var(--amber)' : 'var(--text-3)',
+            color: myPct >= 80 ? 'var(--green)' : myPct >= 50 ? 'var(--amber)' : 'var(--muted)',
           }}>
             {myPct}%
           </span>
@@ -560,7 +555,7 @@ function TrainingProfileTab({
       {myUniqueSops.size > 0 && (
         <div style={{ marginBottom: 20 }}>
           <div style={{ marginBottom: 8 }}>
-            <span style={{ fontFamily: 'var(--font-cond)', fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-3)' }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)' }}>
               Completed ({myUniqueSops.size})
             </span>
           </div>
@@ -571,7 +566,7 @@ function TrainingProfileTab({
                 <div key={code} style={{
                   display: 'flex', alignItems: 'center', gap: 5,
                   padding: '5px 10px', borderRadius: 6,
-                  background: 'var(--green-dim)', border: '1px solid rgba(16,185,129,0.2)',
+                  background: 'var(--green-dim)', border: '1px solid var(--green-bg)',
                 }}>
                   <Check size={11} style={{ color: 'var(--green)', flexShrink: 0 }} />
                   <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600, color: 'var(--green)' }}>{code}</span>
@@ -587,7 +582,7 @@ function TrainingProfileTab({
       {outstanding.length > 0 && (
         <div>
           <div style={{ marginBottom: 8 }}>
-            <span style={{ fontFamily: 'var(--font-cond)', fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-3)' }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)' }}>
               Outstanding ({outstanding.length})
             </span>
           </div>
@@ -601,14 +596,14 @@ function TrainingProfileTab({
                   style={{
                     display: 'flex', alignItems: 'center', gap: 10,
                     padding: '10px 14px', textDecoration: 'none',
-                    background: 'var(--surface-1)', border: '1px solid var(--border)',
+                    background: 'var(--surface)', border: '1px solid var(--border)',
                     borderRadius: 10,
                   }}
                 >
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600, color: 'var(--text-3)', flexShrink: 0 }}>{sop.code}</span>
-                      <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{sop.title}</span>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600, color: 'var(--muted)', flexShrink: 0 }}>{sop.code}</span>
+                      <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--charcoal)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{sop.title}</span>
                     </div>
                     <span style={{ fontSize: 10, fontWeight: 600, color: tradeStyle.text, background: tradeStyle.bg, padding: '1px 5px', borderRadius: 3, marginTop: 2, display: 'inline-block' }}>{sop.trade}</span>
                   </div>
@@ -634,18 +629,18 @@ function TrainingProfileTab({
 function EmptyState({ icon, message, hint }: { icon: React.ReactNode; message: string; hint?: string }) {
   return (
     <div style={{ textAlign: 'center', padding: '40px 24px' }}>
-      <div style={{ color: 'var(--text-3)', marginBottom: 8, display: 'flex', justifyContent: 'center' }}>{icon}</div>
-      <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-2)', marginBottom: hint ? 6 : 0 }}>{message}</p>
-      {hint && <p style={{ fontSize: 11, color: 'var(--text-3)' }}>{hint}</p>}
+      <div style={{ color: 'var(--muted)', marginBottom: 8, display: 'flex', justifyContent: 'center' }}>{icon}</div>
+      <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--mid)', marginBottom: hint ? 6 : 0 }}>{message}</p>
+      {hint && <p style={{ fontSize: 11, color: 'var(--muted)' }}>{hint}</p>}
     </div>
   );
 }
 
 function MiniStat({ label, value, color }: { label: string; value: number; color?: string }) {
   return (
-    <div style={{ padding: '8px 12px', background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 8, flex: 1 }}>
-      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 18, fontWeight: 700, color: color ?? 'var(--text)' }}>{value}</div>
-      <div style={{ fontSize: 10, color: 'var(--text-3)', marginTop: 2 }}>{label}</div>
+    <div style={{ padding: '8px 12px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, flex: 1 }}>
+      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 18, fontWeight: 700, color: color ?? 'var(--charcoal)' }}>{value}</div>
+      <div style={{ fontSize: 10, color: 'var(--muted)', marginTop: 2 }}>{label}</div>
     </div>
   );
 }

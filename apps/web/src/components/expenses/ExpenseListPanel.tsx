@@ -47,7 +47,7 @@ export function ExpenseListPanel({ projectId, tasks }: ExpenseListPanelProps) {
     <>
       <div style={{
         borderRadius: 'var(--radius)',
-        background: 'var(--surface-1)',
+        background: 'var(--surface)',
         border: '1px solid var(--border)',
         overflow: 'hidden',
       }}>
@@ -60,14 +60,14 @@ export function ExpenseListPanel({ projectId, tasks }: ExpenseListPanelProps) {
           borderBottom: '1px solid var(--border)',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Receipt size={14} style={{ color: 'var(--text-3)' }} />
+            <Receipt size={14} style={{ color: 'var(--muted)' }} />
             <span style={{
-              fontFamily: 'var(--font-cond)',
+              fontFamily: 'var(--font-mono)',
               fontSize: 11,
               fontWeight: 700,
               letterSpacing: '0.08em',
               textTransform: 'uppercase',
-              color: 'var(--text-3)',
+              color: 'var(--muted)',
             }}>
               Expenses
             </span>
@@ -76,7 +76,7 @@ export function ExpenseListPanel({ projectId, tasks }: ExpenseListPanelProps) {
                 fontFamily: 'var(--font-mono)',
                 fontSize: 12,
                 fontWeight: 700,
-                color: 'var(--text)',
+                color: 'var(--charcoal)',
               }}>
                 ${totalSpend.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
@@ -93,10 +93,10 @@ export function ExpenseListPanel({ projectId, tasks }: ExpenseListPanelProps) {
               borderRadius: 'var(--radius)',
               fontSize: 11,
               fontWeight: 600,
-              fontFamily: 'var(--font-cond)',
+              fontFamily: 'var(--font-mono)',
               letterSpacing: '0.04em',
-              color: '#FFFFFF',
-              background: 'var(--teal)',
+              color: '#fff',
+              background: 'var(--accent)',
               border: 'none',
               cursor: 'pointer',
             }}
@@ -111,21 +111,21 @@ export function ExpenseListPanel({ projectId, tasks }: ExpenseListPanelProps) {
             <div style={{
               width: 24, height: 24,
               border: '2px solid var(--border)',
-              borderTopColor: 'var(--teal)',
+              borderTopColor: 'var(--accent)',
               borderRadius: '50%',
               animation: 'spin 0.7s linear infinite',
               margin: '0 auto 8px',
             }} />
-            <p style={{ fontSize: 11, color: 'var(--text-3)' }}>Loading expenses...</p>
+            <p style={{ fontSize: 11, color: 'var(--muted)' }}>Loading expenses...</p>
           </div>
         )}
 
         {/* Empty state */}
         {!isLoading && expenses.length === 0 && (
           <div style={{ padding: '32px 14px', textAlign: 'center' }}>
-            <Receipt size={24} style={{ color: 'var(--text-3)', margin: '0 auto 8px' }} />
-            <p style={{ fontSize: 12, color: 'var(--text-2)', fontWeight: 600 }}>No expenses yet</p>
-            <p style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 4 }}>
+            <Receipt size={24} style={{ color: 'var(--muted)', margin: '0 auto 8px' }} />
+            <p style={{ fontSize: 12, color: 'var(--mid)', fontWeight: 600 }}>No expenses yet</p>
+            <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4 }}>
               Track material purchases, tool rentals, and other project costs.
             </p>
           </div>
@@ -149,7 +149,7 @@ export function ExpenseListPanel({ projectId, tasks }: ExpenseListPanelProps) {
                 <span style={{
                   fontFamily: 'var(--font-mono)',
                   fontSize: 10,
-                  color: 'var(--text-3)',
+                  color: 'var(--muted)',
                   width: 52,
                   flexShrink: 0,
                 }}>
@@ -160,7 +160,7 @@ export function ExpenseListPanel({ projectId, tasks }: ExpenseListPanelProps) {
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{
                     fontSize: 12,
-                    color: 'var(--text)',
+                    color: 'var(--charcoal)',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
@@ -168,7 +168,7 @@ export function ExpenseListPanel({ projectId, tasks }: ExpenseListPanelProps) {
                     {expense.description}
                   </p>
                   {expense.vendor && (
-                    <p style={{ fontSize: 10, color: 'var(--text-3)', marginTop: 1 }}>
+                    <p style={{ fontSize: 10, color: 'var(--muted)', marginTop: 1 }}>
                       {expense.vendor}
                     </p>
                   )}
@@ -178,13 +178,13 @@ export function ExpenseListPanel({ projectId, tasks }: ExpenseListPanelProps) {
                 <span style={{
                   fontSize: 8,
                   fontWeight: 700,
-                  fontFamily: 'var(--font-cond)',
+                  fontFamily: 'var(--font-mono)',
                   letterSpacing: '0.06em',
                   textTransform: 'uppercase',
                   padding: '2px 6px',
                   borderRadius: 4,
                   background: 'var(--bg)',
-                  color: 'var(--text-3)',
+                  color: 'var(--muted)',
                   flexShrink: 0,
                   whiteSpace: 'nowrap',
                 }}>
@@ -196,7 +196,7 @@ export function ExpenseListPanel({ projectId, tasks }: ExpenseListPanelProps) {
                   fontFamily: 'var(--font-mono)',
                   fontSize: 12,
                   fontWeight: 600,
-                  color: 'var(--text)',
+                  color: 'var(--charcoal)',
                   flexShrink: 0,
                   width: 64,
                   textAlign: 'right',
@@ -217,7 +217,7 @@ export function ExpenseListPanel({ projectId, tasks }: ExpenseListPanelProps) {
                     background: 'none',
                     border: 'none',
                     cursor: 'pointer',
-                    color: 'var(--text-3)',
+                    color: 'var(--muted)',
                     flexShrink: 0,
                     opacity: deleteExpense.isPending ? 0.4 : 1,
                   }}

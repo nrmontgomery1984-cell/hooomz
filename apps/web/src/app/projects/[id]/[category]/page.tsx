@@ -113,7 +113,7 @@ export default function CategoryDetailPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-cream flex items-center justify-center">
-        <div className="w-64 h-64 rounded-full border-2 border-slate-200 animate-pulse" />
+        <div className="w-64 h-64 rounded-full border-2 border-[var(--border)] animate-pulse" />
       </div>
     );
   }

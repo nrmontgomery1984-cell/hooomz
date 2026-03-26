@@ -16,16 +16,16 @@ import { ContentStatusBadge } from './ContentStatusBadge';
 import { MaintenanceLog } from './MaintenanceLog';
 import { ToolDetailSheet } from './ToolDetailSheet';
 
-const NAVY = '#1B2A4A';
-const TEAL = '#2A9D8F';
-const CORAL = '#E76F51';
-const LIGHT_BG = '#F5F7FA';
+const NAVY = 'var(--charcoal)';
+const TEAL = 'var(--accent)';
+const CORAL = '#E76F51'; /* tool-research category — no canonical equivalent */
+const LIGHT_BG = 'var(--surface-2)';
 const LIGHT_TEAL = '#E6F5F3';
 const LIGHT_CORAL = '#FDEEEA';
 
 const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
-  Owned: { bg: '#E8F5E9', color: '#2E7D32' },
-  Purchasing: { bg: '#E3F2FD', color: '#1565C0' },
+  Owned: { bg: 'var(--green-bg)', color: 'var(--green)' },
+  Purchasing: { bg: 'var(--blue-bg)', color: 'var(--blue)' },
   Wishlist: { bg: '#FFF8E1', color: '#F57F17' },
   Retired: { bg: '#FFEBEE', color: '#C62828' },
 };
@@ -34,14 +34,14 @@ function ridgidBadge(item: ToolInventoryItem) {
   if (item.platform !== 'RIDGID 18V') return null;
   if (item.ridgidRegistered) {
     return (
-      <span style={{ padding: '2px 6px', borderRadius: 10, background: '#E8F5E9', color: '#2E7D32', fontSize: 10, fontWeight: 600 }}>
+      <span style={{ padding: '2px 6px', borderRadius: 10, background: 'var(--green-bg)', color: 'var(--green)', fontSize: 10, fontWeight: 600, fontFamily: 'var(--font-mono)' }}>
         LSA Registered
       </span>
     );
   }
   if (!item.purchasedDate) {
     return (
-      <span style={{ padding: '2px 6px', borderRadius: 10, background: '#FFF3E0', color: '#E65100', fontSize: 10, fontWeight: 600 }}>
+      <span style={{ padding: '2px 6px', borderRadius: 10, background: 'var(--amber-dim)', color: 'var(--amber)', fontSize: 10, fontWeight: 600, fontFamily: 'var(--font-mono)' }}>
         Register
       </span>
     );
@@ -49,20 +49,20 @@ function ridgidBadge(item: ToolInventoryItem) {
   const daysSince = Math.floor((Date.now() - new Date(item.purchasedDate).getTime()) / 86400000);
   if (daysSince > 90) {
     return (
-      <span style={{ padding: '2px 6px', borderRadius: 10, background: '#FFEBEE', color: '#C62828', fontSize: 10, fontWeight: 700 }}>
+      <span style={{ padding: '2px 6px', borderRadius: 10, background: 'var(--red-bg)', color: 'var(--red)', fontSize: 10, fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
         OVERDUE
       </span>
     );
   }
   if (daysSince >= 60) {
     return (
-      <span style={{ padding: '2px 6px', borderRadius: 10, background: '#FFEBEE', color: '#C62828', fontSize: 10, fontWeight: 600 }}>
+      <span style={{ padding: '2px 6px', borderRadius: 10, background: 'var(--red-bg)', color: 'var(--red)', fontSize: 10, fontWeight: 600, fontFamily: 'var(--font-mono)' }}>
         Register — {90 - daysSince}d!
       </span>
     );
   }
   return (
-    <span style={{ padding: '2px 6px', borderRadius: 10, background: '#FFF3E0', color: '#E65100', fontSize: 10, fontWeight: 600 }}>
+    <span style={{ padding: '2px 6px', borderRadius: 10, background: 'var(--amber-dim)', color: 'var(--amber)', fontSize: 10, fontWeight: 600, fontFamily: 'var(--font-mono)' }}>
       Register
     </span>
   );
@@ -127,8 +127,8 @@ export function InventoryTab({ inventory }: InventoryTabProps) {
         borderRadius: 12,
         border: '1px solid',
         borderColor: current === value ? TEAL : '#DDD',
-        background: current === value ? TEAL + '18' : 'white',
-        color: current === value ? TEAL : '#666',
+        background: current === value ? TEAL + '18' : 'var(--surface)',
+        color: current === value ? TEAL : 'var(--muted)',
         fontSize: 11,
         fontWeight: current === value ? 700 : 400,
         cursor: 'pointer',
@@ -160,7 +160,7 @@ export function InventoryTab({ inventory }: InventoryTabProps) {
             <div style={{ fontWeight: 700, fontSize: 13, color: CORAL }}>
               {unregisteredRidgid} RIDGID tool{unregisteredRidgid > 1 ? 's' : ''} not registered
             </div>
-            <div style={{ fontSize: 12, color: '#666' }}>
+            <div style={{ fontSize: 12, color: 'var(--muted)' }}>
               Register within 90 days of purchase at ridgid.com for Lifetime Service Agreement
             </div>
           </div>
@@ -178,8 +178,8 @@ export function InventoryTab({ inventory }: InventoryTabProps) {
       >
         {[
           { label: 'Total Items', value: String(totalTools), colorVal: NAVY, bg: LIGHT_BG },
-          { label: 'Owned', value: String(owned), colorVal: '#2E7D32', bg: '#E8F5E9' },
-          { label: 'Purchasing', value: String(purchasing), colorVal: '#1565C0', bg: '#E3F2FD' },
+          { label: 'Owned', value: String(owned), colorVal: 'var(--green)', bg: 'var(--green-bg)' },
+          { label: 'Purchasing', value: String(purchasing), colorVal: 'var(--blue)', bg: 'var(--blue-bg)' },
           {
             label: 'RIDGID 18V Platform',
             value: `${ridgidCount} items`,
@@ -227,7 +227,7 @@ export function InventoryTab({ inventory }: InventoryTabProps) {
       >
         <div style={{ display: 'flex', gap: 16, marginBottom: 14, flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-            <span style={{ fontSize: 11, fontWeight: 600, color: '#888' }}>Status:</span>
+            <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--muted)' }}>Status:</span>
             {statuses.map((s) => (
               <FilterBtn
                 key={s}
@@ -239,7 +239,7 @@ export function InventoryTab({ inventory }: InventoryTabProps) {
             ))}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-            <span style={{ fontSize: 11, fontWeight: 600, color: '#888' }}>Platform:</span>
+            <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--muted)' }}>Platform:</span>
             {platforms.map((p) => (
               <FilterBtn
                 key={p}
@@ -251,7 +251,7 @@ export function InventoryTab({ inventory }: InventoryTabProps) {
             ))}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-            <span style={{ fontSize: 11, fontWeight: 600, color: '#888' }}>Category:</span>
+            <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--muted)' }}>Category:</span>
             {categories.map((c) => (
               <FilterBtn
                 key={c}
@@ -274,7 +274,7 @@ export function InventoryTab({ inventory }: InventoryTabProps) {
               label: 'Status',
               nowrap: true,
               render: (v) => {
-                const s = STATUS_STYLES[v as string] || { bg: '#EEE', color: '#666' };
+                const s = STATUS_STYLES[v as string] || { bg: 'var(--surface-2)', color: 'var(--muted)' };
                 return (
                   <span
                     style={{
@@ -284,6 +284,7 @@ export function InventoryTab({ inventory }: InventoryTabProps) {
                       color: s.color,
                       fontSize: 11,
                       fontWeight: 600,
+                      fontFamily: 'var(--font-mono)',
                     }}
                   >
                     {v as string}
@@ -350,7 +351,7 @@ export function InventoryTab({ inventory }: InventoryTabProps) {
                           padding: '3px 8px',
                           border: `1px solid ${TEAL}`,
                           borderRadius: 4,
-                          background: 'white',
+                          background: 'var(--surface)',
                           color: TEAL,
                           fontSize: 10,
                           fontWeight: 600,
@@ -366,7 +367,7 @@ export function InventoryTab({ inventory }: InventoryTabProps) {
                           padding: '3px 8px',
                           border: `1px solid ${CORAL}`,
                           borderRadius: 4,
-                          background: 'white',
+                          background: 'var(--surface)',
                           color: CORAL,
                           fontSize: 10,
                           fontWeight: 600,
@@ -383,10 +384,10 @@ export function InventoryTab({ inventory }: InventoryTabProps) {
                       onClick={(e) => { e.stopPropagation(); setMaintenanceItem(row); }}
                       style={{
                         padding: '3px 8px',
-                        border: '1px solid #6B7280',
+                        border: '1px solid var(--muted)',
                         borderRadius: 4,
-                        background: 'white',
-                        color: '#6B7280',
+                        background: 'var(--surface)',
+                        color: 'var(--muted)',
                         fontSize: 10,
                         fontWeight: 600,
                         cursor: 'pointer',
@@ -421,10 +422,10 @@ export function InventoryTab({ inventory }: InventoryTabProps) {
                       onClick={(e) => { e.stopPropagation(); setRegisterItem(row); }}
                       style={{
                         padding: '3px 8px',
-                        border: '1px solid #E65100',
+                        border: '1px solid var(--amber)',
                         borderRadius: 4,
-                        background: 'white',
-                        color: '#E65100',
+                        background: 'var(--surface)',
+                        color: 'var(--amber)',
                         fontSize: 10,
                         fontWeight: 600,
                         cursor: 'pointer',
@@ -464,18 +465,18 @@ export function InventoryTab({ inventory }: InventoryTabProps) {
                   gridTemplateColumns: '1fr auto auto',
                   gap: 12,
                   padding: '10px 14px',
-                  background: i % 2 === 0 ? LIGHT_BG : 'white',
+                  background: i % 2 === 0 ? LIGHT_BG : 'var(--surface)',
                   borderRadius: 6,
                   alignItems: 'center',
                   cursor: 'pointer',
                 }}
                 onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = '#EDF2F7'; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = i % 2 === 0 ? LIGHT_BG : 'white'; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = i % 2 === 0 ? LIGHT_BG : 'var(--surface)'; }}
               >
                 <div>
                   <span style={{ fontWeight: 600, fontSize: 13, color: NAVY }}>{item.item}</span>
                   {item.notes && (
-                    <div style={{ fontSize: 11, color: '#888', marginTop: 2 }}>{item.notes}</div>
+                    <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>{item.notes}</div>
                   )}
                 </div>
                 <span
@@ -483,9 +484,10 @@ export function InventoryTab({ inventory }: InventoryTabProps) {
                     padding: '2px 8px',
                     borderRadius: 10,
                     background: (STATUS_STYLES[item.status] || { bg: '#EEE' }).bg,
-                    color: (STATUS_STYLES[item.status] || { color: '#666' }).color,
+                    color: (STATUS_STYLES[item.status] || { color: 'var(--muted)' }).color,
                     fontSize: 11,
                     fontWeight: 600,
+                    fontFamily: 'var(--font-mono)',
                   }}
                 >
                   {item.status}

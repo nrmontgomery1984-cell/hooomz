@@ -3,9 +3,9 @@
 import Link from 'next/link';
 import { useToolResearchItems, useToolInventory } from '@/lib/hooks/useLabsData';
 
-const TEAL = '#0F766E';
-const NAVY = '#111827';
-const CORAL = '#EF4444';
+const TEAL = 'var(--accent)';
+const NAVY = 'var(--charcoal)';
+const CORAL = 'var(--red)';
 
 export function ToolResearchWidget() {
   const { data: items = [] } = useToolResearchItems();
@@ -28,9 +28,9 @@ export function ToolResearchWidget() {
       style={{
         display: 'block',
         padding: '16px 20px',
-        background: 'white',
+        background: 'var(--surface)',
         borderRadius: 12,
-        border: '1px solid #E5E7EB',
+        border: '1px solid var(--border)',
         textDecoration: 'none',
         transition: 'border-color 0.15s',
       }}
@@ -38,7 +38,7 @@ export function ToolResearchWidget() {
         (e.currentTarget as HTMLElement).style.borderColor = TEAL;
       }}
       onMouseLeave={(e) => {
-        (e.currentTarget as HTMLElement).style.borderColor = '#E5E7EB';
+        (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)';
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
@@ -49,7 +49,7 @@ export function ToolResearchWidget() {
       </div>
 
       {/* Progress bar */}
-      <div style={{ background: '#E5E7EB', borderRadius: 4, height: 6, overflow: 'hidden', marginBottom: 8 }}>
+      <div style={{ background: 'var(--border)', borderRadius: 4, height: 6, overflow: 'hidden', marginBottom: 8 }}>
         <div
           style={{
             width: `${total > 0 ? (purchased / total) * 100 : 0}%`,
@@ -61,10 +61,10 @@ export function ToolResearchWidget() {
       </div>
 
       <div style={{ display: 'flex', gap: 16, fontSize: 12 }}>
-        <span style={{ color: '#6B7280' }}>
+        <span style={{ color: 'var(--muted)' }}>
           ${spent.toLocaleString()} spent
         </span>
-        <span style={{ color: '#6B7280' }}>
+        <span style={{ color: 'var(--muted)' }}>
           {inventory.length} in inventory
         </span>
         {ridgidPending > 0 && (

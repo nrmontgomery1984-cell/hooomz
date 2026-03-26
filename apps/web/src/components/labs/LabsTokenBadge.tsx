@@ -26,7 +26,7 @@ export function LabsTokenBadge({ token, size = 'md', onClick, className = '' }: 
 
   return (
     <span
-      className={`inline-flex items-center font-medium rounded-full border border-gray-200 bg-gray-50 text-gray-800 ${sizeStyles[size]} ${onClick ? 'cursor-pointer hover:bg-gray-100' : ''} ${className}`}
+      className={`inline-flex items-center font-medium rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--charcoal)] ${sizeStyles[size]} ${onClick ? 'cursor-pointer hover:bg-[var(--surface)]' : ''} ${className}`}
       onClick={onClick}
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}

@@ -41,7 +41,7 @@ export function NotificationBell({ collapsed }: NotificationBellProps) {
           background: 'none',
           border: 'none',
           cursor: 'pointer',
-          color: 'var(--sidebar-muted)',
+          color: 'var(--muted)',
           borderRadius: 'var(--radius)',
           transition: 'background 0.15s',
           minHeight: 36,
@@ -55,7 +55,7 @@ export function NotificationBell({ collapsed }: NotificationBellProps) {
               position: 'absolute',
               top: -5,
               right: -6,
-              background: '#EF4444',
+              background: 'var(--red)',
               color: 'white',
               fontSize: 9,
               fontWeight: 700,
@@ -72,7 +72,7 @@ export function NotificationBell({ collapsed }: NotificationBellProps) {
           )}
         </div>
         {!collapsed && (
-          <span style={{ fontFamily: 'var(--font-sans)', fontSize: 13, fontWeight: 500 }}>
+          <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 500 }}>
             Notifications
           </span>
         )}

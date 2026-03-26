@@ -8,11 +8,11 @@
  * Search / trade / health / progress are local state (transient).
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { PageErrorBoundary } from '@/components/ui/PageErrorBoundary';
-import { ArrowLeft, ChevronRight, FolderOpen, Search, X } from 'lucide-react';
+import { ArrowLeft, ChevronDown, ChevronRight, FolderOpen, Search, X } from 'lucide-react';
 import { SECTION_COLORS } from '@/lib/viewmode';
 import { useDashboardData } from '@/lib/hooks/useDashboardData';
 import { useServicesContext } from '@/lib/services/ServicesContext';
@@ -24,12 +24,12 @@ import type { ActiveProjectSummary } from '@/lib/hooks/useDashboardData';
 const COLOR = SECTION_COLORS.production;
 
 const STAGE_COLORS: Partial<Record<JobStage, string>> = {
-  [JobStage.LEAD]: '#9CA3AF', [JobStage.ESTIMATE]: '#9CA3AF',
-  [JobStage.CONSULTATION]: '#3B82F6', [JobStage.QUOTE]: '#3B82F6',
-  [JobStage.CONTRACT]: '#3B82F6', [JobStage.SHIELD]: '#F59E0B',
-  [JobStage.CLEAR]: '#F59E0B', [JobStage.READY]: '#F59E0B',
-  [JobStage.INSTALL]: '#0F766E', [JobStage.PUNCH]: '#F59E0B',
-  [JobStage.TURNOVER]: '#3B82F6',
+  [JobStage.LEAD]: 'var(--muted)', [JobStage.ESTIMATE]: 'var(--muted)',
+  [JobStage.CONSULTATION]: 'var(--blue)', [JobStage.QUOTE]: 'var(--blue)',
+  [JobStage.CONTRACT]: 'var(--blue)', [JobStage.SHIELD]: 'var(--yellow)',
+  [JobStage.CLEAR]: 'var(--yellow)', [JobStage.READY]: 'var(--yellow)',
+  [JobStage.INSTALL]: 'var(--accent)', [JobStage.PUNCH]: 'var(--yellow)',
+  [JobStage.TURNOVER]: 'var(--blue)',
 };
 
 type HealthFilter   = 'all' | 'green' | 'amber' | 'red';
@@ -72,19 +72,19 @@ function progressBucket(p: ActiveProjectSummary): ProgressFilter {
   return 'not-started';
 }
 
-function Pill({ label, active, color, onClick }: {
+function Pill({ label, active, onClick }: {
   label: string; active: boolean; color?: string; onClick: () => void;
 }) {
-  const c = color ?? COLOR;
   return (
     <button
       onClick={onClick}
       style={{
-        padding: '5px 12px', borderRadius: 99, flexShrink: 0,
-        border: `1.5px solid ${active ? c : 'var(--border)'}`,
-        background: active ? `${c}18` : 'var(--surface-1)',
-        color: active ? c : 'var(--text-3)',
-        fontSize: 11, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap',
+        padding: '6px 0', marginRight: 16, flexShrink: 0,
+        border: 'none', borderBottom: `2px solid ${active ? 'var(--charcoal)' : 'transparent'}`,
+        background: 'none',
+        color: active ? 'var(--charcoal)' : 'var(--muted)',
+        fontSize: 11, fontWeight: active ? 700 : 500, cursor: 'pointer', whiteSpace: 'nowrap',
+        fontFamily: 'var(--font-mono)', letterSpacing: '0.04em',
       }}
     >
       {label}
@@ -103,6 +103,17 @@ export default function ProductionJobsPage() {
   const [healthFilter, setHealthFilter]     = useState<HealthFilter>('all');
   const [progressFilter, setProgressFilter] = useState<ProgressFilter>('all');
   const [tradeFilter, setTradeFilter]       = useState<TradeFilter>('all');
+  const [expandedIds, setExpandedIds]       = useState<Set<string>>(new Set());
+
+  const toggleExpanded = useCallback((id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
 
   // Three-Dot weighted health scores
   const projectIds = dashboard.activeProjects.map((p) => p.id);
@@ -155,7 +166,7 @@ export default function ProductionJobsPage() {
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}>
         <div style={{ textAlign: 'center' }}>
           <div style={{ width: 32, height: 32, border: '2px solid var(--border)', borderTopColor: COLOR, borderRadius: '50%', animation: 'spin 0.7s linear infinite', margin: '0 auto 8px' }} />
-          <p style={{ fontSize: 11, color: 'var(--text-3)' }}>Loading...</p>
+          <p style={{ fontSize: 11, color: 'var(--muted)' }}>Loading...</p>
         </div>
       </div>
     );
@@ -166,18 +177,18 @@ export default function ProductionJobsPage() {
       <div style={{ minHeight: '100vh', paddingBottom: 96, background: 'var(--bg)' }}>
 
         {/* Header */}
-        <div style={{ background: 'var(--surface-1)', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
           <div className="max-w-lg md:max-w-full mx-auto px-4 md:px-6 py-3 md:py-4">
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <button
                 onClick={() => router.push('/production')}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-3)', padding: 0, minWidth: 28, minHeight: 28, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)', padding: 0, minWidth: 28, minHeight: 28, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
                 <ArrowLeft size={18} />
               </button>
               <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <h1 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', fontFamily: 'var(--font-cond)' }}>Jobs</h1>
+                  <h1 style={{ fontSize: 16, fontWeight: 700, color: 'var(--charcoal)', fontFamily: 'var(--font-mono)' }}>Jobs</h1>
                   {hasFilters && (
                     <button
                       onClick={clearAll}
@@ -187,7 +198,7 @@ export default function ProductionJobsPage() {
                     </button>
                   )}
                 </div>
-                <p style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 1 }}>
+                <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 1 }}>
                   {filtered.length} of {dashboard.activeProjects.length} active job{dashboard.activeProjects.length !== 1 ? 's' : ''}
                 </p>
               </div>
@@ -199,16 +210,16 @@ export default function ProductionJobsPage() {
 
           {/* Search */}
           <div style={{ position: 'relative', marginBottom: 12 }}>
-            <Search size={14} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-3)', pointerEvents: 'none' }} />
+            <Search size={14} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--muted)', pointerEvents: 'none' }} />
             <input
               type="text"
               placeholder="Search jobs…"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              style={{ width: '100%', padding: '9px 32px 9px 30px', background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 10, color: 'var(--text)', fontSize: 13, outline: 'none', boxSizing: 'border-box' }}
+              style={{ width: '100%', padding: '9px 32px 9px 30px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10, color: 'var(--charcoal)', fontSize: 13, outline: 'none', boxSizing: 'border-box' }}
             />
             {query && (
-              <button onClick={() => setQuery('')} style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-3)', padding: 2, display: 'flex' }}>
+              <button onClick={() => setQuery('')} style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)', padding: 2, display: 'flex' }}>
                 <X size={13} />
               </button>
             )}
@@ -216,8 +227,8 @@ export default function ProductionJobsPage() {
 
           {/* Stage filter */}
           <div style={{ marginBottom: 10 }}>
-            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: 6 }}>Stage</div>
-            <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 2 }}>
+            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 6 }}>Stage</div>
+            <div style={{ display: 'flex', gap: 0, overflowX: 'auto', borderBottom: '1px solid var(--border)' }}>
               <Pill label="All" active={!stageFilter} onClick={() => setStage(null)} />
               {SCRIPT_STAGES.map((s) => (
                 <Pill
@@ -233,8 +244,8 @@ export default function ProductionJobsPage() {
 
           {/* Trade filter */}
           <div style={{ marginBottom: 10 }}>
-            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: 6 }}>Trade</div>
-            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 6 }}>Trade</div>
+            <div style={{ display: 'flex', gap: 0, flexWrap: 'wrap', borderBottom: '1px solid var(--border)' }}>
               {(['all', 'flooring', 'paint', 'trim', 'tile', 'drywall'] as TradeFilter[]).map((key) => (
                 <Pill
                   key={key}
@@ -248,8 +259,8 @@ export default function ProductionJobsPage() {
 
           {/* Health filter */}
           <div style={{ marginBottom: 10 }}>
-            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: 6 }}>Health</div>
-            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 6 }}>Health</div>
+            <div style={{ display: 'flex', gap: 0, flexWrap: 'wrap', borderBottom: '1px solid var(--border)' }}>
               {([
                 { key: 'all'   as HealthFilter, label: 'All',      color: COLOR },
                 { key: 'green' as HealthFilter, label: 'On Track',  color: THREE_DOT_HEX.green },
@@ -264,8 +275,8 @@ export default function ProductionJobsPage() {
 
           {/* Progress filter */}
           <div style={{ marginBottom: 16 }}>
-            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: 6 }}>Progress</div>
-            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 6 }}>Progress</div>
+            <div style={{ display: 'flex', gap: 0, flexWrap: 'wrap', borderBottom: '1px solid var(--border)' }}>
               {([
                 { key: 'all'          as ProgressFilter, label: 'All' },
                 { key: 'not-started'  as ProgressFilter, label: 'Not Started' },
@@ -281,8 +292,8 @@ export default function ProductionJobsPage() {
           {/* Results */}
           {filtered.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '48px 16px' }}>
-              <FolderOpen size={24} style={{ color: 'var(--text-3)', margin: '0 auto 8px' }} />
-              <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-2)' }}>
+              <FolderOpen size={24} style={{ color: 'var(--muted)', margin: '0 auto 8px' }} />
+              <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--mid)' }}>
                 {hasFilters ? 'No jobs match these filters' : 'No active jobs'}
               </p>
               {hasFilters && (
@@ -296,50 +307,87 @@ export default function ProductionJobsPage() {
               {filtered.map((project) => {
                 const stage = resolveScriptStage(project);
                 const stageMeta = stage ? JOB_STAGE_META[stage] : null;
-                const stageColor = (stage && STAGE_COLORS[stage]) || '#9CA3AF';
+                const stageColor = (stage && STAGE_COLORS[stage]) || 'var(--muted)';
                 const healthColor = threeDotHex(getHealthScore(project.id, project.healthScore));
                 const pct = project.taskCount > 0 ? Math.round((project.completedCount / project.taskCount) * 100) : 0;
                 const trades = projectTradesMap.get(project.id) ?? [];
+                const isExpanded = expandedIds.has(project.id);
 
                 return (
-                  <button
+                  <div
                     key={project.id}
-                    onClick={() => router.push(`/projects/${project.id}`)}
-                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', borderRadius: 'var(--radius)', background: 'var(--surface-1)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-card)', cursor: 'pointer', width: '100%', textAlign: 'left' }}
+                    style={{
+                      borderRadius: 'var(--radius)', background: 'var(--surface)',
+                      border: '1px solid var(--border)', boxShadow: 'var(--shadow-card)',
+                      overflow: 'hidden', cursor: 'pointer', width: '100%', textAlign: 'left',
+                    }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flex: 1 }}>
-                      <div style={{ width: 8, height: 8, borderRadius: '50%', flexShrink: 0, background: healthColor }} />
-                      <div style={{ minWidth: 0, flex: 1 }}>
-                        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {/* Collapsed row — always visible */}
+                    <div
+                      onClick={(e) => toggleExpanded(project.id, e)}
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', gap: 8 }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flex: 1 }}>
+                        <div style={{ width: 8, height: 8, borderRadius: '50%', flexShrink: 0, background: healthColor }} />
+                        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--charcoal)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
                           {project.name}
                         </span>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 3 }}>
-                          <div style={{ flex: 1, height: 3, background: 'var(--border)', borderRadius: 2, overflow: 'hidden', maxWidth: 80 }}>
-                            <div style={{ height: '100%', width: `${pct}%`, background: healthColor, borderRadius: 2 }} />
-                          </div>
-                          <span style={{ fontSize: 9, color: 'var(--text-3)', flexShrink: 0 }}>
-                            {project.completedCount}/{project.taskCount}
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+                        {trades.map((t) => (
+                          <span
+                            key={t}
+                            style={{ fontSize: 9, fontWeight: 600, color: 'var(--muted)', background: 'var(--border)', borderRadius: 3, padding: '1px 4px', textTransform: 'capitalize', fontFamily: 'var(--font-mono)' }}
+                          >
+                            {t}
                           </span>
-                          {trades.map((t) => (
-                            <span
-                              key={t}
-                              style={{ fontSize: 9, fontWeight: 600, color: 'var(--text-3)', background: 'var(--border)', borderRadius: 3, padding: '1px 4px', textTransform: 'capitalize' }}
-                            >
-                              {t}
-                            </span>
-                          ))}
-                        </div>
+                        ))}
+                        {stageMeta && (
+                          <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '2px 6px', borderRadius: 4, background: `${stageColor}18`, color: stageColor, fontFamily: 'var(--font-mono)' }}>
+                            {stageMeta.label}
+                          </span>
+                        )}
+                        <ChevronDown
+                          size={14}
+                          style={{
+                            color: 'var(--muted)',
+                            transition: 'transform 0.2s ease',
+                            transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                          }}
+                        />
                       </div>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, marginLeft: 8 }}>
-                      {stageMeta && (
-                        <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '2px 6px', borderRadius: 4, background: `${stageColor}18`, color: stageColor }}>
-                          {stageMeta.label}
-                        </span>
-                      )}
-                      <ChevronRight size={14} style={{ color: 'var(--border-strong, #d1d5db)' }} />
+
+                    {/* Expanded detail — smooth height transition */}
+                    <div
+                      style={{
+                        maxHeight: isExpanded ? 200 : 0,
+                        overflow: 'hidden',
+                        transition: 'max-height 0.25s ease',
+                      }}
+                    >
+                      <div style={{ padding: '0 14px 12px', borderTop: '1px solid var(--border)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 10 }}>
+                          <div style={{ flex: 1, height: 3, background: 'var(--border)', borderRadius: 2, overflow: 'hidden', maxWidth: 120 }}>
+                            <div style={{ height: '100%', width: `${pct}%`, background: healthColor, borderRadius: 2, transition: 'width 0.3s ease' }} />
+                          </div>
+                          <span style={{ fontSize: 10, color: 'var(--muted)', fontFamily: 'var(--font-mono)' }}>
+                            {project.completedCount}/{project.taskCount} tasks
+                          </span>
+                        </div>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); router.push(`/projects/${project.id}`); }}
+                          style={{
+                            marginTop: 10, display: 'flex', alignItems: 'center', gap: 4,
+                            fontSize: 11, fontWeight: 600, color: COLOR, background: 'none',
+                            border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'var(--font-mono)',
+                          }}
+                        >
+                          Open Job <ChevronRight size={10} />
+                        </button>
+                      </div>
                     </div>
-                  </button>
+                  </div>
                 );
               })}
             </div>

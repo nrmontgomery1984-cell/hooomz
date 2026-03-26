@@ -6,7 +6,7 @@
  * Shows the room outline with:
  *   • Baseboard (dashed amber line, offset inward) broken at door openings
  *   • Door symbols (gap + 90° swing arc) — blue
- *   • Window symbols (three parallel lines on wall) — teal
+ *   • Window symbols (three parallel lines on wall) — accent
  *
  * All input coordinates in mm (from RoomScan).
  * Openings are positioned via wallIndex + wallOffset_mm.
@@ -17,9 +17,9 @@ import type { Point2D, RoomOpening } from '@/lib/types/roomScan.types';
 
 // ─── Colors ───────────────────────────────────────────────────────────────────
 const WALL_CLR    = '#1F2937';
-const BASE_CLR    = '#F59E0B';  // amber baseboard
-const DOOR_CLR    = '#1E3A8A';  // blue door
-const WIN_CLR     = '#0F766E';  // teal window
+const BASE_CLR    = 'var(--yellow)';  // amber baseboard
+const DOOR_CLR    = 'var(--blue)';  // blue door
+const WIN_CLR     = 'var(--accent)';  // accent window
 const FILL_CLR    = 'rgba(241,245,249,0.7)'; // room fill
 
 // ─── Geometry helpers ─────────────────────────────────────────────────────────
@@ -266,8 +266,8 @@ export function TrimRoomCanvas({ vertices, openings, height = 280 }: Props) {
   if (!svg) {
     return (
       <div style={{ height, display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 12,
-        color: 'var(--text-3)', fontSize: 13 }}>
+        background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12,
+        color: 'var(--muted)', fontSize: 13 }}>
         No room scan data
       </div>
     );
@@ -277,7 +277,7 @@ export function TrimRoomCanvas({ vertices, openings, height = 280 }: Props) {
           legX, legY, legFS, legSp, dashLen, gapLen, baseStroke, symStroke } = svg;
 
   return (
-    <div style={{ width: '100%', height, background: 'var(--surface-1)',
+    <div style={{ width: '100%', height, background: 'var(--surface)',
       border: '1px solid var(--border)', borderRadius: 12, overflow: 'hidden' }}>
       <svg
         width="100%"

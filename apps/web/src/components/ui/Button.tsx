@@ -49,9 +49,9 @@ export function Button({
   // Variant styles
   const variantStyles = {
     primary: 'bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 active:bg-primary-800',
-    secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500 active:bg-gray-400',
+    secondary: 'bg-[var(--surface-2)] text-[var(--charcoal)] hover:bg-[var(--surface-3)] focus:ring-[var(--muted)] active:bg-[var(--surface-3)]',
     danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 active:bg-red-800',
-    ghost: 'bg-transparent text-gray-700 hover:bg-gray-100 focus:ring-gray-500 active:bg-gray-200',
+    ghost: 'bg-transparent text-[var(--mid)] hover:bg-[var(--surface)] focus:ring-[var(--muted)] active:bg-[var(--surface-2)]',
   };
 
   // Size styles - all maintain minimum 44px touch target
@@ -68,6 +68,7 @@ export function Button({
       type={type}
       className={`${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${widthStyles} ${className}`}
       disabled={disabled || loading}
+      style={{ fontFamily: 'var(--font-mono)' }}
       {...props}
     >
       {loading && (

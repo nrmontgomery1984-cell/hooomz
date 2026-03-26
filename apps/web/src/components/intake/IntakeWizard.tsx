@@ -73,17 +73,17 @@ function ClientStep({ data, updateField, errors }: StepProps) {
   return (
     <div className="space-y-5">
       <div>
-        <h2 className="text-xl font-semibold" style={{ color: '#111827' }}>Client & Property</h2>
-        <p className="text-sm mt-1" style={{ color: '#6B7280' }}>Who is the project for?</p>
+        <h2 className="text-xl font-semibold" style={{ color: 'var(--charcoal)' }}>Client & Property</h2>
+        <p className="text-sm mt-1" style={{ color: 'var(--muted)' }}>Who is the project for?</p>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-sm font-medium mb-1.5" style={{ color: '#374151' }}>
+          <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--mid)' }}>
             First Name *
           </label>
           <div className="relative">
-            <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#9CA3AF' }} />
+            <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--muted)' }} />
             <input
               type="text"
               value={data.contact.first_name}
@@ -93,11 +93,11 @@ function ClientStep({ data, updateField, errors }: StepProps) {
             />
           </div>
           {errors['contact.first_name'] && (
-            <p className="text-xs mt-1" style={{ color: '#EF4444' }}>{errors['contact.first_name']}</p>
+            <p className="text-xs mt-1" style={{ color: 'var(--red)' }}>{errors['contact.first_name']}</p>
           )}
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1.5" style={{ color: '#374151' }}>
+          <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--mid)' }}>
             Last Name *
           </label>
           <input
@@ -111,11 +111,11 @@ function ClientStep({ data, updateField, errors }: StepProps) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1.5" style={{ color: '#374151' }}>
+        <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--mid)' }}>
           Email *
         </label>
         <div className="relative">
-          <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#9CA3AF' }} />
+          <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--muted)' }} />
           <input
             type="email"
             value={data.contact.email}
@@ -125,16 +125,16 @@ function ClientStep({ data, updateField, errors }: StepProps) {
           />
         </div>
         {errors['contact.email'] && (
-          <p className="text-xs mt-1" style={{ color: '#EF4444' }}>{errors['contact.email']}</p>
+          <p className="text-xs mt-1" style={{ color: 'var(--red)' }}>{errors['contact.email']}</p>
         )}
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1.5" style={{ color: '#374151' }}>
+        <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--mid)' }}>
           Phone
         </label>
         <div className="relative">
-          <Phone size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#9CA3AF' }} />
+          <Phone size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--muted)' }} />
           <input
             type="tel"
             value={data.contact.phone || ''}
@@ -146,11 +146,11 @@ function ClientStep({ data, updateField, errors }: StepProps) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1.5" style={{ color: '#374151' }}>
+        <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--mid)' }}>
           Property Address *
         </label>
         <div className="relative mb-2">
-          <MapPin size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#9CA3AF' }} />
+          <MapPin size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--muted)' }} />
           <input
             type="text"
             value={data.project.address.street}
@@ -160,7 +160,7 @@ function ClientStep({ data, updateField, errors }: StepProps) {
           />
         </div>
         {errors['project.address'] && (
-          <p className="text-xs mt-1 mb-2" style={{ color: '#EF4444' }}>{errors['project.address']}</p>
+          <p className="text-xs mt-1 mb-2" style={{ color: 'var(--red)' }}>{errors['project.address']}</p>
         )}
         <div className="grid grid-cols-3 gap-2">
           <input
@@ -205,12 +205,12 @@ function ServicesStep({ data, updateField, errors }: StepProps) {
   return (
     <div className="space-y-5">
       <div>
-        <h2 className="text-xl font-semibold" style={{ color: '#111827' }}>What do you need?</h2>
-        <p className="text-sm mt-1" style={{ color: '#6B7280' }}>Select all the services you&apos;re interested in.</p>
+        <h2 className="text-xl font-semibold" style={{ color: 'var(--charcoal)' }}>What do you need?</h2>
+        <p className="text-sm mt-1" style={{ color: 'var(--muted)' }}>Select all the services you&apos;re interested in.</p>
       </div>
 
       {errors['project.selected_trades'] && (
-        <p className="text-xs" style={{ color: '#EF4444' }}>{errors['project.selected_trades']}</p>
+        <p className="text-xs" style={{ color: 'var(--red)' }}>{errors['project.selected_trades']}</p>
       )}
 
       <div className="space-y-2">
@@ -223,29 +223,29 @@ function ServicesStep({ data, updateField, errors }: StepProps) {
               onClick={() => toggleTrade(svc.code)}
               className="w-full flex items-center gap-3 rounded-xl p-4 min-h-[64px] text-left transition-all"
               style={{
-                background: isOn ? '#F0FDFA' : '#FFFFFF',
-                border: isOn ? '2px solid #0F766E' : '2px solid #E5E7EB',
+                background: isOn ? 'var(--green-bg)' : 'var(--surface)',
+                border: isOn ? '2px solid var(--accent)' : '2px solid var(--border)',
               }}
             >
               <div
                 className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
                 style={{
-                  background: isOn ? '#0F766E' : '#F3F4F6',
-                  color: isOn ? '#FFFFFF' : '#6B7280',
+                  background: isOn ? 'var(--accent)' : 'var(--surface-2)',
+                  color: isOn ? '#fff' : 'var(--muted)',
                 }}
               >
                 {svc.icon}
               </div>
               <div className="flex-1 min-w-0">
-                <span className="font-semibold text-sm" style={{ color: '#111827' }}>{svc.name}</span>
-                <p className="text-xs mt-0.5" style={{ color: '#9CA3AF' }}>{svc.description}</p>
+                <span className="font-semibold text-sm" style={{ color: 'var(--charcoal)' }}>{svc.name}</span>
+                <p className="text-xs mt-0.5" style={{ color: 'var(--muted)' }}>{svc.description}</p>
               </div>
               {isOn && (
                 <div
                   className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
-                  style={{ background: '#0F766E' }}
+                  style={{ background: 'var(--accent)' }}
                 >
-                  <Check size={14} color="#FFFFFF" />
+                  <Check size={14} color="#fff" />
                 </div>
               )}
             </button>
@@ -254,8 +254,8 @@ function ServicesStep({ data, updateField, errors }: StepProps) {
       </div>
 
       {selected.length > 0 && (
-        <div className="rounded-xl p-3" style={{ background: '#F0FDFA' }}>
-          <p className="text-sm" style={{ color: '#0F766E' }}>
+        <div className="rounded-xl p-3" style={{ background: 'var(--green-bg)' }}>
+          <p className="text-sm" style={{ color: 'var(--accent)' }}>
             <span className="font-medium">{selected.length} service{selected.length !== 1 ? 's' : ''} selected</span>
             {' — '}
             {selected.map((c) => SERVICES.find((s) => s.code === c)?.name).filter(Boolean).join(', ')}
@@ -279,14 +279,14 @@ function RoomsStep({ data, updateField, errors }: StepProps) {
   return (
     <div className="space-y-5">
       <div>
-        <h2 className="text-xl font-semibold" style={{ color: '#111827' }}>Room Scope</h2>
-        <p className="text-sm mt-1" style={{ color: '#6B7280' }}>
+        <h2 className="text-xl font-semibold" style={{ color: 'var(--charcoal)' }}>Room Scope</h2>
+        <p className="text-sm mt-1" style={{ color: 'var(--muted)' }}>
           Add rooms, enter measurements, and configure trades per room.
         </p>
       </div>
 
       {errors['project.selected_rooms'] && (
-        <p className="text-xs" style={{ color: '#EF4444' }}>{errors['project.selected_rooms']}</p>
+        <p className="text-xs" style={{ color: 'var(--red)' }}>{errors['project.selected_rooms']}</p>
       )}
 
       <RoomScopeBuilder
@@ -308,26 +308,26 @@ function NotesStep({ data, updateField }: StepProps) {
   return (
     <div className="space-y-5">
       <div>
-        <h2 className="text-xl font-semibold" style={{ color: '#111827' }}>Review & Notes</h2>
-        <p className="text-sm mt-1" style={{ color: '#6B7280' }}>Anything else we should know?</p>
+        <h2 className="text-xl font-semibold" style={{ color: 'var(--charcoal)' }}>Review & Notes</h2>
+        <p className="text-sm mt-1" style={{ color: 'var(--muted)' }}>Anything else we should know?</p>
       </div>
 
       {/* Summary card */}
-      <div className="rounded-xl p-4" style={{ background: '#F3F4F6', border: '1px solid #E5E7EB' }}>
+      <div className="rounded-xl p-4" style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}>
         <div className="space-y-2">
           <div className="flex justify-between">
-            <span className="text-sm" style={{ color: '#6B7280' }}>Client</span>
-            <span className="text-sm font-medium" style={{ color: '#111827' }}>
+            <span className="text-sm" style={{ color: 'var(--muted)' }}>Client</span>
+            <span className="text-sm font-medium" style={{ color: 'var(--charcoal)' }}>
               {data.contact.first_name} {data.contact.last_name}
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-sm" style={{ color: '#6B7280' }}>Services</span>
-            <span className="text-sm font-medium" style={{ color: '#0F766E' }}>{serviceNames.join(', ') || 'None'}</span>
+            <span className="text-sm" style={{ color: 'var(--muted)' }}>Services</span>
+            <span className="text-sm font-medium" style={{ color: 'var(--accent)' }}>{serviceNames.join(', ') || 'None'}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-sm" style={{ color: '#6B7280' }}>Rooms</span>
-            <span className="text-sm font-medium" style={{ color: '#111827' }}>
+            <span className="text-sm" style={{ color: 'var(--muted)' }}>Rooms</span>
+            <span className="text-sm font-medium" style={{ color: 'var(--charcoal)' }}>
               {roomScopes.length}{totalSqft > 0 ? ` · ${totalSqft.toLocaleString()} sqft` : ''}
             </span>
           </div>
@@ -337,7 +337,7 @@ function NotesStep({ data, updateField }: StepProps) {
       {/* Room-by-room breakdown */}
       {roomScopes.length > 0 && (
         <div className="space-y-2">
-          <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: '#9CA3AF' }}>
+          <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--muted)' }}>
             Room Breakdown
           </p>
           {roomScopes.map((room) => {
@@ -348,15 +348,15 @@ function NotesStep({ data, updateField }: StepProps) {
               <div
                 key={room.id}
                 className="rounded-xl p-3"
-                style={{ background: '#FFFFFF', border: '1px solid #E5E7EB' }}
+                style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
               >
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium" style={{ color: '#111827' }}>{room.name}</span>
+                  <span className="text-sm font-medium" style={{ color: 'var(--charcoal)' }}>{room.name}</span>
                   {room.measurements.sqft != null && room.measurements.sqft > 0 && (
-                    <span className="text-xs" style={{ color: '#9CA3AF' }}>{room.measurements.sqft} sqft</span>
+                    <span className="text-xs" style={{ color: 'var(--muted)' }}>{room.measurements.sqft} sqft</span>
                   )}
                   {photoCount > 0 && (
-                    <span className="text-xs" style={{ color: '#6B7280' }}>
+                    <span className="text-xs" style={{ color: 'var(--muted)' }}>
                       {photoCount} photo{photoCount !== 1 ? 's' : ''}
                     </span>
                   )}
@@ -367,7 +367,7 @@ function NotesStep({ data, updateField }: StepProps) {
                       <span
                         key={code}
                         className="text-[10px] font-medium"
-                        style={{ color: '#0F766E' }}
+                        style={{ color: 'var(--accent)' }}
                       >
                         {TRADE_CODES[code as keyof typeof TRADE_CODES]?.name ?? code}
                       </span>
@@ -378,23 +378,23 @@ function NotesStep({ data, updateField }: StepProps) {
                 {mat && (
                   <div className="mt-1 space-y-0.5">
                     {mat.flooring?.product && (
-                      <p className="text-[11px]" style={{ color: '#6B7280' }}>
+                      <p className="text-[11px]" style={{ color: 'var(--muted)' }}>
                         Flooring: {mat.flooring.product}{mat.flooring.color ? ` (${mat.flooring.color})` : ''}
                       </p>
                     )}
                     {mat.paint?.brand && (
-                      <p className="text-[11px]" style={{ color: '#6B7280' }}>
+                      <p className="text-[11px]" style={{ color: 'var(--muted)' }}>
                         Paint: {mat.paint.brand} {mat.paint.finish}
                         {mat.paint.colors.walls ? ` — ${mat.paint.colors.walls}` : ''}
                       </p>
                     )}
                     {mat.trim?.profile && (
-                      <p className="text-[11px]" style={{ color: '#6B7280' }}>
+                      <p className="text-[11px]" style={{ color: 'var(--muted)' }}>
                         Trim: {mat.trim.profile} {mat.trim.material}
                       </p>
                     )}
                     {mat.tile?.type && (
-                      <p className="text-[11px]" style={{ color: '#6B7280' }}>
+                      <p className="text-[11px]" style={{ color: 'var(--muted)' }}>
                         Tile: {mat.tile.type}{mat.tile.size ? ` ${mat.tile.size}` : ''}
                       </p>
                     )}
@@ -407,7 +407,7 @@ function NotesStep({ data, updateField }: StepProps) {
       )}
 
       <div>
-        <label className="block text-sm font-medium mb-1.5" style={{ color: '#374151' }}>
+        <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--mid)' }}>
           Project Name
         </label>
         <input
@@ -417,13 +417,13 @@ function NotesStep({ data, updateField }: StepProps) {
           className="input"
           placeholder={`${data.contact.first_name || 'Client'}'s ${serviceNames.join(' + ') || 'Project'}`}
         />
-        <p className="text-xs mt-1" style={{ color: '#9CA3AF' }}>
+        <p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>
           Leave blank to auto-generate
         </p>
       </div>
 
       <div>
-        <label className="flex items-center gap-2 text-sm font-medium mb-1.5" style={{ color: '#374151' }}>
+        <label className="flex items-center gap-2 text-sm font-medium mb-1.5" style={{ color: 'var(--mid)' }}>
           <StickyNote size={14} />
           Notes / Special Requests
         </label>
@@ -591,14 +591,14 @@ export function IntakeWizard({
   const isLastStep = currentStep === STEPS.length - 1;
 
   return (
-    <div className="min-h-screen" style={{ background: '#F3F4F6' }}>
+    <div className="min-h-screen" style={{ background: 'var(--surface-2)' }}>
       {/* Header */}
-      <div className="sticky top-0 z-10" style={{ background: '#FFFFFF', borderBottom: '1px solid #E5E7EB' }}>
+      <div className="sticky top-0 z-10" style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
         <div className="max-w-lg mx-auto px-4 py-3 flex items-center justify-between">
           <button
             onClick={handleBack}
             className="flex items-center gap-1 text-sm font-medium min-h-[48px] min-w-[48px]"
-            style={{ color: '#6B7280' }}
+            style={{ color: 'var(--muted)' }}
           >
             <ChevronLeft size={18} />
             {currentStep === 0 ? 'Cancel' : 'Back'}
@@ -613,13 +613,13 @@ export function IntakeWizard({
                 style={{
                   width: i === currentStep ? 10 : 8,
                   height: i === currentStep ? 10 : 8,
-                  background: i <= currentStep ? '#0F766E' : '#D1D5DB',
+                  background: i <= currentStep ? 'var(--accent)' : 'var(--border)',
                 }}
               />
             ))}
           </div>
 
-          <span className="text-sm" style={{ color: '#9CA3AF' }}>
+          <span className="text-sm" style={{ color: 'var(--muted)' }}>
             {currentStep + 1} of {STEPS.length}
           </span>
         </div>
@@ -630,7 +630,7 @@ export function IntakeWizard({
         <div
           className="max-w-lg mx-auto rounded-2xl p-5"
           style={{
-            background: '#FFFFFF',
+            background: 'var(--surface)',
             boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
             minHeight: 'calc(100vh - 140px)',
             display: 'flex',
@@ -648,8 +648,8 @@ export function IntakeWizard({
               onClick={handleNext}
               className="btn btn-dark w-full text-base font-semibold"
               style={{
-                background: '#374151',
-                color: '#FFFFFF',
+                background: 'var(--mid)',
+                color: '#fff',
                 borderRadius: '12px',
                 minHeight: '52px',
               }}

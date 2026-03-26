@@ -21,7 +21,7 @@ export function ProductionScoreWidget({ projectId }: ProductionScoreWidgetProps)
   return (
     <div
       style={{
-        background: '#FFFFFF',
+        background: 'var(--surface)',
         borderRadius: 12,
         padding: '20px',
         boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
@@ -41,12 +41,12 @@ export function ProductionScoreWidget({ projectId }: ProductionScoreWidgetProps)
         />
         <div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-            <span style={{ fontSize: 28, fontWeight: 700, color: '#1F2937', lineHeight: 1 }}>
+            <span style={{ fontSize: 28, fontWeight: 700, color: 'var(--charcoal)', lineHeight: 1 }}>
               {data.score}
             </span>
-            <span style={{ fontSize: 13, color: '#9CA3AF', fontWeight: 500 }}>/100</span>
+            <span style={{ fontSize: 13, color: 'var(--muted)', fontWeight: 500 }}>/100</span>
           </div>
-          <p style={{ fontSize: 13, color: '#6B7280', marginTop: 2 }}>
+          <p style={{ fontSize: 13, color: 'var(--muted)', marginTop: 2 }}>
             {data.statusLine}
           </p>
         </div>
@@ -58,8 +58,8 @@ export function ProductionScoreWidget({ projectId }: ProductionScoreWidgetProps)
           const dotColor = entry.status === 'done'
             ? THREE_DOT_HEX.green
             : entry.status === 'active'
-            ? '#3B82F6'
-            : '#D1D5DB';
+            ? 'var(--blue)'
+            : 'var(--border)';
 
           return (
             <div key={entry.stage} style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
@@ -71,7 +71,7 @@ export function ProductionScoreWidget({ projectId }: ProductionScoreWidgetProps)
                     height: entry.status === 'active' ? 12 : 8,
                     borderRadius: '50%',
                     background: dotColor,
-                    border: entry.status === 'active' ? '2px solid #3B82F6' : 'none',
+                    border: entry.status === 'active' ? '2px solid var(--blue)' : 'none',
                     boxSizing: 'border-box',
                   }}
                 />
@@ -80,7 +80,7 @@ export function ProductionScoreWidget({ projectId }: ProductionScoreWidgetProps)
                   fontWeight: 600,
                   textTransform: 'uppercase',
                   letterSpacing: '0.05em',
-                  color: entry.status === 'upcoming' ? '#D1D5DB' : '#6B7280',
+                  color: entry.status === 'upcoming' ? 'var(--border)' : 'var(--muted)',
                 }}>
                   {entry.label.charAt(0)}
                 </span>
@@ -91,7 +91,7 @@ export function ProductionScoreWidget({ projectId }: ProductionScoreWidgetProps)
                   style={{
                     flex: 1,
                     height: 2,
-                    background: entry.status === 'done' ? THREE_DOT_HEX.green : '#E5E7EB',
+                    background: entry.status === 'done' ? THREE_DOT_HEX.green : 'var(--border)',
                     marginBottom: 16, // offset for the label
                   }}
                 />

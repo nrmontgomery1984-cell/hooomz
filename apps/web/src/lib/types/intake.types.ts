@@ -463,12 +463,12 @@ export const TRADE_CODES = {
  * SCRIPT pipeline: Shield → Clear → Ready → Install → Punch → Turnover
  */
 export const STAGE_CODES = {
-  'ST-SH': { name: 'Shield',     order: 0, color: '#0EA5E9' }, // Protect the home
-  'ST-DM': { name: 'Demolition', order: 1, color: '#EF4444' }, // Clear — remove existing
-  'ST-PR': { name: 'Prime & Prep', order: 2, color: '#F59E0B' }, // Ready
-  'ST-FN': { name: 'Finish',     order: 3, color: '#3B82F6' }, // Install
-  'ST-PL': { name: 'Punch List', order: 4, color: '#8B5CF6' }, // Punch
-  'ST-CL': { name: 'Closeout',   order: 5, color: '#10B981' }, // Turnover
+  'ST-SH': { name: 'Shield',     order: 0, color: 'var(--blue)' }, // Protect the home
+  'ST-DM': { name: 'Demolition', order: 1, color: 'var(--red)' }, // Clear — remove existing
+  'ST-PR': { name: 'Prime & Prep', order: 2, color: 'var(--yellow)' }, // Ready
+  'ST-FN': { name: 'Finish',     order: 3, color: 'var(--blue)' }, // Install
+  'ST-PL': { name: 'Punch List', order: 4, color: 'var(--violet)' }, // Punch
+  'ST-CL': { name: 'Closeout',   order: 5, color: 'var(--green)' }, // Turnover
 } as const;
 
 export const ROOM_LOCATIONS = {

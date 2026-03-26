@@ -2,14 +2,14 @@
 
 import { useState, useMemo, type ReactNode } from 'react';
 
-const NAVY = '#1B2A4A';
-const LIGHT_BG = '#F5F7FA';
+const NAVY = 'var(--charcoal)';
+const LIGHT_BG = 'var(--surface-2)';
 
 const PRIORITY_COLORS: Record<string, { bg: string; text: string }> = {
-  P0: { bg: '#E8F5E9', text: '#2E7D32' },
+  P0: { bg: 'var(--green-bg)', text: 'var(--green)' },
   P1: { bg: '#FFF8E1', text: '#F57F17' },
-  P2: { bg: '#FFF3E0', text: '#E65100' },
-  P3: { bg: '#FFEBEE', text: '#C62828' },
+  P2: { bg: 'var(--amber-dim)', text: 'var(--amber)' },
+  P3: { bg: 'var(--red-bg)', text: 'var(--red)' },
 };
 
 export interface TableColumn<T> {
@@ -64,7 +64,7 @@ export function SortableTable<T extends object>({
   };
 
   return (
-    <div style={{ overflowX: 'auto', borderRadius: 8, border: '1px solid #DEE2E6' }}>
+    <div style={{ overflowX: 'auto', borderRadius: 8, border: '1px solid var(--border)' }}>
       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
         <thead>
           <tr>
@@ -103,10 +103,10 @@ export function SortableTable<T extends object>({
                 if (onRowClick) {
                   const rs = rowStyle?.(row);
                   (e.currentTarget as HTMLElement).style.background =
-                    rs?.background as string ?? (ri % 2 === 0 ? 'white' : LIGHT_BG);
+                    rs?.background as string ?? (ri % 2 === 0 ? 'var(--surface)' : LIGHT_BG);
                 }
               }}
-              style={{ background: ri % 2 === 0 ? 'white' : LIGHT_BG, cursor: onRowClick ? 'pointer' : undefined, ...rowStyle?.(row) }}
+              style={{ background: ri % 2 === 0 ? 'var(--surface)' : LIGHT_BG, cursor: onRowClick ? 'pointer' : undefined, ...rowStyle?.(row) }}
             >
               {columns.map((col, ci) => {
                 const val = (row as Record<string, unknown>)[col.key];
@@ -117,7 +117,7 @@ export function SortableTable<T extends object>({
                     key={ci}
                     style={{
                       padding: '8px 12px',
-                      borderBottom: '1px solid #EEE',
+                      borderBottom: '1px solid var(--border)',
                       background: isPriority ? PRIORITY_COLORS[val as string].bg : undefined,
                       color: isPriority
                         ? PRIORITY_COLORS[val as string].text

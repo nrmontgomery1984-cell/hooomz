@@ -66,10 +66,10 @@ export function VoiceInputFAB({
           isRecording
             ? 'bg-coral text-white scale-110 animate-pulse'
             : isProcessing
-              ? 'bg-slate-400 text-white cursor-wait'
+              ? 'bg-[var(--muted)] text-white cursor-wait'
               : isDisabled
-                ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                : 'bg-teal text-white hover:bg-teal/90 active:scale-95'
+                ? 'bg-[var(--surface-2)] text-[var(--muted)] cursor-not-allowed'
+                : 'bg-[var(--accent)] text-white hover:bg-[var(--accent)]/90 active:scale-95'
         }
         ${className}
       `}

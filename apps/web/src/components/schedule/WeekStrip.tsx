@@ -23,30 +23,30 @@ export function WeekStrip({ weekStart, selectedDate, onSelectDate, onPrevWeek, o
   const days = Array.from({ length: 7 }, (_, i) => addDays(monday, i));
 
   return (
-    <div className="bg-white border-b border-gray-200">
+    <div className="bg-white border-b border-[var(--border)]">
       {/* Week nav */}
       <div className="flex items-center justify-between px-4 md:px-6 py-2">
         <button
           onClick={onPrevWeek}
-          className="p-2 text-gray-500 hover:text-gray-800 transition-colors"
+          className="p-2 text-[var(--muted)] hover:text-[var(--charcoal)] transition-colors"
           style={{ minWidth: '44px', minHeight: '44px' }}
         >
           &larr;
         </button>
         <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-gray-900">
+          <span className="text-sm font-semibold text-[var(--charcoal)]">
             {format(monday, 'MMM d')} — {format(addDays(monday, 6), 'MMM d, yyyy')}
           </span>
           <button
             onClick={onToday}
-            className="px-2 py-0.5 text-xs font-medium rounded border border-gray-300 text-gray-600 hover:bg-gray-50 transition-colors"
+            className="px-2 py-0.5 text-xs font-medium rounded border border-[var(--border)] text-[var(--mid)] hover:bg-[var(--surface)] transition-colors"
           >
             Today
           </button>
         </div>
         <button
           onClick={onNextWeek}
-          className="p-2 text-gray-500 hover:text-gray-800 transition-colors"
+          className="p-2 text-[var(--muted)] hover:text-[var(--charcoal)] transition-colors"
           style={{ minWidth: '44px', minHeight: '44px' }}
         >
           &rarr;
@@ -66,12 +66,12 @@ export function WeekStrip({ weekStart, selectedDate, onSelectDate, onPrevWeek, o
               onClick={() => onSelectDate(day)}
               className={`flex-1 flex flex-col items-center py-1.5 rounded-lg transition-colors ${
                 isSelected
-                  ? 'bg-gray-900 text-white'
+                  ? 'bg-[var(--charcoal)] text-white'
                   : isToday
-                  ? 'bg-teal-50 text-teal-700 border border-teal-200'
+                  ? 'bg-[var(--accent-bg)] text-[var(--accent)] border border-[var(--accent-border)]'
                   : isWeekend
-                  ? 'text-gray-400 hover:bg-gray-50'
-                  : 'text-gray-700 hover:bg-gray-50'
+                  ? 'text-[var(--muted)] hover:bg-[var(--surface)]'
+                  : 'text-[var(--mid)] hover:bg-[var(--surface)]'
               }`}
               style={{ minHeight: '44px' }}
             >

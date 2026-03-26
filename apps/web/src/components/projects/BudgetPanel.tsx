@@ -66,7 +66,7 @@ function TrackBar({ label, valueStr, pct, color, onClick, expandIcon }: TrackBar
     >
       {/* Expand icon */}
       {expandIcon && (
-        <span style={{ flexShrink: 0, color: 'var(--text-3)', display: 'flex', alignItems: 'center' }}>
+        <span style={{ flexShrink: 0, color: 'var(--muted)', display: 'flex', alignItems: 'center' }}>
           {expandIcon === 'down' ? <ChevronDown size={10} /> : <ChevronRight size={10} />}
         </span>
       )}
@@ -74,12 +74,12 @@ function TrackBar({ label, valueStr, pct, color, onClick, expandIcon }: TrackBar
       {/* Label */}
       <span
         style={{
-          fontFamily: 'var(--font-cond)',
+          fontFamily: 'var(--font-mono)',
           fontSize: 10,
           fontWeight: 600,
           letterSpacing: '0.05em',
           textTransform: 'uppercase',
-          color: 'var(--text-3)',
+          color: 'var(--muted)',
           width: expandIcon ? 32 : 40,
           flexShrink: 0,
         }}
@@ -92,7 +92,7 @@ function TrackBar({ label, valueStr, pct, color, onClick, expandIcon }: TrackBar
         style={{
           fontFamily: 'var(--font-mono)',
           fontSize: 10,
-          color: 'var(--text-2)',
+          color: 'var(--mid)',
           width: 100,
           flexShrink: 0,
           overflow: 'hidden',
@@ -208,7 +208,7 @@ export function BudgetPanel({
     return (
       <PanelSection label="Budget" action={action}>
         <div style={{ padding: '6px 12px' }}>
-          <span style={{ fontSize: 11, color: 'var(--text-3)' }}>No budget data yet</span>
+          <span style={{ fontSize: 11, color: 'var(--muted)' }}>No budget data yet</span>
         </div>
       </PanelSection>
     );
@@ -218,14 +218,14 @@ export function BudgetPanel({
     ? budgetSummary.totalActualHours / budgetSummary.totalBudgetedHours
     : 0;
   const hoursPct = Math.round(hoursRatio * 100);
-  const hoursColor = hasBudgetData ? getBudgetColor(hoursRatio) : 'var(--text-3)';
+  const hoursColor = hasBudgetData ? getBudgetColor(hoursRatio) : 'var(--muted)';
   const hoursValue = hasBudgetData
     ? `${budgetSummary.totalActualHours.toFixed(1)}h / ${budgetSummary.totalBudgetedHours.toFixed(0)}h`
     : '—';
 
   const costRatio = hasCostData ? actualCost / estimatedCost : 0;
   const costPct = Math.round(costRatio * 100);
-  const costColor = hasCostData ? getBudgetColor(costRatio) : 'var(--text-3)';
+  const costColor = hasCostData ? getBudgetColor(costRatio) : 'var(--muted)';
   const costValue = hasCostData
     ? `${formatCurrency(actualCost)} / ${formatCurrency(estimatedCost)}`
     : '—';
@@ -249,10 +249,10 @@ export function BudgetPanel({
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setLabourExpanded(!labourExpanded); } }}
                 style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '2px 12px', cursor: 'pointer' }}
               >
-                <span style={{ flexShrink: 0, color: 'var(--text-3)', display: 'flex', alignItems: 'center' }}>
+                <span style={{ flexShrink: 0, color: 'var(--muted)', display: 'flex', alignItems: 'center' }}>
                   {labourExpanded ? <ChevronDown size={9} /> : <ChevronRight size={9} />}
                 </span>
-                <span style={{ fontFamily: 'var(--font-cond)', fontSize: 9, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' as const, color: 'var(--text-3)' }}>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' as const, color: 'var(--muted)' }}>
                   {budgets.length} task{budgets.length !== 1 ? 's' : ''} budgeted
                   {labourQuoteTotal ? ` · ${formatCurrency(labourQuoteTotal)} quoted` : ''}
                 </span>
@@ -265,16 +265,16 @@ export function BudgetPanel({
                     const remaining = Math.max(0, b.budgetedHours - b.actualHours);
                     return (
                       <div key={b.id} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '3px 12px 3px 24px' }}>
-                        <span style={{ fontFamily: 'var(--font-cond)', fontSize: 9, color: 'var(--text-3)', width: 60, flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--muted)', width: 60, flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {b.sopCode || b.taskId.slice(0, 8)}
                         </span>
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-2)', width: 80, flexShrink: 0 }}>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--mid)', width: 80, flexShrink: 0 }}>
                           {b.actualHours.toFixed(1)}h / {b.budgetedHours.toFixed(0)}h
                         </span>
                         <div style={{ flex: 1, height: 2, background: 'var(--border)', borderRadius: 1, overflow: 'hidden' }}>
                           <div style={{ width: `${Math.min(taskPct, 100)}%`, height: '100%', background: getBudgetColor(taskRatio), borderRadius: 1 }} />
                         </div>
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: remaining > 0 ? 'var(--text-2)' : 'var(--red)', width: 36, textAlign: 'right', flexShrink: 0 }}>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: remaining > 0 ? 'var(--mid)' : 'var(--red)', width: 36, textAlign: 'right', flexShrink: 0 }}>
                           {remaining > 0 ? `${remaining.toFixed(1)}h` : 'done'}
                         </span>
                       </div>
@@ -298,7 +298,7 @@ export function BudgetPanel({
               gap: 6,
               padding: '6px 10px',
               fontSize: 10,
-              fontFamily: 'var(--font-cond)',
+              fontFamily: 'var(--font-mono)',
               fontWeight: 600,
               letterSpacing: '0.05em',
               textTransform: 'uppercase',
@@ -332,7 +332,7 @@ export function BudgetPanel({
             <div style={{ borderTop: '1px solid var(--border)', paddingTop: 4, paddingBottom: 4 }}>
               {categoryBreakdown.length === 0 ? (
                 <div style={{ padding: '4px 12px 4px 34px' }}>
-                  <span style={{ fontSize: 9, color: 'var(--text-3)' }}>No line items yet</span>
+                  <span style={{ fontSize: 9, color: 'var(--muted)' }}>No line items yet</span>
                 </div>
               ) : (
                 categoryBreakdown.map(({ category, label, total, items }) => {
@@ -347,13 +347,13 @@ export function BudgetPanel({
                         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setExpandedCategory(isOpen ? null : category); } }}
                         style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 12px 4px 24px', cursor: 'pointer' }}
                       >
-                        <span style={{ flexShrink: 0, color: 'var(--text-3)', display: 'flex', alignItems: 'center' }}>
+                        <span style={{ flexShrink: 0, color: 'var(--muted)', display: 'flex', alignItems: 'center' }}>
                           {isOpen ? <ChevronDown size={8} /> : <ChevronRight size={8} />}
                         </span>
-                        <span style={{ fontFamily: 'var(--font-cond)', fontSize: 9, color: 'var(--text-3)', width: 56, flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--muted)', width: 56, flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {label}
                         </span>
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-2)', width: 48, flexShrink: 0, textAlign: 'right' }}>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--mid)', width: 48, flexShrink: 0, textAlign: 'right' }}>
                           {formatCurrency(total)}
                         </span>
                         <div style={{ flex: 1, height: 2, background: 'var(--border)', borderRadius: 1, overflow: 'hidden' }}>
@@ -367,21 +367,21 @@ export function BudgetPanel({
                           {items.map((item) => (
                             <div key={item.id} style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 6, padding: '2px 12px 2px 0' }}>
                               <div style={{ flex: 1, minWidth: 0 }}>
-                                <span style={{ fontFamily: 'var(--font)', fontSize: 10, color: 'var(--text-2)', lineHeight: 1.3 }}>
+                                <span style={{ fontFamily: 'var(--font)', fontSize: 10, color: 'var(--mid)', lineHeight: 1.3 }}>
                                   {item.description}
                                 </span>
-                                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-3)', marginLeft: 4 }}>
+                                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--muted)', marginLeft: 4 }}>
                                   {item.quantity} {item.unit} @ {formatCurrency(item.unitCost)}
                                 </span>
                               </div>
-                              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-2)', flexShrink: 0 }}>
+                              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--mid)', flexShrink: 0 }}>
                                 {formatCurrency(item.totalCost)}
                               </span>
                             </div>
                           ))}
                           <Link
                             href={`/estimates/${projectId}`}
-                            style={{ display: 'inline-block', marginTop: 4, fontFamily: 'var(--font)', fontSize: 9, color: 'var(--teal)', textDecoration: 'none' }}
+                            style={{ display: 'inline-block', marginTop: 4, fontFamily: 'var(--font)', fontSize: 9, color: 'var(--accent)', textDecoration: 'none' }}
                           >
                             Edit in Estimate →
                           </Link>
@@ -406,14 +406,14 @@ export function BudgetPanel({
             </span>
           )}
           {onTrackCount > 0 && (
-            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, color: 'var(--text-2)' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, color: 'var(--mid)' }}>
               <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--green)', flexShrink: 0 }} />
               {onTrackCount} on track
             </span>
           )}
           {completeCount > 0 && (
-            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, color: 'var(--text-2)' }}>
-              <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--text-3)', flexShrink: 0 }} />
+            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, color: 'var(--mid)' }}>
+              <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--muted)', flexShrink: 0 }} />
               {completeCount} done
             </span>
           )}

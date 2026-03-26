@@ -31,9 +31,9 @@ const AVAILABLE_ROOMS = Object.entries(ROOM_LOCATIONS)
 
 // Priority dot colors
 const PRIORITY_COLORS: Record<string, string> = {
-  high: '#EF4444',
-  medium: '#F59E0B',
-  low: '#9CA3AF',
+  high: 'var(--red)',
+  medium: 'var(--yellow)',
+  low: 'var(--muted)',
 };
 
 // =============================================================================
@@ -54,12 +54,12 @@ function RoomCard({ room, onClick, onDelete }: RoomCardProps) {
   return (
     <div
       className="flex items-center gap-3 rounded-xl p-3 min-h-[64px]"
-      style={{ background: '#FFFFFF', border: '1px solid #E5E7EB' }}
+      style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
     >
       {/* Room icon */}
       <div
         className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 text-lg"
-        style={{ background: '#F3F4F6' }}
+        style={{ background: 'var(--surface-2)' }}
       >
         {icon}
       </div>
@@ -71,11 +71,11 @@ function RoomCard({ room, onClick, onDelete }: RoomCardProps) {
         className="flex-1 min-w-0 text-left min-h-[44px] flex flex-col justify-center"
       >
         <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold truncate" style={{ color: '#111827' }}>
+          <span className="text-sm font-semibold truncate" style={{ color: 'var(--charcoal)' }}>
             {room.name}
           </span>
           {sqft != null && sqft > 0 && (
-            <span className="text-xs" style={{ color: '#9CA3AF' }}>
+            <span className="text-xs" style={{ color: 'var(--muted)' }}>
               {sqft} sqft
             </span>
           )}
@@ -87,17 +87,17 @@ function RoomCard({ room, onClick, onDelete }: RoomCardProps) {
             <span
               key={code}
               className="text-[10px] font-medium px-1.5 py-0.5 rounded"
-              style={{ background: '#F0FDFA', color: '#0F766E' }}
+              style={{ background: 'var(--green-bg)', color: 'var(--accent)' }}
             >
               {code}
             </span>
           ))}
           {activeTrades.length === 0 && (
-            <span className="text-[10px]" style={{ color: '#D1D5DB' }}>No trades</span>
+            <span className="text-[10px]" style={{ color: 'var(--border)' }}>No trades</span>
           )}
           <span
             className="w-2 h-2 rounded-full ml-auto flex-shrink-0"
-            style={{ background: PRIORITY_COLORS[room.priority] ?? '#9CA3AF' }}
+            style={{ background: PRIORITY_COLORS[room.priority] ?? 'var(--muted)' }}
           />
         </div>
       </button>
@@ -108,7 +108,7 @@ function RoomCard({ room, onClick, onDelete }: RoomCardProps) {
         onClick={onClick}
         className="flex-shrink-0 min-h-[44px] min-w-[32px] flex items-center justify-center"
       >
-        <ChevronRight size={16} style={{ color: '#D1D5DB' }} />
+        <ChevronRight size={16} style={{ color: 'var(--border)' }} />
       </button>
 
       {/* Delete */}
@@ -117,7 +117,7 @@ function RoomCard({ room, onClick, onDelete }: RoomCardProps) {
         onClick={(e) => { e.stopPropagation(); onDelete(); }}
         className="flex-shrink-0 min-h-[44px] min-w-[36px] flex items-center justify-center"
       >
-        <Trash2 size={14} style={{ color: '#D1D5DB' }} />
+        <Trash2 size={14} style={{ color: 'var(--border)' }} />
       </button>
     </div>
   );
@@ -158,23 +158,23 @@ function AddRoomSheet({ isOpen, onClose, onAdd, existingRoomIds }: AddRoomSheetP
               type="button"
               onClick={() => { onAdd(room.id, room.name); onClose(); }}
               className="flex items-center gap-2 rounded-xl p-3 min-h-[52px] text-left transition-colors"
-              style={{ background: '#F3F4F6' }}
+              style={{ background: 'var(--surface-2)' }}
             >
               <span className="text-base">{room.icon}</span>
-              <span className="text-sm font-medium" style={{ color: '#374151' }}>{room.name}</span>
+              <span className="text-sm font-medium" style={{ color: 'var(--mid)' }}>{room.name}</span>
             </button>
           ))}
         </div>
 
         {availableRooms.length === 0 && (
-          <p className="text-sm text-center py-4" style={{ color: '#9CA3AF' }}>
+          <p className="text-sm text-center py-4" style={{ color: 'var(--muted)' }}>
             All rooms added
           </p>
         )}
 
         {/* Custom room */}
-        <div style={{ borderTop: '1px solid #E5E7EB', paddingTop: 12 }}>
-          <p className="text-[11px] font-semibold uppercase tracking-wider mb-2" style={{ color: '#9CA3AF' }}>
+        <div style={{ borderTop: '1px solid var(--border)', paddingTop: 12 }}>
+          <p className="text-[11px] font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--muted)' }}>
             Custom Room
           </p>
           <div className="flex gap-2">
@@ -191,7 +191,7 @@ function AddRoomSheet({ isOpen, onClose, onAdd, existingRoomIds }: AddRoomSheetP
               onClick={handleAddCustom}
               disabled={!customName.trim()}
               className="px-4 min-h-[48px] rounded-xl text-sm font-medium disabled:opacity-40"
-              style={{ background: '#0F766E', color: '#FFFFFF' }}
+              style={{ background: 'var(--accent)', color: '#fff' }}
             >
               Add
             </button>
@@ -262,14 +262,14 @@ export function RoomScopeBuilder({
     <div className="space-y-3">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold" style={{ color: '#111827' }}>
+        <h3 className="text-sm font-semibold" style={{ color: 'var(--charcoal)' }}>
           Rooms ({rooms.length})
         </h3>
         <button
           type="button"
           onClick={() => setShowAddSheet(true)}
           className="flex items-center gap-1 text-sm font-medium min-h-[44px] px-3 rounded-lg"
-          style={{ color: '#0F766E' }}
+          style={{ color: 'var(--accent)' }}
         >
           <Plus size={16} />
           Add Room
@@ -282,10 +282,10 @@ export function RoomScopeBuilder({
           type="button"
           onClick={() => setShowAddSheet(true)}
           className="w-full rounded-xl p-6 text-center min-h-[80px]"
-          style={{ background: '#F9FAFB', border: '2px dashed #E5E7EB' }}
+          style={{ background: 'var(--surface)', border: '2px dashed var(--border)' }}
         >
-          <Plus size={24} className="mx-auto mb-2" style={{ color: '#D1D5DB' }} />
-          <p className="text-sm" style={{ color: '#9CA3AF' }}>
+          <Plus size={24} className="mx-auto mb-2" style={{ color: 'var(--border)' }} />
+          <p className="text-sm" style={{ color: 'var(--muted)' }}>
             Add your first room
           </p>
         </button>
@@ -304,8 +304,8 @@ export function RoomScopeBuilder({
 
       {/* Summary */}
       {rooms.length > 0 && (
-        <div className="rounded-xl p-3" style={{ background: '#F0FDFA' }}>
-          <p className="text-sm" style={{ color: '#0F766E' }}>
+        <div className="rounded-xl p-3" style={{ background: 'var(--green-bg)' }}>
+          <p className="text-sm" style={{ color: 'var(--accent)' }}>
             <span className="font-medium">{rooms.length} room{rooms.length !== 1 ? 's' : ''}</span>
             {totalSqft > 0 && <> · {totalSqft.toLocaleString()} sqft</>}
             {allTrades.size > 0 && <> · {Array.from(allTrades).sort().join(', ')}</>}

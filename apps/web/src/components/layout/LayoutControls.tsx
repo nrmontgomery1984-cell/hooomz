@@ -40,7 +40,7 @@ function ControlLabel({ children }: { children: React.ReactNode }) {
         fontWeight: 700,
         letterSpacing: '0.14em',
         textTransform: 'uppercase',
-        color: 'var(--text-3)',
+        color: 'var(--muted)',
         marginBottom: 6,
       }}
     >
@@ -70,9 +70,9 @@ export function LayoutControls({ config, onChange }: Props) {
               style={{
                 padding: '6px 12px',
                 borderRadius: 8,
-                border: `2px solid ${config.pattern === p.value ? '#1E3A8A' : 'var(--border)'}`,
-                background: config.pattern === p.value ? 'rgba(30,58,138,0.1)' : 'var(--surface-1)',
-                color: config.pattern === p.value ? '#1E3A8A' : 'var(--text-3)',
+                border: `2px solid ${config.pattern === p.value ? 'var(--blue)' : 'var(--border)'}`,
+                background: config.pattern === p.value ? 'rgba(30,58,138,0.1)' : 'var(--surface)',
+                color: config.pattern === p.value ? 'var(--blue)' : 'var(--muted)',
                 fontSize: 12,
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -95,10 +95,10 @@ export function LayoutControls({ config, onChange }: Props) {
               style={{
                 padding: '6px 10px',
                 borderRadius: 8,
-                border: `2px solid ${config.startCorner === c.value ? '#1E3A8A' : 'var(--border)'}`,
+                border: `2px solid ${config.startCorner === c.value ? 'var(--blue)' : 'var(--border)'}`,
                 background:
-                  config.startCorner === c.value ? 'rgba(30,58,138,0.1)' : 'var(--surface-1)',
-                color: config.startCorner === c.value ? '#1E3A8A' : 'var(--text-3)',
+                  config.startCorner === c.value ? 'rgba(30,58,138,0.1)' : 'var(--surface)',
+                color: config.startCorner === c.value ? 'var(--blue)' : 'var(--muted)',
                 fontSize: 12,
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -123,10 +123,10 @@ export function LayoutControls({ config, onChange }: Props) {
                   width: 48,
                   height: 36,
                   borderRadius: 8,
-                  border: `2px solid ${config.staggerOffset === s.value ? '#1E3A8A' : 'var(--border)'}`,
+                  border: `2px solid ${config.staggerOffset === s.value ? 'var(--blue)' : 'var(--border)'}`,
                   background:
-                    config.staggerOffset === s.value ? 'rgba(30,58,138,0.1)' : 'var(--surface-1)',
-                  color: config.staggerOffset === s.value ? '#1E3A8A' : 'var(--text-3)',
+                    config.staggerOffset === s.value ? 'rgba(30,58,138,0.1)' : 'var(--surface)',
+                  color: config.staggerOffset === s.value ? 'var(--blue)' : 'var(--muted)',
                   fontSize: 13,
                   fontWeight: 700,
                   cursor: 'pointer',
@@ -155,10 +155,10 @@ export function LayoutControls({ config, onChange }: Props) {
               style={{
                 padding: '6px 10px',
                 borderRadius: 8,
-                border: `2px solid ${config.groutWidth === g.value ? '#1E3A8A' : 'var(--border)'}`,
+                border: `2px solid ${config.groutWidth === g.value ? 'var(--blue)' : 'var(--border)'}`,
                 background:
-                  config.groutWidth === g.value ? 'rgba(30,58,138,0.1)' : 'var(--surface-1)',
-                color: config.groutWidth === g.value ? '#1E3A8A' : 'var(--text-3)',
+                  config.groutWidth === g.value ? 'rgba(30,58,138,0.1)' : 'var(--surface)',
+                color: config.groutWidth === g.value ? 'var(--blue)' : 'var(--muted)',
                 fontSize: 12,
                 fontWeight: 600,
                 cursor: 'pointer',

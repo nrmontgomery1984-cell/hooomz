@@ -44,15 +44,15 @@ export interface SidebarSection {
 }
 
 export const SECTION_COLORS: Record<string, string> = {
-  sales: '#3b82f6',
-  production: '#3b82f6',
-  finance: '#f59e0b',
-  standards: '#10b981',
-  labs: '#a855f7',
-  admin: '#64748b',
-  customers: '#0d9488',
+  sales: 'var(--blue)',
+  production: 'var(--blue)',
+  finance: 'var(--yellow)',
+  standards: 'var(--green)',
+  labs: 'var(--violet)',
+  admin: 'var(--muted)',
+  customers: 'var(--accent)',
   // Legacy aliases
-  work: '#3b82f6',
+  work: 'var(--blue)',
 };
 
 export const SIDEBAR_SECTIONS: SidebarSection[] = [
@@ -105,6 +105,7 @@ export const SIDEBAR_SECTIONS: SidebarSection[] = [
       { href: '/standards/sops', label: 'SOPs', iconName: 'FileCheck', allowedModes: ['manager', 'operator'] },
       { href: '/standards/training', label: 'Training', iconName: 'GraduationCap', allowedModes: ['manager', 'operator'] },
       { href: '/standards/knowledge', label: 'Knowledge Base', iconName: 'Lightbulb', allowedModes: ['manager', 'operator'] },
+      { href: '/standards/risk-register', label: 'Risk Register', iconName: 'ShieldAlert', allowedModes: ['manager', 'operator'] },
     ],
   },
   {
@@ -158,12 +159,12 @@ export interface BottomNavItem {
 }
 
 export const BOTTOM_NAV_ITEMS: BottomNavItem[] = [
-  { href: '/', label: 'Home', iconName: 'Home', allowedModes: ['manager', 'operator', 'installer'] },
   { href: '/sales', label: 'Sales', iconName: 'Users', allowedModes: ['manager', 'operator'] },
   // Center "+" handled separately
   { href: '/production', label: 'Production', iconName: 'HardHat', allowedModes: ['manager', 'operator', 'installer'] },
   { href: '/finance', label: 'Finance', iconName: 'TrendingUp', allowedModes: ['manager'] },
   { href: '/labs', label: 'Labs', iconName: 'FlaskConical', allowedModes: ['manager', 'operator'] },
+  { href: '/customers', label: 'Admin', iconName: 'Settings', allowedModes: ['manager'] },
 ];
 
 // ============================================================================

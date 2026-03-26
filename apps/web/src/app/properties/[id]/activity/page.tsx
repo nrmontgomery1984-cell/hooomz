@@ -45,12 +45,12 @@ export default function PropertyActivityPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-slate-100">
+      <header className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-[var(--border)]">
         <div className="flex items-center justify-between px-4 py-3">
           {/* Back button */}
           <button
             onClick={() => router.back()}
-            className="min-w-[44px] min-h-[44px] flex items-center justify-center -ml-2 text-slate-600"
+            className="min-w-[44px] min-h-[44px] flex items-center justify-center -ml-2 text-[var(--mid)]"
             aria-label="Go back"
           >
             <svg
@@ -68,7 +68,7 @@ export default function PropertyActivityPage() {
           </button>
 
           {/* Title */}
-          <h1 className="text-lg font-semibold text-slate-800">
+          <h1 className="text-lg font-semibold text-[var(--charcoal)]">
             Activity
           </h1>
 

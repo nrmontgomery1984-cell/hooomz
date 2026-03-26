@@ -46,7 +46,7 @@ export function HomeCareSheetPanel({ projectId, customerId, jobStage }: HomeCare
         color: 'var(--blue)',
         fontWeight: 600,
         textDecoration: 'none',
-        fontFamily: 'var(--font-cond)',
+        fontFamily: 'var(--font-mono)',
       }}
     >
       View <ArrowRight size={9} />
@@ -58,10 +58,10 @@ export function HomeCareSheetPanel({ projectId, customerId, jobStage }: HomeCare
       <div style={{ padding: '6px 12px', display: 'flex', alignItems: 'center', gap: 8 }}>
         <FileCheck size={14} style={{ color: 'var(--green)', flexShrink: 0 }} />
         <div>
-          <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text)' }}>
+          <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--charcoal)' }}>
             {tradeCount} trade{tradeCount !== 1 ? 's' : ''}
           </span>
-          <span style={{ fontSize: 10, color: 'var(--text-3)', marginLeft: 6 }}>
+          <span style={{ fontSize: 10, color: 'var(--muted)', marginLeft: 6 }}>
             {materialCount} material{materialCount !== 1 ? 's' : ''} documented
           </span>
         </div>

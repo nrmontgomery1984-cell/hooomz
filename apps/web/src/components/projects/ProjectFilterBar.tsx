@@ -112,7 +112,7 @@ export function ProjectFilterBar({ tasks, filters, onFiltersChange, groupMode, o
       {/* Group mode segmented control */}
       <div
         className="inline-flex rounded-lg overflow-hidden"
-        style={{ border: '1px solid #E5E7EB' }}
+        style={{ border: '1px solid var(--border)' }}
       >
         {GROUP_MODES.map(({ key, label }) => (
           <button
@@ -121,9 +121,9 @@ export function ProjectFilterBar({ tasks, filters, onFiltersChange, groupMode, o
             className="text-[11px] font-medium px-3 py-1.5 transition-colors"
             style={{
               minHeight: '30px',
-              background: groupMode === key ? '#0F766E' : '#FFFFFF',
-              color: groupMode === key ? '#FFFFFF' : '#374151',
-              borderRight: key !== 'stage' ? '1px solid #E5E7EB' : 'none',
+              background: groupMode === key ? 'var(--accent)' : 'var(--surface)',
+              color: groupMode === key ? 'var(--surface)' : 'var(--mid)',
+              borderRight: key !== 'stage' ? '1px solid var(--border)' : 'none',
             }}
           >
             {label}
@@ -144,9 +144,9 @@ export function ProjectFilterBar({ tasks, filters, onFiltersChange, groupMode, o
                 className="text-[11px] font-medium px-2.5 py-1.5 rounded-full transition-colors"
                 style={{
                   minHeight: '30px',
-                  background: isActive ? '#0F766E' : '#FFFFFF',
-                  color: isActive ? '#FFFFFF' : '#374151',
-                  border: isActive ? '1px solid #0F766E' : '1px solid #E5E7EB',
+                  background: isActive ? 'var(--accent)' : 'var(--surface)',
+                  color: isActive ? 'var(--surface)' : 'var(--mid)',
+                  border: isActive ? '1px solid var(--accent)' : '1px solid var(--border)',
                 }}
               >
                 {meta?.icon} {meta?.name || code}
@@ -168,9 +168,9 @@ export function ProjectFilterBar({ tasks, filters, onFiltersChange, groupMode, o
               className="text-[11px] font-medium px-2.5 py-1.5 rounded-full transition-colors"
               style={{
                 minHeight: '30px',
-                background: isActive ? '#0F766E' : '#FFFFFF',
-                color: isActive ? '#FFFFFF' : '#374151',
-                border: isActive ? '1px solid #0F766E' : '1px solid #E5E7EB',
+                background: isActive ? 'var(--accent)' : 'var(--surface)',
+                color: isActive ? 'var(--surface)' : 'var(--mid)',
+                border: isActive ? '1px solid var(--accent)' : '1px solid var(--border)',
               }}
             >
               {meta?.name || code}
@@ -186,9 +186,9 @@ export function ProjectFilterBar({ tasks, filters, onFiltersChange, groupMode, o
             className="text-[11px] font-medium px-2.5 py-1.5 rounded-full appearance-none cursor-pointer"
             style={{
               minHeight: '30px',
-              background: filters.room ? '#0F766E' : '#FFFFFF',
-              color: filters.room ? '#FFFFFF' : '#374151',
-              border: filters.room ? '1px solid #0F766E' : '1px solid #E5E7EB',
+              background: filters.room ? 'var(--accent)' : 'var(--surface)',
+              color: filters.room ? 'var(--surface)' : 'var(--mid)',
+              border: filters.room ? '1px solid var(--accent)' : '1px solid var(--border)',
               paddingRight: '20px',
             }}
           >
@@ -208,9 +208,9 @@ export function ProjectFilterBar({ tasks, filters, onFiltersChange, groupMode, o
             className="text-[11px] font-medium px-2 py-1.5 rounded-full flex items-center gap-1 transition-colors"
             style={{
               minHeight: '30px',
-              color: '#EF4444',
-              background: '#FEF2F2',
-              border: '1px solid #FECACA',
+              color: 'var(--red)',
+              background: 'var(--red-bg)',
+              border: '1px solid var(--red-bg)',
             }}
           >
             <X size={10} />

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   Home, Activity, Calculator, FlaskConical, TrendingUp, Plus, Sun, Moon, UserCircle,
-  Users, HardHat,
+  Users, HardHat, Settings,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useQuickAdd } from '@/components/activity/QuickAddContext';
@@ -19,6 +19,7 @@ import type { ViewMode } from '@/lib/viewmode';
 import { useActiveCrew } from '@/lib/crew/ActiveCrewContext';
 import { useLocalProjects } from '@/lib/hooks/useLocalData';
 import { useDarkMode } from '@/lib/hooks/useDarkMode';
+import { usePermissions } from '@/lib/hooks/usePermissions';
 
 const ICON_MAP: Record<string, LucideIcon> = {
   Home,
@@ -28,10 +29,19 @@ const ICON_MAP: Record<string, LucideIcon> = {
   FlaskConical,
   Users,
   HardHat,
+  Settings,
 };
 
 const ALL_MODES: ViewMode[] = ['manager', 'operator', 'installer', 'homeowner'];
-const hiddenPaths = ['/intake', '/portal'];
+const hiddenPaths = ['/intake', '/portal', '/login'];
+
+/** Map bottom nav href → permission module */
+const BOTTOM_NAV_MODULE: Record<string, string> = {
+  '/sales': 'sales',
+  '/production': 'jobs',
+  '/finance': 'dashboard',
+  '/labs': 'labs',
+};
 
 export function BottomNav() {
   const pathname = usePathname();
@@ -41,6 +51,7 @@ export function BottomNav() {
   const { crewMemberName } = useActiveCrew();
   const { data: projectsResult } = useLocalProjects();
   const { isDark, toggle: toggleDark } = useDarkMode();
+  const { hasAccess } = usePermissions();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -63,9 +74,11 @@ export function BottomNav() {
   if (hiddenPaths.some((path) => pathname?.startsWith(path))) return null;
   if (viewMode === 'homeowner') return null;
 
-  const visibleItems = BOTTOM_NAV_ITEMS.filter((item) =>
-    item.allowedModes.includes(viewMode)
-  );
+  const visibleItems = BOTTOM_NAV_ITEMS.filter((item) => {
+    if (!item.allowedModes.includes(viewMode)) return false;
+    const mod = BOTTOM_NAV_MODULE[item.href];
+    return !mod || hasAccess(mod);
+  });
   const showQuickAdd = isQuickAddButtonAllowed(viewMode);
 
   // Split items for left/right of center button
@@ -95,8 +108,8 @@ export function BottomNav() {
     <nav
       className="fixed bottom-0 left-0 right-0 border-t z-40 pb-safe md:hidden"
       style={{
-        backgroundColor: 'var(--surface-1, #FFFFFF)',
-        borderColor: 'var(--border, #e5e7eb)',
+        backgroundColor: 'var(--surface)',
+        borderColor: 'var(--border)',
       }}
     >
       <div className="flex items-end justify-around max-w-lg mx-auto h-16">
@@ -123,7 +136,7 @@ export function BottomNav() {
             <button
               onClick={() => isOpen ? close() : open()}
               className="w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-transform duration-200"
-              style={{ backgroundColor: 'var(--theme-accent)' }}
+              style={{ backgroundColor: 'var(--accent)' }}
               aria-label={isOpen ? 'Close quick add' : 'Quick add'}
               aria-expanded={isOpen}
             >
@@ -176,14 +189,14 @@ export function BottomNav() {
               width: 24,
               height: 24,
               borderRadius: '50%',
-              background: 'var(--blue, #3B82F6)',
+              background: 'var(--blue)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               fontSize: 10,
               fontWeight: 700,
               color: 'white',
-              fontFamily: 'var(--font-cond)',
+              fontFamily: 'var(--font-mono)',
             }}>
               {initials}
             </div>
@@ -191,8 +204,8 @@ export function BottomNav() {
               fontSize: 10,
               marginTop: 2,
               fontWeight: 600,
-              color: 'var(--blue, #3B82F6)',
-              fontFamily: 'var(--font-cond)',
+              color: 'var(--blue)',
+              fontFamily: 'var(--font-mono)',
               textTransform: 'uppercase',
               letterSpacing: '0.02em',
             }}>
@@ -208,8 +221,8 @@ export function BottomNav() {
                 bottom: '100%',
                 right: 0,
                 marginBottom: 8,
-                background: 'var(--surface-1, #FFFFFF)',
-                border: '1px solid var(--border, #e5e7eb)',
+                background: 'var(--surface)',
+                border: '1px solid var(--border)',
                 borderRadius: 12,
                 boxShadow: '0 4px 24px rgba(0,0,0,0.12)',
                 padding: 6,
@@ -227,12 +240,12 @@ export function BottomNav() {
                     gap: 10,
                     width: '100%',
                     padding: '10px 12px',
-                    background: mode === viewMode ? 'var(--blue-dim, #EFF6FF)' : 'transparent',
+                    background: mode === viewMode ? 'var(--blue-bg)' : 'transparent',
                     border: 'none',
                     borderRadius: 8,
                     cursor: 'pointer',
-                    color: mode === viewMode ? 'var(--blue, #3B82F6)' : 'var(--text, #111827)',
-                    fontFamily: 'var(--font-sans)',
+                    color: mode === viewMode ? 'var(--blue)' : 'var(--charcoal)',
+                    fontFamily: 'var(--font-body)',
                     fontSize: 14,
                     fontWeight: mode === viewMode ? 600 : 500,
                     minHeight: 44,
@@ -245,7 +258,7 @@ export function BottomNav() {
               ))}
 
               {/* Divider */}
-              <div style={{ height: 1, background: 'var(--border, #e5e7eb)', margin: '4px 8px' }} />
+              <div style={{ height: 1, background: 'var(--border)', margin: '4px 8px' }} />
 
               {/* Dark mode toggle */}
               <button
@@ -260,8 +273,8 @@ export function BottomNav() {
                   border: 'none',
                   borderRadius: 8,
                   cursor: 'pointer',
-                  color: 'var(--text, #111827)',
-                  fontFamily: 'var(--font-sans)',
+                  color: 'var(--charcoal)',
+                  fontFamily: 'var(--font-body)',
                   fontSize: 14,
                   fontWeight: 500,
                   minHeight: 44,
@@ -300,11 +313,11 @@ function NavLink({
       <Icon
         size={20}
         strokeWidth={1.5}
-        style={{ color: isActive ? 'var(--theme-accent)' : 'var(--theme-muted)' }}
+        style={{ color: isActive ? 'var(--accent)' : 'var(--muted)' }}
       />
       <span
         className="text-[10px] mt-1 font-medium"
-        style={{ color: isActive ? 'var(--theme-accent)' : 'var(--theme-muted)' }}
+        style={{ color: isActive ? 'var(--accent)' : 'var(--muted)' }}
       >
         {label}
       </span>

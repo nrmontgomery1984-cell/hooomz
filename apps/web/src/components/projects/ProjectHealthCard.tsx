@@ -43,7 +43,7 @@ export function ProjectHealthCard({
 
   return (
     <div
-      style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '8px 12px', boxShadow: 'var(--shadow-card)' }}
+      style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '8px 12px', boxShadow: 'var(--shadow-card)' }}
     >
       {/* Top line: label + score + stats */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
@@ -51,16 +51,16 @@ export function ProjectHealthCard({
           <span style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 700, color: scoreColor }}>
             {healthScore}%
           </span>
-          <span style={{ fontSize: 11, color: 'var(--text-2)' }}>
+          <span style={{ fontSize: 11, color: 'var(--mid)' }}>
             {completedTasks}/{totalTasks} tasks
           </span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{ fontSize: 11, color: 'var(--text-3)' }}>
+          <span style={{ fontSize: 11, color: 'var(--muted)' }}>
             {roomCount} room{roomCount !== 1 ? 's' : ''}
           </span>
           {budgetSummary && budgetSummary.totalBudgetedHours > 0 && (
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 600, color: budgetColor || 'var(--text-3)' }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 600, color: budgetColor || 'var(--muted)' }}>
               {budgetSummary.totalActualHours.toFixed(1)}/{budgetSummary.totalBudgetedHours.toFixed(0)}h
             </span>
           )}
@@ -86,7 +86,7 @@ export function ProjectHealthCard({
             style={{
               width: `${Math.min(budgetPct || 0, 100)}%`,
               height: '100%',
-              background: budgetColor || 'var(--text-3)',
+              background: budgetColor || 'var(--muted)',
               transition: 'width 0.4s ease',
             }}
           />

@@ -7,7 +7,10 @@
  *   Conflict resolution: Last-write-wins using metadata.updatedAt.
  *
  * The sync_data table stores:
- *   (store_name, id) → { data: JSONB, updated_at, device_id, deleted }
+ *   (store_name, id) → { data: JSONB, updated_at, device_id, org_id, deleted }
+ *
+ * RLS: sync_data is scoped by org_id. The org_id is resolved from the
+ * authenticated user's team_members record via get_user_org_id().
  */
 
 import { supabase, isSupabaseConfigured } from '../supabase/client';
@@ -23,6 +26,7 @@ const SYNCED_STORES: Set<string> = new Set([
   // Core
   StoreNames.PROJECTS,
   StoreNames.TASKS,
+  StoreNames.CUSTOMERS,
   StoreNames.CUSTOMERS_V2,
   StoreNames.ACTIVITY_EVENTS,
   StoreNames.LINE_ITEMS,
@@ -86,6 +90,11 @@ const SYNCED_STORES: Set<string> = new Set([
   // Trim Cut Calculator (Block 5)
   StoreNames.MILLWORK_ASSEMBLY_CONFIGS,
   StoreNames.TRIM_CALCULATIONS,
+  // Properties (v34)
+  StoreNames.PROPERTIES,
+  // Passports (v35)
+  StoreNames.PASSPORTS,
+  StoreNames.PASSPORT_ENTRIES,
 ]);
 
 function getDeviceId(): string {
@@ -102,12 +111,42 @@ export class SyncEngine {
   private static instance: SyncEngine | null = null;
   private storage: StorageAdapter;
   private deviceId: string;
+  private orgId: string | null = null;
   private isPulling = false;
   private isPushing = false;
 
   private constructor(storage: StorageAdapter) {
     this.storage = storage;
     this.deviceId = getDeviceId();
+  }
+
+  /**
+   * Resolve the current user's org_id from Supabase.
+   * Caches the result for the lifetime of this instance.
+   * Returns null if not authenticated or no team membership.
+   */
+  private async getOrgId(): Promise<string | null> {
+    if (this.orgId) return this.orgId;
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+
+      const { data } = await supabase
+        .from('team_members')
+        .select('organization_id')
+        .eq('user_id', user.id)
+        .limit(1)
+        .single();
+
+      if (data?.organization_id) {
+        this.orgId = data.organization_id;
+      }
+    } catch {
+      // Not authenticated or no team membership — org_id stays null
+    }
+
+    return this.orgId;
   }
 
   static getInstance(storage: StorageAdapter): SyncEngine {
@@ -140,6 +179,8 @@ export class SyncEngine {
     }
 
     try {
+      const orgId = await this.getOrgId();
+
       if (item.operation === 'delete') {
         const { error } = await supabase
           .from('sync_data')
@@ -150,6 +191,7 @@ export class SyncEngine {
               data: {},
               updated_at: new Date().toISOString(),
               device_id: this.deviceId,
+              org_id: orgId,
               deleted: true,
             },
             { onConflict: 'store_name,id' }
@@ -167,6 +209,7 @@ export class SyncEngine {
               data: item.data,
               updated_at: item.data?.metadata?.updatedAt || new Date().toISOString(),
               device_id: this.deviceId,
+              org_id: orgId,
               deleted: false,
             },
             { onConflict: 'store_name,id' }
@@ -307,6 +350,8 @@ export class SyncEngine {
     const result = { pushed: 0, errors: [] as string[] };
 
     try {
+      const orgId = await this.getOrgId();
+
       for (const storeName of SYNCED_STORES) {
         try {
           const items = await this.storage.getAll<any>(storeName);
@@ -327,6 +372,7 @@ export class SyncEngine {
                   item.updatedAt ||
                   new Date().toISOString(),
                 device_id: this.deviceId,
+                org_id: orgId,
                 deleted: false,
               }));
 

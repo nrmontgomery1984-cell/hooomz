@@ -78,11 +78,11 @@ export default function ActualsPage() {
   };
 
   if (isLoading) {
-    return <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-3, #9CA3AF)' }}>Loading actuals...</div>;
+    return <div style={{ padding: 40, textAlign: 'center', color: 'var(--muted)' }}>Loading actuals...</div>;
   }
 
   if (!actuals) {
-    return <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-3, #9CA3AF)' }}>No data available</div>;
+    return <div style={{ padding: 40, textAlign: 'center', color: 'var(--muted)' }}>No data available</div>;
   }
 
   return (
@@ -103,17 +103,17 @@ export default function ActualsPage() {
               fontSize: 12,
               fontWeight: preset === key ? 600 : 500,
               borderRadius: 6,
-              border: '1px solid var(--border, #E5E7EB)',
-              background: preset === key ? 'var(--blue, #3B82F6)' : 'var(--surface-1, #FFFFFF)',
-              color: preset === key ? 'white' : 'var(--text-2, #6B7280)',
+              border: '1px solid var(--border)',
+              background: preset === key ? 'var(--blue)' : 'var(--surface)',
+              color: preset === key ? 'white' : 'var(--mid)',
               cursor: 'pointer',
-              fontFamily: 'var(--font-sans)',
+              fontFamily: 'var(--font-body)',
             }}
           >
             {label}
           </button>
         ))}
-        <span style={{ fontSize: 12, color: 'var(--text-3, #9CA3AF)', alignSelf: 'center', marginLeft: 8 }}>
+        <span style={{ fontSize: 12, color: 'var(--muted)', alignSelf: 'center', marginLeft: 8 }}>
           {range.from} — {range.to}
         </span>
       </div>
@@ -122,10 +122,10 @@ export default function ActualsPage() {
       {actuals.unresolvedProjectCount > 0 && (
         <div style={{
           display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px',
-          background: '#FEF3C7', border: '1px solid #F59E0B', borderRadius: 8,
+          background: 'var(--yellow-bg)', border: '1px solid var(--yellow)', borderRadius: 8,
         }}>
-          <AlertTriangle size={16} style={{ color: '#D97706', flexShrink: 0 }} />
-          <span style={{ fontSize: 13, color: '#92400E' }}>
+          <AlertTriangle size={16} style={{ color: 'var(--yellow)', flexShrink: 0 }} />
+          <span style={{ fontSize: 13, color: 'var(--yellow)' }}>
             Revenue data for {actuals.unresolvedProjectCount} project{actuals.unresolvedProjectCount > 1 ? 's' : ''} could not be attributed. Manual review required.
           </span>
         </div>
@@ -142,20 +142,20 @@ export default function ActualsPage() {
 
       {/* Labor split */}
       <div style={{
-        background: 'var(--surface-1, #FFFFFF)', borderRadius: 12, border: '1px solid var(--border, #E5E7EB)',
+        background: 'var(--surface)', borderRadius: 12, border: '1px solid var(--border)',
         padding: 16, display: 'flex', flexDirection: 'column', gap: 10,
       }}>
-        <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-3, #9CA3AF)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--muted)' }}>
           Labor Breakdown
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
           <LaborRow name="Nathan" hours={actuals.nathanHours} cost={actuals.nathanLaborCost} />
           <LaborRow name="Nishant" hours={actuals.nishantHours} cost={actuals.nishantLaborCost} />
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: 'var(--bg, #F9FAFB)', borderRadius: 8 }}>
-            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text, #111827)' }}>Total</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: 'var(--bg)', borderRadius: 8 }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--charcoal)' }}>Total</span>
             <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text, #111827)' }}>{fmt(actuals.totalLaborCost)}</div>
-              <div style={{ fontSize: 11, color: 'var(--text-3, #9CA3AF)' }}>{fmtHrs(actuals.totalHours)}</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--charcoal)' }}>{fmt(actuals.totalLaborCost)}</div>
+              <div style={{ fontSize: 11, color: 'var(--muted)' }}>{fmtHrs(actuals.totalHours)}</div>
             </div>
           </div>
         </div>
@@ -163,18 +163,18 @@ export default function ActualsPage() {
 
       {/* Project breakdown table */}
       <div style={{
-        background: 'var(--surface-1, #FFFFFF)', borderRadius: 12, border: '1px solid var(--border, #E5E7EB)',
+        background: 'var(--surface)', borderRadius: 12, border: '1px solid var(--border)',
         overflow: 'hidden',
       }}>
-        <div style={{ padding: '14px 16px', borderBottom: '1px solid var(--border, #E5E7EB)' }}>
-          <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-3, #9CA3AF)' }}>
+        <div style={{ padding: '14px 16px', borderBottom: '1px solid var(--border)' }}>
+          <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--muted)' }}>
             Project Breakdown
           </div>
         </div>
         <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, fontFamily: 'var(--font-sans)' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, fontFamily: 'var(--font-body)' }}>
             <thead>
-              <tr style={{ borderBottom: '1px solid var(--border, #E5E7EB)' }}>
+              <tr style={{ borderBottom: '1px solid var(--border)' }}>
                 {([
                   ['projectName', 'Project'],
                   ['status', 'Status'],
@@ -191,7 +191,7 @@ export default function ActualsPage() {
                     onClick={() => toggleSort(key)}
                     style={{
                       padding: '8px 12px', textAlign: key === 'projectName' || key === 'status' ? 'left' : 'right',
-                      fontWeight: 600, color: 'var(--text-2, #6B7280)', cursor: 'pointer',
+                      fontWeight: 600, color: 'var(--mid)', cursor: 'pointer',
                       whiteSpace: 'nowrap', userSelect: 'none', fontSize: 11,
                     }}
                   >
@@ -206,14 +206,14 @@ export default function ActualsPage() {
             <tbody>
               {sortedProjects.length === 0 ? (
                 <tr>
-                  <td colSpan={9} style={{ padding: 24, textAlign: 'center', color: 'var(--text-3, #9CA3AF)' }}>
+                  <td colSpan={9} style={{ padding: 24, textAlign: 'center', color: 'var(--muted)' }}>
                     No projects in selected period
                   </td>
                 </tr>
               ) : (
                 sortedProjects.map((p) => (
-                  <tr key={p.projectId} style={{ borderBottom: '1px solid var(--border, #E5E7EB)' }}>
-                    <td style={{ padding: '10px 12px', fontWeight: 500, color: 'var(--text, #111827)', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <tr key={p.projectId} style={{ borderBottom: '1px solid var(--border)' }}>
+                    <td style={{ padding: '10px 12px', fontWeight: 500, color: 'var(--charcoal)', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {p.projectName}
                     </td>
                     <td style={{ padding: '10px 12px' }}>
@@ -222,7 +222,7 @@ export default function ActualsPage() {
                     <td style={{ padding: '10px 12px', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{fmt(p.revenue)}</td>
                     <td style={{ padding: '10px 12px', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{fmt(p.laborCost)}</td>
                     <td style={{ padding: '10px 12px', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{fmt(p.materialCost)}</td>
-                    <td style={{ padding: '10px 12px', textAlign: 'right', fontWeight: 600, fontVariantNumeric: 'tabular-nums', color: p.grossProfit >= 0 ? 'var(--green, #10B981)' : 'var(--red, #EF4444)' }}>
+                    <td style={{ padding: '10px 12px', textAlign: 'right', fontWeight: 600, fontVariantNumeric: 'tabular-nums', color: p.grossProfit >= 0 ? 'var(--green)' : 'var(--red)' }}>
                       {fmt(p.grossProfit)}
                     </td>
                     <td style={{ padding: '10px 12px', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{fmtPct(p.marginPct)}</td>
@@ -242,23 +242,23 @@ export default function ActualsPage() {
 function SummaryCard({ label, value, badge }: { label: string; value: string; badge?: string }) {
   return (
     <div style={{
-      background: 'var(--surface-1, #FFFFFF)', borderRadius: 12, border: '1px solid var(--border, #E5E7EB)',
+      background: 'var(--surface)', borderRadius: 12, border: '1px solid var(--border)',
       padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 4,
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-3, #9CA3AF)' }}>
+        <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--muted)' }}>
           {label}
         </span>
         {badge && (
           <span style={{
-            fontSize: 10, fontWeight: 700, background: 'var(--blue-dim, #EFF6FF)', color: 'var(--blue, #3B82F6)',
+            fontSize: 10, fontWeight: 700, background: 'var(--blue-bg)', color: 'var(--blue)',
             borderRadius: 10, padding: '1px 6px',
           }}>
             {badge}
           </span>
         )}
       </div>
-      <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text, #111827)', fontVariantNumeric: 'tabular-nums' }}>
+      <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--charcoal)', fontVariantNumeric: 'tabular-nums' }}>
         {value}
       </div>
     </div>
@@ -267,11 +267,11 @@ function SummaryCard({ label, value, badge }: { label: string; value: string; ba
 
 function LaborRow({ name, hours, cost }: { name: string; hours: number; cost: number }) {
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: 'var(--bg, #F9FAFB)', borderRadius: 8 }}>
-      <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text, #111827)' }}>{name}</span>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: 'var(--bg)', borderRadius: 8 }}>
+      <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--charcoal)' }}>{name}</span>
       <div style={{ textAlign: 'right' }}>
-        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text, #111827)' }}>{fmt(cost)}</div>
-        <div style={{ fontSize: 11, color: 'var(--text-3, #9CA3AF)' }}>{fmtHrs(hours)}</div>
+        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--charcoal)' }}>{fmt(cost)}</div>
+        <div style={{ fontSize: 11, color: 'var(--muted)' }}>{fmtHrs(hours)}</div>
       </div>
     </div>
   );
@@ -279,12 +279,12 @@ function LaborRow({ name, hours, cost }: { name: string; hours: number; cost: nu
 
 function StatusBadge({ status }: { status: string }) {
   const colors: Record<string, { bg: string; text: string }> = {
-    complete: { bg: '#D1FAE5', text: '#065F46' },
-    in_progress: { bg: '#DBEAFE', text: '#1E40AF' },
-    approved: { bg: '#E0E7FF', text: '#3730A3' },
-    quoted: { bg: '#FEF3C7', text: '#92400E' },
+    complete: { bg: 'var(--green-bg)', text: 'var(--green)' },
+    in_progress: { bg: 'var(--blue-bg)', text: 'var(--blue)' },
+    approved: { bg: 'var(--blue-bg)', text: 'var(--blue)' },
+    quoted: { bg: 'var(--yellow-bg)', text: 'var(--yellow)' },
   };
-  const c = colors[status] || { bg: '#F3F4F6', text: '#6B7280' };
+  const c = colors[status] || { bg: 'var(--surface-2)', text: 'var(--muted)' };
   return (
     <span style={{
       fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 4,

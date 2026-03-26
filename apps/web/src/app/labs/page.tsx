@@ -45,7 +45,7 @@ export default function LabsPage() {
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}>
         <div style={{ textAlign: 'center' }}>
           <div style={{ width: 32, height: 32, border: '2px solid var(--border)', borderTopColor: COLOR, borderRadius: '50%', animation: 'spin 0.7s linear infinite', margin: '0 auto 8px' }} />
-          <p style={{ fontSize: 11, color: 'var(--text-3)' }}>Loading Labs...</p>
+          <p style={{ fontSize: 11, color: 'var(--muted)' }}>Loading Labs...</p>
         </div>
       </div>
     );
@@ -58,16 +58,16 @@ export default function LabsPage() {
       <div style={{ minHeight: '100vh', paddingBottom: 96, background: 'var(--bg)' }}>
 
         {/* Header */}
-        <div style={{ background: 'var(--surface-1)', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
           <div className="max-w-lg md:max-w-full mx-auto px-4 md:px-6 py-3 md:py-4 flex items-center justify-between">
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <div style={{ width: 8, height: 8, borderRadius: '50%', background: COLOR }} />
-                <h1 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', fontFamily: 'var(--font-cond)', letterSpacing: '0.02em' }}>
+                <h1 style={{ fontSize: 16, fontWeight: 700, color: 'var(--charcoal)', fontFamily: 'var(--font-mono)', letterSpacing: '0.02em' }}>
                   Labs
                 </h1>
               </div>
-              <p style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 2 }}>Field data collection &amp; knowledge engine</p>
+              <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>Field data collection &amp; knowledge engine</p>
             </div>
             <button
               onClick={() => setShowCreateExperiment(true)}
@@ -99,12 +99,12 @@ export default function LabsPage() {
             {/* Recent Observations */}
             <div>
               <SectionHeader title="Recent Observations" />
-              <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
+              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
                 {recentObservations.length === 0 ? (
                   <div style={{ padding: 24, textAlign: 'center' }}>
-                    <ClipboardList size={20} style={{ color: 'var(--text-3)', margin: '0 auto 8px' }} />
-                    <p style={{ fontSize: 12, color: 'var(--text-3)' }}>No observations yet</p>
-                    <p style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 4 }}>Captured as crew members work on projects</p>
+                    <ClipboardList size={20} style={{ color: 'var(--muted)', margin: '0 auto 8px' }} />
+                    <p style={{ fontSize: 12, color: 'var(--muted)' }}>No observations yet</p>
+                    <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4 }}>Captured as crew members work on projects</p>
                   </div>
                 ) : (
                   recentObservations.slice(0, 5).map((obs, i) => (
@@ -118,10 +118,10 @@ export default function LabsPage() {
                     >
                       <div style={{ width: 6, height: 6, borderRadius: '50%', background: COLOR, flexShrink: 0 }} />
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <p style={{ fontSize: 12, fontWeight: 500, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <p style={{ fontSize: 12, fontWeight: 500, color: 'var(--charcoal)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {obs.notes ? obs.notes.slice(0, 60) : obs.knowledgeType.replace(/_/g, ' ')}
                         </p>
-                        <p style={{ fontSize: 10, color: 'var(--text-3)', marginTop: 1 }}>
+                        <p style={{ fontSize: 10, color: 'var(--muted)', marginTop: 1 }}>
                           {obs.trade ?? obs.knowledgeType.replace(/_/g, ' ')}
                         </p>
                       </div>
@@ -145,12 +145,12 @@ export default function LabsPage() {
             {/* Active Experiments */}
             <div>
               <SectionHeader title="Active Experiments" />
-              <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
+              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
                 {activeExperimentsList.length === 0 ? (
                   <div style={{ padding: 24, textAlign: 'center' }}>
-                    <Beaker size={20} style={{ color: 'var(--text-3)', margin: '0 auto 8px' }} />
-                    <p style={{ fontSize: 12, color: 'var(--text-3)' }}>No active experiments</p>
-                    <p style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 4 }}>Start one to track field learnings</p>
+                    <Beaker size={20} style={{ color: 'var(--muted)', margin: '0 auto 8px' }} />
+                    <p style={{ fontSize: 12, color: 'var(--muted)' }}>No active experiments</p>
+                    <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4 }}>Start one to track field learnings</p>
                   </div>
                 ) : (
                   activeExperimentsList.slice(0, 5).map((exp, i) => (
@@ -166,10 +166,10 @@ export default function LabsPage() {
                     >
                       <div style={{ width: 6, height: 6, borderRadius: '50%', background: COLOR, flexShrink: 0 }} />
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <p style={{ fontSize: 12, fontWeight: 500, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <p style={{ fontSize: 12, fontWeight: 500, color: 'var(--charcoal)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {exp.title}
                         </p>
-                        <p style={{ fontSize: 10, color: 'var(--text-3)', marginTop: 1 }}>
+                        <p style={{ fontSize: 10, color: 'var(--muted)', marginTop: 1 }}>
                           {exp.knowledgeType.replace(/_/g, ' ')} · {exp.status}
                         </p>
                       </div>
@@ -197,7 +197,7 @@ export default function LabsPage() {
           {contentReadyItems.length > 0 && (
             <div style={{ marginTop: 16 }}>
               <SectionHeader title="Ready for Content" />
-              <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
+              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
                 {contentReadyItems.slice(0, 5).map((item, i) => (
                   <Link
                     key={item.id}
@@ -210,10 +210,10 @@ export default function LabsPage() {
                   >
                     <BookOpen size={14} style={{ color: COLOR, flexShrink: 0 }} />
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <p style={{ fontSize: 12, fontWeight: 500, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <p style={{ fontSize: 12, fontWeight: 500, color: 'var(--charcoal)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {item.title}
                       </p>
-                      <p style={{ fontSize: 10, color: 'var(--text-3)', marginTop: 1 }}>
+                      <p style={{ fontSize: 10, color: 'var(--muted)', marginTop: 1 }}>
                         {item.observationCount} observations · {item.confidenceScore}% confidence
                       </p>
                     </div>
@@ -238,9 +238,9 @@ export default function LabsPage() {
           {/* Revenue Flywheel */}
           <div style={{ marginTop: 16 }}>
             <SectionHeader title="Revenue Flywheel" />
-            <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
+            <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
               <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--border)' }}>
-                <p style={{ fontSize: 11, color: 'var(--text-3)' }}>Every test generates 5 revenue streams</p>
+                <p style={{ fontSize: 11, color: 'var(--muted)' }}>Every test generates 5 revenue streams</p>
               </div>
               {[
                 { label: 'YouTube Content', icon: '01' },
@@ -260,7 +260,7 @@ export default function LabsPage() {
                   <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700, color: COLOR, flexShrink: 0, minWidth: 20 }}>
                     {feed.icon}
                   </span>
-                  <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text)' }}>{feed.label}</span>
+                  <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--charcoal)' }}>{feed.label}</span>
                 </div>
               ))}
             </div>
@@ -301,7 +301,7 @@ export default function LabsPage() {
 function SectionHeader({ title }: { title: string }) {
   return (
     <div style={{ marginBottom: 8 }}>
-      <span style={{ fontFamily: 'var(--font-cond)', fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-3)' }}>
+      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)' }}>
         {title}
       </span>
     </div>
@@ -320,18 +320,18 @@ function StatCard({ icon, label, value, color, href }: {
       <div style={{
         padding: '12px 14px',
         borderRadius: 'var(--radius)',
-        background: 'var(--surface-1)',
+        background: 'var(--surface)',
         border: '1px solid var(--border)',
         boxShadow: 'var(--shadow-card)',
         cursor: 'pointer',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
           <div style={{ color }}>{icon}</div>
-          <span style={{ fontFamily: 'var(--font-cond)', fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-3)' }}>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--muted)' }}>
             {label}
           </span>
         </div>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 22, fontWeight: 700, color: 'var(--text)' }}>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 22, fontWeight: 700, color: 'var(--charcoal)' }}>
           {value}
         </span>
       </div>
@@ -354,12 +354,12 @@ function QuickAccessCard({
       style={{
         display: 'flex', alignItems: 'center', gap: 10,
         borderRadius: 'var(--radius)', padding: '10px 12px', minHeight: 44,
-        background: 'var(--surface-1)', border: '1px solid var(--border)',
+        background: 'var(--surface)', border: '1px solid var(--border)',
         textDecoration: 'none', boxShadow: 'var(--shadow-card)',
       }}
     >
       <Icon size={16} style={{ color: COLOR }} strokeWidth={1.5} />
-      <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text)' }}>{label}</span>
+      <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--charcoal)' }}>{label}</span>
     </Link>
   );
 }

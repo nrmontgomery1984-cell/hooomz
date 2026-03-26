@@ -155,8 +155,8 @@ function CategorySelectView({
   return (
     <div className="px-1 pb-2">
       <div className="flex items-center gap-2 mb-4">
-        <FlaskConical size={18} style={{ color: '#0F766E' }} />
-        <p className="text-sm font-medium" style={{ color: '#111827' }}>
+        <FlaskConical size={18} style={{ color: 'var(--accent)' }} />
+        <p className="text-sm font-medium" style={{ color: 'var(--charcoal)' }}>
           Anything worth noting for Labs?
         </p>
       </div>
@@ -168,9 +168,9 @@ function CategorySelectView({
             onClick={() => onSelect(cat)}
             className="min-h-[48px] px-3 py-3 rounded-xl text-sm font-medium text-left transition-colors"
             style={{
-              background: '#F3F4F6',
-              color: '#374151',
-              border: '1px solid #E5E7EB',
+              background: 'var(--surface-2)',
+              color: 'var(--mid)',
+              border: '1px solid var(--border)',
             }}
           >
             {cat.label}
@@ -183,9 +183,9 @@ function CategorySelectView({
           onClick={onSkip}
           className="w-full min-h-[52px] rounded-xl text-sm font-medium transition-colors"
           style={{
-            background: '#FFFFFF',
-            color: '#9CA3AF',
-            border: '1px solid #E5E7EB',
+            background: 'var(--surface)',
+            color: 'var(--muted)',
+            border: '1px solid var(--border)',
           }}
         >
           Skip — nothing to report
@@ -222,16 +222,16 @@ function NoteFormView({
       <div className="mb-3">
         <span
           className="inline-block px-2 py-0.5 rounded text-xs font-medium mb-2"
-          style={{ background: '#F0FDFA', color: '#0F766E' }}
+          style={{ background: 'var(--accent-bg)', color: 'var(--accent)' }}
         >
           {category.label}
         </span>
-        <p className="text-sm" style={{ color: '#6B7280' }}>
+        <p className="text-sm" style={{ color: 'var(--muted)' }}>
           {taskContext.taskName}
           {taskContext.room !== 'General' ? ` — ${taskContext.room}` : ''}
         </p>
         {taskContext.materialDescription && (
-          <p className="text-xs mt-0.5" style={{ color: '#9CA3AF' }}>
+          <p className="text-xs mt-0.5" style={{ color: 'var(--muted)' }}>
             {taskContext.materialDescription}
           </p>
         )}
@@ -245,16 +245,16 @@ function NoteFormView({
         rows={3}
         className="w-full rounded-xl px-4 py-3 text-sm resize-none"
         style={{
-          background: '#F9FAFB',
-          color: '#111827',
-          border: '1px solid #E5E7EB',
+          background: 'var(--surface)',
+          color: 'var(--charcoal)',
+          border: '1px solid var(--border)',
         }}
         autoFocus
       />
 
       {/* Rating (optional) */}
       <div className="mt-3 flex items-center justify-between">
-        <p className="text-xs" style={{ color: '#9CA3AF' }}>
+        <p className="text-xs" style={{ color: 'var(--muted)' }}>
           Quality rating (optional)
         </p>
         <StarRating value={rating} onChange={onRatingChange} size={20} />
@@ -265,7 +265,7 @@ function NoteFormView({
         type="button"
         disabled
         className="mt-3 flex items-center gap-2 px-3 py-2 rounded-lg text-xs"
-        style={{ color: '#D1D5DB' }}
+        style={{ color: 'var(--border)' }}
       >
         <Camera size={14} />
         Add photo (coming soon)
@@ -276,7 +276,7 @@ function NoteFormView({
         <button
           onClick={onCancel}
           className="flex-1 min-h-[48px] rounded-xl text-sm font-medium"
-          style={{ background: '#F3F4F6', color: '#6B7280' }}
+          style={{ background: 'var(--surface-2)', color: 'var(--muted)' }}
         >
           Back
         </button>
@@ -284,7 +284,7 @@ function NoteFormView({
           onClick={onSave}
           disabled={!notes.trim() || isSaving}
           className="flex-1 min-h-[48px] rounded-xl text-sm font-medium disabled:opacity-50"
-          style={{ background: '#0F766E', color: '#FFFFFF' }}
+          style={{ background: 'var(--accent)', color: '#fff' }}
         >
           {isSaving ? 'Saving...' : 'Save'}
         </button>

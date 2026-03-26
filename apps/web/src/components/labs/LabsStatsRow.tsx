@@ -24,11 +24,11 @@ export function LabsStatsRow({ stats, className = '' }: LabsStatsRowProps) {
       {stats.map((stat) => (
         <div
           key={stat.label}
-          className="bg-white rounded-xl border border-gray-200 p-3 shadow-sm"
+          className="bg-white rounded-xl border border-[var(--border)] p-3 shadow-sm"
         >
-          <p className="text-xs text-gray-500 mb-1">{stat.label}</p>
+          <p className="text-xs text-[var(--muted)] mb-1">{stat.label}</p>
           <div className="flex items-end gap-2">
-            <span className="text-xl font-bold text-gray-900">{stat.value}</span>
+            <span className="text-xl font-bold text-[var(--charcoal)]">{stat.value}</span>
             {stat.change !== undefined && stat.change !== 0 && (
               <span className={`text-xs font-medium ${stat.change > 0 ? 'text-green-600' : 'text-red-500'}`}>
                 {stat.change > 0 ? '+' : ''}{stat.change}

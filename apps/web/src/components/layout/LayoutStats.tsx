@@ -82,8 +82,8 @@ function StatCard({
   return (
     <div
       style={{
-        background: 'var(--surface-1)',
-        border: `1px solid ${accent ? '#1E3A8A' : 'var(--border)'}`,
+        background: 'var(--surface)',
+        border: `1px solid ${accent ? 'var(--blue)' : 'var(--border)'}`,
         borderRadius: 10,
         padding: '10px 14px',
         flex: '1 1 80px',
@@ -96,17 +96,17 @@ function StatCard({
           fontWeight: 700,
           letterSpacing: '0.14em',
           textTransform: 'uppercase',
-          color: 'var(--text-3)',
+          color: 'var(--muted)',
           marginBottom: 3,
         }}
       >
         {label}
       </div>
-      <div style={{ fontSize: 15, fontWeight: 700, color: accent ? '#1E3A8A' : 'var(--text)' }}>
+      <div style={{ fontSize: 15, fontWeight: 700, color: accent ? 'var(--blue)' : 'var(--charcoal)' }}>
         {value}
       </div>
       {sub && (
-        <div style={{ fontSize: 10, color: 'var(--text-3)', marginTop: 1 }}>{sub}</div>
+        <div style={{ fontSize: 10, color: 'var(--muted)', marginTop: 1 }}>{sub}</div>
       )}
     </div>
   );
@@ -120,11 +120,11 @@ export function LayoutStats({ result, optimizationScore, optimizedAt }: Props) {
       <div
         style={{
           padding: '12px 16px',
-          background: 'var(--surface-1)',
+          background: 'var(--surface)',
           border: '1px solid var(--border)',
           borderRadius: 10,
           fontSize: 13,
-          color: 'var(--text-3)',
+          color: 'var(--muted)',
           textAlign: 'center',
         }}
       >
@@ -136,10 +136,10 @@ export function LayoutStats({ result, optimizationScore, optimizedAt }: Props) {
   const wastePct = (result.wastePercentage * 100).toFixed(1);
   const wasteColor =
     result.wastePercentage < 0.08
-      ? '#10B981'
+      ? 'var(--green)'
       : result.wastePercentage < 0.15
-      ? '#F59E0B'
-      : '#EF4444';
+      ? 'var(--yellow)'
+      : 'var(--red)';
 
   const cutSizes = computeCutSizes(result.tiles);
 
@@ -160,7 +160,7 @@ export function LayoutStats({ result, optimizationScore, optimizedAt }: Props) {
       {/* Waste bar */}
       <div
         style={{
-          background: 'var(--surface-1)',
+          background: 'var(--surface)',
           border: '1px solid var(--border)',
           borderRadius: 10,
           padding: '10px 14px',
@@ -180,7 +180,7 @@ export function LayoutStats({ result, optimizationScore, optimizedAt }: Props) {
               fontWeight: 700,
               letterSpacing: '0.14em',
               textTransform: 'uppercase',
-              color: 'var(--text-3)',
+              color: 'var(--muted)',
             }}
           >
             Waste
@@ -206,7 +206,7 @@ export function LayoutStats({ result, optimizationScore, optimizedAt }: Props) {
           />
         </div>
         {optimizedAt && optimizationScore != null && (
-          <div style={{ fontSize: 10, color: 'var(--text-3)', marginTop: 6 }}>
+          <div style={{ fontSize: 10, color: 'var(--muted)', marginTop: 6 }}>
             Optimized · best config ({(optimizationScore * 100).toFixed(1)}% waste)
           </div>
         )}
@@ -216,7 +216,7 @@ export function LayoutStats({ result, optimizationScore, optimizedAt }: Props) {
       {cutSizes.length > 0 && (
         <div
           style={{
-            background: 'var(--surface-1)',
+            background: 'var(--surface)',
             border: '1px solid var(--border)',
             borderRadius: 10,
             padding: '10px 14px',
@@ -228,7 +228,7 @@ export function LayoutStats({ result, optimizationScore, optimizedAt }: Props) {
               fontWeight: 700,
               letterSpacing: '0.14em',
               textTransform: 'uppercase',
-              color: 'var(--text-3)',
+              color: 'var(--muted)',
               marginBottom: 8,
             }}
           >
@@ -243,19 +243,19 @@ export function LayoutStats({ result, optimizationScore, optimizedAt }: Props) {
                   alignItems: 'center',
                   gap: 5,
                   padding: '4px 8px',
-                  background: 'rgba(245,158,11,0.12)',
+                  background: 'var(--yellow-bg)',
                   border: '1px solid rgba(245,158,11,0.35)',
                   borderRadius: 6,
                 }}
               >
-                <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text)' }}>
+                <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--charcoal)' }}>
                   {fmtIn(s.w)} × {fmtIn(s.h)}
                 </span>
                 <span
                   style={{
                     fontSize: 10,
                     fontWeight: 600,
-                    color: 'var(--text-3)',
+                    color: 'var(--muted)',
                     background: 'var(--border)',
                     borderRadius: 4,
                     padding: '1px 5px',
@@ -266,7 +266,7 @@ export function LayoutStats({ result, optimizationScore, optimizedAt }: Props) {
               </div>
             ))}
           </div>
-          <div style={{ fontSize: 10, color: 'var(--text-3)', marginTop: 6 }}>
+          <div style={{ fontSize: 10, color: 'var(--muted)', marginTop: 6 }}>
             Pieces ≥50% of tile paired from one tile · pieces &lt;50% need a new tile each
           </div>
         </div>

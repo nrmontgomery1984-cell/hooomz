@@ -28,11 +28,11 @@ interface ChangeOrderDetailSheetProps {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  approved: 'var(--green, #10B981)',
-  pending_approval: 'var(--amber, #F59E0B)',
-  declined: 'var(--red, #EF4444)',
-  draft: 'var(--text-3, #9CA3AF)',
-  cancelled: 'var(--text-3, #9CA3AF)',
+  approved: 'var(--green)',
+  pending_approval: 'var(--amber)',
+  declined: 'var(--red)',
+  draft: 'var(--muted)',
+  cancelled: 'var(--muted)',
 };
 
 const STATUS_LABELS: Record<string, string> = {
@@ -64,11 +64,11 @@ const inputStyle: React.CSSProperties = {
   minHeight: 44,
   padding: '10px 12px',
   fontSize: 13,
-  fontFamily: 'var(--font-sans)',
+  fontFamily: 'var(--font-body)',
   borderRadius: 8,
-  border: '1px solid var(--border, #E5E7EB)',
-  background: 'var(--surface-1, #FFFFFF)',
-  color: 'var(--text, #111827)',
+  border: '1px solid var(--border)',
+  background: 'var(--surface)',
+  color: 'var(--charcoal)',
   outline: 'none',
 };
 
@@ -76,9 +76,9 @@ const labelStyle: React.CSSProperties = {
   display: 'block',
   fontSize: 10,
   fontWeight: 600,
-  color: 'var(--text-3, #9CA3AF)',
+  color: 'var(--muted)',
   marginBottom: 2,
-  fontFamily: 'var(--font-cond)',
+  fontFamily: 'var(--font-mono)',
   letterSpacing: '0.04em',
   textTransform: 'uppercase',
 };
@@ -203,7 +203,7 @@ export function ChangeOrderDetailSheet({ isOpen, onClose, changeOrderId }: Chang
     <BottomSheet isOpen={isOpen} onClose={onClose} title={co ? `${co.coNumber} — ${co.title}` : 'Change Order'}>
       {isLoading || !co ? (
         <div style={{ padding: 20, textAlign: 'center' }}>
-          <p style={{ fontSize: 12, color: 'var(--text-3)' }}>Loading...</p>
+          <p style={{ fontSize: 12, color: 'var(--muted)' }}>Loading...</p>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -218,35 +218,35 @@ export function ChangeOrderDetailSheet({ isOpen, onClose, changeOrderId }: Chang
               borderRadius: 4,
               fontSize: 11,
               fontWeight: 600,
-              color: STATUS_COLORS[co.status] || 'var(--text-3)',
-              background: 'var(--surface-3, #F3F4F6)',
+              color: STATUS_COLORS[co.status] || 'var(--muted)',
+              background: 'var(--surface-3)',
             }}>
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: STATUS_COLORS[co.status] }} />
               {STATUS_LABELS[co.status] || co.status}
             </span>
-            <span style={{ fontSize: 11, color: 'var(--text-3)' }}>
+            <span style={{ fontSize: 11, color: 'var(--muted)' }}>
               {INITIATOR_LABELS[co.initiatorType] || co.initiatorType}
             </span>
           </div>
 
           {/* Description */}
           {co.description && (
-            <p style={{ fontSize: 12, color: 'var(--text-2, #6B7280)', lineHeight: 1.5 }}>
+            <p style={{ fontSize: 12, color: 'var(--mid)', lineHeight: 1.5 }}>
               {co.description}
             </p>
           )}
 
           {/* Cost + Schedule summary */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-            <div style={{ background: 'var(--surface-3, #F3F4F6)', borderRadius: 8, padding: '10px 12px' }}>
+            <div style={{ background: 'var(--surface-3)', borderRadius: 8, padding: '10px 12px' }}>
               <span style={labelStyle}>Cost Impact</span>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 16, fontWeight: 700, color: 'var(--text)' }}>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 16, fontWeight: 700, color: 'var(--charcoal)' }}>
                 {fmt(co.costImpact)}
               </span>
             </div>
-            <div style={{ background: 'var(--surface-3, #F3F4F6)', borderRadius: 8, padding: '10px 12px' }}>
+            <div style={{ background: 'var(--surface-3)', borderRadius: 8, padding: '10px 12px' }}>
               <span style={labelStyle}>Schedule Impact</span>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 16, fontWeight: 700, color: 'var(--text)' }}>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 16, fontWeight: 700, color: 'var(--charcoal)' }}>
                 {co.scheduleImpactDays}d
               </span>
             </div>
@@ -264,7 +264,7 @@ export function ChangeOrderDetailSheet({ isOpen, onClose, changeOrderId }: Chang
                   style={{
                     fontSize: 11,
                     fontWeight: 600,
-                    color: '#0F766E',
+                    color: 'var(--accent)',
                     background: 'none',
                     border: 'none',
                     cursor: 'pointer',
@@ -278,7 +278,7 @@ export function ChangeOrderDetailSheet({ isOpen, onClose, changeOrderId }: Chang
             </div>
 
             {lineItems.length === 0 && !showAddLineItem && (
-              <p style={{ fontSize: 11, color: 'var(--text-3)', padding: '8px 0' }}>No line items yet</p>
+              <p style={{ fontSize: 11, color: 'var(--muted)', padding: '8px 0' }}>No line items yet</p>
             )}
 
             {lineItems.map((li) => (
@@ -289,22 +289,22 @@ export function ChangeOrderDetailSheet({ isOpen, onClose, changeOrderId }: Chang
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   padding: '6px 0',
-                  borderBottom: '1px solid var(--border, #E5E7EB)',
+                  borderBottom: '1px solid var(--border)',
                   minHeight: 36,
                 }}
               >
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <span style={{ fontSize: 12, color: 'var(--text)', fontWeight: 500 }}>{li.description}</span>
+                  <span style={{ fontSize: 12, color: 'var(--charcoal)', fontWeight: 500 }}>{li.description}</span>
                   <div style={{ display: 'flex', gap: 8, marginTop: 2 }}>
-                    <span style={{ fontSize: 10, color: 'var(--text-3)' }}>{li.category}</span>
-                    <span style={{ fontSize: 10, color: 'var(--text-3)' }}>{li.estimatedHours}h</span>
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-2)' }}>{fmt(li.estimatedTotal)}</span>
+                    <span style={{ fontSize: 10, color: 'var(--muted)' }}>{li.category}</span>
+                    <span style={{ fontSize: 10, color: 'var(--muted)' }}>{li.estimatedHours}h</span>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--mid)' }}>{fmt(li.estimatedTotal)}</span>
                   </div>
                 </div>
                 {isDraft && (
                   <button
                     onClick={() => handleRemoveLineItem(li.id)}
-                    style={{ minWidth: 36, minHeight: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--red, #EF4444)' }}
+                    style={{ minWidth: 36, minHeight: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--red)' }}
                   >
                     <Trash2 size={13} />
                   </button>
@@ -314,7 +314,7 @@ export function ChangeOrderDetailSheet({ isOpen, onClose, changeOrderId }: Chang
 
             {/* Add line item form */}
             {showAddLineItem && (
-              <div style={{ marginTop: 8, padding: 12, borderRadius: 8, border: '1px solid var(--border, #E5E7EB)', display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div style={{ marginTop: 8, padding: 12, borderRadius: 8, border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: 10 }}>
                 <input type="text" value={liDesc} onChange={(e) => setLiDesc(e.target.value)} placeholder="Description *" style={inputStyle} />
                 <input type="text" value={liCategory} onChange={(e) => setLiCategory(e.target.value)} placeholder="Category (e.g. flooring)" style={inputStyle} />
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
@@ -323,7 +323,7 @@ export function ChangeOrderDetailSheet({ isOpen, onClose, changeOrderId }: Chang
                   <input type="number" value={liLaborCost} onChange={(e) => setLiLaborCost(e.target.value)} placeholder="Labor $" min="0" style={inputStyle} />
                 </div>
                 <div style={{ display: 'flex', gap: 8 }}>
-                  <button onClick={resetLineItemForm} style={{ flex: 1, minHeight: 40, borderRadius: 6, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text-2)', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+                  <button onClick={resetLineItemForm} style={{ flex: 1, minHeight: 40, borderRadius: 6, border: '1px solid var(--border)', background: 'transparent', color: 'var(--mid)', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
                     Cancel
                   </button>
                   <button
@@ -331,8 +331,8 @@ export function ChangeOrderDetailSheet({ isOpen, onClose, changeOrderId }: Chang
                     disabled={!liDesc.trim() || addLineItem.isPending}
                     style={{
                       flex: 1, minHeight: 40, borderRadius: 6, border: 'none',
-                      background: liDesc.trim() ? '#0F766E' : 'var(--border)',
-                      color: liDesc.trim() ? '#FFFFFF' : 'var(--text-3)',
+                      background: liDesc.trim() ? 'var(--accent)' : 'var(--border)',
+                      color: liDesc.trim() ? '#fff' : 'var(--muted)',
                       fontSize: 12, fontWeight: 600, cursor: liDesc.trim() ? 'pointer' : 'not-allowed',
                     }}
                   >
@@ -349,14 +349,14 @@ export function ChangeOrderDetailSheet({ isOpen, onClose, changeOrderId }: Chang
               <button
                 onClick={handleCancel}
                 disabled={cancelCO.isPending}
-                style={{ flex: 1, minHeight: 44, borderRadius: 8, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text-2)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+                style={{ flex: 1, minHeight: 44, borderRadius: 8, border: '1px solid var(--border)', background: 'transparent', color: 'var(--mid)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
               >
                 Cancel CO
               </button>
               <button
                 onClick={handleSubmit}
                 disabled={submitForApproval.isPending}
-                style={{ flex: 1, minHeight: 44, borderRadius: 8, border: 'none', background: '#0F766E', color: '#FFFFFF', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+                style={{ flex: 1, minHeight: 44, borderRadius: 8, border: 'none', background: 'var(--accent)', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
               >
                 {submitForApproval.isPending ? 'Submitting...' : 'Submit for Approval'}
               </button>
@@ -367,14 +367,14 @@ export function ChangeOrderDetailSheet({ isOpen, onClose, changeOrderId }: Chang
             <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
               <button
                 onClick={() => setShowDeclineForm(true)}
-                style={{ flex: 1, minHeight: 44, borderRadius: 8, border: '1px solid var(--red, #EF4444)', background: 'transparent', color: 'var(--red, #EF4444)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+                style={{ flex: 1, minHeight: 44, borderRadius: 8, border: '1px solid var(--red)', background: 'transparent', color: 'var(--red)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
               >
                 Decline
               </button>
               <button
                 onClick={handleApprove}
                 disabled={approveCO.isPending}
-                style={{ flex: 1, minHeight: 44, borderRadius: 8, border: 'none', background: 'var(--green, #10B981)', color: '#FFFFFF', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+                style={{ flex: 1, minHeight: 44, borderRadius: 8, border: 'none', background: 'var(--green)', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
               >
                 {approveCO.isPending ? 'Approving...' : 'Approve'}
               </button>
@@ -391,7 +391,7 @@ export function ChangeOrderDetailSheet({ isOpen, onClose, changeOrderId }: Chang
                 style={{ ...inputStyle, minHeight: 60, resize: 'vertical' }}
               />
               <div style={{ display: 'flex', gap: 8 }}>
-                <button onClick={() => { setShowDeclineForm(false); setDeclineReason(''); }} style={{ flex: 1, minHeight: 40, borderRadius: 6, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text-2)', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+                <button onClick={() => { setShowDeclineForm(false); setDeclineReason(''); }} style={{ flex: 1, minHeight: 40, borderRadius: 6, border: '1px solid var(--border)', background: 'transparent', color: 'var(--mid)', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
                   Back
                 </button>
                 <button
@@ -399,8 +399,8 @@ export function ChangeOrderDetailSheet({ isOpen, onClose, changeOrderId }: Chang
                   disabled={!declineReason.trim() || declineCO.isPending}
                   style={{
                     flex: 1, minHeight: 40, borderRadius: 6, border: 'none',
-                    background: declineReason.trim() ? 'var(--red, #EF4444)' : 'var(--border)',
-                    color: declineReason.trim() ? '#FFFFFF' : 'var(--text-3)',
+                    background: declineReason.trim() ? 'var(--red)' : 'var(--border)',
+                    color: declineReason.trim() ? '#fff' : 'var(--muted)',
                     fontSize: 12, fontWeight: 600, cursor: declineReason.trim() ? 'pointer' : 'not-allowed',
                   }}
                 >
@@ -411,9 +411,9 @@ export function ChangeOrderDetailSheet({ isOpen, onClose, changeOrderId }: Chang
           )}
 
           {co.status === 'declined' && co.declinedReason && (
-            <div style={{ padding: '10px 12px', borderRadius: 8, background: 'var(--red-dim, #FEF2F2)', border: '1px solid var(--red, #EF4444)', borderLeftWidth: 3 }}>
-              <span style={{ ...labelStyle, color: 'var(--red, #EF4444)', marginBottom: 4 }}>Decline Reason</span>
-              <p style={{ fontSize: 12, color: 'var(--text)', lineHeight: 1.4 }}>{co.declinedReason}</p>
+            <div style={{ padding: '10px 12px', borderRadius: 8, background: 'var(--red-dim)', border: '1px solid var(--red)', borderLeftWidth: 3 }}>
+              <span style={{ ...labelStyle, color: 'var(--red)', marginBottom: 4 }}>Decline Reason</span>
+              <p style={{ fontSize: 12, color: 'var(--charcoal)', lineHeight: 1.4 }}>{co.declinedReason}</p>
             </div>
           )}
         </div>

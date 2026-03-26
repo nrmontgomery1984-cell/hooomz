@@ -42,16 +42,11 @@ const STATUS_COLOR: Record<LoopStatus, string> = {
   amber: 'var(--amber)',
   red:   'var(--red)',
   blue:  'var(--blue)',
-  grey:  'var(--text-3)',
+  grey:  'var(--muted)',
 };
 
 // Trade badge color configs
-const TRADE_BADGE_COLORS: Record<string, { bg: string; color: string }> = {
-  FL:   { bg: 'rgba(245,158,11,0.15)',  color: '#F59E0B' },
-  FC:   { bg: 'rgba(37,99,235,0.15)',   color: '#60A5FA' },
-  DEMO: { bg: 'rgba(239,68,68,0.12)',   color: '#F87171' },
-  GEN:  { bg: 'rgba(148,163,184,0.12)', color: '#94A3B8' },
-};
+const TRADE_BADGE_COLORS: Record<string, { bg: string; color: string }> = {};
 
 export function LoopRow({
   name,
@@ -72,10 +67,10 @@ export function LoopRow({
 }: LoopRowProps) {
   const color = STATUS_COLOR[status];
   const paddingLeft = DEPTH_PADDING[depth];
-  const tradeColors = tradeBadge ? (TRADE_BADGE_COLORS[tradeBadge] ?? { bg: 'rgba(148,163,184,0.12)', color: '#94A3B8' }) : null;
+  const tradeColors = tradeBadge ? (TRADE_BADGE_COLORS[tradeBadge] ?? { bg: 'var(--accent-bg)', color: 'var(--accent)' }) : null;
 
   // Delta color
-  let deltaColor = 'var(--text-3)';
+  let deltaColor = 'var(--muted)';
   if (delta) {
     if (delta.startsWith('+')) deltaColor = 'var(--green)';
     else if (delta.toUpperCase() === 'BLOCKED') deltaColor = 'var(--red)';
@@ -110,7 +105,7 @@ export function LoopRow({
       {hasChildren ? (
         <ChevronRight
           size={10}
-          color="var(--text-3)"
+          color="var(--muted)"
           style={{ transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.15s', flexShrink: 0 }}
         />
       ) : (
@@ -119,7 +114,7 @@ export function LoopRow({
 
       {/* Icon */}
       {icon && (
-        <div style={{ width: 16, flexShrink: 0, display: 'flex', alignItems: 'center', color: 'var(--text-3)' }}>
+        <div style={{ width: 16, flexShrink: 0, display: 'flex', alignItems: 'center', color: 'var(--muted)' }}>
           {icon}
         </div>
       )}
@@ -130,7 +125,7 @@ export function LoopRow({
           style={{
             fontSize: 12,
             fontWeight: 500,
-            color: 'var(--text)',
+            color: 'var(--charcoal)',
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -141,7 +136,7 @@ export function LoopRow({
           {name}
         </div>
         {subLabel && (
-          <div style={{ fontSize: 10, color: 'var(--text-2)', lineHeight: 1, marginTop: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          <div style={{ fontSize: 10, color: 'var(--mid)', lineHeight: 1, marginTop: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {subLabel}
           </div>
         )}
@@ -151,7 +146,7 @@ export function LoopRow({
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
         {/* Trade badge */}
         {tradeBadge && tradeColors && (
-          <span style={{ fontFamily: 'var(--font-cond)', fontSize: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', background: tradeColors.bg, color: tradeColors.color, padding: '1px 4px', borderRadius: 2 }}>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', background: tradeColors.bg, color: tradeColors.color, padding: '1px 4px', borderRadius: 2 }}>
             {tradeBadge}
           </span>
         )}

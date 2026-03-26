@@ -30,7 +30,7 @@ function getEventDotColor(eventType: string): string {
   if (eventType.includes('started') || eventType.includes('scheduled') || eventType.includes('delay')) {
     return 'var(--amber)';
   }
-  return 'var(--text-3)';
+  return 'var(--muted)';
 }
 
 interface ActivityEventRowProps {
@@ -121,19 +121,19 @@ export function ActivityEventRow({
 
         {/* Message */}
         <div style={{ flex: 1, minWidth: 0 }}>
-          <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text)', lineHeight: 1.4 }}>
+          <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--charcoal)', lineHeight: 1.4 }}>
             {message}
           </span>
 
           {/* Who + project name */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
             {event.actor_name && (
-              <span style={{ fontSize: 10, color: 'var(--blue)', fontWeight: 500, fontFamily: 'var(--font-cond)', letterSpacing: '0.02em' }}>
+              <span style={{ fontSize: 10, color: 'var(--blue)', fontWeight: 500, fontFamily: 'var(--font-mono)', letterSpacing: '0.02em' }}>
                 {event.actor_name}
               </span>
             )}
             {showProjectName && event.project_name && (
-              <span style={{ fontSize: 10, color: 'var(--text-3)' }}>
+              <span style={{ fontSize: 10, color: 'var(--muted)' }}>
                 {event.project_name}
               </span>
             )}
@@ -143,11 +143,11 @@ export function ActivityEventRow({
         {/* Timestamp */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
           {hasExpandedContent && (
-            <span style={{ fontSize: 9, color: 'var(--text-3)', display: 'inline-block', transform: isExpanded ? 'rotate(90deg)' : 'none', transition: 'transform 0.15s' }}>
+            <span style={{ fontSize: 9, color: 'var(--muted)', display: 'inline-block', transform: isExpanded ? 'rotate(90deg)' : 'none', transition: 'transform 0.15s' }}>
               ▸
             </span>
           )}
-          <time dateTime={event.timestamp} style={{ fontSize: 10, color: 'var(--text-3)', whiteSpace: 'nowrap' }}>
+          <time dateTime={event.timestamp} style={{ fontSize: 10, color: 'var(--muted)', whiteSpace: 'nowrap' }}>
             {relativeTime}
           </time>
         </div>
@@ -157,7 +157,7 @@ export function ActivityEventRow({
       {isExpanded && hasExpandedContent && (
         <div style={{ marginTop: 6, marginLeft: 15, paddingLeft: 8, borderLeft: '2px solid var(--border)' }}>
           {(details || notes) && (
-            <p style={{ fontSize: 11, color: 'var(--text-2)', marginBottom: 2 }}>
+            <p style={{ fontSize: 11, color: 'var(--mid)', marginBottom: 2 }}>
               {details || notes}
             </p>
           )}
@@ -169,8 +169,8 @@ export function ActivityEventRow({
           {extraFields.length > 0 && (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2px 10px' }}>
               {extraFields.map(([key, value]) => (
-                <span key={key} style={{ fontSize: 10, color: 'var(--text-2)' }}>
-                  <span style={{ color: 'var(--text-3)' }}>{key.replace(/_/g, ' ')}:</span>{' '}
+                <span key={key} style={{ fontSize: 10, color: 'var(--mid)' }}>
+                  <span style={{ color: 'var(--muted)' }}>{key.replace(/_/g, ' ')}:</span>{' '}
                   {typeof value === 'number' && key.includes('amount')
                     ? `$${value.toLocaleString()}`
                     : String(value)}

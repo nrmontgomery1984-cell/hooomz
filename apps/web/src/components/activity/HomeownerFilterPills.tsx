@@ -108,8 +108,8 @@ export function HomeownerFilterPills({
             transition-all duration-200
             ${
               activeFilter === filter.value
-                ? 'bg-teal text-white shadow-sm'
-                : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'
+                ? 'bg-[var(--accent)] text-white shadow-sm'
+                : 'bg-white text-[var(--mid)] hover:bg-[var(--surface)] border border-[var(--border)]'
             }
           `}
         >

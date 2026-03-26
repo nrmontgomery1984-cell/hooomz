@@ -32,11 +32,11 @@ const inputStyle: React.CSSProperties = {
   minHeight: 44,
   padding: '10px 12px',
   fontSize: 13,
-  fontFamily: 'var(--font-sans)',
+  fontFamily: 'var(--font-body)',
   borderRadius: 8,
   border: '1px solid var(--border, #E5E7EB)',
-  background: 'var(--surface-1, #FFFFFF)',
-  color: 'var(--text, #111827)',
+  background: 'var(--surface)',
+  color: 'var(--charcoal)',
   outline: 'none',
 };
 
@@ -44,9 +44,9 @@ const labelStyle: React.CSSProperties = {
   display: 'block',
   fontSize: 11,
   fontWeight: 600,
-  color: 'var(--text-2, #6B7280)',
+  color: 'var(--mid)',
   marginBottom: 4,
-  fontFamily: 'var(--font-cond)',
+  fontFamily: 'var(--font-mono)',
   letterSpacing: '0.04em',
   textTransform: 'uppercase',
 };
@@ -153,7 +153,7 @@ export function CreateChangeOrderSheet({ isOpen, onClose, projectId, onCreated }
           <div>
             <label style={labelStyle}>Cost Impact (CAD)</label>
             <div style={{ position: 'relative' }}>
-              <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 13, color: 'var(--text-3, #9CA3AF)' }}>$</span>
+              <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 13, color: 'var(--muted)' }}>$</span>
               <input
                 type="number"
                 value={costImpact}
@@ -188,10 +188,10 @@ export function CreateChangeOrderSheet({ isOpen, onClose, projectId, onCreated }
               borderRadius: 8,
               border: '1px solid var(--border, #E5E7EB)',
               background: 'transparent',
-              color: 'var(--text-2, #6B7280)',
+              color: 'var(--mid)',
               fontSize: 13,
               fontWeight: 600,
-              fontFamily: 'var(--font-sans)',
+              fontFamily: 'var(--font-body)',
               cursor: 'pointer',
             }}
           >
@@ -205,11 +205,11 @@ export function CreateChangeOrderSheet({ isOpen, onClose, projectId, onCreated }
               minHeight: 44,
               borderRadius: 8,
               border: 'none',
-              background: canSubmit ? '#0F766E' : 'var(--border, #E5E7EB)',
-              color: canSubmit ? '#FFFFFF' : 'var(--text-3, #9CA3AF)',
+              background: canSubmit ? 'var(--accent)' : 'var(--border)',
+              color: canSubmit ? '#fff' : 'var(--muted)',
               fontSize: 13,
               fontWeight: 600,
-              fontFamily: 'var(--font-sans)',
+              fontFamily: 'var(--font-body)',
               cursor: canSubmit ? 'pointer' : 'not-allowed',
             }}
           >

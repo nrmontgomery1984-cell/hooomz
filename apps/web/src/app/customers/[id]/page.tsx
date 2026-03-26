@@ -3,11 +3,11 @@
 /**
  * Customer Record — /customers/[id]
  *
- * Detail view for a single customer. 4-tab navigation: Overview, Jobs, Documents, Notes.
- * Reads from customers_v2 + activity stores. Does NOT touch legacy customers store.
+ * Detail view for a single customer. 6-tab navigation: Overview, Properties, Jobs, Documents, Warranty, Notes.
+ * Reads from customers_v2 + activity + properties stores. Does NOT touch legacy customers store.
  */
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { PageErrorBoundary } from '@/components/ui/PageErrorBoundary';
 import {
@@ -23,23 +23,30 @@ import {
   User,
   ChevronRight,
   Shield,
+  Home,
+  Plus,
+  CheckCircle2,
 } from 'lucide-react';
 import { SECTION_COLORS } from '@/lib/viewmode';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCustomer, useUpdateCustomerV2, useAddCustomerNote } from '@/lib/hooks/useCustomersV2';
 import { useLocalRecentActivity } from '@/lib/hooks/useLocalData';
 import { useServicesContext } from '@/lib/services/ServicesContext';
 import { useQuotesByCustomer } from '@/lib/hooks/useQuotes';
 import { useInvoicesByCustomer } from '@/lib/hooks/useInvoices';
-import type { CustomerStatus, CustomerLeadSource, CustomerContactMethod, CustomerRecord } from '@hooomz/shared-contracts';
+import type { CustomerStatus, CustomerLeadSource, CustomerContactMethod, CustomerRecord, Property } from '@hooomz/shared-contracts';
 import { JOB_STAGE_META } from '@hooomz/shared-contracts';
+import { createProperty, getPropertiesByCustomer } from '@/lib/db/properties';
+import { useAuth } from '@/context/AuthContext';
+import { supabase } from '@/lib/supabase/client';
 
 const COLOR = SECTION_COLORS.customers;
 
-type Tab = 'overview' | 'jobs' | 'documents' | 'notes' | 'warranty';
+type Tab = 'overview' | 'properties' | 'jobs' | 'documents' | 'notes' | 'warranty';
 
 const TAB_LIST: { value: Tab; label: string; icon: typeof User }[] = [
   { value: 'overview', label: 'Overview', icon: User },
+  { value: 'properties', label: 'Properties', icon: Home },
   { value: 'jobs', label: 'Jobs', icon: FolderOpen },
   { value: 'documents', label: 'Documents', icon: FileText },
   { value: 'warranty', label: 'Warranty', icon: Shield },
@@ -47,9 +54,9 @@ const TAB_LIST: { value: Tab; label: string; icon: typeof User }[] = [
 ];
 
 const STATUS_BADGE: Record<CustomerStatus, { bg: string; text: string; label: string }> = {
-  lead: { bg: '#EFF6FF', text: '#3B82F6', label: 'Lead' },
-  active: { bg: '#ECFDF5', text: '#10B981', label: 'Active' },
-  past: { bg: '#F3F4F6', text: '#9CA3AF', label: 'Past' },
+  lead: { bg: 'var(--blue-bg)', text: 'var(--blue)', label: 'Lead' },
+  active: { bg: 'var(--green-bg)', text: 'var(--green)', label: 'Active' },
+  past: { bg: 'var(--surface-2)', text: 'var(--muted)', label: 'Past' },
 };
 
 const SOURCE_LABELS: Record<CustomerLeadSource, string> = {
@@ -78,7 +85,7 @@ export default function CustomerRecordPage() {
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}>
         <div style={{ textAlign: 'center' }}>
           <div style={{ width: 32, height: 32, border: '2px solid var(--border)', borderTopColor: COLOR, borderRadius: '50%', animation: 'spin 0.7s linear infinite', margin: '0 auto 8px' }} />
-          <p style={{ fontSize: 11, color: 'var(--text-3)' }}>Loading...</p>
+          <p style={{ fontSize: 11, color: 'var(--muted)' }}>Loading...</p>
         </div>
       </div>
     );
@@ -88,10 +95,10 @@ export default function CustomerRecordPage() {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}>
         <div style={{ textAlign: 'center' }}>
-          <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-2)' }}>Customer not found</p>
+          <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--mid)' }}>Customer not found</p>
           <button
             onClick={() => router.push('/customers')}
-            style={{ marginTop: 12, fontSize: 12, color: COLOR, background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}
+            style={{ marginTop: 12, fontSize: 12, color: COLOR, background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, fontFamily: 'var(--font-mono)' }}
           >
             Back to Customers
           </button>
@@ -108,19 +115,19 @@ export default function CustomerRecordPage() {
       <div style={{ minHeight: '100vh', paddingBottom: 96, background: 'var(--bg)' }}>
 
         {/* Header */}
-        <div style={{ background: 'var(--surface-1)', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
           <div className="max-w-lg md:max-w-full mx-auto px-4 md:px-6 py-3 md:py-4">
             {/* Back + Name */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <button
                 onClick={() => router.push('/customers')}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-3)', padding: 0, minWidth: 28, minHeight: 28, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)', padding: 0, minWidth: 28, minHeight: 28, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
                 <ArrowLeft size={18} />
               </button>
               <div style={{ minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <h1 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', fontFamily: 'var(--font-cond)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <h1 style={{ fontSize: 16, fontWeight: 700, color: 'var(--charcoal)', fontFamily: 'var(--font-mono)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {fullName}
                   </h1>
                   <span style={{
@@ -131,7 +138,7 @@ export default function CustomerRecordPage() {
                     {badge.label}
                   </span>
                 </div>
-                <p style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 1 }}>
+                <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 1 }}>
                   {SOURCE_LABELS[customer.leadSource]}
                   {customer.propertyCity && ` · ${customer.propertyCity}`}
                 </p>
@@ -147,7 +154,7 @@ export default function CustomerRecordPage() {
                     display: 'flex', alignItems: 'center', gap: 5,
                     minHeight: 32, padding: '0 12px', borderRadius: 'var(--radius)',
                     fontSize: 11, fontWeight: 600,
-                    background: 'var(--bg)', color: 'var(--text)',
+                    background: 'var(--bg)', color: 'var(--charcoal)',
                     border: '1px solid var(--border)', textDecoration: 'none',
                   }}
                 >
@@ -161,7 +168,7 @@ export default function CustomerRecordPage() {
                     display: 'flex', alignItems: 'center', gap: 5,
                     minHeight: 32, padding: '0 12px', borderRadius: 'var(--radius)',
                     fontSize: 11, fontWeight: 600,
-                    background: 'var(--bg)', color: 'var(--text)',
+                    background: 'var(--bg)', color: 'var(--charcoal)',
                     border: '1px solid var(--border)', textDecoration: 'none',
                     overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                   }}
@@ -183,8 +190,8 @@ export default function CustomerRecordPage() {
                     style={{
                       flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
                       minHeight: 36, fontSize: 11, fontWeight: 600,
-                      fontFamily: 'var(--font-cond)', letterSpacing: '0.04em',
-                      color: isActive ? COLOR : 'var(--text-3)',
+                      fontFamily: 'var(--font-mono)', letterSpacing: '0.04em',
+                      color: isActive ? COLOR : 'var(--muted)',
                       borderBottom: isActive ? `2px solid ${COLOR}` : '2px solid transparent',
                       background: 'none', border: 'none', cursor: 'pointer',
                       borderBottomStyle: 'solid',
@@ -202,6 +209,7 @@ export default function CustomerRecordPage() {
 
         <div className="max-w-lg md:max-w-full mx-auto px-4 md:px-6" style={{ marginTop: 16 }}>
           {activeTab === 'overview' && <OverviewTab customerId={customerId} customer={customer} />}
+          {activeTab === 'properties' && <PropertiesTab customerId={customerId} />}
           {activeTab === 'jobs' && <JobsTab jobIds={customer.jobIds} />}
           {activeTab === 'documents' && <DocumentsTab customerId={customerId} />}
           {activeTab === 'warranty' && <WarrantyTab jobIds={customer.jobIds} />}
@@ -223,10 +231,6 @@ function OverviewTab({ customerId, customer }: { customerId: string; customer: C
   const [editLastName, setEditLastName] = useState(customer.lastName);
   const [editPhone, setEditPhone] = useState(customer.phone);
   const [editEmail, setEditEmail] = useState(customer.email);
-  const [editAddress, setEditAddress] = useState(customer.propertyAddress);
-  const [editCity, setEditCity] = useState(customer.propertyCity);
-  const [editProvince, setEditProvince] = useState(customer.propertyProvince || '');
-  const [editPostalCode, setEditPostalCode] = useState(customer.propertyPostalCode || '');
   const [editSource, setEditSource] = useState<CustomerLeadSource>(customer.leadSource);
   const [editStatus, setEditStatus] = useState<CustomerStatus>(customer.status);
   const [editNotes, setEditNotes] = useState(customer.notes);
@@ -237,10 +241,6 @@ function OverviewTab({ customerId, customer }: { customerId: string; customer: C
     setEditLastName(customer.lastName);
     setEditPhone(customer.phone);
     setEditEmail(customer.email);
-    setEditAddress(customer.propertyAddress);
-    setEditCity(customer.propertyCity);
-    setEditProvince(customer.propertyProvince || '');
-    setEditPostalCode(customer.propertyPostalCode || '');
     setEditSource(customer.leadSource);
     setEditStatus(customer.status);
     setEditNotes(customer.notes);
@@ -257,10 +257,6 @@ function OverviewTab({ customerId, customer }: { customerId: string; customer: C
         lastName: editLastName.trim(),
         phone: editPhone.trim(),
         email: editEmail.trim(),
-        propertyAddress: editAddress.trim(),
-        propertyCity: editCity.trim(),
-        propertyProvince: editProvince.trim() || undefined,
-        propertyPostalCode: editPostalCode.trim() || undefined,
         leadSource: editSource,
         status: editStatus,
         notes: editNotes.trim(),
@@ -278,7 +274,7 @@ function OverviewTab({ customerId, customer }: { customerId: string; customer: C
     fontSize: 12,
     background: 'var(--bg)',
     border: '1px solid var(--border)',
-    color: 'var(--text)',
+    color: 'var(--charcoal)',
     outline: 'none',
   };
 
@@ -293,7 +289,7 @@ function OverviewTab({ customerId, customer }: { customerId: string; customer: C
             style={{
               display: 'flex', alignItems: 'center', gap: 5,
               minHeight: 30, padding: '0 12px', borderRadius: 'var(--radius)',
-              fontSize: 11, fontWeight: 600,
+              fontSize: 11, fontWeight: 600, fontFamily: 'var(--font-mono)',
               background: 'var(--bg)', color: COLOR,
               border: `1px solid ${COLOR}40`, cursor: 'pointer',
             }}
@@ -306,8 +302,8 @@ function OverviewTab({ customerId, customer }: { customerId: string; customer: C
               onClick={() => setEditing(false)}
               style={{
                 minHeight: 30, padding: '0 10px', borderRadius: 'var(--radius)',
-                fontSize: 11, fontWeight: 600,
-                background: 'var(--bg)', color: 'var(--text-2)',
+                fontSize: 11, fontWeight: 600, fontFamily: 'var(--font-mono)',
+                background: 'var(--bg)', color: 'var(--mid)',
                 border: '1px solid var(--border)', cursor: 'pointer',
               }}
             >
@@ -319,7 +315,7 @@ function OverviewTab({ customerId, customer }: { customerId: string; customer: C
               style={{
                 display: 'flex', alignItems: 'center', gap: 4,
                 minHeight: 30, padding: '0 12px', borderRadius: 'var(--radius)',
-                fontSize: 11, fontWeight: 600,
+                fontSize: 11, fontWeight: 600, fontFamily: 'var(--font-mono)',
                 background: COLOR, color: '#FFFFFF',
                 border: 'none', cursor: 'pointer',
                 opacity: updateCustomer.isPending ? 0.6 : 1,
@@ -376,39 +372,6 @@ function OverviewTab({ customerId, customer }: { customerId: string; customer: C
         )}
       </Card>
 
-      {/* Property Card */}
-      <Card title="Property">
-        {editing ? (
-          <div style={{ display: 'grid', gap: 8 }}>
-            <div>
-              <FieldLabel>Address</FieldLabel>
-              <input type="text" value={editAddress} onChange={(e) => setEditAddress(e.target.value)} style={inputStyle} />
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-              <div>
-                <FieldLabel>City</FieldLabel>
-                <input type="text" value={editCity} onChange={(e) => setEditCity(e.target.value)} style={inputStyle} />
-              </div>
-              <div>
-                <FieldLabel>Province</FieldLabel>
-                <input type="text" value={editProvince} onChange={(e) => setEditProvince(e.target.value)} placeholder="NB" style={inputStyle} />
-              </div>
-            </div>
-            <div>
-              <FieldLabel>Postal Code</FieldLabel>
-              <input type="text" value={editPostalCode} onChange={(e) => setEditPostalCode(e.target.value)} placeholder="E1A 1A1" style={inputStyle} />
-            </div>
-          </div>
-        ) : (
-          <div style={{ display: 'grid', gap: 6 }}>
-            <DetailRow label="Address" value={customer.propertyAddress || '—'} />
-            <DetailRow label="City" value={customer.propertyCity || '—'} />
-            {customer.propertyProvince && <DetailRow label="Province" value={customer.propertyProvince} />}
-            {customer.propertyPostalCode && <DetailRow label="Postal Code" value={customer.propertyPostalCode} />}
-          </div>
-        )}
-      </Card>
-
       {/* Status + Source Card */}
       <Card title="Status & Source">
         {editing ? (
@@ -443,12 +406,12 @@ function OverviewTab({ customerId, customer }: { customerId: string; customer: C
             )}
             {customer.tags && customer.tags.length > 0 && (
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 8 }}>
-                <span style={{ fontSize: 11, color: 'var(--text-3)' }}>Tags</span>
+                <span style={{ fontSize: 11, color: 'var(--muted)' }}>Tags</span>
                 <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
                   {customer.tags.map((tag) => (
                     <span key={tag} style={{
                       fontSize: 10, fontWeight: 600, padding: '1px 6px', borderRadius: 4,
-                      background: 'var(--bg)', color: 'var(--text-2)', border: '1px solid var(--border)',
+                      background: 'var(--bg)', color: 'var(--mid)', border: '1px solid var(--border)',
                     }}>
                       {tag}
                     </span>
@@ -474,7 +437,7 @@ function OverviewTab({ customerId, customer }: { customerId: string; customer: C
             style={{ ...inputStyle, minHeight: 72, padding: '8px 10px', resize: 'vertical' }}
           />
         ) : (
-          <p style={{ fontSize: 12, color: customer.notes ? 'var(--text)' : 'var(--text-3)', whiteSpace: 'pre-wrap' }}>
+          <p style={{ fontSize: 12, color: customer.notes ? 'var(--charcoal)' : 'var(--muted)', whiteSpace: 'pre-wrap' }}>
             {customer.notes || 'No notes yet'}
           </p>
         )}
@@ -508,6 +471,383 @@ function LifetimeValueCard({ customerId }: { customerId: string }) {
 }
 
 // ============================================================================
+// Properties Tab
+// ============================================================================
+
+const PROPERTY_TYPE_LABELS: Record<string, string> = {
+  residential: 'Residential',
+  'multi-unit': 'Multi-Unit',
+  commercial: 'Commercial',
+};
+
+function PropertiesTab({ customerId }: { customerId: string }) {
+  const { services } = useServicesContext();
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const [showForm, setShowForm] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  const { data: properties = [], isLoading } = useQuery({
+    queryKey: ['properties', customerId],
+    queryFn: async () => {
+      if (!services) return [];
+      return getPropertiesByCustomer(services.storage, customerId);
+    },
+    enabled: !!services,
+  });
+
+  const handleCreated = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ['properties', customerId] });
+    setShowForm(false);
+    setSuccessMessage('Property added');
+    setTimeout(() => setSuccessMessage(null), 3000);
+  }, [queryClient, customerId]);
+
+  if (isLoading) {
+    return (
+      <div style={{ textAlign: 'center', padding: '48px 16px' }}>
+        <div style={{ width: 24, height: 24, border: '2px solid var(--border)', borderTopColor: COLOR, borderRadius: '50%', animation: 'spin 0.7s linear infinite', margin: '0 auto 8px' }} />
+        <p style={{ fontSize: 11, color: 'var(--muted)' }}>Loading...</p>
+      </div>
+    );
+  }
+
+  // Empty state
+  if (properties.length === 0 && !showForm) {
+    return (
+      <div style={{ textAlign: 'center', padding: '48px 16px' }}>
+        <Home size={24} style={{ color: 'var(--muted)', margin: '0 auto 8px' }} />
+        <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--mid)' }}>No properties yet.</p>
+        <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4, maxWidth: 280, marginLeft: 'auto', marginRight: 'auto' }}>
+          Add a property to start tracking projects and building a Passport for this home.
+        </p>
+        <button
+          onClick={() => setShowForm(true)}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 5,
+            marginTop: 16, minHeight: 34, padding: '0 16px',
+            borderRadius: 'var(--radius)', fontSize: 11, fontWeight: 600,
+            fontFamily: 'var(--font-mono)',
+            background: 'var(--green)', color: '#fff',
+            border: 'none', cursor: 'pointer',
+          }}
+        >
+          <Plus size={12} /> Add Property
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+
+      {/* Header row with Add button */}
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        {!showForm && (
+          <button
+            onClick={() => setShowForm(true)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 5,
+              minHeight: 30, padding: '0 12px', borderRadius: 'var(--radius)',
+              fontSize: 11, fontWeight: 600, fontFamily: 'var(--font-mono)',
+              background: 'var(--bg)', color: 'var(--green)',
+              border: '1px solid var(--green-dim)', cursor: 'pointer',
+            }}
+          >
+            <Plus size={11} /> Add Property
+          </button>
+        )}
+      </div>
+
+      {/* Success message */}
+      {successMessage && (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 6,
+          padding: '8px 12px', borderRadius: 'var(--radius)',
+          background: 'var(--green-bg)', border: '1px solid #A7F3D0',
+        }}>
+          <CheckCircle2 size={14} style={{ color: 'var(--green)' }} />
+          <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--green)' }}>{successMessage}</span>
+        </div>
+      )}
+
+      {/* Add Property Form */}
+      {showForm && (
+        <AddPropertyForm
+          customerId={customerId}
+          userId={user?.id}
+          onCreated={handleCreated}
+          onCancel={() => setShowForm(false)}
+        />
+      )}
+
+      {/* Property cards */}
+      {properties.map((property) => (
+        <PropertyCard key={property.id} property={property} />
+      ))}
+    </div>
+  );
+}
+
+// ── Add Property Form ──
+
+function AddPropertyForm({
+  customerId,
+  userId,
+  onCreated,
+  onCancel,
+}: {
+  customerId: string;
+  userId?: string;
+  onCreated: () => void;
+  onCancel: () => void;
+}) {
+  const { services } = useServicesContext();
+
+  const [addressLine1, setAddressLine1] = useState('');
+  const [addressLine2, setAddressLine2] = useState('');
+  const [city, setCity] = useState('Moncton');
+  const [province, setProvince] = useState('NB');
+  const [postalCode, setPostalCode] = useState('');
+  const [propertyType, setPropertyType] = useState<'residential' | 'multi-unit' | 'commercial'>('residential');
+  const [yearBuilt, setYearBuilt] = useState('');
+  const [sqftTotal, setSqftTotal] = useState('');
+  const [notes, setNotes] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  const inputStyle: React.CSSProperties = {
+    width: '100%',
+    minHeight: 34,
+    padding: '0 10px',
+    borderRadius: 'var(--radius)',
+    fontSize: 12,
+    background: 'var(--bg)',
+    border: '1px solid var(--border)',
+    color: 'var(--charcoal)',
+    outline: 'none',
+  };
+
+  const handleSubmit = async () => {
+    if (submitting || !services) return;
+
+    // Validate required fields
+    if (!addressLine1.trim()) { setError('Street address is required'); return; }
+    if (!city.trim()) { setError('City is required'); return; }
+    if (!province.trim()) { setError('Province is required'); return; }
+    if (!postalCode.trim()) { setError('Postal code is required'); return; }
+
+    setError(null);
+    setSubmitting(true);
+
+    try {
+      // Resolve org_id from team_members
+      let orgId = '';
+      if (userId) {
+        const { data } = await supabase
+          .from('team_members')
+          .select('organization_id')
+          .eq('user_id', userId)
+          .limit(1)
+          .single();
+        orgId = data?.organization_id || '';
+      }
+
+      await createProperty(services.storage, {
+        customer_id: customerId,
+        org_id: orgId,
+        address_line_1: addressLine1.trim(),
+        address_line_2: addressLine2.trim() || undefined,
+        city: city.trim(),
+        province: province.trim(),
+        postal_code: postalCode.trim(),
+        property_type: propertyType,
+        year_built: yearBuilt ? parseInt(yearBuilt, 10) : undefined,
+        sqft_total: sqftTotal ? parseInt(sqftTotal, 10) : undefined,
+        notes: notes.trim() || undefined,
+      });
+
+      onCreated();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to create property');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <Card title="New Property">
+      <div style={{ display: 'grid', gap: 8 }}>
+        <div>
+          <FieldLabel>Street Address *</FieldLabel>
+          <input type="text" value={addressLine1} onChange={(e) => setAddressLine1(e.target.value)} placeholder="142 Elmwood Dr" style={inputStyle} />
+        </div>
+        <div>
+          <FieldLabel>Unit / Suite</FieldLabel>
+          <input type="text" value={addressLine2} onChange={(e) => setAddressLine2(e.target.value)} placeholder="Apt 2B" style={inputStyle} />
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+          <div>
+            <FieldLabel>City *</FieldLabel>
+            <input type="text" value={city} onChange={(e) => setCity(e.target.value)} style={inputStyle} />
+          </div>
+          <div>
+            <FieldLabel>Province *</FieldLabel>
+            <input type="text" value={province} onChange={(e) => setProvince(e.target.value)} style={inputStyle} />
+          </div>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+          <div>
+            <FieldLabel>Postal Code *</FieldLabel>
+            <input type="text" value={postalCode} onChange={(e) => setPostalCode(e.target.value)} placeholder="E1C 5N2" style={inputStyle} />
+          </div>
+          <div>
+            <FieldLabel>Property Type *</FieldLabel>
+            <select value={propertyType} onChange={(e) => setPropertyType(e.target.value as typeof propertyType)} style={{ ...inputStyle, cursor: 'pointer' }}>
+              <option value="residential">Residential</option>
+              <option value="multi-unit">Multi-Unit</option>
+              <option value="commercial">Commercial</option>
+            </select>
+          </div>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+          <div>
+            <FieldLabel>Year Built</FieldLabel>
+            <input type="number" value={yearBuilt} onChange={(e) => setYearBuilt(e.target.value)} placeholder="1985" style={inputStyle} />
+          </div>
+          <div>
+            <FieldLabel>Total Sqft</FieldLabel>
+            <input type="number" value={sqftTotal} onChange={(e) => setSqftTotal(e.target.value)} placeholder="1200" style={inputStyle} />
+          </div>
+        </div>
+        <div>
+          <FieldLabel>Notes</FieldLabel>
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            rows={2}
+            placeholder="Corner lot, detached garage, etc."
+            style={{ ...inputStyle, minHeight: 56, padding: '8px 10px', resize: 'vertical' }}
+          />
+        </div>
+
+        {/* Error */}
+        {error && (
+          <p style={{ fontSize: 11, color: 'var(--red)', margin: 0 }}>{error}</p>
+        )}
+
+        {/* Actions */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 6, marginTop: 4 }}>
+          <button
+            onClick={onCancel}
+            style={{
+              minHeight: 30, padding: '0 10px', borderRadius: 'var(--radius)',
+              fontSize: 11, fontWeight: 600, fontFamily: 'var(--font-mono)',
+              background: 'var(--bg)', color: 'var(--mid)',
+              border: '1px solid var(--border)', cursor: 'pointer',
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSubmit}
+            disabled={submitting}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 4,
+              minHeight: 30, padding: '0 12px', borderRadius: 'var(--radius)',
+              fontSize: 11, fontWeight: 600, fontFamily: 'var(--font-mono)',
+              background: 'var(--green)', color: '#fff',
+              border: 'none', cursor: 'pointer',
+              opacity: submitting ? 0.6 : 1,
+            }}
+          >
+            <Save size={11} /> {submitting ? 'Saving...' : 'Save Property'}
+          </button>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+// ── Property Card ──
+
+function PropertyCard({ property }: { property: Property }) {
+  const typeLabel = PROPERTY_TYPE_LABELS[property.property_type] || property.property_type;
+  const addressParts = [property.address_line_1];
+  if (property.address_line_2) addressParts.push(property.address_line_2);
+  addressParts.push(`${property.city}, ${property.province} ${property.postal_code}`);
+
+  const createdDate = new Date(property.created_at).toLocaleDateString('en-US', {
+    month: 'short', day: 'numeric', year: 'numeric',
+  });
+
+  return (
+    <div style={{
+      padding: '12px 14px', borderRadius: 'var(--radius)',
+      background: 'var(--surface)', border: '1px solid var(--border)',
+      borderLeft: `3px solid ${COLOR}`,
+      boxShadow: 'var(--shadow-card)',
+    }}>
+      {/* Header row */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+          <Home size={14} style={{ color: COLOR, flexShrink: 0 }} />
+          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--charcoal)' }}>
+            {property.address_line_1}
+          </span>
+        </div>
+        <span style={{
+          fontSize: 9, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase',
+          padding: '2px 6px', borderRadius: 4, flexShrink: 0,
+          background: 'var(--bg)', color: 'var(--mid)', border: '1px solid var(--border)',
+        }}>
+          {typeLabel}
+        </span>
+      </div>
+
+      {/* Address */}
+      <div style={{ fontSize: 11, color: 'var(--mid)', marginBottom: 8, lineHeight: 1.5 }}>
+        {property.address_line_2 && <div>{property.address_line_2}</div>}
+        <div>{property.city}, {property.province} {property.postal_code}</div>
+      </div>
+
+      {/* Details row */}
+      <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginBottom: 8 }}>
+        {property.year_built && (
+          <div>
+            <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--muted)' }}>Built</span>
+            <span style={{ fontSize: 11, color: 'var(--charcoal)', fontWeight: 500, marginLeft: 4 }}>{property.year_built}</span>
+          </div>
+        )}
+        {property.sqft_total && (
+          <div>
+            <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--muted)' }}>Sqft</span>
+            <span style={{ fontSize: 11, color: 'var(--charcoal)', fontWeight: 500, marginLeft: 4 }}>{property.sqft_total.toLocaleString()}</span>
+          </div>
+        )}
+      </div>
+
+      {/* Footer row */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <span style={{ fontSize: 10, color: 'var(--muted)' }}>Added {createdDate}</span>
+        <button
+          onClick={() => console.log('Edit property:', property.id)}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 4,
+            minHeight: 26, padding: '0 10px', borderRadius: 'var(--radius)',
+            fontSize: 10, fontWeight: 600, fontFamily: 'var(--font-mono)',
+            background: 'none', color: COLOR,
+            border: `1px solid ${COLOR}40`, cursor: 'pointer',
+          }}
+        >
+          <Pencil size={10} /> Edit
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================================
 // Jobs Tab
 // ============================================================================
 
@@ -530,9 +870,9 @@ function JobsTab({ jobIds }: { jobIds: string[] }) {
   if (jobIds.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '48px 16px' }}>
-        <FolderOpen size={24} style={{ color: 'var(--text-3)', margin: '0 auto 8px' }} />
-        <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-2)' }}>No linked jobs</p>
-        <p style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 4 }}>
+        <FolderOpen size={24} style={{ color: 'var(--muted)', margin: '0 auto 8px' }} />
+        <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--mid)' }}>No linked jobs</p>
+        <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4 }}>
           Jobs will appear here when this customer has active projects
         </p>
       </div>
@@ -540,9 +880,9 @@ function JobsTab({ jobIds }: { jobIds: string[] }) {
   }
 
   const STAGE_COLORS: Record<string, string> = {
-    lead: '#9CA3AF', estimate: '#9CA3AF', consultation: '#3B82F6', quote: '#3B82F6',
-    contract: '#3B82F6', shield: '#F59E0B', clear: '#F59E0B', ready: '#F59E0B',
-    install: '#0F766E', punch: '#F59E0B', turnover: '#3B82F6', complete: '#10B981',
+    lead: 'var(--muted)', estimate: 'var(--muted)', consultation: 'var(--blue)', quote: 'var(--blue)',
+    contract: 'var(--blue)', shield: 'var(--yellow)', clear: 'var(--yellow)', ready: 'var(--yellow)',
+    install: 'var(--accent)', punch: 'var(--yellow)', turnover: 'var(--blue)', complete: 'var(--green)',
   };
 
   return (
@@ -552,7 +892,7 @@ function JobsTab({ jobIds }: { jobIds: string[] }) {
         const name = project?.name || jobId;
         const stage = project?.jobStage;
         const stageMeta = stage ? JOB_STAGE_META[stage] : null;
-        const stageColor = stage ? STAGE_COLORS[stage] || '#9CA3AF' : '#9CA3AF';
+        const stageColor = stage ? STAGE_COLORS[stage] || 'var(--muted)' : 'var(--muted)';
         const city = project?.address?.city;
 
         return (
@@ -562,19 +902,19 @@ function JobsTab({ jobIds }: { jobIds: string[] }) {
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               padding: '12px 14px', borderRadius: 'var(--radius)',
-              background: 'var(--surface-1)', border: '1px solid var(--border)',
+              background: 'var(--surface)', border: '1px solid var(--border)',
               boxShadow: 'var(--shadow-card)', cursor: 'pointer',
-              width: '100%', textAlign: 'left',
+              width: '100%', textAlign: 'left', fontFamily: 'var(--font-mono)',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
               <FolderOpen size={14} style={{ color: COLOR, flexShrink: 0 }} />
               <div style={{ minWidth: 0 }}>
-                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--charcoal)', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {name}
                 </span>
                 {city && (
-                  <span style={{ fontSize: 10, color: 'var(--text-3)' }}>{city}</span>
+                  <span style={{ fontSize: 10, color: 'var(--muted)' }}>{city}</span>
                 )}
               </div>
             </div>
@@ -607,29 +947,29 @@ function DocumentsTab({ customerId }: { customerId: string }) {
   const { data: invoices = [] } = useInvoicesByCustomer(customerId);
 
   const QUOTE_STATUS_COLORS: Record<string, { bg: string; text: string }> = {
-    draft: { bg: '#F3F4F6', text: '#6B7280' },
-    sent: { bg: '#DBEAFE', text: '#2563EB' },
-    accepted: { bg: '#D1FAE5', text: '#059669' },
-    declined: { bg: '#FEE2E2', text: '#DC2626' },
-    expired: { bg: '#F3F4F6', text: '#9CA3AF' },
+    draft: { bg: 'var(--surface-2)', text: 'var(--mid)' },
+    sent: { bg: 'var(--blue-bg)', text: 'var(--blue)' },
+    accepted: { bg: 'var(--green-bg)', text: 'var(--green)' },
+    declined: { bg: 'var(--red-bg)', text: 'var(--red)' },
+    expired: { bg: 'var(--surface-2)', text: 'var(--muted)' },
   };
 
   const INV_STATUS_COLORS: Record<string, { bg: string; text: string }> = {
-    draft: { bg: '#F3F4F6', text: '#6B7280' },
-    sent: { bg: '#DBEAFE', text: '#2563EB' },
-    viewed: { bg: '#DBEAFE', text: '#2563EB' },
-    partial: { bg: '#FEF3C7', text: '#D97706' },
-    paid: { bg: '#D1FAE5', text: '#059669' },
-    overdue: { bg: '#FEE2E2', text: '#DC2626' },
-    cancelled: { bg: '#F3F4F6', text: '#9CA3AF' },
+    draft: { bg: 'var(--surface-2)', text: 'var(--mid)' },
+    sent: { bg: 'var(--blue-bg)', text: 'var(--blue)' },
+    viewed: { bg: 'var(--blue-bg)', text: 'var(--blue)' },
+    partial: { bg: 'var(--yellow-bg)', text: 'var(--yellow)' },
+    paid: { bg: 'var(--green-bg)', text: 'var(--green)' },
+    overdue: { bg: 'var(--red-bg)', text: 'var(--red)' },
+    cancelled: { bg: 'var(--surface-2)', text: 'var(--muted)' },
   };
 
   if (quotes.length === 0 && invoices.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '48px 16px' }}>
-        <FileText size={24} style={{ color: 'var(--text-3)', margin: '0 auto 8px' }} />
-        <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-2)' }}>No documents yet</p>
-        <p style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 4 }}>
+        <FileText size={24} style={{ color: 'var(--muted)', margin: '0 auto 8px' }} />
+        <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--mid)' }}>No documents yet</p>
+        <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4 }}>
           Quotes and invoices will appear here
         </p>
       </div>
@@ -644,7 +984,7 @@ function DocumentsTab({ customerId }: { customerId: string }) {
       {/* Quotes */}
       {quotes.length > 0 && (
         <div>
-          <p style={{ fontFamily: 'var(--font-cond)', fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: 8 }}>
+          <p style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 8 }}>
             Quotes ({quotes.length})
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -657,14 +997,14 @@ function DocumentsTab({ customerId }: { customerId: string }) {
                   style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     padding: '10px 14px', borderRadius: 'var(--radius)',
-                    background: 'var(--surface-1)', border: '1px solid var(--border)',
+                    background: 'var(--surface)', border: '1px solid var(--border)',
                     boxShadow: 'var(--shadow-card)', cursor: 'pointer',
-                    width: '100%', textAlign: 'left',
+                    width: '100%', textAlign: 'left', fontFamily: 'var(--font-mono)',
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
                     <FileText size={13} style={{ color: COLOR, flexShrink: 0 }} />
-                    <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--charcoal)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {formatCurrency(q.totalAmount)}
                     </span>
                     <span style={{
@@ -674,7 +1014,7 @@ function DocumentsTab({ customerId }: { customerId: string }) {
                       {q.status}
                     </span>
                   </div>
-                  <span style={{ fontSize: 10, color: 'var(--text-3)', flexShrink: 0 }}>
+                  <span style={{ fontSize: 10, color: 'var(--muted)', flexShrink: 0 }}>
                     {formatDate(q.createdAt)}
                   </span>
                 </button>
@@ -687,7 +1027,7 @@ function DocumentsTab({ customerId }: { customerId: string }) {
       {/* Invoices */}
       {invoices.length > 0 && (
         <div>
-          <p style={{ fontFamily: 'var(--font-cond)', fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: 8 }}>
+          <p style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 8 }}>
             Invoices ({invoices.length})
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -700,14 +1040,14 @@ function DocumentsTab({ customerId }: { customerId: string }) {
                   style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     padding: '10px 14px', borderRadius: 'var(--radius)',
-                    background: 'var(--surface-1)', border: '1px solid var(--border)',
+                    background: 'var(--surface)', border: '1px solid var(--border)',
                     boxShadow: 'var(--shadow-card)', cursor: 'pointer',
-                    width: '100%', textAlign: 'left',
+                    width: '100%', textAlign: 'left', fontFamily: 'var(--font-mono)',
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
                     <FileText size={13} style={{ color: COLOR, flexShrink: 0 }} />
-                    <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 600, color: 'var(--text)' }}>
+                    <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 600, color: 'var(--charcoal)' }}>
                       {inv.invoiceNumber}
                     </span>
                     <span style={{
@@ -718,7 +1058,7 @@ function DocumentsTab({ customerId }: { customerId: string }) {
                     </span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-                    <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 600, color: inv.balanceDue > 0 ? '#DC2626' : '#059669' }}>
+                    <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 600, color: inv.balanceDue > 0 ? 'var(--red)' : 'var(--green)' }}>
                       {formatCurrency(inv.balanceDue)}
                     </span>
                     <ChevronRight size={14} style={{ color: 'var(--border-strong, #d1d5db)' }} />
@@ -758,9 +1098,9 @@ function WarrantyTab({ jobIds }: { jobIds: string[] }) {
   if (completedProjects.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '48px 16px' }}>
-        <Shield size={24} style={{ color: 'var(--text-3)', margin: '0 auto 8px' }} />
-        <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-2)' }}>No warranty coverage yet</p>
-        <p style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 4 }}>
+        <Shield size={24} style={{ color: 'var(--muted)', margin: '0 auto 8px' }} />
+        <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--mid)' }}>No warranty coverage yet</p>
+        <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4 }}>
           Warranty tracking begins when a project is completed
         </p>
       </div>
@@ -784,29 +1124,29 @@ function WarrantyTab({ jobIds }: { jobIds: string[] }) {
             key={project.id}
             style={{
               padding: '12px 14px', borderRadius: 'var(--radius)',
-              background: 'var(--surface-1)', border: '1px solid var(--border)',
+              background: 'var(--surface)', border: '1px solid var(--border)',
               boxShadow: 'var(--shadow-card)',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)' }}>{project.name}</span>
+              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--charcoal)' }}>{project.name}</span>
               <span style={{
                 fontSize: 9, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase',
                 padding: '2px 6px', borderRadius: 4,
-                background: isActive ? '#D1FAE518' : '#F3F4F6',
-                color: isActive ? '#10B981' : '#9CA3AF',
+                background: isActive ? '#D1FAE518' : 'var(--surface-2)',
+                color: isActive ? 'var(--green)' : 'var(--muted)',
               }}>
                 {isActive ? 'Active' : 'Expired'}
               </span>
             </div>
             <div style={{ display: 'grid', gap: 4 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11 }}>
-                <span style={{ color: 'var(--text-3)' }}>Completed</span>
-                <span style={{ color: 'var(--text)', fontWeight: 500 }}>{formatDate(completionDate)}</span>
+                <span style={{ color: 'var(--muted)' }}>Completed</span>
+                <span style={{ color: 'var(--charcoal)', fontWeight: 500 }}>{formatDate(completionDate)}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11 }}>
-                <span style={{ color: 'var(--text-3)' }}>Warranty Expires</span>
-                <span style={{ color: isActive ? '#10B981' : '#9CA3AF', fontWeight: 500 }}>{formatDate(expiryDate)}</span>
+                <span style={{ color: 'var(--muted)' }}>Warranty Expires</span>
+                <span style={{ color: isActive ? 'var(--green)' : 'var(--muted)', fontWeight: 500 }}>{formatDate(expiryDate)}</span>
               </div>
             </div>
           </div>
@@ -842,7 +1182,7 @@ function NotesTab({ customerId }: { customerId: string }) {
       {/* Add note input */}
       <div style={{
         padding: 12, borderRadius: 'var(--radius)',
-        background: 'var(--surface-1)', border: '1px solid var(--border)',
+        background: 'var(--surface)', border: '1px solid var(--border)',
         boxShadow: 'var(--shadow-card)',
       }}>
         <textarea
@@ -854,7 +1194,7 @@ function NotesTab({ customerId }: { customerId: string }) {
             width: '100%', minHeight: 56, padding: '8px 10px',
             borderRadius: 'var(--radius)', fontSize: 12,
             background: 'var(--bg)', border: '1px solid var(--border)',
-            color: 'var(--text)', outline: 'none', resize: 'vertical',
+            color: 'var(--charcoal)', outline: 'none', resize: 'vertical',
           }}
           onKeyDown={(e) => { if (e.key === 'Enter' && e.metaKey) handleAddNote(); }}
         />
@@ -864,7 +1204,7 @@ function NotesTab({ customerId }: { customerId: string }) {
             disabled={!noteText.trim() || addNote.isPending}
             style={{
               minHeight: 32, padding: '0 16px', borderRadius: 'var(--radius)',
-              fontSize: 11, fontWeight: 600,
+              fontSize: 11, fontWeight: 600, fontFamily: 'var(--font-mono)',
               background: COLOR, color: '#FFFFFF',
               border: 'none', cursor: noteText.trim() ? 'pointer' : 'default',
               opacity: noteText.trim() && !addNote.isPending ? 1 : 0.5,
@@ -878,8 +1218,8 @@ function NotesTab({ customerId }: { customerId: string }) {
       {/* Notes timeline */}
       {customerEvents.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '32px 16px' }}>
-          <StickyNote size={24} style={{ color: 'var(--text-3)', margin: '0 auto 8px' }} />
-          <p style={{ fontSize: 12, color: 'var(--text-3)' }}>No notes yet</p>
+          <StickyNote size={24} style={{ color: 'var(--muted)', margin: '0 auto 8px' }} />
+          <p style={{ fontSize: 12, color: 'var(--muted)' }}>No notes yet</p>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -888,18 +1228,18 @@ function NotesTab({ customerId }: { customerId: string }) {
               key={String(event.id || i)}
               style={{
                 padding: '10px 12px', borderRadius: 'var(--radius)',
-                background: 'var(--surface-1)', border: '1px solid var(--border)',
+                background: 'var(--surface)', border: '1px solid var(--border)',
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-                <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-3)' }}>
+                <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--muted)' }}>
                   {String(event.event_type || event.eventType || '').replace(/[._]/g, ' ')}
                 </span>
-                <span style={{ fontSize: 10, color: 'var(--text-3)' }}>
+                <span style={{ fontSize: 10, color: 'var(--muted)' }}>
                   {formatRelativeTime(event.created_at || event.createdAt || event.timestamp)}
                 </span>
               </div>
-              <p style={{ fontSize: 12, color: 'var(--text)', whiteSpace: 'pre-wrap' }}>
+              <p style={{ fontSize: 12, color: 'var(--charcoal)', whiteSpace: 'pre-wrap' }}>
                 {String(event.summary || event.description || '')}
               </p>
             </div>
@@ -918,13 +1258,13 @@ function Card({ title, children }: { title: string; children: React.ReactNode })
   return (
     <div style={{
       padding: '14px 16px', borderRadius: 'var(--radius)',
-      background: 'var(--surface-1)', border: '1px solid var(--border)',
+      background: 'var(--surface)', border: '1px solid var(--border)',
       boxShadow: 'var(--shadow-card)',
     }}>
       <p style={{
-        fontFamily: 'var(--font-cond)', fontSize: 9, fontWeight: 700,
+        fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 700,
         letterSpacing: '0.14em', textTransform: 'uppercase',
-        color: 'var(--text-3)', marginBottom: 10,
+        color: 'var(--muted)', marginBottom: 10,
       }}>
         {title}
       </p>
@@ -936,15 +1276,15 @@ function Card({ title, children }: { title: string; children: React.ReactNode })
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 8 }}>
-      <span style={{ fontSize: 11, color: 'var(--text-3)' }}>{label}</span>
-      <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text)', textAlign: 'right' }}>{value}</span>
+      <span style={{ fontSize: 11, color: 'var(--muted)' }}>{label}</span>
+      <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--charcoal)', textAlign: 'right' }}>{value}</span>
     </div>
   );
 }
 
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return (
-    <label style={{ display: 'block', fontSize: 10, fontWeight: 600, color: 'var(--text-3)', marginBottom: 3 }}>
+    <label style={{ display: 'block', fontSize: 10, fontWeight: 600, color: 'var(--muted)', marginBottom: 3 }}>
       {children}
     </label>
   );

@@ -30,15 +30,15 @@ import type { NotificationType } from '@hooomz/shared-contracts';
 // ============================================================================
 
 const NOTIFICATION_STYLE: Record<NotificationType, { icon: typeof Bell; color: string }> = {
-  quote_accepted:          { icon: CheckCircle2,  color: '#10B981' },
-  quote_declined:          { icon: XCircle,        color: '#EF4444' },
-  portal_question:         { icon: MessageCircle,  color: '#3B82F6' },
-  labs_submission_update:  { icon: FlaskConical,   color: '#8B5CF6' },
-  experiment_checkpoint:   { icon: FlaskConical,   color: '#8B5CF6' },
-  experiment_invitation:   { icon: FlaskConical,   color: '#8B5CF6' },
-  confidence_alert:        { icon: FlaskConical,   color: '#F59E0B' },
-  challenge_update:        { icon: FlaskConical,   color: '#8B5CF6' },
-  general:                 { icon: Bell,           color: '#6B7280' },
+  quote_accepted:          { icon: CheckCircle2,  color: 'var(--green)' },
+  quote_declined:          { icon: XCircle,        color: 'var(--red)' },
+  portal_question:         { icon: MessageCircle,  color: 'var(--blue)' },
+  labs_submission_update:  { icon: FlaskConical,   color: 'var(--violet)' },
+  experiment_checkpoint:   { icon: FlaskConical,   color: 'var(--violet)' },
+  experiment_invitation:   { icon: FlaskConical,   color: 'var(--violet)' },
+  confidence_alert:        { icon: FlaskConical,   color: 'var(--yellow)' },
+  challenge_update:        { icon: FlaskConical,   color: 'var(--violet)' },
+  general:                 { icon: Bell,           color: 'var(--muted)' },
 };
 
 const PANEL_WIDTH = 320;
@@ -111,7 +111,7 @@ export function NotificationPanel({ onClose, getAnchorRect }: NotificationPanelP
         left: pos.left,
         width: PANEL_WIDTH,
         maxHeight: PANEL_MAX_HEIGHT,
-        background: 'var(--surface-1)',
+        background: 'var(--surface)',
         border: '1px solid var(--border)',
         borderRadius: 12,
         boxShadow: '0 8px 30px rgba(0,0,0,0.15)',
@@ -130,10 +130,10 @@ export function NotificationPanel({ onClose, getAnchorRect }: NotificationPanelP
         borderBottom: '1px solid var(--border)',
         flexShrink: 0,
       }}>
-        <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)', fontFamily: 'var(--font-cond)', letterSpacing: '0.04em' }}>
+        <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--charcoal)', fontFamily: 'var(--font-mono)', letterSpacing: '0.04em' }}>
           Notifications
           {unreadCount > 0 && (
-            <span style={{ marginLeft: 6, fontSize: 11, fontWeight: 600, color: 'var(--text-3)' }}>
+            <span style={{ marginLeft: 6, fontSize: 11, fontWeight: 600, color: 'var(--muted)' }}>
               ({unreadCount} new)
             </span>
           )}
@@ -144,7 +144,7 @@ export function NotificationPanel({ onClose, getAnchorRect }: NotificationPanelP
             disabled={markAllRead.isPending}
             style={{
               display: 'flex', alignItems: 'center', gap: 4,
-              fontSize: 11, fontWeight: 600, color: 'var(--accent, #3B82F6)',
+              fontSize: 11, fontWeight: 600, color: 'var(--accent)',
               background: 'none', border: 'none', cursor: 'pointer',
               opacity: markAllRead.isPending ? 0.5 : 1,
             }}
@@ -158,8 +158,8 @@ export function NotificationPanel({ onClose, getAnchorRect }: NotificationPanelP
       <div style={{ flex: 1, overflowY: 'auto', padding: '4px 0' }}>
         {notifications.length === 0 && (
           <div style={{ padding: 32, textAlign: 'center' }}>
-            <Bell size={24} style={{ color: 'var(--text-3)', margin: '0 auto 8px' }} />
-            <p style={{ fontSize: 12, color: 'var(--text-3)' }}>No notifications yet</p>
+            <Bell size={24} style={{ color: 'var(--muted)', margin: '0 auto 8px' }} />
+            <p style={{ fontSize: 12, color: 'var(--muted)' }}>No notifications yet</p>
           </div>
         )}
 
@@ -201,7 +201,7 @@ export function NotificationPanel({ onClose, getAnchorRect }: NotificationPanelP
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span style={{
                     fontSize: 12, fontWeight: n.isRead ? 500 : 700,
-                    color: 'var(--text)',
+                    color: 'var(--charcoal)',
                     overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                   }}>
                     {n.title}
@@ -209,17 +209,17 @@ export function NotificationPanel({ onClose, getAnchorRect }: NotificationPanelP
                   {!n.isRead && (
                     <span style={{
                       width: 6, height: 6, borderRadius: '50%',
-                      background: '#3B82F6', flexShrink: 0,
+                      background: 'var(--blue)', flexShrink: 0,
                     }} />
                   )}
                 </div>
                 <p style={{
-                  fontSize: 11, color: 'var(--text-3)', marginTop: 2,
+                  fontSize: 11, color: 'var(--muted)', marginTop: 2,
                   overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                 }}>
                   {n.body}
                 </p>
-                <span style={{ fontSize: 10, color: 'var(--text-3)', marginTop: 3, display: 'block' }}>
+                <span style={{ fontSize: 10, color: 'var(--muted)', marginTop: 3, display: 'block' }}>
                   {formatRelativeTime(n.timestamp)}
                 </span>
               </div>

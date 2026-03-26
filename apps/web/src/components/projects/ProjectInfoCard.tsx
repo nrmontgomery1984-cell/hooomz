@@ -10,13 +10,13 @@
 import Link from 'next/link';
 
 const STATUS_COLORS: Record<string, string> = {
-  lead: '#8B5CF6',
-  quoted: '#3B82F6',
-  approved: '#F59E0B',
-  'in-progress': '#0F766E',
-  complete: '#10B981',
-  'on-hold': '#EF4444',
-  cancelled: '#9CA3AF',
+  lead: 'var(--violet)',
+  quoted: 'var(--blue)',
+  approved: 'var(--yellow)',
+  'in-progress': 'var(--accent)',
+  complete: 'var(--green)',
+  'on-hold': 'var(--red)',
+  cancelled: 'var(--muted)',
 };
 
 function formatType(type: string): string {
@@ -66,7 +66,7 @@ export function ProjectInfoCard({
   estimatedEndDate,
   createdAt,
 }: ProjectInfoCardProps) {
-  const statusColor = STATUS_COLORS[status] || '#9CA3AF';
+  const statusColor = STATUS_COLORS[status] || 'var(--muted)';
 
   const rows: { label: string; value: string }[] = [];
 
@@ -95,7 +95,7 @@ export function ProjectInfoCard({
   return (
     <div
       className="mt-3 rounded-2xl p-3"
-      style={{ background: '#FFFFFF', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}
+      style={{ background: 'var(--surface)', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}
     >
       {/* Status + Type badges */}
       <div className="flex items-center justify-between mb-2">
@@ -111,7 +111,7 @@ export function ProjectInfoCard({
         </span>
         <span
           className="text-[11px] font-medium px-2 py-0.5 rounded-full"
-          style={{ background: '#F3F4F6', color: '#6B7280' }}
+          style={{ background: 'var(--surface-2)', color: 'var(--muted)' }}
         >
           {formatType(projectType)}
         </span>
@@ -121,10 +121,10 @@ export function ProjectInfoCard({
       <div className="space-y-1">
         {rows.map((row) => (
           <div key={row.label} className="flex items-center justify-between">
-            <span className="text-[11px] font-medium" style={{ color: '#9CA3AF' }}>
+            <span className="text-[11px] font-medium" style={{ color: 'var(--muted)' }}>
               {row.label}
             </span>
-            <span className="text-sm font-medium" style={{ color: '#111827' }}>
+            <span className="text-sm font-medium" style={{ color: 'var(--charcoal)' }}>
               {row.value}
             </span>
           </div>
@@ -136,7 +136,7 @@ export function ProjectInfoCard({
         <Link
           href={`/estimates/${projectId}`}
           className="mt-2.5 flex items-center justify-center gap-2 w-full py-2 rounded-xl text-xs font-semibold text-white"
-          style={{ background: '#0F766E', minHeight: '38px' }}
+          style={{ background: 'var(--accent)', minHeight: '38px' }}
         >
           View Estimate
           <span className="text-xs">&rarr;</span>

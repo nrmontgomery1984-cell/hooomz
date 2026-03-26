@@ -70,20 +70,20 @@ export default function ActivityPage() {
 
   return (
     <PageErrorBoundary>
-    <div className="min-h-screen pb-24" style={{ background: '#F3F4F6' }}>
+    <div className="min-h-screen pb-24" style={{ background: 'var(--surface-2)' }}>
       {/* Header */}
-      <div style={{ background: '#FFFFFF', borderBottom: '1px solid #E5E7EB' }}>
+      <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
         <div className="max-w-lg md:max-w-4xl mx-auto px-4 md:px-8 py-3 md:py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-lg md:text-xl font-bold" style={{ color: '#111827' }}>Activity</h1>
-              <p className="text-[11px] mt-0.5" style={{ color: '#9CA3AF' }}>
+              <h1 className="text-lg md:text-xl font-bold" style={{ color: 'var(--charcoal)' }}>Activity</h1>
+              <p className="text-[11px] mt-0.5" style={{ color: 'var(--muted)' }}>
                 {recentEvents.length} event{recentEvents.length !== 1 ? 's' : ''} recorded
               </p>
             </div>
             <div className="flex items-center gap-1.5">
-              <Filter size={14} style={{ color: '#9CA3AF' }} />
-              <span className="text-[11px]" style={{ color: '#9CA3AF' }}>
+              <Filter size={14} style={{ color: 'var(--muted)' }} />
+              <span className="text-[11px]" style={{ color: 'var(--muted)' }}>
                 {activeFilter !== 'all' ? `Showing: ${activeFilter}` : 'All types'}
               </span>
             </div>
@@ -102,8 +102,8 @@ export default function ActivityPage() {
                   onClick={() => setActiveFilter(key)}
                   className="min-h-[32px] px-3 rounded-lg text-xs font-medium whitespace-nowrap transition-colors"
                   style={{
-                    background: activeFilter === key ? '#374151' : '#F3F4F6',
-                    color: activeFilter === key ? '#FFFFFF' : '#6B7280',
+                    background: activeFilter === key ? 'var(--mid)' : 'var(--surface-2)',
+                    color: activeFilter === key ? '#fff' : 'var(--muted)',
                   }}
                 >
                   {label}{count > 0 ? ` (${count})` : ''}
@@ -116,19 +116,19 @@ export default function ActivityPage() {
 
       {/* Activity Feed */}
       <div className="max-w-lg md:max-w-4xl mx-auto px-4 md:px-8 mt-4">
-        <div className="rounded-xl overflow-hidden" style={{ background: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
+        <div className="rounded-xl overflow-hidden" style={{ background: 'var(--surface)', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
           {isLoading ? (
             <div className="text-center py-10">
-              <div className="w-8 h-8 border-2 rounded-full animate-spin mx-auto mb-2" style={{ borderColor: '#E5E7EB', borderTopColor: '#0F766E' }} />
-              <p className="text-xs" style={{ color: '#9CA3AF' }}>Loading activity...</p>
+              <div className="w-8 h-8 border-2 rounded-full animate-spin mx-auto mb-2" style={{ borderColor: 'var(--border)', borderTopColor: 'var(--accent)' }} />
+              <p className="text-xs" style={{ color: 'var(--muted)' }}>Loading activity...</p>
             </div>
           ) : filteredEvents.length === 0 ? (
             <div className="text-center py-10">
-              <Activity size={28} className="mx-auto mb-2" style={{ color: '#D1D5DB' }} />
-              <p className="text-sm font-medium mb-0.5" style={{ color: '#111827' }}>
+              <Activity size={28} className="mx-auto mb-2" style={{ color: 'var(--border)' }} />
+              <p className="text-sm font-medium mb-0.5" style={{ color: 'var(--charcoal)' }}>
                 {activeFilter === 'all' ? 'No activity yet' : `No ${activeFilter} activity`}
               </p>
-              <p className="text-xs" style={{ color: '#9CA3AF' }}>
+              <p className="text-xs" style={{ color: 'var(--muted)' }}>
                 {activeFilter === 'all'
                   ? 'Create a project to see activity here'
                   : 'Try selecting "All" to see all activity'}

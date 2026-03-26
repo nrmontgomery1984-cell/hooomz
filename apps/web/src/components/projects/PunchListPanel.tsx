@@ -21,7 +21,7 @@ const PRIORITY_ORDER: PunchListPriority[] = ['critical', 'major', 'minor'];
 const PRIORITY_COLORS: Record<PunchListPriority, string> = {
   critical: 'var(--red)',
   major: 'var(--amber)',
-  minor: 'var(--text-3)',
+  minor: 'var(--muted)',
 };
 const PRIORITY_LABELS: Record<PunchListPriority, string> = {
   critical: 'Critical',
@@ -91,14 +91,14 @@ export function PunchListPanel({ projectId }: PunchListPanelProps) {
             placeholder="Description…"
             value={desc}
             onChange={(e) => setDesc(e.target.value)}
-            style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--border)', borderRadius: 'var(--radius)', fontSize: 12, color: 'var(--text)', background: 'var(--surface-1)', marginBottom: 6, boxSizing: 'border-box' }}
+            style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--border)', borderRadius: 'var(--radius)', fontSize: 12, color: 'var(--charcoal)', background: 'var(--surface)', marginBottom: 6, boxSizing: 'border-box' }}
           />
           <input
             type="text"
             placeholder="Location (e.g. Kitchen, Living Room)…"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
-            style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--border)', borderRadius: 'var(--radius)', fontSize: 12, color: 'var(--text)', background: 'var(--surface-1)', marginBottom: 6, boxSizing: 'border-box' }}
+            style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--border)', borderRadius: 'var(--radius)', fontSize: 12, color: 'var(--charcoal)', background: 'var(--surface)', marginBottom: 6, boxSizing: 'border-box' }}
           />
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
             {PRIORITY_ORDER.map((p) => (
@@ -108,8 +108,8 @@ export function PunchListPanel({ projectId }: PunchListPanelProps) {
                 style={{
                   padding: '4px 10px', borderRadius: 99, fontSize: 10, fontWeight: 600, cursor: 'pointer',
                   border: `1.5px solid ${priority === p ? PRIORITY_COLORS[p] : 'var(--border)'}`,
-                  background: priority === p ? `${PRIORITY_COLORS[p]}18` : 'var(--surface-1)',
-                  color: priority === p ? PRIORITY_COLORS[p] : 'var(--text-3)',
+                  background: priority === p ? `${PRIORITY_COLORS[p]}18` : 'var(--surface)',
+                  color: priority === p ? PRIORITY_COLORS[p] : 'var(--muted)',
                 }}
               >
                 {PRIORITY_LABELS[p]}
@@ -129,7 +129,7 @@ export function PunchListPanel({ projectId }: PunchListPanelProps) {
             </button>
             <button
               onClick={() => setShowForm(false)}
-              style={{ padding: '7px 12px', borderRadius: 'var(--radius)', fontSize: 11, fontWeight: 600, cursor: 'pointer', background: 'none', border: '1px solid var(--border)', color: 'var(--text-3)' }}
+              style={{ padding: '7px 12px', borderRadius: 'var(--radius)', fontSize: 11, fontWeight: 600, cursor: 'pointer', background: 'none', border: '1px solid var(--border)', color: 'var(--muted)' }}
             >
               Cancel
             </button>
@@ -140,7 +140,7 @@ export function PunchListPanel({ projectId }: PunchListPanelProps) {
       {/* Items grouped by priority */}
       {items.length === 0 ? (
         <div style={{ padding: '16px 12px', textAlign: 'center' }}>
-          <p style={{ fontSize: 12, color: 'var(--text-3)' }}>No punch list items</p>
+          <p style={{ fontSize: 12, color: 'var(--muted)' }}>No punch list items</p>
         </div>
       ) : (
         grouped.map((group) => (
@@ -190,14 +190,14 @@ function PunchRow({ item, onResolve, onVerify, onReopen, onDelete }: {
     >
       <div style={{ flex: 1, minWidth: 0 }}>
         <p style={{
-          fontSize: 12, fontWeight: 500, color: 'var(--text)',
+          fontSize: 12, fontWeight: 500, color: 'var(--charcoal)',
           textDecoration: item.status === 'verified' ? 'line-through' : 'none',
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}>
           {item.description}
         </p>
         {item.location && (
-          <p style={{ fontSize: 10, color: 'var(--text-3)', marginTop: 1 }}>{item.location}</p>
+          <p style={{ fontSize: 10, color: 'var(--muted)', marginTop: 1 }}>{item.location}</p>
         )}
       </div>
 

@@ -164,6 +164,22 @@ export const StoreNames = {
   PUNCH_LIST_ITEMS: 'punchListItems',
   // IAQ Reports (v32)
   IAQ_REPORTS: 'iaqReports',
+  // Catalogue v33: Cost Items, Material Records, Labs Reviews, Price Log
+  COST_ITEMS: 'costItems',
+  MATERIAL_RECORDS: 'materialRecords',
+  LABS_REVIEWS: 'labsReviews',
+  MATERIAL_PRICE_LOG: 'materialPriceLog',
+  // Properties (v34)
+  PROPERTIES: 'properties',
+  // Passports (v35)
+  PASSPORTS: 'passports',
+  PASSPORT_ENTRIES: 'passportEntries',
+  // Risk Register (v36)
+  RISK_ENTRIES: 'riskEntries',
+  // Expense & PO Tracker (v37)
+  VENDORS: 'vendors',
+  JOB_EXPENSES: 'jobExpenses',
+  PURCHASE_ORDERS: 'purchaseOrders',
 } as const;
 
 export type StoreName = (typeof StoreNames)[keyof typeof StoreNames];

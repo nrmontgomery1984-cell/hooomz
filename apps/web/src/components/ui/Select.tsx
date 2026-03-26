@@ -49,11 +49,11 @@ export function Select({
 }: SelectProps) {
   const selectId = id || `select-${Math.random().toString(36).substr(2, 9)}`;
 
-  const baseStyles = 'block rounded-lg border px-4 py-3 text-base transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed min-h-[48px] appearance-none bg-white pr-10';
+  const baseStyles = 'block rounded-lg border px-4 py-3 text-base transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed min-h-[48px] appearance-none bg-[var(--surface)] pr-10';
 
   const stateStyles = error
     ? 'border-red-300 text-red-900 focus:border-red-500 focus:ring-red-500'
-    : 'border-gray-300 focus:border-primary-500 focus:ring-primary-500';
+    : 'border-[var(--border)] focus:border-primary-500 focus:ring-primary-500';
 
   const widthStyles = fullWidth ? 'w-full' : '';
 
@@ -62,7 +62,7 @@ export function Select({
       {label && (
         <label
           htmlFor={selectId}
-          className="block text-sm font-semibold text-gray-700 mb-2"
+          className="block text-sm font-semibold text-[var(--mid)] mb-2"
         >
           {label}
           {props.required && <span className="text-red-600 ml-1">*</span>}
@@ -79,7 +79,7 @@ export function Select({
         </select>
 
         {/* Dropdown arrow */}
-        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-700">
+        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-[var(--mid)]">
           <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
             <path
               fillRule="evenodd"
@@ -95,7 +95,7 @@ export function Select({
       )}
 
       {!error && helperText && (
-        <p className="mt-2 text-sm text-gray-500">{helperText}</p>
+        <p className="mt-2 text-sm text-[var(--muted)]">{helperText}</p>
       )}
     </div>
   );

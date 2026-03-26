@@ -395,29 +395,29 @@ export default function AdminRatesPage() {
   if (isLoading || !draft) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-sm" style={{ color: '#6B7280' }}>Loading rates...</p>
+        <p className="text-sm" style={{ color: 'var(--muted)' }}>Loading rates...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen pb-24" style={{ background: '#F9FAFB' }}>
+    <div className="min-h-screen pb-24" style={{ background: 'var(--surface)' }}>
       {/* Header */}
-      <div className="sticky top-0 z-10" style={{ background: '#FFFFFF', borderBottom: '1px solid #E5E7EB' }}>
+      <div className="sticky top-0 z-10" style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
         <div className="px-4 py-3 flex items-center gap-3">
-          <button onClick={() => router.back()} className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg" style={{ color: '#6B7280' }}>
+          <button onClick={() => router.back()} className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg" style={{ color: 'var(--muted)' }}>
             <ArrowLeft size={20} />
           </button>
           <div className="flex-1 min-w-0">
-            <h1 className="text-lg font-bold" style={{ color: '#111827' }}>Cost Catalogue</h1>
-            <p className="text-xs" style={{ color: '#9CA3AF' }}>
+            <h1 className="text-lg font-bold" style={{ color: 'var(--charcoal)' }}>Cost Catalogue</h1>
+            <p className="text-xs" style={{ color: 'var(--muted)' }}>
               {hasChanges ? 'Unsaved changes' : justSaved ? 'Saved' : 'Edit rates, materials & labour'}
             </p>
           </div>
           <button
             onClick={() => setShowResetConfirm(true)}
             className="min-h-[44px] px-3 flex items-center gap-1.5 rounded-lg text-xs font-medium"
-            style={{ color: '#EF4444', border: '1px solid #FCA5A5' }}
+            style={{ color: 'var(--red)', border: '1px solid var(--red-bg)' }}
           >
             <RotateCcw size={14} />
             Reset All
@@ -425,15 +425,15 @@ export default function AdminRatesPage() {
         </div>
 
         {/* Tab Bar */}
-        <div className="flex px-4 gap-1" style={{ borderTop: '1px solid #F3F4F6' }}>
+        <div className="flex px-4 gap-1" style={{ borderTop: '1px solid var(--surface-2)' }}>
           {TABS.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className="flex-1 py-2.5 text-sm font-medium text-center transition-colors"
               style={{
-                color: activeTab === tab.id ? '#0F766E' : '#6B7280',
-                borderBottom: activeTab === tab.id ? '2px solid #0F766E' : '2px solid transparent',
+                color: activeTab === tab.id ? 'var(--accent)' : 'var(--muted)',
+                borderBottom: activeTab === tab.id ? '2px solid var(--accent)' : '2px solid transparent',
               }}
             >
               {tab.label}
@@ -486,13 +486,13 @@ export default function AdminRatesPage() {
       )}
 
       {/* Sticky Save Bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-20 px-4 py-3 md:pl-[256px]" style={{ background: '#FFFFFF', borderTop: '1px solid #E5E7EB' }}>
+      <div className="fixed bottom-0 left-0 right-0 z-20 px-4 py-3 md:pl-[256px]" style={{ background: 'var(--surface)', borderTop: '1px solid var(--border)' }}>
         <button
           onClick={handleSave}
           disabled={!hasChanges || saveMutation.isPending}
           className="w-full min-h-[52px] rounded-xl text-base font-semibold text-white flex items-center justify-center gap-2 transition-opacity"
           style={{
-            background: hasChanges ? '#0F766E' : '#9CA3AF',
+            background: hasChanges ? 'var(--accent)' : 'var(--muted)',
             opacity: saveMutation.isPending ? 0.7 : 1,
           }}
         >
@@ -509,16 +509,16 @@ export default function AdminRatesPage() {
       {/* Reset Confirm Modal */}
       {showResetConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.5)' }}>
-          <div className="w-full max-w-sm rounded-2xl p-5" style={{ background: '#FFFFFF' }}>
-            <h3 className="text-lg font-bold mb-2" style={{ color: '#111827' }}>Reset All Rates?</h3>
-            <p className="text-sm mb-5" style={{ color: '#6B7280' }}>
+          <div className="w-full max-w-sm rounded-2xl p-5" style={{ background: 'var(--surface)' }}>
+            <h3 className="text-lg font-bold mb-2" style={{ color: 'var(--charcoal)' }}>Reset All Rates?</h3>
+            <p className="text-sm mb-5" style={{ color: 'var(--muted)' }}>
               This will revert all rates, materials, assemblies & labour to the original defaults. Any custom items will be removed.
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setShowResetConfirm(false)}
                 className="flex-1 min-h-[44px] rounded-xl text-sm font-medium"
-                style={{ color: '#374151', border: '1px solid #E5E7EB' }}
+                style={{ color: 'var(--mid)', border: '1px solid var(--border)' }}
               >
                 Cancel
               </button>
@@ -526,7 +526,7 @@ export default function AdminRatesPage() {
                 onClick={handleResetAll}
                 disabled={resetMutation.isPending}
                 className="flex-1 min-h-[44px] rounded-xl text-sm font-semibold text-white"
-                style={{ background: '#EF4444' }}
+                style={{ background: 'var(--red)' }}
               >
                 {resetMutation.isPending ? 'Resetting...' : 'Reset All'}
               </button>
@@ -570,38 +570,38 @@ function InstalledRatesTab({
   return (
     <>
       {/* Info banner */}
-      <div className="mx-4 mt-4 p-3 rounded-xl" style={{ background: '#F0FDFA', border: '1px solid #99F6E4' }}>
-        <p className="text-xs font-medium" style={{ color: '#0F766E' }}>
+      <div className="mx-4 mt-4 p-3 rounded-xl" style={{ background: 'var(--green-bg)', border: '1px solid var(--accent-border)' }}>
+        <p className="text-xs font-medium" style={{ color: 'var(--accent)' }}>
           Installed rates are now computed from Assemblies (Materials + Labour).
         </p>
-        <p className="text-xs mt-1" style={{ color: '#5EEAD4' }}>
+        <p className="text-xs mt-1" style={{ color: 'var(--accent)' }}>
           Edit rates in the{' '}
-          <button onClick={() => onSwitchTab('materials')} className="underline font-medium" style={{ color: '#0F766E' }}>Materials</button>,{' '}
-          <button onClick={() => onSwitchTab('labour')} className="underline font-medium" style={{ color: '#0F766E' }}>Labour</button>, or{' '}
-          <button onClick={() => onSwitchTab('assemblies')} className="underline font-medium" style={{ color: '#0F766E' }}>Assemblies</button> tabs.
+          <button onClick={() => onSwitchTab('materials')} className="underline font-medium" style={{ color: 'var(--accent)' }}>Materials</button>,{' '}
+          <button onClick={() => onSwitchTab('labour')} className="underline font-medium" style={{ color: 'var(--accent)' }}>Labour</button>, or{' '}
+          <button onClick={() => onSwitchTab('assemblies')} className="underline font-medium" style={{ color: 'var(--accent)' }}>Assemblies</button> tabs.
         </p>
       </div>
 
       {/* Variance — still editable (used by room-count fallback) */}
-      <div className="mx-4 mt-4 p-3 rounded-xl" style={{ background: '#FFFFFF', border: '1px solid #E5E7EB' }}>
+      <div className="mx-4 mt-4 p-3 rounded-xl" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium" style={{ color: '#111827' }}>Estimate Variance</p>
-            <p className="text-xs" style={{ color: '#9CA3AF' }}>Used for room-count fallback estimates only</p>
+            <p className="text-sm font-medium" style={{ color: 'var(--charcoal)' }}>Estimate Variance</p>
+            <p className="text-xs" style={{ color: 'var(--muted)' }}>Used for room-count fallback estimates only</p>
           </div>
           <div className="flex items-center gap-1">
-            <span className="text-sm font-medium" style={{ color: '#6B7280' }}>±</span>
+            <span className="text-sm font-medium" style={{ color: 'var(--muted)' }}>±</span>
             <input
               type="number"
               value={Math.round(draft.variance * 100)}
               onChange={(e) => setDraft({ ...draft, variance: (parseInt(e.target.value, 10) || 25) / 100 })}
               className="w-16 h-10 px-2 text-center text-sm font-semibold rounded-lg"
-              style={{ color: '#111827', background: '#F9FAFB', border: '1px solid #E5E7EB' }}
+              style={{ color: 'var(--charcoal)', background: 'var(--surface)', border: '1px solid var(--border)' }}
               min={0}
               max={100}
               step={5}
             />
-            <span className="text-sm font-medium" style={{ color: '#6B7280' }}>%</span>
+            <span className="text-sm font-medium" style={{ color: 'var(--muted)' }}>%</span>
           </div>
         </div>
       </div>
@@ -665,23 +665,23 @@ function AssemblyRateSummaryCard({
   const entries = Object.keys(rateMap);
 
   return (
-    <div className="rounded-xl overflow-hidden" style={{ background: '#FFFFFF', border: '1px solid #E5E7EB' }}>
-      <div className="px-4 py-3 flex items-center justify-between" style={{ borderBottom: '1px solid #F3F4F6' }}>
+    <div className="rounded-xl overflow-hidden" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+      <div className="px-4 py-3 flex items-center justify-between" style={{ borderBottom: '1px solid var(--surface-2)' }}>
         <div>
-          <h3 className="text-sm font-semibold" style={{ color: '#111827' }}>{title}</h3>
-          <p className="text-[11px]" style={{ color: '#9CA3AF' }}>{unit} — computed from assemblies</p>
+          <h3 className="text-sm font-semibold" style={{ color: 'var(--charcoal)' }}>{title}</h3>
+          <p className="text-[11px]" style={{ color: 'var(--muted)' }}>{unit} — computed from assemblies</p>
         </div>
         <button
           onClick={() => onSwitchTab('assemblies')}
           className="min-h-[32px] px-2 flex items-center gap-1 rounded-lg text-[11px] font-medium"
-          style={{ color: '#0F766E', border: '1px solid #E5E7EB' }}
+          style={{ color: 'var(--accent)', border: '1px solid var(--border)' }}
         >
           Edit Assemblies
         </button>
       </div>
 
       {/* Column headers */}
-      <div className="px-4 py-2 grid grid-cols-[100px_1fr_1fr_72px_72px_72px] gap-2 text-[10px] font-semibold uppercase tracking-wider" style={{ color: '#9CA3AF', borderBottom: '1px solid #F3F4F6' }}>
+      <div className="px-4 py-2 grid grid-cols-[100px_1fr_1fr_72px_72px_72px] gap-2 text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--muted)', borderBottom: '1px solid var(--surface-2)' }}>
         <span>Key</span>
         <span>Label</span>
         <span>Assembly</span>
@@ -690,7 +690,7 @@ function AssemblyRateSummaryCard({
         <span className="text-right">Best</span>
       </div>
 
-      <div className="divide-y" style={{ borderColor: '#F3F4F6' }}>
+      <div className="divide-y" style={{ borderColor: 'var(--surface-2)' }}>
         {entries.map((key) => {
           const mapping = rateMap[key];
           const label = (rateLabels[key] as Record<string, unknown>)?.label as string ?? key;
@@ -716,12 +716,12 @@ function AssemblyRateSummaryCard({
 
             return (
               <div key={key} className="px-4 py-2.5 grid grid-cols-[100px_1fr_1fr_72px_72px_72px] gap-2 items-center">
-                <span className="text-xs font-mono" style={{ color: '#6B7280' }}>{key}</span>
-                <span className="text-xs" style={{ color: '#111827' }}>{label}</span>
-                <span className="text-xs" style={{ color: wallAsm ? '#374151' : '#D1D5DB' }}>{asmName}</span>
-                <span className="text-xs font-medium text-right" style={{ color: '#059669' }}>${good.toFixed(2)}</span>
-                <span className="text-xs font-medium text-right" style={{ color: '#0369A1' }}>${better.toFixed(2)}</span>
-                <span className="text-xs font-medium text-right" style={{ color: '#7C3AED' }}>${best.toFixed(2)}</span>
+                <span className="text-xs font-mono" style={{ color: 'var(--muted)' }}>{key}</span>
+                <span className="text-xs" style={{ color: 'var(--charcoal)' }}>{label}</span>
+                <span className="text-xs" style={{ color: wallAsm ? 'var(--mid)' : 'var(--border)' }}>{asmName}</span>
+                <span className="text-xs font-medium text-right" style={{ color: 'var(--green)' }}>${good.toFixed(2)}</span>
+                <span className="text-xs font-medium text-right" style={{ color: 'var(--blue)' }}>${better.toFixed(2)}</span>
+                <span className="text-xs font-medium text-right" style={{ color: 'var(--violet)' }}>${best.toFixed(2)}</span>
               </div>
             );
           }
@@ -733,24 +733,24 @@ function AssemblyRateSummaryCard({
             const t = computeAssemblyTotals(assembly, materials, labour);
             return (
               <div key={key} className="px-4 py-2.5 grid grid-cols-[100px_1fr_1fr_72px_72px_72px] gap-2 items-center">
-                <span className="text-xs font-mono" style={{ color: '#6B7280' }}>{key}</span>
-                <span className="text-xs" style={{ color: '#111827' }}>{label}</span>
-                <span className="text-xs" style={{ color: '#374151' }}>{assembly.name}</span>
-                <span className="text-xs font-medium text-right" style={{ color: '#059669' }}>${t.good.toFixed(2)}</span>
-                <span className="text-xs font-medium text-right" style={{ color: '#0369A1' }}>${t.better.toFixed(2)}</span>
-                <span className="text-xs font-medium text-right" style={{ color: '#7C3AED' }}>${t.best.toFixed(2)}</span>
+                <span className="text-xs font-mono" style={{ color: 'var(--muted)' }}>{key}</span>
+                <span className="text-xs" style={{ color: 'var(--charcoal)' }}>{label}</span>
+                <span className="text-xs" style={{ color: 'var(--mid)' }}>{assembly.name}</span>
+                <span className="text-xs font-medium text-right" style={{ color: 'var(--green)' }}>${t.good.toFixed(2)}</span>
+                <span className="text-xs font-medium text-right" style={{ color: 'var(--blue)' }}>${t.better.toFixed(2)}</span>
+                <span className="text-xs font-medium text-right" style={{ color: 'var(--violet)' }}>${t.best.toFixed(2)}</span>
               </div>
             );
           }
 
           return (
             <div key={key} className="px-4 py-2.5 grid grid-cols-[100px_1fr_1fr_72px_72px_72px] gap-2 items-center">
-              <span className="text-xs font-mono" style={{ color: '#6B7280' }}>{key}</span>
-              <span className="text-xs" style={{ color: '#111827' }}>{label}</span>
-              <span className="text-xs" style={{ color: '#D1D5DB' }}>No assembly</span>
-              <span className="text-xs text-right" style={{ color: '#D1D5DB' }}>—</span>
-              <span className="text-xs text-right" style={{ color: '#D1D5DB' }}>—</span>
-              <span className="text-xs text-right" style={{ color: '#D1D5DB' }}>—</span>
+              <span className="text-xs font-mono" style={{ color: 'var(--muted)' }}>{key}</span>
+              <span className="text-xs" style={{ color: 'var(--charcoal)' }}>{label}</span>
+              <span className="text-xs" style={{ color: 'var(--border)' }}>No assembly</span>
+              <span className="text-xs text-right" style={{ color: 'var(--border)' }}>—</span>
+              <span className="text-xs text-right" style={{ color: 'var(--border)' }}>—</span>
+              <span className="text-xs text-right" style={{ color: 'var(--border)' }}>—</span>
             </div>
           );
         })}
@@ -869,18 +869,18 @@ function InstalledRateCategoryCard({
   const itemKeys = Object.keys(items);
 
   return (
-    <div className="rounded-xl overflow-hidden" style={{ background: '#FFFFFF', border: '1px solid #E5E7EB' }}>
-      <div className="px-4 py-3 flex items-center justify-between" style={{ borderBottom: '1px solid #F3F4F6' }}>
+    <div className="rounded-xl overflow-hidden" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+      <div className="px-4 py-3 flex items-center justify-between" style={{ borderBottom: '1px solid var(--surface-2)' }}>
         <div>
-          <h3 className="text-sm font-semibold" style={{ color: '#111827' }}>{config.title}</h3>
-          <p className="text-[11px]" style={{ color: '#9CA3AF' }}>{config.unit}</p>
+          <h3 className="text-sm font-semibold" style={{ color: 'var(--charcoal)' }}>{config.title}</h3>
+          <p className="text-[11px]" style={{ color: 'var(--muted)' }}>{config.unit}</p>
         </div>
-        <button onClick={onReset} className="min-h-[32px] px-2 flex items-center gap-1 rounded-lg text-[11px] font-medium" style={{ color: '#6B7280', border: '1px solid #E5E7EB' }}>
+        <button onClick={onReset} className="min-h-[32px] px-2 flex items-center gap-1 rounded-lg text-[11px] font-medium" style={{ color: 'var(--muted)', border: '1px solid var(--border)' }}>
           <RotateCcw size={12} />
           Reset
         </button>
       </div>
-      <div className="divide-y" style={{ borderColor: '#F3F4F6' }}>
+      <div className="divide-y" style={{ borderColor: 'var(--surface-2)' }}>
         {itemKeys.map((itemKey) => (
           <InstalledRateRow
             key={itemKey}
@@ -921,26 +921,26 @@ function MaterialCategoryCard({
   const itemKeys = Object.keys(items);
 
   return (
-    <div className="rounded-xl overflow-hidden" style={{ background: '#FFFFFF', border: '1px solid #E5E7EB' }}>
-      <div className="px-4 py-3 flex items-center justify-between" style={{ borderBottom: '1px solid #F3F4F6' }}>
+    <div className="rounded-xl overflow-hidden" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+      <div className="px-4 py-3 flex items-center justify-between" style={{ borderBottom: '1px solid var(--surface-2)' }}>
         <div>
-          <h3 className="text-sm font-semibold" style={{ color: '#111827' }}>{label}</h3>
-          <p className="text-[11px]" style={{ color: '#9CA3AF' }}>Good / Better / Best tiers</p>
+          <h3 className="text-sm font-semibold" style={{ color: 'var(--charcoal)' }}>{label}</h3>
+          <p className="text-[11px]" style={{ color: 'var(--muted)' }}>Good / Better / Best tiers</p>
         </div>
-        <button onClick={onReset} className="min-h-[32px] px-2 flex items-center gap-1 rounded-lg text-[11px] font-medium" style={{ color: '#6B7280', border: '1px solid #E5E7EB' }}>
+        <button onClick={onReset} className="min-h-[32px] px-2 flex items-center gap-1 rounded-lg text-[11px] font-medium" style={{ color: 'var(--muted)', border: '1px solid var(--border)' }}>
           <RotateCcw size={12} />
           Reset
         </button>
       </div>
 
       {/* Header rows */}
-      <div className="px-4 pt-2 grid grid-cols-[1fr_1fr_120px_100px] gap-2 text-[10px] font-semibold uppercase tracking-wider" style={{ color: '#9CA3AF' }}>
+      <div className="px-4 pt-2 grid grid-cols-[1fr_1fr_120px_100px] gap-2 text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--muted)' }}>
         <span>Manufacturer</span>
         <span>Product</span>
         <span>Model #</span>
         <span>SKU</span>
       </div>
-      <div className="px-4 py-2 grid grid-cols-[1fr_80px_100px_72px_72px_72px_28px] gap-2 text-[10px] font-semibold uppercase tracking-wider" style={{ color: '#9CA3AF', borderBottom: '1px solid #F3F4F6' }}>
+      <div className="px-4 py-2 grid grid-cols-[1fr_80px_100px_72px_72px_72px_28px] gap-2 text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--muted)', borderBottom: '1px solid var(--surface-2)' }}>
         <span>Name</span>
         <span>Unit</span>
         <span>Supplier</span>
@@ -950,7 +950,7 @@ function MaterialCategoryCard({
         <span />
       </div>
 
-      <div className="divide-y" style={{ borderColor: '#F3F4F6' }}>
+      <div className="divide-y" style={{ borderColor: 'var(--surface-2)' }}>
         {itemKeys.map((itemKey) => (
           <MaterialRow
             key={itemKey}
@@ -964,7 +964,7 @@ function MaterialCategoryCard({
         ))}
       </div>
 
-      <button onClick={onAddItem} className="w-full min-h-[44px] flex items-center justify-center gap-1.5 text-xs font-medium" style={{ color: '#0F766E', borderTop: '1px solid #F3F4F6' }}>
+      <button onClick={onAddItem} className="w-full min-h-[44px] flex items-center justify-center gap-1.5 text-xs font-medium" style={{ color: 'var(--accent)', borderTop: '1px solid var(--surface-2)' }}>
         <Plus size={14} />
         Add Item
       </button>
@@ -991,7 +991,7 @@ function MaterialRow({
     <div className="px-4 py-2.5">
       {/* Key label */}
       <div className="mb-1.5">
-        <span className="text-[10px] font-mono" style={{ color: '#9CA3AF' }}>{itemKey}</span>
+        <span className="text-[10px] font-mono" style={{ color: 'var(--muted)' }}>{itemKey}</span>
       </div>
       {/* Product details row */}
       <div className="grid grid-cols-[1fr_1fr_120px_100px] gap-2 mb-2">
@@ -1001,7 +1001,7 @@ function MaterialRow({
           onChange={(e) => onUpdate('manufacturer', e.target.value)}
           placeholder="Manufacturer"
           className="h-8 px-2 text-[11px] rounded-lg"
-          style={{ color: '#374151', background: '#F9FAFB', border: '1px solid #E5E7EB' }}
+          style={{ color: 'var(--mid)', background: 'var(--surface)', border: '1px solid var(--border)' }}
         />
         <input
           type="text"
@@ -1009,7 +1009,7 @@ function MaterialRow({
           onChange={(e) => onUpdate('productName', e.target.value)}
           placeholder="Product Name"
           className="h-8 px-2 text-[11px] rounded-lg"
-          style={{ color: '#374151', background: '#F9FAFB', border: '1px solid #E5E7EB' }}
+          style={{ color: 'var(--mid)', background: 'var(--surface)', border: '1px solid var(--border)' }}
         />
         <input
           type="text"
@@ -1017,7 +1017,7 @@ function MaterialRow({
           onChange={(e) => onUpdate('modelNumber', e.target.value)}
           placeholder="Model #"
           className="h-8 px-2 text-[11px] font-mono rounded-lg"
-          style={{ color: '#374151', background: '#F9FAFB', border: '1px solid #E5E7EB' }}
+          style={{ color: 'var(--mid)', background: 'var(--surface)', border: '1px solid var(--border)' }}
         />
         <input
           type="text"
@@ -1025,7 +1025,7 @@ function MaterialRow({
           onChange={(e) => onUpdate('sku', e.target.value)}
           placeholder="SKU"
           className="h-8 px-2 text-[11px] font-mono rounded-lg"
-          style={{ color: '#374151', background: '#F9FAFB', border: '1px solid #E5E7EB' }}
+          style={{ color: 'var(--mid)', background: 'var(--surface)', border: '1px solid var(--border)' }}
         />
       </div>
       {/* Pricing grid */}
@@ -1036,14 +1036,14 @@ function MaterialRow({
           value={item.name}
           onChange={(e) => onUpdate('name', e.target.value)}
           className="h-9 px-2 text-sm rounded-lg"
-          style={{ color: '#111827', background: '#F9FAFB', border: '1px solid #E5E7EB' }}
+          style={{ color: 'var(--charcoal)', background: 'var(--surface)', border: '1px solid var(--border)' }}
         />
         {/* Unit */}
         <select
           value={item.unit}
           onChange={(e) => onUpdate('unit', e.target.value)}
           className="h-9 px-1 text-xs rounded-lg"
-          style={{ color: '#374151', background: '#F9FAFB', border: '1px solid #E5E7EB' }}
+          style={{ color: 'var(--mid)', background: 'var(--surface)', border: '1px solid var(--border)' }}
         >
           {CATALOG_UNITS.map((u) => (
             <option key={u.value} value={u.value}>{u.label}</option>
@@ -1056,11 +1056,11 @@ function MaterialRow({
           onChange={(e) => onUpdate('supplier', e.target.value)}
           placeholder="Supplier"
           className="h-9 px-2 text-xs rounded-lg"
-          style={{ color: '#374151', background: '#F9FAFB', border: '1px solid #E5E7EB' }}
+          style={{ color: 'var(--mid)', background: 'var(--surface)', border: '1px solid var(--border)' }}
         />
         {/* Good */}
         <div className="relative">
-          <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs" style={{ color: '#9CA3AF' }}>$</span>
+          <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs" style={{ color: 'var(--muted)' }}>$</span>
           <input
             type="number"
             value={item.good}
@@ -1068,12 +1068,12 @@ function MaterialRow({
             step={0.5}
             min={0}
             className="w-full h-9 text-sm rounded-lg"
-            style={{ color: '#111827', background: '#F9FAFB', border: '1px solid #E5E7EB', paddingLeft: '18px', paddingRight: '4px' }}
+            style={{ color: 'var(--charcoal)', background: 'var(--surface)', border: '1px solid var(--border)', paddingLeft: '18px', paddingRight: '4px' }}
           />
         </div>
         {/* Better */}
         <div className="relative">
-          <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs" style={{ color: '#9CA3AF' }}>$</span>
+          <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs" style={{ color: 'var(--muted)' }}>$</span>
           <input
             type="number"
             value={item.better}
@@ -1081,12 +1081,12 @@ function MaterialRow({
             step={0.5}
             min={0}
             className="w-full h-9 text-sm rounded-lg"
-            style={{ color: '#111827', background: '#F9FAFB', border: '1px solid #E5E7EB', paddingLeft: '18px', paddingRight: '4px' }}
+            style={{ color: 'var(--charcoal)', background: 'var(--surface)', border: '1px solid var(--border)', paddingLeft: '18px', paddingRight: '4px' }}
           />
         </div>
         {/* Best */}
         <div className="relative">
-          <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs" style={{ color: '#9CA3AF' }}>$</span>
+          <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs" style={{ color: 'var(--muted)' }}>$</span>
           <input
             type="number"
             value={item.best}
@@ -1094,12 +1094,12 @@ function MaterialRow({
             step={0.5}
             min={0}
             className="w-full h-9 text-sm rounded-lg"
-            style={{ color: '#111827', background: '#F9FAFB', border: '1px solid #E5E7EB', paddingLeft: '18px', paddingRight: '4px' }}
+            style={{ color: 'var(--charcoal)', background: 'var(--surface)', border: '1px solid var(--border)', paddingLeft: '18px', paddingRight: '4px' }}
           />
         </div>
         {/* Delete */}
         {isCustom ? (
-          <button onClick={onRemove} className="min-h-[28px] min-w-[28px] flex items-center justify-center rounded" style={{ color: '#EF4444' }}>
+          <button onClick={onRemove} className="min-h-[28px] min-w-[28px] flex items-center justify-center rounded" style={{ color: 'var(--red)' }}>
             <Trash2 size={14} />
           </button>
         ) : <div />}
@@ -1138,15 +1138,15 @@ function AssembliesTab({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium" style={{ color: '#111827' }}>Assemblies</p>
-          <p className="text-xs" style={{ color: '#9CA3AF' }}>Composite installed rates — materials + labour with G/B/B tiers</p>
+          <p className="text-sm font-medium" style={{ color: 'var(--charcoal)' }}>Assemblies</p>
+          <p className="text-xs" style={{ color: 'var(--muted)' }}>Composite installed rates — materials + labour with G/B/B tiers</p>
         </div>
         <div className="flex gap-2">
-          <button onClick={onReset} className="min-h-[32px] px-2 flex items-center gap-1 rounded-lg text-[11px] font-medium" style={{ color: '#6B7280', border: '1px solid #E5E7EB' }}>
+          <button onClick={onReset} className="min-h-[32px] px-2 flex items-center gap-1 rounded-lg text-[11px] font-medium" style={{ color: 'var(--muted)', border: '1px solid var(--border)' }}>
             <RotateCcw size={12} />
             Reset
           </button>
-          <button onClick={onAddAssembly} className="min-h-[32px] px-3 flex items-center gap-1 rounded-lg text-xs font-medium text-white" style={{ background: '#0F766E' }}>
+          <button onClick={onAddAssembly} className="min-h-[32px] px-3 flex items-center gap-1 rounded-lg text-xs font-medium text-white" style={{ background: 'var(--accent)' }}>
             <Plus size={14} />
             Add Assembly
           </button>
@@ -1154,10 +1154,10 @@ function AssembliesTab({
       </div>
 
       {assemblyKeys.length === 0 ? (
-        <div className="rounded-xl p-8 text-center" style={{ background: '#FFFFFF', border: '1px solid #E5E7EB' }}>
-          <Package size={32} style={{ color: '#D1D5DB' }} className="mx-auto mb-2" />
-          <p className="text-sm" style={{ color: '#6B7280' }}>No assemblies yet</p>
-          <p className="text-xs mt-1" style={{ color: '#9CA3AF' }}>Add an assembly to combine materials & labour into installed rates</p>
+        <div className="rounded-xl p-8 text-center" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+          <Package size={32} style={{ color: 'var(--border)' }} className="mx-auto mb-2" />
+          <p className="text-sm" style={{ color: 'var(--muted)' }}>No assemblies yet</p>
+          <p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>Add an assembly to combine materials & labour into installed rates</p>
         </div>
       ) : (
         assemblyKeys.map((key) => (
@@ -1230,34 +1230,34 @@ function NewAssemblyCard({
   const allCategories = [...new Set([...MATERIAL_CATEGORY_ORDER, ...LABOUR_CATEGORY_ORDER])];
 
   return (
-    <div className="rounded-xl overflow-hidden" style={{ background: '#FFFFFF', border: '1px solid #E5E7EB' }}>
+    <div className="rounded-xl overflow-hidden" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
       {/* Header */}
-      <div className="px-4 py-3 flex items-center gap-3" style={{ borderBottom: '1px solid #F3F4F6' }}>
+      <div className="px-4 py-3 flex items-center gap-3" style={{ borderBottom: '1px solid var(--surface-2)' }}>
         <div className="flex-1 flex flex-wrap items-center gap-2">
           <input
             type="text"
             value={assembly.name}
             onChange={(e) => onUpdateField('name', e.target.value)}
             className="h-9 px-2 text-sm font-semibold rounded-lg flex-1 min-w-[140px]"
-            style={{ color: '#111827', background: '#F9FAFB', border: '1px solid #E5E7EB' }}
+            style={{ color: 'var(--charcoal)', background: 'var(--surface)', border: '1px solid var(--border)' }}
           />
           <select
             value={assembly.category}
             onChange={(e) => onUpdateField('category', e.target.value)}
             className="h-9 px-2 text-xs rounded-lg"
-            style={{ color: '#374151', background: '#F9FAFB', border: '1px solid #E5E7EB' }}
+            style={{ color: 'var(--mid)', background: 'var(--surface)', border: '1px solid var(--border)' }}
           >
             {allCategories.map((cat) => (
               <option key={cat} value={cat}>{MATERIAL_CATEGORY_LABELS[cat] ?? LABOUR_CATEGORY_LABELS[cat] ?? cat}</option>
             ))}
           </select>
           <div className="flex items-center gap-1">
-            <span className="text-[10px] font-medium" style={{ color: '#9CA3AF' }}>per</span>
+            <span className="text-[10px] font-medium" style={{ color: 'var(--muted)' }}>per</span>
             <select
               value={assembly.unit}
               onChange={(e) => onUpdateField('unit', e.target.value)}
               className="h-9 px-1 text-xs rounded-lg"
-              style={{ color: '#374151', background: '#F9FAFB', border: '1px solid #E5E7EB' }}
+              style={{ color: 'var(--mid)', background: 'var(--surface)', border: '1px solid var(--border)' }}
             >
               {CATALOG_UNITS.map((u) => (
                 <option key={u.value} value={u.value}>{u.label}</option>
@@ -1265,13 +1265,13 @@ function NewAssemblyCard({
             </select>
           </div>
         </div>
-        <button onClick={onRemove} className="min-h-[32px] min-w-[32px] flex items-center justify-center rounded-lg" style={{ color: '#EF4444' }}>
+        <button onClick={onRemove} className="min-h-[32px] min-w-[32px] flex items-center justify-center rounded-lg" style={{ color: 'var(--red)' }}>
           <Trash2 size={16} />
         </button>
       </div>
 
       {/* Column headers */}
-      <div className="px-4 py-2 grid grid-cols-[80px_1fr_1fr_72px_72px_72px_72px_28px] gap-2 text-[10px] font-semibold uppercase tracking-wider" style={{ color: '#9CA3AF', borderBottom: '1px solid #F3F4F6' }}>
+      <div className="px-4 py-2 grid grid-cols-[80px_1fr_1fr_72px_72px_72px_72px_28px] gap-2 text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--muted)', borderBottom: '1px solid var(--surface-2)' }}>
         <span>Type</span>
         <span>Category</span>
         <span>Item</span>
@@ -1283,7 +1283,7 @@ function NewAssemblyCard({
       </div>
 
       {/* Component rows */}
-      <div className="divide-y" style={{ borderColor: '#F3F4F6' }}>
+      <div className="divide-y" style={{ borderColor: 'var(--surface-2)' }}>
         {assembly.components.map((comp, idx) => (
           <NewAssemblyComponentRow
             key={idx}
@@ -1297,16 +1297,16 @@ function NewAssemblyCard({
       </div>
 
       {/* Footer: totals + add button */}
-      <div className="px-4 py-2.5 flex items-center justify-between" style={{ borderTop: '1px solid #E5E7EB', background: '#F9FAFB' }}>
+      <div className="px-4 py-2.5 flex items-center justify-between" style={{ borderTop: '1px solid var(--border)', background: 'var(--surface)' }}>
         <div className="flex items-center gap-4">
-          <span className="text-xs font-semibold" style={{ color: '#111827' }}>
+          <span className="text-xs font-semibold" style={{ color: 'var(--charcoal)' }}>
             Totals per {CATALOG_UNITS.find((u) => u.value === assembly.unit)?.label ?? assembly.unit}:
           </span>
-          <span className="text-xs font-medium" style={{ color: '#059669' }}>G ${totals.good.toFixed(2)}</span>
-          <span className="text-xs font-medium" style={{ color: '#0369A1' }}>B ${totals.better.toFixed(2)}</span>
-          <span className="text-xs font-medium" style={{ color: '#7C3AED' }}>B ${totals.best.toFixed(2)}</span>
+          <span className="text-xs font-medium" style={{ color: 'var(--green)' }}>G ${totals.good.toFixed(2)}</span>
+          <span className="text-xs font-medium" style={{ color: 'var(--blue)' }}>B ${totals.better.toFixed(2)}</span>
+          <span className="text-xs font-medium" style={{ color: 'var(--violet)' }}>B ${totals.best.toFixed(2)}</span>
         </div>
-        <button onClick={onAddComponent} className="min-h-[32px] px-3 flex items-center gap-1 rounded-lg text-xs font-medium" style={{ color: '#0F766E', border: '1px solid #E5E7EB', background: '#FFFFFF' }}>
+        <button onClick={onAddComponent} className="min-h-[32px] px-3 flex items-center gap-1 rounded-lg text-xs font-medium" style={{ color: 'var(--accent)', border: '1px solid var(--border)', background: 'var(--surface)' }}>
           <Plus size={14} />
           Add Component
         </button>
@@ -1378,7 +1378,7 @@ function NewAssemblyComponentRow({
         value={component.type}
         onChange={(e) => handleTypeChange(e.target.value)}
         className="h-9 px-1 text-xs rounded-lg"
-        style={{ color: '#374151', background: '#F9FAFB', border: '1px solid #E5E7EB' }}
+        style={{ color: 'var(--mid)', background: 'var(--surface)', border: '1px solid var(--border)' }}
       >
         <option value="material">Material</option>
         <option value="labour">Labour</option>
@@ -1388,7 +1388,7 @@ function NewAssemblyComponentRow({
         value={component.sourceCategory}
         onChange={(e) => handleCategoryChange(e.target.value)}
         className="h-9 px-2 text-xs rounded-lg"
-        style={{ color: '#374151', background: '#F9FAFB', border: '1px solid #E5E7EB' }}
+        style={{ color: 'var(--mid)', background: 'var(--surface)', border: '1px solid var(--border)' }}
       >
         {categories.map((cat) => (
           <option key={cat} value={cat}>
@@ -1401,7 +1401,7 @@ function NewAssemblyComponentRow({
         value={component.sourceKey}
         onChange={(e) => onUpdate({ sourceKey: e.target.value })}
         className="h-9 px-2 text-xs rounded-lg"
-        style={{ color: '#374151', background: '#F9FAFB', border: '1px solid #E5E7EB' }}
+        style={{ color: 'var(--mid)', background: 'var(--surface)', border: '1px solid var(--border)' }}
       >
         {itemsInCategory.map(([key, val]) => (
           <option key={key} value={key}>{(val as { name: string }).name}</option>
@@ -1415,16 +1415,16 @@ function NewAssemblyComponentRow({
         step={0.01}
         min={0}
         className="h-9 px-2 text-sm rounded-lg"
-        style={{ color: '#111827', background: '#F9FAFB', border: '1px solid #E5E7EB' }}
+        style={{ color: 'var(--charcoal)', background: 'var(--surface)', border: '1px solid var(--border)' }}
       />
       {/* Good */}
-      <span className="text-xs font-medium text-right" style={{ color: '#059669' }}>${resolved.good.toFixed(2)}</span>
+      <span className="text-xs font-medium text-right" style={{ color: 'var(--green)' }}>${resolved.good.toFixed(2)}</span>
       {/* Better */}
-      <span className="text-xs font-medium text-right" style={{ color: '#0369A1' }}>${resolved.better.toFixed(2)}</span>
+      <span className="text-xs font-medium text-right" style={{ color: 'var(--blue)' }}>${resolved.better.toFixed(2)}</span>
       {/* Best */}
-      <span className="text-xs font-medium text-right" style={{ color: '#7C3AED' }}>${resolved.best.toFixed(2)}</span>
+      <span className="text-xs font-medium text-right" style={{ color: 'var(--violet)' }}>${resolved.best.toFixed(2)}</span>
       {/* Remove */}
-      <button onClick={onRemove} className="min-h-[28px] min-w-[28px] flex items-center justify-center rounded" style={{ color: '#EF4444' }}>
+      <button onClick={onRemove} className="min-h-[28px] min-w-[28px] flex items-center justify-center rounded" style={{ color: 'var(--red)' }}>
         <Trash2 size={14} />
       </button>
     </div>
@@ -1457,27 +1457,27 @@ function LabourCategoryCard({
   const itemKeys = Object.keys(items);
 
   return (
-    <div className="rounded-xl overflow-hidden" style={{ background: '#FFFFFF', border: '1px solid #E5E7EB' }}>
-      <div className="px-4 py-3 flex items-center justify-between" style={{ borderBottom: '1px solid #F3F4F6' }}>
+    <div className="rounded-xl overflow-hidden" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+      <div className="px-4 py-3 flex items-center justify-between" style={{ borderBottom: '1px solid var(--surface-2)' }}>
         <div>
-          <h3 className="text-sm font-semibold" style={{ color: '#111827' }}>{label}</h3>
-          <p className="text-[11px]" style={{ color: '#9CA3AF' }}>Labour rates by task</p>
+          <h3 className="text-sm font-semibold" style={{ color: 'var(--charcoal)' }}>{label}</h3>
+          <p className="text-[11px]" style={{ color: 'var(--muted)' }}>Labour rates by task</p>
         </div>
-        <button onClick={onReset} className="min-h-[32px] px-2 flex items-center gap-1 rounded-lg text-[11px] font-medium" style={{ color: '#6B7280', border: '1px solid #E5E7EB' }}>
+        <button onClick={onReset} className="min-h-[32px] px-2 flex items-center gap-1 rounded-lg text-[11px] font-medium" style={{ color: 'var(--muted)', border: '1px solid var(--border)' }}>
           <RotateCcw size={12} />
           Reset
         </button>
       </div>
 
       {/* Header row */}
-      <div className="px-4 py-2 grid grid-cols-[1fr_80px_80px_28px] gap-2 text-[10px] font-semibold uppercase tracking-wider" style={{ color: '#9CA3AF', borderBottom: '1px solid #F3F4F6' }}>
+      <div className="px-4 py-2 grid grid-cols-[1fr_80px_80px_28px] gap-2 text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--muted)', borderBottom: '1px solid var(--surface-2)' }}>
         <span>Name</span>
         <span>Unit</span>
         <span>Rate</span>
         <span />
       </div>
 
-      <div className="divide-y" style={{ borderColor: '#F3F4F6' }}>
+      <div className="divide-y" style={{ borderColor: 'var(--surface-2)' }}>
         {itemKeys.map((itemKey) => (
           <LabourRow
             key={itemKey}
@@ -1491,7 +1491,7 @@ function LabourCategoryCard({
         ))}
       </div>
 
-      <button onClick={onAddItem} className="w-full min-h-[44px] flex items-center justify-center gap-1.5 text-xs font-medium" style={{ color: '#0F766E', borderTop: '1px solid #F3F4F6' }}>
+      <button onClick={onAddItem} className="w-full min-h-[44px] flex items-center justify-center gap-1.5 text-xs font-medium" style={{ color: 'var(--accent)', borderTop: '1px solid var(--surface-2)' }}>
         <Plus size={14} />
         Add Item
       </button>
@@ -1517,7 +1517,7 @@ function LabourRow({
   return (
     <div className="px-4 py-2.5">
       <div className="mb-1.5">
-        <span className="text-[10px] font-mono" style={{ color: '#9CA3AF' }}>{itemKey}</span>
+        <span className="text-[10px] font-mono" style={{ color: 'var(--muted)' }}>{itemKey}</span>
       </div>
       <div className="grid grid-cols-[1fr_80px_80px_28px] gap-2 items-end">
         {/* Name */}
@@ -1526,14 +1526,14 @@ function LabourRow({
           value={item.name}
           onChange={(e) => onUpdate('name', e.target.value)}
           className="h-9 px-2 text-sm rounded-lg"
-          style={{ color: '#111827', background: '#F9FAFB', border: '1px solid #E5E7EB' }}
+          style={{ color: 'var(--charcoal)', background: 'var(--surface)', border: '1px solid var(--border)' }}
         />
         {/* Unit */}
         <select
           value={item.unit}
           onChange={(e) => onUpdate('unit', e.target.value)}
           className="h-9 px-1 text-xs rounded-lg"
-          style={{ color: '#374151', background: '#F9FAFB', border: '1px solid #E5E7EB' }}
+          style={{ color: 'var(--mid)', background: 'var(--surface)', border: '1px solid var(--border)' }}
         >
           {CATALOG_UNITS.map((u) => (
             <option key={u.value} value={u.value}>{u.label}</option>
@@ -1541,7 +1541,7 @@ function LabourRow({
         </select>
         {/* Rate */}
         <div className="relative">
-          <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs" style={{ color: '#9CA3AF' }}>$</span>
+          <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs" style={{ color: 'var(--muted)' }}>$</span>
           <input
             type="number"
             value={item.rate}
@@ -1549,12 +1549,12 @@ function LabourRow({
             step={0.5}
             min={0}
             className="w-full h-9 text-sm rounded-lg"
-            style={{ color: '#111827', background: '#F9FAFB', border: '1px solid #E5E7EB', paddingLeft: '18px', paddingRight: '4px' }}
+            style={{ color: 'var(--charcoal)', background: 'var(--surface)', border: '1px solid var(--border)', paddingLeft: '18px', paddingRight: '4px' }}
           />
         </div>
         {/* Delete */}
         {isCustom ? (
-          <button onClick={onRemove} className="min-h-[28px] min-w-[28px] flex items-center justify-center rounded" style={{ color: '#EF4444' }}>
+          <button onClick={onRemove} className="min-h-[28px] min-w-[28px] flex items-center justify-center rounded" style={{ color: 'var(--red)' }}>
             <Trash2 size={14} />
           </button>
         ) : <div />}
@@ -1581,7 +1581,7 @@ function InstalledRateRow({
   return (
     <div className="px-4 py-3">
       <div className="mb-2">
-        <span className="text-xs font-mono" style={{ color: '#6B7280' }}>{itemKey}</span>
+        <span className="text-xs font-mono" style={{ color: 'var(--muted)' }}>{itemKey}</span>
       </div>
       <div className="flex flex-wrap gap-2">
         {columns.map((col) => (
@@ -1611,9 +1611,9 @@ function RateField({
         onClick={() => onChange(!value)}
         className="min-h-[36px] px-3 rounded-lg text-xs font-medium flex items-center gap-1"
         style={{
-          background: value ? '#F0FDFA' : '#F9FAFB',
-          color: value ? '#0F766E' : '#6B7280',
-          border: value ? '1px solid #0F766E' : '1px solid #E5E7EB',
+          background: value ? 'var(--green-bg)' : 'var(--surface)',
+          color: value ? 'var(--accent)' : 'var(--muted)',
+          border: value ? '1px solid var(--accent)' : '1px solid var(--border)',
         }}
       >
         {column.label}: {value ? 'Yes' : 'No'}
@@ -1624,13 +1624,13 @@ function RateField({
   if (column.type === 'text') {
     return (
       <div className="flex-1 min-w-[120px]">
-        <label className="block text-[10px] font-medium mb-0.5" style={{ color: '#9CA3AF' }}>{column.label}</label>
+        <label className="block text-[10px] font-medium mb-0.5" style={{ color: 'var(--muted)' }}>{column.label}</label>
         <input
           type="text"
           value={String(value ?? '')}
           onChange={(e) => onChange(e.target.value)}
           className="w-full h-9 px-2 text-sm rounded-lg"
-          style={{ color: '#111827', background: '#F9FAFB', border: '1px solid #E5E7EB' }}
+          style={{ color: 'var(--charcoal)', background: 'var(--surface)', border: '1px solid var(--border)' }}
         />
       </div>
     );
@@ -1638,10 +1638,10 @@ function RateField({
 
   return (
     <div className="min-w-[80px]">
-      <label className="block text-[10px] font-medium mb-0.5" style={{ color: '#9CA3AF' }}>{column.label}</label>
+      <label className="block text-[10px] font-medium mb-0.5" style={{ color: 'var(--muted)' }}>{column.label}</label>
       <div className="relative">
         {column.prefix && (
-          <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs" style={{ color: '#9CA3AF' }}>
+          <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs" style={{ color: 'var(--muted)' }}>
             {column.prefix}
           </span>
         )}
@@ -1653,9 +1653,9 @@ function RateField({
           min={0}
           className="w-full h-9 text-sm rounded-lg"
           style={{
-            color: '#111827',
-            background: '#F9FAFB',
-            border: '1px solid #E5E7EB',
+            color: 'var(--charcoal)',
+            background: 'var(--surface)',
+            border: '1px solid var(--border)',
             paddingLeft: column.prefix ? '18px' : '8px',
             paddingRight: '8px',
           }}

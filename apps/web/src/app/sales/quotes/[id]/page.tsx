@@ -12,22 +12,16 @@
  */
 
 import { useState, useMemo, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import {
-  ArrowLeft,
   FileText,
   Send,
   Eye,
   CheckCircle2,
   XCircle,
   Clock,
-  Video,
-  ExternalLink,
-  Hammer,
-  AlertTriangle,
   Download,
-  Percent,
   Link2,
   Mail,
   Rocket,
@@ -61,16 +55,30 @@ const DownloadQuotePDF = dynamic(
 );
 import { useCreateNotification } from '@/lib/hooks/useNotifications';
 import { useApproveEstimateWithPipeline } from '@/lib/hooks/useApproveWithPipeline';
+import {
+  BrandHeader,
+  StatusProgressBar,
+  TradeSection,
+  SummaryPanel,
+} from '@/components/estimates/detail';
+import type { TradeSectionLineItem } from '@/components/estimates/detail';
+import {
+  PartiesCards,
+  SourceLink,
+  PaymentTerms,
+  GeneralTerms,
+  AcceptanceBlock,
+} from '@/components/quotes/detail';
 
 const COLOR = SECTION_COLORS.sales;
 
 const STATUS_CONFIG: Record<QuoteStatus, { bg: string; text: string; label: string; icon: typeof FileText }> = {
-  draft:    { bg: '#F3F4F6', text: '#6B7280', label: 'Draft',    icon: FileText },
-  sent:     { bg: '#EFF6FF', text: '#3B82F6', label: 'Sent',     icon: Send },
-  viewed:   { bg: '#FFF7ED', text: '#F59E0B', label: 'Viewed',   icon: Eye },
-  accepted: { bg: '#ECFDF5', text: '#10B981', label: 'Accepted', icon: CheckCircle2 },
-  declined: { bg: '#FEF2F2', text: '#EF4444', label: 'Declined', icon: XCircle },
-  expired:  { bg: '#F3F4F6', text: '#9CA3AF', label: 'Expired',  icon: Clock },
+  draft:    { bg: 'var(--surface-2)', text: 'var(--muted)', label: 'Draft',    icon: FileText },
+  sent:     { bg: 'var(--blue-bg)', text: 'var(--blue)', label: 'Sent',     icon: Send },
+  viewed:   { bg: 'var(--yellow-bg)', text: 'var(--yellow)', label: 'Viewed',   icon: Eye },
+  accepted: { bg: 'var(--green-bg)', text: 'var(--green)', label: 'Accepted', icon: CheckCircle2 },
+  declined: { bg: 'var(--red-bg)', text: 'var(--red)', label: 'Declined', icon: XCircle },
+  expired:  { bg: 'var(--surface-2)', text: 'var(--muted)', label: 'Expired',  icon: Clock },
 };
 
 // Trade/category labels for grouping
@@ -129,7 +137,6 @@ const SOURCE_ORDER: SourceGroupKey[] = ['material_selection', 'labour_estimation
 
 export default function QuoteDetailPage() {
   const params = useParams();
-  const router = useRouter();
   const quoteId = params.id as string;
 
   const { data: quote, isLoading: quoteLoading } = useQuote(quoteId);
@@ -153,14 +160,6 @@ export default function QuoteDetailPage() {
   // Decline modal state
   const [showDeclineModal, setShowDeclineModal] = useState(false);
   const [declineReason, setDeclineReason] = useState('');
-
-  // Video link editor
-  const [editingVideo, setEditingVideo] = useState(false);
-  const [videoLinkDraft, setVideoLinkDraft] = useState('');
-
-  // Deposit percentage editor
-  const [editingDeposit, setEditingDeposit] = useState(false);
-  const [depositDraft, setDepositDraft] = useState(25);
 
   // Approve & Start Project
   const { approveAndGenerate } = useApproveEstimateWithPipeline();
@@ -261,8 +260,6 @@ export default function QuoteDetailPage() {
   }, [sourceGroups]);
 
   const grandTotal = sourceGroups.reduce((s, g) => s + g.total, 0);
-  const grandLabor = tradeGroups.reduce((s, g) => s + g.laborTotal, 0);
-  const grandMaterial = tradeGroups.reduce((s, g) => s + g.materialTotal, 0);
 
   // Actions
   const handleSend = async () => {
@@ -325,19 +322,6 @@ export default function QuoteDetailPage() {
     setDeclineReason('');
   };
 
-  const handleSaveVideoLink = async () => {
-    if (!quote) return;
-    await updateQuote.mutateAsync({ id: quote.id, data: { videoLink: videoLinkDraft.trim() } });
-    setEditingVideo(false);
-  };
-
-  const handleSaveDeposit = async () => {
-    if (!quote) return;
-    const clamped = Math.max(0, Math.min(100, depositDraft));
-    await updateQuote.mutateAsync({ id: quote.id, data: { depositPercentage: clamped } });
-    setEditingDeposit(false);
-  };
-
   const portalUrl = typeof window !== 'undefined' && quote
     ? `${window.location.origin}/portal/${quote.projectId}`
     : '';
@@ -390,6 +374,81 @@ export default function QuoteDetailPage() {
     || project?.status === ProjectStatus.IN_PROGRESS
     || project?.status === ProjectStatus.COMPLETE;
 
+  // ── Document layout: derived values ──
+  const QUOTE_STATUS_STEPS = [
+    { key: 'draft', label: 'Draft' },
+    { key: 'sent', label: 'Sent' },
+    { key: 'reviewed', label: 'Reviewed' },
+    { key: 'accepted', label: 'Accepted' },
+  ];
+
+  const quoteStatusKey = useMemo(() => {
+    if (!quote) return 'draft';
+    if (quote.status === 'viewed') return 'reviewed';
+    if (quote.status === 'accepted' || quote.status === 'declined' || quote.status === 'expired') return 'accepted';
+    return quote.status; // draft, sent
+  }, [quote]);
+
+  const quoteNumber = useMemo(() => {
+    if (!quote) return 'Q-0000-000';
+    const year = new Date(quote.createdAt).getFullYear();
+    const seq = quoteId.slice(-3).replace(/\D/g, '0').padStart(3, '0');
+    return `Q-${year}-${seq}`;
+  }, [quote, quoteId]);
+
+  // Map trade groups into TradeSection format
+  const tradeSectionGroups = useMemo(() => {
+    return tradeGroups.map((g) => ({
+      code: g.key,
+      name: g.label,
+      items: g.items.map((i): TradeSectionLineItem => ({
+        id: i.id,
+        description: i.description,
+        spec: i.isLabor ? 'Labor' : (CATEGORY_LABELS[i.category] || ''),
+        quantity: i.quantity,
+        unit: i.unit,
+        unitCost: i.unitCost,
+        totalCost: i.totalCost,
+      })),
+      subtotal: g.total,
+    }));
+  }, [tradeGroups]);
+
+  // Payment terms handlers
+  const currentDepositPct = quote?.depositPercentage ?? 25;
+  const currentValidityDays = quote?.validityDays ?? 30;
+  const currentScheduleType = quote?.scheduleType ?? 'simple';
+  const currentCustomMilestones = quote?.customMilestones ?? [];
+  const isDraft = quote?.status === 'draft';
+
+  const handleDepositChange = async (pct: number) => {
+    if (!quote || !isDraft) return;
+    await updateQuote.mutateAsync({ id: quote.id, data: { depositPercentage: Math.max(0, Math.min(100, pct)) } });
+  };
+  const handleValidityChange = async (days: number) => {
+    if (!quote || !isDraft) return;
+    await updateQuote.mutateAsync({ id: quote.id, data: { validityDays: days } });
+  };
+  const handleScheduleTypeChange = async (type: 'simple' | 'progress' | 'custom') => {
+    if (!quote || !isDraft) return;
+    await updateQuote.mutateAsync({ id: quote.id, data: { scheduleType: type } });
+  };
+  const handleCustomMilestonesChange = async (milestones: Array<{ label: string; pct: number }>) => {
+    if (!quote || !isDraft) return;
+    await updateQuote.mutateAsync({ id: quote.id, data: { customMilestones: milestones } });
+  };
+  const handleGeneralTermsUpdate = async (terms: string[]) => {
+    if (!quote) return;
+    await updateQuote.mutateAsync({ id: quote.id, data: { generalTerms: terms } });
+  };
+
+  const validUntilDate = useMemo(() => {
+    if (!quote) return '';
+    const d = new Date(quote.createdAt);
+    d.setDate(d.getDate() + currentValidityDays);
+    return d.toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: 'numeric' });
+  }, [quote, currentValidityDays]);
+
   if (quoteLoading) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -401,597 +460,350 @@ export default function QuoteDetailPage() {
   if (!quote) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 12 }}>
-        <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-2)' }}>Quote not found</p>
+        <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--mid)' }}>Quote not found</p>
         <Link href="/sales/quotes" style={{ fontSize: 12, color: COLOR }}>Back to Quotes</Link>
       </div>
     );
   }
 
   const badge = STATUS_CONFIG[quote.status];
-  const BadgeIcon = badge.icon;
+  const depositAmount = quote.totalAmount * (currentDepositPct / 100);
 
   return (
     <PageErrorBoundary>
-      <div style={{ minHeight: '100vh', paddingBottom: 96, background: 'var(--bg)' }}>
+      <div className="min-h-screen" style={{ background: 'var(--bg)' }}>
 
-        {/* Header */}
-        <div style={{ background: 'var(--surface-1)', borderBottom: '1px solid var(--border)' }}>
-          <div className="max-w-lg md:max-w-full mx-auto px-4 md:px-6 py-3 md:py-4">
-            {/* Back nav */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-              <button
-                onClick={() => router.push('/sales/quotes')}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-3)', display: 'flex', alignItems: 'center', gap: 4, fontSize: 11 }}
-              >
-                <ArrowLeft size={14} /> Quotes
-              </button>
-            </div>
+        {/* ── Brand Header ── */}
+        <BrandHeader docType="Quote" />
 
-            {/* Title row */}
-            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+        {/* ── Status Progress Bar ── */}
+        <StatusProgressBar steps={QUOTE_STATUS_STEPS} currentStepKey={quoteStatusKey} />
+
+        {/* ── Header ── */}
+        <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
+          <div className="px-6 py-5" style={{ maxWidth: 1200 }}>
+            <div className="flex items-start justify-between gap-4">
               <div>
-                <h1 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', fontFamily: 'var(--font-cond)', letterSpacing: '0.02em' }}>
-                  Quote for {customerName}
-                </h1>
-                <p style={{ fontSize: 12, color: 'var(--text-3)', marginTop: 2 }}>
+                <div
+                  className="text-[11px] font-medium tracking-[0.06em]"
+                  style={{ fontFamily: 'var(--font-mono)', color: 'var(--muted)' }}
+                >
+                  {quoteNumber}
+                </div>
+                <h1 className="text-xl font-bold mt-0.5 leading-tight" style={{ color: 'var(--charcoal)' }}>
                   {project?.name || quote.projectId}
-                </p>
+                </h1>
+                <div className="flex gap-5 mt-2 flex-wrap items-center">
+                  <div className="text-xs" style={{ color: 'var(--mid)' }}>
+                    Homeowner{' '}
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--charcoal)', fontWeight: 500 }}>
+                      {customerName}
+                    </span>
+                  </div>
+                  <div className="text-xs" style={{ color: 'var(--mid)' }}>
+                    Issued{' '}
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--charcoal)', fontWeight: 500 }}>
+                      {new Date(quote.createdAt).toLocaleDateString('en-CA')}
+                    </span>
+                  </div>
+                  <div className="text-xs" style={{ color: 'var(--mid)' }}>
+                    Valid Until{' '}
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--charcoal)', fontWeight: 500 }}>
+                      {validUntilDate}
+                    </span>
+                  </div>
+                  <span
+                    className="inline-flex items-center gap-[5px] px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.06em]"
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      background: badge.bg,
+                      border: `1px solid ${badge.text}20`,
+                      color: badge.text,
+                    }}
+                  >
+                    <span className="w-[5px] h-[5px] rounded-full" style={{ background: badge.text }} />
+                    {badge.label}
+                  </span>
+                </div>
               </div>
-              <span style={{
-                display: 'flex', alignItems: 'center', gap: 4,
-                fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase',
-                padding: '4px 10px', borderRadius: 6,
-                background: badge.bg, color: badge.text, flexShrink: 0,
-              }}>
-                <BadgeIcon size={12} /> {badge.label}
-              </span>
-            </div>
-
-            {/* Total */}
-            <div style={{ marginTop: 12, display: 'flex', alignItems: 'baseline', gap: 8 }}>
-              <span style={{ fontSize: 28, fontWeight: 800, color: 'var(--text)', fontFamily: 'var(--font-mono, monospace)', letterSpacing: '-0.02em' }}>
-                ${quote.totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </span>
-              <span style={{ fontSize: 11, color: 'var(--text-3)' }}>CAD</span>
+              {/* Action buttons */}
+              <div className="flex gap-2 flex-shrink-0 flex-wrap">
+                {quote.status === 'draft' && (
+                  <ActionButton label="Send Quote" icon={Send} color="var(--blue)" loading={sendQuote.isPending} onClick={handleSend} />
+                )}
+                {quote.status === 'sent' && (
+                  <ActionButton label="Mark Viewed" icon={Eye} color="var(--amber, var(--yellow))" loading={markViewed.isPending} onClick={handleMarkViewed} />
+                )}
+                {(quote.status === 'sent' || quote.status === 'viewed') && (
+                  <>
+                    <ActionButton label="Accept" icon={CheckCircle2} color="var(--green)" loading={acceptQuote.isPending} onClick={handleAccept} />
+                    <ActionButton label="Decline" icon={XCircle} color="var(--red)" loading={declineQuote.isPending} onClick={() => setShowDeclineModal(true)} />
+                  </>
+                )}
+                {customer && project && lineItems.length > 0 && (
+                  <DownloadQuotePDF quote={quote} project={project} customer={customer} lineItems={lineItems as unknown as ContractLineItem[]}>
+                    <button
+                      className="text-[11px] font-medium tracking-[0.04em] px-4 py-2 flex items-center gap-1.5"
+                      style={{ fontFamily: 'var(--font-mono)', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--charcoal)' }}
+                    >
+                      <Download size={12} /> PDF
+                    </button>
+                  </DownloadQuotePDF>
+                )}
+                {quote.contractGeneratedAt && customer && project && lineItems.length > 0 && (
+                  <DownloadContractPDF quote={quote} project={project} customer={customer} lineItems={lineItems as unknown as ContractLineItem[]} depositPercentage={currentDepositPct}>
+                    <button
+                      className="text-[11px] font-medium tracking-[0.04em] px-4 py-2 flex items-center gap-1.5"
+                      style={{ fontFamily: 'var(--font-mono)', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--charcoal)' }}
+                    >
+                      <Download size={12} /> Contract
+                    </button>
+                  </DownloadContractPDF>
+                )}
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="max-w-lg md:max-w-full mx-auto px-4 md:px-6">
-
-          {/* ================================================================ */}
-          {/* Action Buttons */}
-          {/* ================================================================ */}
-          <div style={{ marginTop: 16, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            {quote.status === 'draft' && (
-              <ActionButton label="Send Quote" icon={Send} color="#3B82F6" loading={sendQuote.isPending} onClick={handleSend} />
-            )}
-            {quote.status === 'sent' && (
-              <ActionButton label="Mark Viewed" icon={Eye} color="#F59E0B" loading={markViewed.isPending} onClick={handleMarkViewed} />
-            )}
-            {(quote.status === 'sent' || quote.status === 'viewed') && (
-              <>
-                <ActionButton label="Accept" icon={CheckCircle2} color="#10B981" loading={acceptQuote.isPending} onClick={handleAccept} />
-                <ActionButton label="Decline" icon={XCircle} color="#EF4444" loading={declineQuote.isPending} onClick={() => setShowDeclineModal(true)} />
-              </>
-            )}
-          </div>
-
-          {/* Approve & Start Project — shown after quote is accepted */}
-          {quote.status === 'accepted' && !isProjectApproved && !approvalResult && (
-            <div style={{
-              marginTop: 12, padding: 16, borderRadius: 'var(--radius)',
-              background: '#ECFDF5', border: '2px solid #10B981',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                <Rocket size={16} style={{ color: '#059669' }} />
-                <span style={{ fontSize: 13, fontWeight: 700, color: '#059669' }}>
-                  Quote Accepted — Ready to Start Project
-                </span>
+        {/* ── Approve Project Banner ── */}
+        {quote.status === 'accepted' && !isProjectApproved && !approvalResult && (
+          <div className="px-6 py-3" style={{ maxWidth: 1200 }}>
+            <div className="flex items-center justify-between px-4 py-3" style={{ background: 'var(--green-bg, rgba(22,163,74,0.08))', border: '2px solid var(--green)' }}>
+              <div className="flex items-center gap-2">
+                <Rocket size={16} style={{ color: 'var(--green)' }} />
+                <span className="text-xs font-bold" style={{ color: 'var(--green)' }}>Quote Accepted — Ready to Start Project</span>
               </div>
-              <p style={{ fontSize: 11, color: '#374151', lineHeight: 1.5, marginBottom: 12 }}>
-                This will advance the project to Approved and generate tasks from line items that have SOP codes assigned.
-              </p>
               <button
                 onClick={handleApproveProject}
                 disabled={approving}
-                style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                  width: '100%', minHeight: 44, borderRadius: 'var(--radius)',
-                  fontSize: 13, fontWeight: 700,
-                  background: approving ? '#9CA3AF' : '#059669',
-                  color: '#FFFFFF', border: 'none',
-                  cursor: approving ? 'not-allowed' : 'pointer',
-                }}
+                className="text-[11px] font-medium tracking-[0.04em] px-4 py-2 text-white"
+                style={{ fontFamily: 'var(--font-mono)', background: approving ? 'var(--muted)' : 'var(--green)', border: 'none' }}
               >
-                <Rocket size={16} />
-                {approving ? 'Approving & Generating Tasks...' : 'Approve & Start Project'}
+                {approving ? 'Approving...' : 'Approve & Start Project'}
               </button>
             </div>
-          )}
+          </div>
+        )}
 
-          {/* Approval Result */}
-          {approvalResult && (
-            <div style={{
-              marginTop: 12, padding: 16, borderRadius: 'var(--radius)',
-              background: '#F0FDF4', border: '1px solid #BBF7D0',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                <CheckCircle2 size={16} style={{ color: '#10B981' }} />
-                <span style={{ fontSize: 13, fontWeight: 700, color: '#059669' }}>
-                  Project Approved
+        {/* ── Approval Result ── */}
+        {approvalResult && (
+          <div className="px-6 py-3" style={{ maxWidth: 1200 }}>
+            <div className="flex items-center justify-between px-4 py-3" style={{ background: 'var(--green-bg, rgba(22,163,74,0.08))', border: '1px solid var(--green-bg, rgba(22,163,74,0.08))' }}>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 size={16} style={{ color: 'var(--green)' }} />
+                <span className="text-xs font-semibold" style={{ color: 'var(--green)' }}>
+                  Project Approved — {approvalResult.tasksDeployed} tasks created
                 </span>
               </div>
-              <div style={{ display: 'flex', gap: 16, fontSize: 12, color: '#374151', marginBottom: 12 }}>
-                <span><strong>{approvalResult.tasksDeployed}</strong> tasks created</span>
-                <span><strong>{approvalResult.blueprintsCreated}</strong> blueprints</span>
-                <span><strong>{approvalResult.pipelineEligible}</strong> of {approvalResult.totalLineItems} items eligible</span>
-              </div>
-              {approvalResult.missingSopCodes.length > 0 && (
-                <p style={{ fontSize: 11, color: '#F59E0B', marginBottom: 8 }}>
-                  {approvalResult.missingSopCodes.length} line items skipped (no SOP codes assigned)
-                </p>
-              )}
               <Link
                 href={`/projects/${quote.projectId}`}
-                style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                  width: '100%', minHeight: 40, borderRadius: 'var(--radius)',
-                  fontSize: 12, fontWeight: 600, textDecoration: 'none',
-                  background: 'var(--surface-1)', color: COLOR,
-                  border: `1px solid ${COLOR}`,
-                }}
+                className="text-[11px] font-medium tracking-[0.04em] px-4 py-2 no-underline"
+                style={{ fontFamily: 'var(--font-mono)', border: '1px solid var(--green)', color: 'var(--green)' }}
               >
-                Go to Project <ExternalLink size={12} />
+                View Project →
               </Link>
             </div>
-          )}
-
-          {/* Already approved — show link */}
-          {quote.status === 'accepted' && isProjectApproved && !approvalResult && (
-            <div style={{
-              marginTop: 12, padding: 14, borderRadius: 'var(--radius)',
-              background: '#F0FDF4', border: '1px solid #BBF7D0',
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <CheckCircle2 size={16} style={{ color: '#10B981' }} />
-                <span style={{ fontSize: 12, fontWeight: 600, color: '#059669' }}>Project Started</span>
-              </div>
-              <Link
-                href={`/projects/${quote.projectId}`}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 4,
-                  fontSize: 11, fontWeight: 600, color: COLOR, textDecoration: 'none',
-                }}
-              >
-                View Project <ExternalLink size={12} />
-              </Link>
-            </div>
-          )}
-
-          {/* Decline Modal */}
-          {showDeclineModal && (
-            <div style={{
-              marginTop: 8, padding: 14, borderRadius: 'var(--radius)',
-              background: 'var(--surface-1)', border: '2px solid #EF444440',
-            }}>
-              <p style={{ fontSize: 11, fontWeight: 600, color: '#EF4444', marginBottom: 8 }}>Reason for Decline (optional)</p>
-              <textarea
-                value={declineReason}
-                onChange={(e) => setDeclineReason(e.target.value)}
-                placeholder="Customer feedback or reason..."
-                rows={2}
-                style={{
-                  width: '100%', minHeight: 48, padding: '8px 10px',
-                  borderRadius: 'var(--radius)', fontSize: 12,
-                  background: 'var(--bg)', border: '1px solid var(--border)',
-                  color: 'var(--text)', outline: 'none', resize: 'vertical',
-                }}
-              />
-              <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-                <button onClick={() => setShowDeclineModal(false)} style={{ flex: 1, minHeight: 32, borderRadius: 'var(--radius)', fontSize: 11, fontWeight: 600, background: 'var(--bg)', color: 'var(--text-2)', border: '1px solid var(--border)', cursor: 'pointer' }}>
-                  Cancel
-                </button>
-                <button onClick={handleDecline} disabled={declineQuote.isPending} style={{ flex: 1, minHeight: 32, borderRadius: 'var(--radius)', fontSize: 11, fontWeight: 600, background: '#EF4444', color: '#FFFFFF', border: 'none', cursor: 'pointer', opacity: declineQuote.isPending ? 0.5 : 1 }}>
-                  {declineQuote.isPending ? 'Declining...' : 'Confirm Decline'}
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Download Quote PDF — available whenever there are line items */}
-          {customer && project && lineItems.length > 0 && (
-            <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              <DownloadQuotePDF
-                quote={quote}
-                project={project}
-                customer={customer}
-                lineItems={lineItems as unknown as ContractLineItem[]}
-              >
-                <button
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 6,
-                    minHeight: 36, padding: '0 16px',
-                    borderRadius: 'var(--radius)', fontSize: 12, fontWeight: 600,
-                    color: '#0F766E', background: '#FFFFFF',
-                    border: '2px solid #0F766E', cursor: 'pointer',
-                  }}
-                >
-                  <Download size={14} /> Download Quote
-                </button>
-              </DownloadQuotePDF>
-              {/* Download Contract — only after quote is sent */}
-              {quote.contractGeneratedAt && (
-                <DownloadContractPDF
-                  quote={quote}
-                  project={project}
-                  customer={customer}
-                  lineItems={lineItems as unknown as ContractLineItem[]}
-                  depositPercentage={quote.depositPercentage ?? 25}
-                >
-                  <button
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: 6,
-                      minHeight: 36, padding: '0 16px',
-                      borderRadius: 'var(--radius)', fontSize: 12, fontWeight: 600,
-                      color: 'var(--text-2)', background: 'var(--surface-1)',
-                      border: '1px solid var(--border)', cursor: 'pointer',
-                    }}
-                  >
-                    <Download size={14} /> Download Contract
-                  </button>
-                </DownloadContractPDF>
-              )}
-            </div>
-          )}
-
-          {/* Share — visible after quote is sent */}
-          {quote.contractGeneratedAt && (
-            <div style={{ marginTop: 8, display: 'flex', gap: 8 }}>
-              <button
-                onClick={handleCopyLink}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 6,
-                  minHeight: 36, padding: '0 16px',
-                  borderRadius: 'var(--radius)', fontSize: 12, fontWeight: 600,
-                  color: 'var(--text-2)', background: 'var(--surface-1)',
-                  border: '1px solid var(--border)', cursor: 'pointer',
-                }}
-              >
-                <Link2 size={14} /> Copy Portal Link
-              </button>
-              <button
-                onClick={handleEmailLink}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 6,
-                  minHeight: 36, padding: '0 16px',
-                  borderRadius: 'var(--radius)', fontSize: 12, fontWeight: 600,
-                  color: 'var(--text-2)', background: 'var(--surface-1)',
-                  border: '1px solid var(--border)', cursor: 'pointer',
-                }}
-              >
-                <Mail size={14} /> Email Quote
-              </button>
-            </div>
-          )}
-
-          {/* ================================================================ */}
-          {/* Pre-Quote Checklist */}
-          {/* ================================================================ */}
-          <div style={{
-            marginTop: 20, padding: '12px 14px', borderRadius: 'var(--radius)',
-            background: 'var(--surface-1)', border: '1px solid var(--border)',
-          }}>
-            <SalesChecklist
-              entityType="quote"
-              entityId={quote.id}
-              completions={quote.checklistCompletions}
-            />
           </div>
+        )}
 
-          {/* ================================================================ */}
-          {/* Estimate Breakdown by Trade */}
-          {/* ================================================================ */}
-          <div style={{ marginTop: 20 }}>
-            <h2 style={{ fontSize: 11, fontWeight: 700, fontFamily: 'var(--font-cond)', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: 8 }}>
-              Estimate Breakdown
-            </h2>
+        {/* Already approved */}
+        {quote.status === 'accepted' && isProjectApproved && !approvalResult && (
+          <div className="px-6 py-3" style={{ maxWidth: 1200 }}>
+            <div className="flex items-center justify-between px-4 py-3" style={{ background: 'var(--green-bg, rgba(22,163,74,0.08))' }}>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 size={16} style={{ color: 'var(--green)' }} />
+                <span className="text-xs font-semibold" style={{ color: 'var(--green)' }}>Project Started</span>
+              </div>
+              <Link href={`/projects/${quote.projectId}`} className="text-[11px] font-medium no-underline" style={{ color: COLOR }}>
+                View Project →
+              </Link>
+            </div>
+          </div>
+        )}
 
+        {/* ── Content Grid ── */}
+        <div
+          className="grid gap-4 px-6 py-4"
+          style={{ gridTemplateColumns: '1fr 300px', maxWidth: 1200 }}
+        >
+          {/* ── Left Column ── */}
+          <div>
+            {/* Parties */}
+            <PartiesCards
+              preparedFor={customer ? {
+                name: customerName,
+                address: customer.propertyAddress ? [customer.propertyAddress, customer.propertyCity, customer.propertyProvince, customer.propertyPostalCode].filter(Boolean).join(', ') : undefined,
+                phone: customer.phone,
+                email: customer.email,
+              } : undefined}
+              preparedBy={{
+                name: 'Nathan Montgomery',
+                company: 'Hooomz Interiors',
+                address: 'Moncton, NB',
+                email: 'nathan@hooomz.ca',
+              }}
+            />
+
+            {/* Source Link */}
+            <SourceLink projectId={quote.projectId} />
+
+            {/* Trade Sections */}
             {loadingItems && (
-              <div style={{ padding: 24, textAlign: 'center' }}>
-                <div style={{ width: 24, height: 24, border: '2px solid var(--border)', borderTopColor: COLOR, borderRadius: '50%', animation: 'spin 0.7s linear infinite', margin: '0 auto 8px' }} />
-                <p style={{ fontSize: 11, color: 'var(--text-3)' }}>Loading line items...</p>
+              <div className="px-4 py-8 text-center mb-3" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+                <p className="text-xs" style={{ color: 'var(--muted)' }}>Loading line items...</p>
               </div>
             )}
-
+            {!loadingItems && tradeSectionGroups.length > 0 && tradeSectionGroups.map((group) => (
+              <TradeSection
+                key={group.code}
+                title={group.name}
+                items={group.items}
+                subtotal={group.subtotal}
+              />
+            ))}
             {!loadingItems && lineItems.length === 0 && (
-              <div style={{
-                padding: '20px 14px', borderRadius: 'var(--radius)',
-                background: 'var(--surface-1)', border: '1px solid var(--border)',
-                textAlign: 'center',
-              }}>
-                <AlertTriangle size={20} style={{ color: '#F59E0B', margin: '0 auto 6px' }} />
-                <p style={{ fontSize: 12, color: 'var(--text-2)' }}>No line items in this estimate</p>
-                <Link href={`/estimates/${quote.projectId}`} style={{ fontSize: 11, color: COLOR, marginTop: 4, display: 'inline-block' }}>
-                  Add line items in Estimate Editor
+              <div className="px-4 py-8 text-center mb-3" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+                <p className="text-xs" style={{ color: 'var(--muted)' }}>No line items in this estimate</p>
+                <Link href={`/estimates/${quote.projectId}`} className="text-[11px] mt-1 inline-block" style={{ color: COLOR }}>
+                  Add line items →
                 </Link>
               </div>
             )}
 
-            {!loadingItems && sourceGroups.length > 0 && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {/* Grand totals card */}
-                <div style={{
-                  padding: '10px 14px', borderRadius: 'var(--radius)',
-                  background: 'var(--surface-1)', border: '1px solid var(--border)',
-                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                }}>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-2)' }}>
-                    {lineItems.length} items across {tradeGroups.length} {tradeGroups.length === 1 ? 'trade' : 'trades'}
-                  </span>
-                  <div style={{ display: 'flex', gap: 12, fontSize: 11 }}>
-                    <span style={{ color: '#3B82F6' }}>Labor ${grandLabor.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
-                    <span style={{ color: '#10B981' }}>Material ${grandMaterial.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
-                    <span style={{ fontWeight: 700, color: 'var(--text)', fontFamily: 'var(--font-mono, monospace)' }}>
-                      ${grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </span>
-                  </div>
-                </div>
+            {/* Payment Terms */}
+            <PaymentTerms
+              total={quote.totalAmount * 1.15}
+              depositPct={currentDepositPct}
+              validityDays={currentValidityDays}
+              scheduleType={currentScheduleType}
+              customMilestones={currentCustomMilestones}
+              tradeGroups={tradeGroups.map((g) => ({ name: g.label, total: g.total }))}
+              isEditable={isDraft}
+              quoteNumber={quoteNumber}
+              onDepositChange={handleDepositChange}
+              onValidityChange={handleValidityChange}
+              onScheduleTypeChange={handleScheduleTypeChange}
+              onCustomMilestonesChange={handleCustomMilestonesChange}
+            />
 
-                {/* Source groups with trade cards */}
-                {sourceGroups.map((sg) => (
-                  <div key={sg.key}>
-                    {/* Source group header — only show if multiple source groups */}
-                    {sourceGroups.length > 1 && (
-                      <div style={{
-                        display: 'flex', justifyContent: 'space-between', alignItems: 'baseline',
-                        padding: '10px 0 4px',
-                      }}>
-                        <span style={{
-                          fontSize: 9, fontWeight: 700, letterSpacing: '0.14em',
-                          textTransform: 'uppercase', color: 'var(--text-3)',
-                          fontFamily: 'var(--font-cond)',
-                        }}>
-                          {sg.label}
-                        </span>
-                        <span style={{
-                          fontSize: 12, fontWeight: 700, color: 'var(--text-2)',
-                          fontFamily: 'var(--font-mono, monospace)',
-                        }}>
-                          ${sg.total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                        </span>
-                      </div>
-                    )}
-                    {sg.tradeGroups.map((group) => (
-                      <TradeGroupCard key={`${sg.key}-${group.key}`} group={group} />
-                    ))}
-                  </div>
-                ))}
+            {/* General Terms */}
+            <GeneralTerms
+              terms={quote.generalTerms}
+              onUpdate={handleGeneralTermsUpdate}
+              isEditable={isDraft}
+            />
+
+            {/* Acceptance Block */}
+            <AcceptanceBlock
+              depositAmount={depositAmount}
+              homeownerName={customerName}
+            />
+
+            {/* Decline Reason */}
+            {quote.status === 'declined' && quote.declineReason && (
+              <div className="px-4 py-3 mb-3" style={{ background: 'var(--red-bg, rgba(220,38,38,0.08))', border: '1px solid var(--red-bg, rgba(220,38,38,0.08))' }}>
+                <div className="flex items-center gap-1.5 mb-1">
+                  <XCircle size={12} style={{ color: 'var(--red)' }} />
+                  <span className="text-[9px] font-medium uppercase tracking-[0.1em]" style={{ fontFamily: 'var(--font-mono)', color: 'var(--red)' }}>
+                    Decline Reason
+                  </span>
+                </div>
+                <p className="text-xs leading-relaxed" style={{ color: 'var(--red)' }}>{quote.declineReason}</p>
               </div>
             )}
           </div>
 
-          {/* ================================================================ */}
-          {/* Delivery Section */}
-          {/* ================================================================ */}
-          <div style={{ marginTop: 24 }}>
-            <h2 style={{ fontSize: 11, fontWeight: 700, fontFamily: 'var(--font-cond)', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: 8 }}>
-              Delivery
-            </h2>
+          {/* ── Right Column ── */}
+          <div>
+            <SummaryPanel
+              homeowner={customer ? [
+                { label: 'Name', value: customerName },
+                ...(customer.phone ? [{ label: 'Phone', value: customer.phone }] : []),
+                ...(customer.email ? [{ label: 'Email', value: customer.email }] : []),
+              ] : undefined}
+              job={project ? [
+                { label: 'Address', value: project.name || '—' },
+                { label: 'Status', value: quote.status },
+              ] : undefined}
+              trades={tradeGroups.map((g) => ({ name: g.label, total: g.total }))}
+              subtotal={grandTotal}
+              total={grandTotal * 1.15}
+              history={[
+                ...(quote.respondedAt ? [{ label: quote.status === 'accepted' ? 'Accepted' : 'Declined', date: new Date(quote.respondedAt).toLocaleDateString('en-CA', { month: 'short', day: 'numeric' }) }] : []),
+                ...(quote.viewedAt ? [{ label: 'Viewed', date: new Date(quote.viewedAt).toLocaleDateString('en-CA', { month: 'short', day: 'numeric' }) }] : []),
+                ...(quote.sentAt ? [{ label: 'Sent', date: new Date(quote.sentAt).toLocaleDateString('en-CA', { month: 'short', day: 'numeric' }) }] : []),
+                { label: 'Created', date: new Date(quote.createdAt).toLocaleDateString('en-CA', { month: 'short', day: 'numeric' }) },
+              ]}
+            />
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-
-              {/* Video Link */}
-              <div style={{
-                padding: '12px 14px', borderRadius: 'var(--radius)',
-                background: 'var(--surface-1)', border: '1px solid var(--border)',
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: 'var(--text-2)' }}>
-                    <Video size={14} style={{ color: COLOR }} /> Video Walkthrough
-                  </span>
-                  {!editingVideo && (
-                    <button
-                      onClick={() => { setVideoLinkDraft(quote.videoLink); setEditingVideo(true); }}
-                      style={{ fontSize: 10, color: COLOR, background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}
-                    >
-                      {quote.videoLink ? 'Edit' : 'Add'}
-                    </button>
-                  )}
-                </div>
-                {editingVideo ? (
-                  <div>
-                    <input
-                      type="url"
-                      value={videoLinkDraft}
-                      onChange={(e) => setVideoLinkDraft(e.target.value)}
-                      placeholder="https://www.loom.com/share/..."
-                      style={{
-                        width: '100%', minHeight: 34, padding: '0 10px',
-                        borderRadius: 'var(--radius)', fontSize: 12,
-                        background: 'var(--bg)', border: '1px solid var(--border)',
-                        color: 'var(--text)', outline: 'none',
-                      }}
-                    />
-                    <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
-                      <button onClick={() => setEditingVideo(false)} style={{ fontSize: 10, color: 'var(--text-3)', background: 'none', border: 'none', cursor: 'pointer' }}>Cancel</button>
-                      <button onClick={handleSaveVideoLink} disabled={updateQuote.isPending} style={{ fontSize: 10, color: COLOR, fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer' }}>
-                        {updateQuote.isPending ? 'Saving...' : 'Save'}
-                      </button>
-                    </div>
-                  </div>
-                ) : quote.videoLink ? (
-                  <a href={quote.videoLink} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: COLOR, textDecoration: 'none' }}>
-                    {quote.videoLink.length > 50 ? quote.videoLink.slice(0, 47) + '...' : quote.videoLink} <ExternalLink size={10} />
-                  </a>
-                ) : (
-                  <p style={{ fontSize: 11, color: 'var(--text-3)' }}>No video link added yet</p>
-                )}
+            {/* Share buttons */}
+            {quote.contractGeneratedAt && (
+              <div className="mb-3 flex gap-2">
+                <button
+                  onClick={handleCopyLink}
+                  className="flex-1 text-[10px] font-medium tracking-[0.04em] px-3 py-2 flex items-center justify-center gap-1.5"
+                  style={{ fontFamily: 'var(--font-mono)', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--mid)' }}
+                >
+                  <Link2 size={11} /> Copy Link
+                </button>
+                <button
+                  onClick={handleEmailLink}
+                  className="flex-1 text-[10px] font-medium tracking-[0.04em] px-3 py-2 flex items-center justify-center gap-1.5"
+                  style={{ fontFamily: 'var(--font-mono)', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--mid)' }}
+                >
+                  <Mail size={11} /> Email
+                </button>
               </div>
+            )}
 
-              {/* Deposit Percentage */}
-              <div style={{
-                padding: '12px 14px', borderRadius: 'var(--radius)',
-                background: 'var(--surface-1)', border: '1px solid var(--border)',
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: 'var(--text-2)' }}>
-                    <Percent size={14} style={{ color: COLOR }} /> Deposit
-                  </span>
-                  {quote.status === 'draft' && !editingDeposit && (
-                    <button
-                      onClick={() => { setDepositDraft(quote.depositPercentage ?? 25); setEditingDeposit(true); }}
-                      style={{ fontSize: 10, color: COLOR, background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}
-                    >
-                      Edit
-                    </button>
-                  )}
-                </div>
-                {editingDeposit ? (
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <input
-                        type="number"
-                        min={0}
-                        max={100}
-                        value={depositDraft}
-                        onChange={(e) => setDepositDraft(Number(e.target.value))}
-                        style={{
-                          width: 80, minHeight: 34, padding: '0 10px',
-                          borderRadius: 'var(--radius)', fontSize: 13, fontWeight: 600,
-                          background: 'var(--bg)', border: '1px solid var(--border)',
-                          color: 'var(--text)', outline: 'none', textAlign: 'right',
-                        }}
-                      />
-                      <span style={{ fontSize: 12, color: 'var(--text-2)' }}>%</span>
-                      <span style={{ fontSize: 11, color: 'var(--text-3)', marginLeft: 'auto' }}>
-                        = ${(quote.totalAmount * (depositDraft / 100)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                      </span>
-                    </div>
-                    <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
-                      <button onClick={() => setEditingDeposit(false)} style={{ fontSize: 10, color: 'var(--text-3)', background: 'none', border: 'none', cursor: 'pointer' }}>Cancel</button>
-                      <button onClick={handleSaveDeposit} disabled={updateQuote.isPending} style={{ fontSize: 10, color: COLOR, fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer' }}>
-                        {updateQuote.isPending ? 'Saving...' : 'Save'}
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>
-                      {quote.depositPercentage ?? 25}%
-                    </span>
-                    <span style={{ fontSize: 11, color: 'var(--text-3)', fontFamily: 'var(--font-mono, monospace)' }}>
-                      ${(quote.totalAmount * ((quote.depositPercentage ?? 25) / 100)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </span>
-                    {quote.status !== 'draft' && (
-                      <span style={{ fontSize: 9, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>locked</span>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* Expiry */}
-              <div style={{
-                padding: '12px 14px', borderRadius: 'var(--radius)',
-                background: 'var(--surface-1)', border: '1px solid var(--border)',
-              }}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: 'var(--text-2)' }}>
-                  <Clock size={14} style={{ color: COLOR }} /> Expiry
-                </span>
-                {quote.expiresAt ? (
-                  <p style={{
-                    fontSize: 13, fontWeight: 600, marginTop: 4,
-                    color: new Date(quote.expiresAt) < new Date() ? '#EF4444' : 'var(--text)',
-                  }}>
-                    {new Date(quote.expiresAt).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-                    {new Date(quote.expiresAt) < new Date() && (
-                      <span style={{ fontSize: 10, color: '#EF4444', marginLeft: 8, fontWeight: 700, textTransform: 'uppercase' }}>Expired</span>
-                    )}
-                  </p>
-                ) : (
-                  <p style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 4 }}>No expiry set</p>
-                )}
-              </div>
-
-              {/* Cover Notes */}
-              {quote.coverNotes && (
-                <div style={{
-                  padding: '12px 14px', borderRadius: 'var(--radius)',
-                  background: 'var(--surface-1)', border: '1px solid var(--border)',
-                }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: 'var(--text-2)', marginBottom: 6 }}>
-                    <FileText size={14} style={{ color: COLOR }} /> Cover Notes
-                  </span>
-                  <p style={{ fontSize: 12, color: 'var(--text)', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>
-                    {quote.coverNotes}
-                  </p>
-                </div>
-              )}
-
-              {/* Decline reason */}
-              {quote.status === 'declined' && quote.declineReason && (
-                <div style={{
-                  padding: '12px 14px', borderRadius: 'var(--radius)',
-                  background: '#FEF2F2', border: '1px solid #FECACA',
-                }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: '#EF4444', marginBottom: 6 }}>
-                    <XCircle size={14} /> Decline Reason
-                  </span>
-                  <p style={{ fontSize: 12, color: '#991B1B', lineHeight: 1.5 }}>
-                    {quote.declineReason}
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* ================================================================ */}
-          {/* Status Timeline */}
-          {/* ================================================================ */}
-          <div style={{ marginTop: 24, marginBottom: 32 }}>
-            <h2 style={{ fontSize: 11, fontWeight: 700, fontFamily: 'var(--font-cond)', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: 12 }}>
-              Timeline
-            </h2>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 0, paddingLeft: 8 }}>
-              <TimelineStep
-                label="Created"
-                date={quote.createdAt}
-                color="#6B7280"
-                isActive
-                isLast={!quote.sentAt}
+            {/* Sales Checklist */}
+            <div className="mb-3 px-4 py-3" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+              <SalesChecklist
+                entityType="quote"
+                entityId={quote.id}
+                completions={quote.checklistCompletions}
               />
-              {quote.sentAt && (
-                <TimelineStep
-                  label="Sent"
-                  date={quote.sentAt}
-                  color="#3B82F6"
-                  isActive
-                  isLast={!quote.viewedAt && !quote.respondedAt}
-                />
-              )}
-              {quote.viewedAt && (
-                <TimelineStep
-                  label="Viewed"
-                  date={quote.viewedAt}
-                  color="#F59E0B"
-                  isActive
-                  isLast={!quote.respondedAt}
-                />
-              )}
-              {quote.respondedAt && (
-                <TimelineStep
-                  label={quote.status === 'accepted' ? 'Accepted' : 'Declined'}
-                  date={quote.respondedAt}
-                  color={quote.status === 'accepted' ? '#10B981' : '#EF4444'}
-                  isActive
-                  isLast
-                />
-              )}
             </div>
           </div>
         </div>
+
+        {/* ── Decline Modal ── */}
+        {showDeclineModal && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center"
+            style={{ background: 'rgba(0,0,0,0.5)' }}
+            onClick={(e) => { if (e.target === e.currentTarget) setShowDeclineModal(false); }}
+          >
+            <div className="w-full max-w-sm p-5" style={{ background: 'var(--surface)' }}>
+              <p className="text-xs font-semibold mb-2" style={{ color: 'var(--red)' }}>Reason for Decline (optional)</p>
+              <textarea
+                value={declineReason}
+                onChange={(e) => setDeclineReason(e.target.value)}
+                placeholder="Customer feedback or reason..."
+                rows={3}
+                className="w-full p-2.5 text-xs resize-y"
+                style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--charcoal)', outline: 'none', minHeight: 48 }}
+              />
+              <div className="flex gap-2 mt-3">
+                <button
+                  onClick={() => setShowDeclineModal(false)}
+                  className="flex-1 py-2 text-[11px] font-medium"
+                  style={{ fontFamily: 'var(--font-mono)', background: 'var(--bg)', color: 'var(--mid)', border: '1px solid var(--border)' }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDecline}
+                  disabled={declineQuote.isPending}
+                  className="flex-1 py-2 text-[11px] font-medium text-white"
+                  style={{ fontFamily: 'var(--font-mono)', background: 'var(--red)', border: 'none', opacity: declineQuote.isPending ? 0.5 : 1 }}
+                >
+                  {declineQuote.isPending ? 'Declining...' : 'Confirm Decline'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </PageErrorBoundary>
   );
@@ -1014,6 +826,7 @@ function ActionButton({
         display: 'flex', alignItems: 'center', gap: 6,
         minHeight: 36, padding: '0 16px',
         borderRadius: 'var(--radius)', fontSize: 12, fontWeight: 600,
+        fontFamily: 'var(--font-mono)',
         background: color, color: '#FFFFFF', border: 'none',
         cursor: loading ? 'default' : 'pointer', opacity: loading ? 0.5 : 1,
       }}
@@ -1023,124 +836,3 @@ function ActionButton({
   );
 }
 
-function TradeGroupCard({ group }: { group: TradeGroup }) {
-  const [expanded, setExpanded] = useState(false);
-  const pct = group.total > 0 ? (group.laborTotal / group.total) * 100 : 0;
-
-  return (
-    <div style={{
-      borderRadius: 'var(--radius)', background: 'var(--surface-1)',
-      border: '1px solid var(--border)', overflow: 'hidden',
-    }}>
-      {/* Header */}
-      <button
-        onClick={() => setExpanded(!expanded)}
-        style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          width: '100%', padding: '10px 14px',
-          background: 'none', border: 'none', cursor: 'pointer',
-          textAlign: 'left',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Hammer size={14} style={{ color: 'var(--text-3)' }} />
-          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)' }}>
-            {group.label}
-          </span>
-          <span style={{ fontSize: 10, color: 'var(--text-3)' }}>
-            {group.items.length} {group.items.length === 1 ? 'item' : 'items'}
-          </span>
-        </div>
-        <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)', fontFamily: 'var(--font-mono, monospace)' }}>
-          ${group.total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-        </span>
-      </button>
-
-      {/* Labor/material split bar */}
-      <div style={{ height: 3, display: 'flex', marginTop: -2 }}>
-        <div style={{ width: `${pct}%`, background: '#3B82F6', borderRadius: '0 0 0 2px' }} />
-        <div style={{ flex: 1, background: '#10B981', borderRadius: '0 0 2px 0' }} />
-      </div>
-
-      {/* Expanded: item list */}
-      {expanded && (
-        <div style={{ padding: '0 14px 10px', borderTop: '1px solid var(--border)' }}>
-          <table style={{ width: '100%', fontSize: 11, borderCollapse: 'collapse', marginTop: 8 }}>
-            <thead>
-              <tr style={{ color: 'var(--text-3)', fontWeight: 600, textAlign: 'left' }}>
-                <th style={{ padding: '4px 0' }}>Description</th>
-                <th style={{ padding: '4px 8px', textAlign: 'right' }}>Qty</th>
-                <th style={{ padding: '4px 8px', textAlign: 'right' }}>Rate</th>
-                <th style={{ padding: '4px 0', textAlign: 'right' }}>Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {group.items.map((item) => (
-                <tr key={item.id} style={{ borderTop: '1px solid var(--border)' }}>
-                  <td style={{ padding: '6px 0', color: 'var(--text)' }}>
-                    {item.description}
-                    <span style={{
-                      marginLeft: 6, fontSize: 9, fontWeight: 600,
-                      color: item.isLabor ? '#3B82F6' : '#10B981',
-                      textTransform: 'uppercase',
-                    }}>
-                      {item.isLabor ? 'L' : 'M'}
-                    </span>
-                  </td>
-                  <td style={{ padding: '6px 8px', textAlign: 'right', color: 'var(--text-2)', whiteSpace: 'nowrap' }}>
-                    {item.quantity} {item.unit}
-                  </td>
-                  <td style={{ padding: '6px 8px', textAlign: 'right', color: 'var(--text-2)', fontFamily: 'var(--font-mono, monospace)' }}>
-                    ${item.unitCost.toFixed(2)}
-                  </td>
-                  <td style={{ padding: '6px 0', textAlign: 'right', fontWeight: 600, color: 'var(--text)', fontFamily: 'var(--font-mono, monospace)' }}>
-                    ${item.totalCost.toFixed(2)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6, paddingTop: 6, borderTop: '1px solid var(--border)', fontSize: 10, color: 'var(--text-3)' }}>
-            <span>Labor: ${group.laborTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-            <span>Material: ${group.materialTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function TimelineStep({
-  label, date, color, isActive, isLast,
-}: {
-  label: string; date: string; color: string; isActive: boolean; isLast: boolean;
-}) {
-  return (
-    <div style={{ display: 'flex', gap: 12, position: 'relative' }}>
-      {/* Vertical line */}
-      {!isLast && (
-        <div style={{
-          position: 'absolute', left: 5, top: 14, bottom: -2,
-          width: 2, background: isActive ? color : 'var(--border)',
-        }} />
-      )}
-      {/* Dot */}
-      <div style={{
-        width: 12, height: 12, borderRadius: '50%', flexShrink: 0,
-        background: isActive ? color : 'var(--border)',
-        marginTop: 1,
-      }} />
-      {/* Content */}
-      <div style={{ paddingBottom: isLast ? 0 : 16 }}>
-        <p style={{ fontSize: 12, fontWeight: 600, color: isActive ? 'var(--text)' : 'var(--text-3)' }}>
-          {label}
-        </p>
-        <p style={{ fontSize: 10, color: 'var(--text-3)', marginTop: 1 }}>
-          {new Date(date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}
-          {' '}
-          {new Date(date).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
-        </p>
-      </div>
-    </div>
-  );
-}

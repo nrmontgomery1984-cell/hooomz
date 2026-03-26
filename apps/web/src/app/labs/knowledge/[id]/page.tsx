@@ -20,10 +20,10 @@ import { ConfidenceScoreBadge } from '@/components/labs/ConfidenceScoreBadge';
 import type { KnowledgeChallenge } from '@hooomz/shared-contracts';
 
 const STATUS_STYLES: Record<string, { bg: string; text: string; label: string }> = {
-  draft: { bg: 'var(--bg)', text: 'var(--text-2)', label: 'Draft' },
-  published: { bg: '#D1FAE5', text: '#065F46', label: 'Published' },
-  under_review: { bg: '#FEF3C7', text: '#92400E', label: 'Under Review' },
-  deprecated: { bg: '#FEE2E2', text: '#991B1B', label: 'Deprecated' },
+  draft: { bg: 'var(--bg)', text: 'var(--mid)', label: 'Draft' },
+  published: { bg: 'var(--green-bg)', text: 'var(--green)', label: 'Published' },
+  under_review: { bg: 'var(--yellow-bg)', text: 'var(--yellow)', label: 'Under Review' },
+  deprecated: { bg: 'var(--red-bg)', text: 'var(--red)', label: 'Deprecated' },
 };
 
 const TYPE_LABELS: Record<string, string> = {
@@ -55,7 +55,7 @@ export default function KnowledgeDetailPage() {
       <div className="min-h-screen pb-24" style={{ background: 'var(--bg)' }}>
         <div className="max-w-lg mx-auto px-4 py-12 text-center">
           <div className="w-8 h-8 border-3 rounded-full animate-spin mx-auto mb-3" style={{ borderColor: 'var(--border)', borderTopColor: 'var(--blue)' }} />
-          <p className="text-sm" style={{ color: 'var(--text-3)' }}>Loading...</p>
+          <p className="text-sm" style={{ color: 'var(--muted)' }}>Loading...</p>
         </div>
       </div>
     );
@@ -65,7 +65,7 @@ export default function KnowledgeDetailPage() {
     return (
       <div className="min-h-screen pb-24" style={{ background: 'var(--bg)' }}>
         <div className="max-w-lg mx-auto px-4 py-12 text-center">
-          <p className="text-sm" style={{ color: 'var(--text-2)' }}>Knowledge item not found</p>
+          <p className="text-sm" style={{ color: 'var(--mid)' }}>Knowledge item not found</p>
           <Link href="/labs/knowledge" className="text-sm hover:underline mt-2 inline-block" style={{ color: 'var(--blue)' }}>
             Back to Knowledge Base
           </Link>
@@ -94,16 +94,16 @@ export default function KnowledgeDetailPage() {
   return (
     <div className="min-h-screen pb-24" style={{ background: 'var(--bg)' }}>
       {/* Header */}
-      <div style={{ background: 'var(--surface-1)', borderBottom: '1px solid var(--border)' }}>
+      <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
         <div className="max-w-lg mx-auto px-4 py-4">
           <div className="flex items-center gap-2 mb-1">
             <Link href="/labs" className="text-sm hover:underline" style={{ color: 'var(--blue)' }}>Labs</Link>
-            <span className="text-xs" style={{ color: 'var(--text-3)' }}>/</span>
+            <span className="text-xs" style={{ color: 'var(--muted)' }}>/</span>
             <Link href="/labs/knowledge" className="text-sm hover:underline" style={{ color: 'var(--blue)' }}>Knowledge</Link>
-            <span className="text-xs" style={{ color: 'var(--text-3)' }}>/</span>
+            <span className="text-xs" style={{ color: 'var(--muted)' }}>/</span>
           </div>
           <div className="flex items-start justify-between gap-3">
-            <h1 className="text-lg font-bold flex-1" style={{ color: 'var(--text)' }}>
+            <h1 className="text-lg font-bold flex-1" style={{ color: 'var(--charcoal)' }}>
               {item.title}
             </h1>
             <ConfidenceScoreBadge score={item.confidenceScore} size="md" />
@@ -113,20 +113,20 @@ export default function KnowledgeDetailPage() {
 
       <div className="max-w-lg mx-auto px-4 mt-4 space-y-4">
         {/* Summary */}
-        <div className="rounded-xl p-4" style={{ background: 'var(--surface-1)', border: '1px solid var(--border)' }}>
-          <p className="text-sm leading-relaxed" style={{ color: 'var(--text-2)' }}>
+        <div className="rounded-xl p-4" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+          <p className="text-sm leading-relaxed" style={{ color: 'var(--mid)' }}>
             {item.summary}
           </p>
           {item.details && (
-            <p className="text-sm leading-relaxed mt-3 pt-3" style={{ color: 'var(--text-2)', borderTop: '1px solid var(--bg)' }}>
+            <p className="text-sm leading-relaxed mt-3 pt-3" style={{ color: 'var(--mid)', borderTop: '1px solid var(--bg)' }}>
               {item.details}
             </p>
           )}
         </div>
 
         {/* Metadata */}
-        <div className="rounded-xl p-4" style={{ background: 'var(--surface-1)', border: '1px solid var(--border)' }}>
-          <h2 className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: 'var(--text-3)' }}>Details</h2>
+        <div className="rounded-xl p-4" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+          <h2 className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: 'var(--muted)' }}>Details</h2>
           <div className="space-y-2.5">
             <MetaRow icon={<Beaker size={14} />} label="Type" value={typeLabel} />
             <MetaRow icon={<Tag size={14} />} label="Category" value={item.category} />
@@ -162,13 +162,13 @@ export default function KnowledgeDetailPage() {
             )}
             {item.tags && item.tags.length > 0 && (
               <div className="flex items-start gap-3 pt-1">
-                <Tag size={14} className="flex-shrink-0 mt-0.5" style={{ color: 'var(--text-3)' }} />
+                <Tag size={14} className="flex-shrink-0 mt-0.5" style={{ color: 'var(--muted)' }} />
                 <div className="flex flex-wrap gap-1">
                   {item.tags.map((tag) => (
                     <span
                       key={tag}
                       className="text-xs px-2 py-0.5 rounded-full"
-                      style={{ background: 'var(--bg)', color: 'var(--text-2)' }}
+                      style={{ background: 'var(--bg)', color: 'var(--mid)' }}
                     >
                       {tag}
                     </span>
@@ -181,8 +181,8 @@ export default function KnowledgeDetailPage() {
 
         {/* Cost Data */}
         {item.costData && (
-          <div className="rounded-xl p-4" style={{ background: 'var(--surface-1)', border: '1px solid var(--border)' }}>
-            <h2 className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: 'var(--text-3)' }}>Cost Data</h2>
+          <div className="rounded-xl p-4" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+            <h2 className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: 'var(--muted)' }}>Cost Data</h2>
             <div className="space-y-2">
               {item.costData.avgMaterialCostPerUnit !== undefined && (
                 <CostRow label="Avg Material Cost/Unit" value={`$${item.costData.avgMaterialCostPerUnit.toFixed(2)}`} />
@@ -200,7 +200,7 @@ export default function KnowledgeDetailPage() {
                 <CostRow label="Avg Callback Cost" value={`$${item.costData.callbackCostAvg.toFixed(2)}`} />
               )}
               {item.costData.totalCostComparison && (
-                <div className="text-xs pt-2" style={{ color: 'var(--text-2)', borderTop: '1px solid var(--bg)' }}>
+                <div className="text-xs pt-2" style={{ color: 'var(--mid)', borderTop: '1px solid var(--bg)' }}>
                   {item.costData.totalCostComparison}
                 </div>
               )}
@@ -209,17 +209,17 @@ export default function KnowledgeDetailPage() {
         )}
 
         {/* Challenges */}
-        <div className="rounded-xl p-4" style={{ background: 'var(--surface-1)', border: '1px solid var(--border)' }}>
+        <div className="rounded-xl p-4" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>
+            <h2 className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--muted)' }}>
               Challenges {pendingChallenges.length > 0 && `(${pendingChallenges.length} pending)`}
             </h2>
             <button
               onClick={() => setShowChallengeForm(!showChallengeForm)}
               className="text-xs font-medium px-3 py-1.5 rounded-lg border transition-colors"
               style={{
-                color: '#EF4444',
-                borderColor: '#FCA5A5',
+                color: 'var(--red)',
+                borderColor: 'var(--red-bg)',
                 minHeight: '36px',
               }}
             >
@@ -231,8 +231,8 @@ export default function KnowledgeDetailPage() {
           </div>
 
           {showChallengeForm && (
-            <div className="mb-3 p-3 rounded-lg" style={{ background: '#FEF2F2', border: '1px solid #FECACA' }}>
-              <p className="text-xs mb-2" style={{ color: '#991B1B' }}>
+            <div className="mb-3 p-3 rounded-lg" style={{ background: 'var(--red-bg)', border: '1px solid var(--red-bg)' }}>
+              <p className="text-xs mb-2" style={{ color: 'var(--red)' }}>
                 Why do you think this knowledge is incorrect or incomplete?
               </p>
               <textarea
@@ -240,7 +240,7 @@ export default function KnowledgeDetailPage() {
                 onChange={(e) => setChallengeReason(e.target.value)}
                 placeholder="Describe your concern..."
                 className="w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-300"
-                style={{ borderColor: '#FECACA', minHeight: '80px' }}
+                style={{ borderColor: 'var(--red-bg)', minHeight: '80px' }}
                 rows={3}
               />
               <div className="flex gap-2 mt-2">
@@ -248,14 +248,14 @@ export default function KnowledgeDetailPage() {
                   onClick={handleSubmitChallenge}
                   disabled={!challengeReason.trim() || fileChallenge.isPending}
                   className="px-3 py-1.5 text-xs font-medium text-white rounded-lg disabled:opacity-50"
-                  style={{ background: '#EF4444', minHeight: '36px' }}
+                  style={{ background: 'var(--red)', minHeight: '36px' }}
                 >
                   {fileChallenge.isPending ? 'Filing...' : 'File Challenge'}
                 </button>
                 <button
                   onClick={() => { setShowChallengeForm(false); setChallengeReason(''); }}
                   className="px-3 py-1.5 text-xs font-medium rounded-lg"
-                  style={{ minHeight: '36px', color: 'var(--text-2)', border: '1px solid var(--border)' }}
+                  style={{ minHeight: '36px', color: 'var(--mid)', border: '1px solid var(--border)' }}
                 >
                   Cancel
                 </button>
@@ -264,7 +264,7 @@ export default function KnowledgeDetailPage() {
           )}
 
           {challenges.length === 0 ? (
-            <p className="text-xs text-center py-3" style={{ color: 'var(--text-3)' }}>
+            <p className="text-xs text-center py-3" style={{ color: 'var(--muted)' }}>
               No challenges filed. Crew members can challenge knowledge they disagree with.
             </p>
           ) : (
@@ -274,27 +274,27 @@ export default function KnowledgeDetailPage() {
                   key={c.id}
                   className="p-3 rounded-lg text-xs"
                   style={{
-                    background: c.status === 'pending' ? '#FFFBEB' : 'var(--surface-2)',
-                    border: `1px solid ${c.status === 'pending' ? '#FDE68A' : 'var(--border)'}`,
+                    background: c.status === 'pending' ? 'var(--yellow-bg)' : 'var(--surface-2)',
+                    border: `1px solid ${c.status === 'pending' ? 'var(--yellow-bg)' : 'var(--border)'}`,
                   }}
                 >
                   <div className="flex items-center justify-between mb-1">
-                    <span className="font-medium" style={{ color: 'var(--text-2)' }}>
+                    <span className="font-medium" style={{ color: 'var(--mid)' }}>
                       {c.submittedBy}
                     </span>
                     <span
                       className="px-2 py-0.5 rounded-full font-medium capitalize"
                       style={{
-                        background: c.status === 'pending' ? '#FEF3C7' : '#D1FAE5',
-                        color: c.status === 'pending' ? '#92400E' : '#065F46',
+                        background: c.status === 'pending' ? 'var(--yellow-bg)' : 'var(--green-bg)',
+                        color: c.status === 'pending' ? 'var(--yellow)' : 'var(--green)',
                       }}
                     >
                       {c.status}
                     </span>
                   </div>
-                  <p style={{ color: 'var(--text-2)' }}>{c.reason}</p>
+                  <p style={{ color: 'var(--mid)' }}>{c.reason}</p>
                   {c.resolution && (
-                    <p className="mt-1 pt-1" style={{ color: 'var(--text-2)', borderTop: '1px solid var(--border)' }}>
+                    <p className="mt-1 pt-1" style={{ color: 'var(--mid)', borderTop: '1px solid var(--border)' }}>
                       Resolution: {c.resolution}
                     </p>
                   )}
@@ -311,9 +311,9 @@ export default function KnowledgeDetailPage() {
 function MetaRow({ icon, label, value }: { icon?: React.ReactNode; label: string; value: React.ReactNode }) {
   return (
     <div className="flex items-center gap-3 text-sm">
-      {icon && <span className="flex-shrink-0" style={{ color: 'var(--text-3)' }}>{icon}</span>}
-      <span className="flex-shrink-0" style={{ color: 'var(--text-2)', minWidth: '100px' }}>{label}</span>
-      <span className="font-medium" style={{ color: 'var(--text)' }}>{value}</span>
+      {icon && <span className="flex-shrink-0" style={{ color: 'var(--muted)' }}>{icon}</span>}
+      <span className="flex-shrink-0" style={{ color: 'var(--mid)', minWidth: '100px' }}>{label}</span>
+      <span className="font-medium" style={{ color: 'var(--charcoal)' }}>{value}</span>
     </div>
   );
 }
@@ -321,8 +321,8 @@ function MetaRow({ icon, label, value }: { icon?: React.ReactNode; label: string
 function CostRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between text-sm">
-      <span style={{ color: 'var(--text-2)' }}>{label}</span>
-      <span className="font-medium font-mono" style={{ color: 'var(--text)' }}>{value}</span>
+      <span style={{ color: 'var(--mid)' }}>{label}</span>
+      <span className="font-medium font-mono" style={{ color: 'var(--charcoal)' }}>{value}</span>
     </div>
   );
 }

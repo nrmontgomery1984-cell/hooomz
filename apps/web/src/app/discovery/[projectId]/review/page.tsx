@@ -56,8 +56,8 @@ function SectionCard({ title, children }: { title: string; children: React.React
   return (
     <div
       style={{
-        background: 'var(--surface-1, #FFFFFF)',
-        border: '1px solid var(--border, #E5E7EB)',
+        background: 'var(--surface)',
+        border: '1px solid var(--border)',
         borderRadius: 12,
         padding: 16,
         boxShadow: '0 1px 3px rgba(0,0,0,0.03)',
@@ -69,7 +69,7 @@ function SectionCard({ title, children }: { title: string; children: React.React
           fontWeight: 700,
           textTransform: 'uppercase',
           letterSpacing: '0.06em',
-          color: '#0F766E',
+          color: 'var(--accent)',
           marginBottom: 12,
         }}
       >
@@ -83,8 +83,8 @@ function SectionCard({ title, children }: { title: string; children: React.React
 function DetailRow({ label, value }: { label: string; value: string | number | null | undefined }) {
   return (
     <div style={{ marginBottom: 8 }}>
-      <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-3, #9CA3AF)', marginBottom: 1 }}>{label}</p>
-      <p style={{ fontSize: 13, color: 'var(--text, #1a1a1a)' }}>{value ?? '—'}</p>
+      <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--muted)', marginBottom: 1 }}>{label}</p>
+      <p style={{ fontSize: 13, color: 'var(--charcoal)' }}>{value ?? '—'}</p>
     </div>
   );
 }
@@ -97,8 +97,8 @@ function Chip({ children }: { children: React.ReactNode }) {
         fontWeight: 600,
         padding: '3px 8px',
         borderRadius: 6,
-        background: '#F0FDFA',
-        color: '#0F766E',
+        background: 'var(--accent-bg)',
+        color: 'var(--accent)',
       }}
     >
       {children}
@@ -218,10 +218,10 @@ export default function DiscoveryReviewPage() {
   const isLoading = draftLoading || consultationLoading || projectLoading || customerLoading;
   if (isLoading) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg, #F9FAFB)' }}>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ width: 32, height: 32, border: '2px solid var(--border, #E5E7EB)', borderTopColor: '#0F766E', borderRadius: '50%', animation: 'spin 0.7s linear infinite', margin: '0 auto 8px' }} />
-          <p style={{ fontSize: 11, color: 'var(--text-3, #9CA3AF)' }}>Loading review...</p>
+          <div style={{ width: 32, height: 32, border: '2px solid var(--border)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.7s linear infinite', margin: '0 auto 8px' }} />
+          <p style={{ fontSize: 11, color: 'var(--muted)' }}>Loading review...</p>
         </div>
       </div>
     );
@@ -229,10 +229,10 @@ export default function DiscoveryReviewPage() {
 
   if (!draft) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg, #F9FAFB)' }}>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}>
         <div style={{ textAlign: 'center' }}>
-          <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text, #1a1a1a)' }}>No discovery found</p>
-          <p style={{ fontSize: 12, color: 'var(--text-3, #9CA3AF)', marginTop: 4 }}>
+          <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--charcoal)' }}>No discovery found</p>
+          <p style={{ fontSize: 12, color: 'var(--muted)', marginTop: 4 }}>
             Complete the discovery wizard first.
           </p>
           <button
@@ -244,8 +244,8 @@ export default function DiscoveryReviewPage() {
               borderRadius: 12,
               fontSize: 13,
               fontWeight: 600,
-              color: '#FFFFFF',
-              background: '#0F766E',
+              color: '#fff',
+              background: 'var(--accent)',
               border: 'none',
               cursor: 'pointer',
             }}
@@ -258,27 +258,27 @@ export default function DiscoveryReviewPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', paddingBottom: 96, background: 'var(--bg, #F9FAFB)' }}>
+    <div style={{ minHeight: '100vh', paddingBottom: 96, background: 'var(--bg)' }}>
 
       {/* Header */}
-      <div style={{ background: 'var(--surface-1, #FFFFFF)', borderBottom: '1px solid var(--border, #E5E7EB)' }}>
+      <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
         <div className="max-w-lg mx-auto px-4 py-3">
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <button
               onClick={() => router.push('/leads')}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-3, #9CA3AF)', padding: 0, display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500 }}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)', padding: 0, display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500 }}
             >
               <ArrowLeft size={16} /> Pipeline
             </button>
             <button
               onClick={() => router.push(`/discovery/${projectId}`)}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#0F766E', padding: 0, display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500 }}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--accent)', padding: 0, display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500 }}
             >
               <Pencil size={14} /> Edit Discovery
             </button>
           </div>
           <div style={{ marginTop: 8 }}>
-            <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text, #1a1a1a)' }}>
+            <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--charcoal)' }}>
               {customerName}
             </p>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
@@ -290,14 +290,14 @@ export default function DiscoveryReviewPage() {
                   textTransform: 'uppercase',
                   padding: '2px 8px',
                   borderRadius: 4,
-                  background: '#F0FDFA',
-                  color: '#0F766E',
+                  background: 'var(--accent-bg)',
+                  color: 'var(--accent)',
                 }}
               >
                 Discovery Complete
               </span>
               {completedDate && (
-                <span style={{ fontSize: 11, color: 'var(--text-3, #9CA3AF)' }}>
+                <span style={{ fontSize: 11, color: 'var(--muted)' }}>
                   {formatDate(completedDate)}
                 </span>
               )}
@@ -343,7 +343,7 @@ export default function DiscoveryReviewPage() {
           </div>
           {pref?.priorities && pref.priorities.length > 0 && (
             <div style={{ marginBottom: 8 }}>
-              <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-3, #9CA3AF)', marginBottom: 4 }}>Top Priorities</p>
+              <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--muted)', marginBottom: 4 }}>Top Priorities</p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                 {pref.priorities.map((pri) => (
                   <Chip key={pri}>{capitalize(pri)}</Chip>
@@ -367,16 +367,16 @@ export default function DiscoveryReviewPage() {
               minHeight: 44,
               padding: '8px 12px',
               borderRadius: 8,
-              border: '1px solid var(--border, #E5E7EB)',
+              border: '1px solid var(--border)',
               fontSize: 13,
-              color: 'var(--text, #1a1a1a)',
-              background: 'var(--bg, #F9FAFB)',
+              color: 'var(--charcoal)',
+              background: 'var(--bg)',
               resize: 'vertical',
               fontFamily: 'inherit',
             }}
           />
           {updateConsultation.isPending && (
-            <p style={{ fontSize: 10, color: 'var(--text-3, #9CA3AF)', marginTop: 4 }}>Saving...</p>
+            <p style={{ fontSize: 10, color: 'var(--muted)', marginTop: 4 }}>Saving...</p>
           )}
         </SectionCard>
 
@@ -389,11 +389,11 @@ export default function DiscoveryReviewPage() {
               gap: 8,
               padding: '10px 14px',
               borderRadius: 12,
-              background: '#F0FDF4',
-              border: '1px solid #BBF7D0',
+              background: 'var(--green-bg)',
+              border: '1px solid var(--green-bg)',
             }}
           >
-            <CheckCircle size={16} style={{ color: '#10B981', flexShrink: 0 }} />
+            <CheckCircle size={16} style={{ color: 'var(--green)', flexShrink: 0 }} />
             <p style={{ fontSize: 12, color: '#059669', fontWeight: 500 }}>
               Customer confirmed on {formatDate(confirmedAt)}
             </p>
@@ -411,8 +411,8 @@ export default function DiscoveryReviewPage() {
               borderRadius: 12,
               fontSize: 14,
               fontWeight: 600,
-              color: '#FFFFFF',
-              background: '#0F766E',
+              color: '#fff',
+              background: 'var(--accent)',
               border: 'none',
               cursor: 'pointer',
               display: 'flex',
@@ -434,9 +434,9 @@ export default function DiscoveryReviewPage() {
               borderRadius: 12,
               fontSize: 14,
               fontWeight: 600,
-              color: '#0F766E',
-              background: '#FFFFFF',
-              border: '2px solid #0F766E',
+              color: 'var(--accent)',
+              background: 'var(--surface)',
+              border: '2px solid var(--accent)',
               cursor: navigating ? 'not-allowed' : 'pointer',
               opacity: navigating ? 0.6 : 1,
               display: 'flex',
@@ -459,7 +459,7 @@ export default function DiscoveryReviewPage() {
               borderRadius: 12,
               fontSize: 13,
               fontWeight: 500,
-              color: 'var(--text-3, #9CA3AF)',
+              color: 'var(--muted)',
               background: 'none',
               border: 'none',
               cursor: 'pointer',

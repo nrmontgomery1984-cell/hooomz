@@ -94,7 +94,7 @@ export default function ProjectionsPage() {
   }, [draft]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (configLoading || servicesLoading || !draft) {
-    return <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-3, #9CA3AF)' }}>Loading forecast config...</div>;
+    return <div style={{ padding: 40, textAlign: 'center', color: 'var(--muted)' }}>Loading forecast config...</div>;
   }
 
   const yearData = projection?.years.find((y) => y.year === activeYear);
@@ -131,17 +131,17 @@ export default function ProjectionsPage() {
             }}
             style={{
               padding: '6px 14px', fontSize: 12, fontWeight: draft.scenario === s ? 600 : 500,
-              borderRadius: 6, border: '1px solid var(--border, #E5E7EB)',
-              background: draft.scenario === s ? 'var(--blue, #3B82F6)' : 'var(--surface-1, #FFFFFF)',
-              color: draft.scenario === s ? 'white' : 'var(--text-2, #6B7280)',
-              cursor: 'pointer', fontFamily: 'var(--font-sans)', textTransform: 'capitalize',
+              borderRadius: 6, border: '1px solid var(--border)',
+              background: draft.scenario === s ? 'var(--blue)' : 'var(--surface)',
+              color: draft.scenario === s ? 'white' : 'var(--mid)',
+              cursor: 'pointer', fontFamily: 'var(--font-body)', textTransform: 'capitalize',
             }}
           >
             {s}
           </button>
         ))}
         {saveConfig.isPending && (
-          <span style={{ fontSize: 11, color: 'var(--text-3, #9CA3AF)', alignSelf: 'center', marginLeft: 8 }}>Saving...</span>
+          <span style={{ fontSize: 11, color: 'var(--muted)', alignSelf: 'center', marginLeft: 8 }}>Saving...</span>
         )}
       </div>
 
@@ -205,10 +205,10 @@ export default function ProjectionsPage() {
                 onClick={() => setActiveYear(yr)}
                 style={{
                   padding: '6px 16px', fontSize: 12, fontWeight: activeYear === yr ? 600 : 500,
-                  borderRadius: 6, border: '1px solid var(--border, #E5E7EB)',
-                  background: activeYear === yr ? 'var(--blue, #3B82F6)' : 'var(--surface-1, #FFFFFF)',
-                  color: activeYear === yr ? 'white' : 'var(--text-2, #6B7280)',
-                  cursor: 'pointer', fontFamily: 'var(--font-sans)',
+                  borderRadius: 6, border: '1px solid var(--border)',
+                  background: activeYear === yr ? 'var(--blue)' : 'var(--surface)',
+                  color: activeYear === yr ? 'white' : 'var(--mid)',
+                  cursor: 'pointer', fontFamily: 'var(--font-body)',
                 }}
               >
                 Year {yr}
@@ -221,10 +221,10 @@ export default function ProjectionsPage() {
           {/* 3-year summary */}
           {projection && (
             <div style={{
-              background: 'var(--surface-1, #FFFFFF)', borderRadius: 12, border: '1px solid var(--border, #E5E7EB)',
+              background: 'var(--surface)', borderRadius: 12, border: '1px solid var(--border)',
               padding: 16,
             }}>
-              <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-3, #9CA3AF)', marginBottom: 12 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--muted)', marginBottom: 12 }}>
                 3-Year Cumulative
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
@@ -248,10 +248,10 @@ export default function ProjectionsPage() {
 function ConfigSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div style={{
-      background: 'var(--surface-1, #FFFFFF)', borderRadius: 12, border: '1px solid var(--border, #E5E7EB)',
+      background: 'var(--surface)', borderRadius: 12, border: '1px solid var(--border)',
       padding: 16, display: 'flex', flexDirection: 'column', gap: 8,
     }}>
-      <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-3, #9CA3AF)', marginBottom: 4 }}>
+      <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--muted)', marginBottom: 4 }}>
         {title}
       </div>
       {children}
@@ -265,21 +265,21 @@ function InputRow({ label, value, prefix, suffix, onChange }: {
 }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-      <span style={{ fontSize: 13, color: 'var(--text, #111827)', fontWeight: 500 }}>{label}</span>
+      <span style={{ fontSize: 13, color: 'var(--charcoal)', fontWeight: 500 }}>{label}</span>
       <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-        {prefix && <span style={{ fontSize: 12, color: 'var(--text-3, #9CA3AF)' }}>{prefix}</span>}
+        {prefix && <span style={{ fontSize: 12, color: 'var(--muted)' }}>{prefix}</span>}
         <input
           type="number"
           value={value}
           onChange={(e) => onChange(Number(e.target.value) || 0)}
           style={{
             width: 80, padding: '4px 6px', fontSize: 13, textAlign: 'right',
-            border: '1px solid var(--border, #E5E7EB)', borderRadius: 4,
-            background: 'var(--bg, #F9FAFB)', color: 'var(--text, #111827)',
+            border: '1px solid var(--border)', borderRadius: 4,
+            background: 'var(--bg)', color: 'var(--charcoal)',
             fontFamily: 'var(--font-mono, monospace)', fontVariantNumeric: 'tabular-nums',
           }}
         />
-        {suffix && <span style={{ fontSize: 12, color: 'var(--text-3, #9CA3AF)' }}>{suffix}</span>}
+        {suffix && <span style={{ fontSize: 12, color: 'var(--muted)' }}>{suffix}</span>}
       </div>
     </div>
   );
@@ -295,10 +295,10 @@ function YearInputRow({ label, values, prefix, suffix, step, displayMultiplier, 
   const mult = displayMultiplier || 1;
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-      <span style={{ fontSize: 13, color: 'var(--text, #111827)', fontWeight: 500, minWidth: 90 }}>{label}</span>
+      <span style={{ fontSize: 13, color: 'var(--charcoal)', fontWeight: 500, minWidth: 90 }}>{label}</span>
       {(['y1', 'y2', 'y3'] as const).map((key) => (
         <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1 }}>
-          {prefix && <span style={{ fontSize: 11, color: 'var(--text-3, #9CA3AF)' }}>{prefix}</span>}
+          {prefix && <span style={{ fontSize: 11, color: 'var(--muted)' }}>{prefix}</span>}
           <input
             type="number"
             step={step ? step * mult : undefined}
@@ -309,12 +309,12 @@ function YearInputRow({ label, values, prefix, suffix, step, displayMultiplier, 
             }}
             style={{
               width: '100%', padding: '4px 4px', fontSize: 12, textAlign: 'right',
-              border: '1px solid var(--border, #E5E7EB)', borderRadius: 4,
-              background: 'var(--bg, #F9FAFB)', color: 'var(--text, #111827)',
+              border: '1px solid var(--border)', borderRadius: 4,
+              background: 'var(--bg)', color: 'var(--charcoal)',
               fontFamily: 'var(--font-mono, monospace)',
             }}
           />
-          {suffix && <span style={{ fontSize: 11, color: 'var(--text-3, #9CA3AF)' }}>{suffix}</span>}
+          {suffix && <span style={{ fontSize: 11, color: 'var(--muted)' }}>{suffix}</span>}
         </div>
       ))}
     </div>
@@ -324,13 +324,13 @@ function YearInputRow({ label, values, prefix, suffix, step, displayMultiplier, 
 function ProjectionOutput({ year }: { year: YearForecast }) {
   return (
     <div style={{
-      background: 'var(--surface-1, #FFFFFF)', borderRadius: 12, border: '1px solid var(--border, #E5E7EB)',
+      background: 'var(--surface)', borderRadius: 12, border: '1px solid var(--border)',
       padding: 16, display: 'flex', flexDirection: 'column', gap: 6,
     }}>
-      <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-3, #9CA3AF)', marginBottom: 6 }}>
+      <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--muted)', marginBottom: 6 }}>
         {year.label}
       </div>
-      <div style={{ fontSize: 11, color: 'var(--text-3, #9CA3AF)', marginBottom: 8 }}>
+      <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 8 }}>
         {year.totalJobs.toFixed(0)} jobs @ {fmt(year.avgJobValue)} avg
       </div>
 
@@ -343,7 +343,7 @@ function ProjectionOutput({ year }: { year: YearForecast }) {
       <ProfitLine label="Nishant Share" value={-year.nishantProfitShare} indent />
       <ProfitLine label="Nathan Net Profit" value={year.nathanNetProfit} bold accent />
 
-      <div style={{ height: 1, background: 'var(--border, #E5E7EB)', margin: '8px 0' }} />
+      <div style={{ height: 1, background: 'var(--border)', margin: '8px 0' }} />
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
         <TakeHomeBox
@@ -375,18 +375,18 @@ function ProfitLine({ label, value, bold, indent, sub, accent }: {
     }}>
       <span style={{
         fontSize: 13, fontWeight: bold ? 600 : 400,
-        color: indent ? 'var(--text-2, #6B7280)' : 'var(--text, #111827)',
+        color: indent ? 'var(--mid)' : 'var(--charcoal)',
       }}>
         {label}
       </span>
       <div style={{ textAlign: 'right', display: 'flex', alignItems: 'baseline', gap: 6 }}>
         <span style={{
           fontSize: 14, fontWeight: bold ? 700 : 500, fontVariantNumeric: 'tabular-nums',
-          color: accent ? 'var(--blue, #3B82F6)' : value < 0 ? 'var(--text-2, #6B7280)' : 'var(--text, #111827)',
+          color: accent ? 'var(--blue)' : value < 0 ? 'var(--mid)' : 'var(--charcoal)',
         }}>
           {value < 0 ? `(${fmt(Math.abs(value))})` : fmt(value)}
         </span>
-        {sub && <span style={{ fontSize: 11, color: 'var(--text-3, #9CA3AF)' }}>{sub}</span>}
+        {sub && <span style={{ fontSize: 11, color: 'var(--muted)' }}>{sub}</span>}
       </div>
     </div>
   );
@@ -397,12 +397,12 @@ function TakeHomeBox({ name, wage, profit, total, hours }: {
 }) {
   const effectiveRate = hours > 0 ? total / hours : 0;
   return (
-    <div style={{ background: 'var(--bg, #F9FAFB)', borderRadius: 8, padding: 12 }}>
-      <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text, #111827)', marginBottom: 6 }}>{name}</div>
-      <div style={{ fontSize: 11, color: 'var(--text-2, #6B7280)' }}>Wage draw: {fmt(wage)}</div>
-      <div style={{ fontSize: 11, color: 'var(--text-2, #6B7280)' }}>Profit draw: {fmt(profit)}</div>
-      <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--blue, #3B82F6)', marginTop: 4 }}>{fmt(total)}/yr</div>
-      <div style={{ fontSize: 10, color: 'var(--text-3, #9CA3AF)' }}>~{fmt(effectiveRate)}/hr effective</div>
+    <div style={{ background: 'var(--bg)', borderRadius: 8, padding: 12 }}>
+      <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--charcoal)', marginBottom: 6 }}>{name}</div>
+      <div style={{ fontSize: 11, color: 'var(--mid)' }}>Wage draw: {fmt(wage)}</div>
+      <div style={{ fontSize: 11, color: 'var(--mid)' }}>Profit draw: {fmt(profit)}</div>
+      <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--blue)', marginTop: 4 }}>{fmt(total)}/yr</div>
+      <div style={{ fontSize: 10, color: 'var(--muted)' }}>~{fmt(effectiveRate)}/hr effective</div>
     </div>
   );
 }
@@ -410,8 +410,8 @@ function TakeHomeBox({ name, wage, profit, total, hours }: {
 function MiniStat({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', color: 'var(--text-3, #9CA3AF)' }}>{label}</div>
-      <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text, #111827)', fontVariantNumeric: 'tabular-nums' }}>{value}</div>
+      <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', color: 'var(--muted)' }}>{label}</div>
+      <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--charcoal)', fontVariantNumeric: 'tabular-nums' }}>{value}</div>
     </div>
   );
 }

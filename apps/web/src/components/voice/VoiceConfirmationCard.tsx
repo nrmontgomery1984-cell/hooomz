@@ -96,10 +96,10 @@ export function VoiceConfirmationCard({
     parsedEvent.needsTaskSelector && tasks.length > 0;
 
   // Get confidence color
-  const confidenceColor = {
-    high: 'text-green-600',
-    medium: 'text-amber-600',
-    low: 'text-slate-500',
+  const confidenceColorStyle = {
+    high: 'var(--green)',
+    medium: 'var(--yellow)',
+    low: 'var(--muted)',
   }[parsedEvent.confidence];
 
   return (
@@ -111,18 +111,18 @@ export function VoiceConfirmationCard({
       />
 
       {/* Card */}
-      <div className="bg-white rounded-t-2xl shadow-xl max-h-[80vh] overflow-y-auto">
+      <div className="rounded-t-2xl shadow-xl max-h-[80vh] overflow-y-auto" style={{background:'var(--surface)'}}>
         {/* Handle */}
         <div className="flex justify-center pt-3 pb-2">
-          <div className="w-10 h-1 bg-slate-300 rounded-full" />
+          <div className="w-10 h-1 rounded-full" style={{background:'var(--border-s)'}} />
         </div>
 
         {/* Header */}
-        <div className="px-4 pb-3 border-b border-slate-100">
-          <h2 className="text-lg font-semibold text-slate-800">
+        <div className="px-4 pb-3 border-b" style={{borderColor:'var(--border)'}}>
+          <h2 className="text-lg font-semibold" style={{color:'var(--charcoal)'}}>
             Confirm Activity
           </h2>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm" style={{color:'var(--muted)'}}>
             Review and edit before saving
           </p>
         </div>
@@ -130,12 +130,12 @@ export function VoiceConfirmationCard({
         {/* Content */}
         <div className="px-4 py-4 space-y-4">
           {/* Original transcript */}
-          <div className="bg-slate-50 rounded-lg p-3">
-            <p className="text-xs text-slate-500 mb-1">You said:</p>
-            <p className="text-sm text-slate-700 italic">
+          <div className="rounded-lg p-3" style={{background:'var(--surface)'}}>
+            <p className="text-xs mb-1" style={{color:'var(--muted)'}}>You said:</p>
+            <p className="text-sm italic" style={{color:'var(--mid)'}}>
               &ldquo;{parsedEvent.transcript}&rdquo;
             </p>
-            <p className={`text-xs mt-1 ${confidenceColor}`}>
+            <p className="text-xs mt-1" style={{color: confidenceColorStyle}}>
               {parsedEvent.confidence === 'high'
                 ? 'Detected with high confidence'
                 : parsedEvent.confidence === 'medium'
@@ -146,7 +146,7 @@ export function VoiceConfirmationCard({
 
           {/* Event Type Selector */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium mb-2" style={{color:'var(--mid)'}}>
               Event Type
             </label>
             <div className="relative">
@@ -155,19 +155,21 @@ export function VoiceConfirmationCard({
                 className="
                   w-full flex items-center justify-between
                   min-h-[48px] px-4
-                  bg-white border border-slate-200 rounded-lg
-                  text-left text-slate-800
-                  hover:border-teal/50 transition-colors
+                  border rounded-lg
+                  text-left
+                  hover:border-[var(--accent)] transition-colors
                 "
+                style={{background:'var(--surface)', borderColor:'var(--border)', color:'var(--charcoal)'}}
               >
                 <span>{getEventTypeLabel(parsedEvent.event_type)}</span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
                   fill="currentColor"
-                  className={`w-5 h-5 text-slate-400 transition-transform ${
+                  className={`w-5 h-5 transition-transform ${
                     isEventTypeOpen ? 'rotate-180' : ''
                   }`}
+                  style={{color:'var(--muted)'}}
                 >
                   <path
                     fillRule="evenodd"
@@ -178,20 +180,21 @@ export function VoiceConfirmationCard({
               </button>
 
               {isEventTypeOpen && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg z-10 max-h-64 overflow-y-auto">
+                <div className="absolute top-full left-0 right-0 mt-1 border rounded-lg shadow-lg z-10 max-h-64 overflow-y-auto" style={{background:'var(--surface)', borderColor:'var(--border)'}}>
                   {eventTypeOptions.map((option) => (
                     <button
                       key={option.value}
                       onClick={() => handleEventTypeChange(option.value)}
                       className={`
                         w-full text-left px-4 py-3 min-h-[48px]
-                        hover:bg-slate-50 transition-colors
+                        transition-colors
                         ${
                           option.value === parsedEvent.event_type
-                            ? 'bg-teal/10 text-teal font-medium'
-                            : 'text-slate-700'
+                            ? 'bg-[var(--accent-bg)] text-[var(--accent)] font-medium'
+                            : ''
                         }
                       `}
+                      style={{color: option.value === parsedEvent.event_type ? undefined : 'var(--mid)'}}
                     >
                       {option.label}
                     </button>
@@ -204,7 +207,7 @@ export function VoiceConfirmationCard({
           {/* Task Selector (if needed) */}
           {showTaskSelector && (
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
+              <label className="block text-sm font-medium mb-2" style={{color:'var(--mid)'}}>
                 Select Task
               </label>
               <select
@@ -212,10 +215,10 @@ export function VoiceConfirmationCard({
                 onChange={(e) => onTaskSelect?.(e.target.value)}
                 className="
                   w-full min-h-[48px] px-4
-                  bg-white border border-slate-200 rounded-lg
-                  text-slate-800
-                  focus:border-teal focus:ring-1 focus:ring-teal
+                  border rounded-lg
+                  focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)]
                 "
+                style={{background:'var(--surface)', borderColor:'var(--border)', color:'var(--charcoal)'}}
               >
                 <option value="">Select a task...</option>
                 {tasks.map((task) => (
@@ -229,7 +232,7 @@ export function VoiceConfirmationCard({
 
           {/* Notes/Content Field */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium mb-2" style={{color:'var(--mid)'}}>
               {parsedEvent.event_type.includes('blocked')
                 ? 'Reason'
                 : parsedEvent.event_type === 'field_note.created'
@@ -242,11 +245,11 @@ export function VoiceConfirmationCard({
               rows={3}
               className="
                 w-full px-4 py-3
-                bg-white border border-slate-200 rounded-lg
-                text-slate-800 placeholder-slate-400
-                focus:border-teal focus:ring-1 focus:ring-teal
+                border rounded-lg
+                focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)]
                 resize-none
               "
+              style={{background:'var(--surface)', borderColor:'var(--border)', color:'var(--charcoal)'}}
               placeholder={
                 parsedEvent.event_type.includes('blocked')
                   ? 'What is blocking this task?'
@@ -283,11 +286,12 @@ export function VoiceConfirmationCard({
             onClick={onDiscard}
             className="
               flex-1 min-h-[48px] px-4
-              bg-slate-100 text-slate-700 font-medium
+              font-medium
               rounded-lg
-              hover:bg-slate-200 active:scale-98
+              active:scale-98
               transition-all
             "
+            style={{background:'var(--surface-2)', color:'var(--mid)'}}
           >
             Discard
           </button>
@@ -296,10 +300,10 @@ export function VoiceConfirmationCard({
             disabled={showTaskSelector && !selectedTaskId}
             className="
               flex-1 min-h-[48px] px-4
-              bg-teal text-white font-medium
+              bg-[var(--accent)] text-white font-medium
               rounded-lg
-              hover:bg-teal/90 active:scale-98
-              disabled:bg-slate-300 disabled:cursor-not-allowed
+              hover:bg-[var(--accent)]/90 active:scale-98
+              disabled:cursor-not-allowed disabled:opacity-50
               transition-all
             "
           >

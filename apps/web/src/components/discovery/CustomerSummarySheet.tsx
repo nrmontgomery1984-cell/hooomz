@@ -90,15 +90,15 @@ export function CustomerSummarySheet({
           style={{
             padding: 12,
             borderRadius: 12,
-            background: '#F9FAFB',
-            border: '1px solid #E5E7EB',
+            background: 'var(--surface)',
+            border: '1px solid var(--border)',
           }}
         >
-          <p style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a', marginBottom: 4 }}>
+          <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--charcoal)', marginBottom: 4 }}>
             {projectName}
           </p>
           {addr && (
-            <p style={{ fontSize: 11, color: '#6b7280', marginBottom: 8 }}>
+            <p style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 8 }}>
               {[addr.street, addr.city, addr.province].filter(Boolean).join(', ')}
             </p>
           )}
@@ -116,7 +116,7 @@ export function CustomerSummarySheet({
             {p?.pets && <Chip>Pets{p.petDetails ? `: ${p.petDetails}` : ''}</Chip>}
           </div>
           {p?.accessNotes && (
-            <p style={{ fontSize: 11, color: '#6b7280', marginBottom: 6 }}>
+            <p style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 6 }}>
               Access: {p.accessNotes}
             </p>
           )}
@@ -134,7 +134,7 @@ export function CustomerSummarySheet({
             ))}
           </div>
           {pref?.inspirationNotes && (
-            <p style={{ fontSize: 11, color: '#6b7280', fontStyle: 'italic', marginTop: 6 }}>
+            <p style={{ fontSize: 11, color: 'var(--muted)', fontStyle: 'italic', marginTop: 6 }}>
               {pref.inspirationNotes}
             </p>
           )}
@@ -143,10 +143,10 @@ export function CustomerSummarySheet({
         {/* Scope notes */}
         {scopeNotes && (
           <div>
-            <p style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#6b7280', marginBottom: 4 }}>
+            <p style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--muted)', marginBottom: 4 }}>
               Scope Notes
             </p>
-            <p style={{ fontSize: 12, color: '#374151', lineHeight: 1.5 }}>{scopeNotes}</p>
+            <p style={{ fontSize: 12, color: 'var(--mid)', lineHeight: 1.5 }}>{scopeNotes}</p>
           </div>
         )}
 
@@ -156,16 +156,16 @@ export function CustomerSummarySheet({
             style={{
               padding: 12,
               borderRadius: 12,
-              background: '#F0FDF4',
-              border: '1px solid #BBF7D0',
+              background: 'var(--green-bg)',
+              border: '1px solid var(--green-bg)',
               textAlign: 'center',
             }}
           >
-            <Check size={20} style={{ color: '#10B981', margin: '0 auto 4px' }} />
+            <Check size={20} style={{ color: 'var(--green)', margin: '0 auto 4px' }} />
             <p style={{ fontSize: 13, fontWeight: 600, color: '#059669' }}>
               Confirmed
             </p>
-            <p style={{ fontSize: 11, color: '#6b7280', marginTop: 2 }}>
+            <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>
               {new Date(confirmedAt).toLocaleString('en-CA', {
                 month: 'short', day: 'numeric', year: 'numeric',
                 hour: 'numeric', minute: '2-digit',
@@ -174,7 +174,7 @@ export function CustomerSummarySheet({
           </div>
         ) : (
           <div>
-            <p style={{ fontSize: 14, fontWeight: 600, color: '#1a1a1a', textAlign: 'center', marginBottom: 12 }}>
+            <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--charcoal)', textAlign: 'center', marginBottom: 12 }}>
               Does this look right?
             </p>
             <div style={{ display: 'flex', gap: 8 }}>
@@ -186,9 +186,9 @@ export function CustomerSummarySheet({
                   borderRadius: 12,
                   fontSize: 13,
                   fontWeight: 600,
-                  color: '#374151',
-                  background: '#FFFFFF',
-                  border: '1px solid #E5E7EB',
+                  color: 'var(--mid)',
+                  background: 'var(--surface)',
+                  border: '1px solid var(--border)',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
@@ -207,8 +207,8 @@ export function CustomerSummarySheet({
                   borderRadius: 12,
                   fontSize: 13,
                   fontWeight: 600,
-                  color: '#FFFFFF',
-                  background: confirming ? '#9CA3AF' : '#0F766E',
+                  color: '#fff',
+                  background: confirming ? 'var(--muted)' : 'var(--accent)',
                   border: 'none',
                   cursor: confirming ? 'not-allowed' : 'pointer',
                   display: 'flex',
@@ -224,7 +224,7 @@ export function CustomerSummarySheet({
         )}
 
         {/* PDF download — always available */}
-        <div style={{ borderTop: '1px solid #E5E7EB', paddingTop: 12 }}>
+        <div style={{ borderTop: '1px solid var(--border)', paddingTop: 12 }}>
           <DownloadDiscoverySummaryPDF
             draft={draft}
             projectName={projectName}
@@ -242,9 +242,9 @@ export function CustomerSummarySheet({
                 borderRadius: 12,
                 fontSize: 13,
                 fontWeight: 600,
-                color: '#374151',
-                background: '#F3F4F6',
-                border: '1px solid #E5E7EB',
+                color: 'var(--mid)',
+                background: 'var(--surface-2)',
+                border: '1px solid var(--border)',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -273,8 +273,8 @@ function Chip({ children }: { children: React.ReactNode }) {
         fontWeight: 600,
         padding: '3px 8px',
         borderRadius: 6,
-        background: '#F0FDFA',
-        color: '#0F766E',
+        background: 'var(--accent-bg)',
+        color: 'var(--accent)',
       }}
     >
       {children}

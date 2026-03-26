@@ -2,7 +2,7 @@
 
 /**
  * Vote Results Chart — Horizontal bar chart for ballot results
- * Monochrome with teal highlight for the winner
+ * Monochrome with accent highlight for the winner
  */
 
 import React from 'react';
@@ -25,17 +25,17 @@ export function VoteResultsChart({ results, totalVotes, className = '' }: VoteRe
         return (
           <div key={result.testId}>
             <div className="flex items-center justify-between mb-1">
-              <span className={`text-sm font-medium ${isWinner ? 'text-teal-800' : 'text-gray-700'}`}>
+              <span className={`text-sm font-medium ${isWinner ? 'text-[var(--accent)]' : 'text-[var(--mid)]'}`}>
                 {result.title}
-                {isWinner && <span className="ml-1.5 text-xs text-teal-600">Winner</span>}
+                {isWinner && <span className="ml-1.5 text-xs text-[var(--accent)]">Winner</span>}
               </span>
-              <span className="text-sm tabular-nums text-gray-500">
+              <span className="text-sm tabular-nums text-[var(--muted)]">
                 {result.voteCount} ({pct}%)
               </span>
             </div>
-            <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+            <div className="h-3 bg-[var(--surface)] rounded-full overflow-hidden">
               <div
-                className={`h-full rounded-full transition-all ${isWinner ? 'bg-teal-600' : 'bg-gray-400'}`}
+                className={`h-full rounded-full transition-all ${isWinner ? 'bg-[var(--accent)]' : 'bg-[var(--muted)]'}`}
                 style={{ width: `${pct}%` }}
               />
             </div>

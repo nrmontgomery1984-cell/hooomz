@@ -84,7 +84,7 @@ export function RiskAttentionPanel({
           ))}
           {hasMore && (
             <div style={{ padding: '4px 12px' }}>
-              <span style={{ fontSize: 11, color: 'var(--text-3)' }}>
+              <span style={{ fontSize: 11, color: 'var(--muted)' }}>
                 +{items.length - 5} more
               </span>
             </div>

@@ -21,7 +21,7 @@ export default function WorkerSpikePage() {
   }, []);
 
   return (
-    <div style={{ padding: 40, fontFamily: 'monospace', fontSize: 14 }}>
+    <div style={{ padding: 40, fontFamily: 'var(--font-mono)', fontSize: 14 }}>
       <div style={{ marginBottom: 8, fontWeight: 700 }}>Worker Spike Test</div>
       <div>{result}</div>
     </div>

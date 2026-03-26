@@ -13,8 +13,8 @@ const CO_STATUS_COLORS: Record<string, string> = {
   approved:         'var(--green)',
   pending_approval: 'var(--amber)',
   declined:         'var(--red)',
-  draft:            'var(--text-3)',
-  cancelled:        'var(--text-3)',
+  draft:            'var(--muted)',
+  cancelled:        'var(--muted)',
 };
 
 function formatCurrency(amount: number): string {
@@ -56,7 +56,7 @@ export function ChangeOrderPanel({ changeOrders, budgetImpact, onCreateCO, onSel
     <PanelSection
       label="Change Orders"
       count={changeOrders.length}
-      countColor={pendingCount > 0 ? 'var(--amber)' : 'var(--text-3)'}
+      countColor={pendingCount > 0 ? 'var(--amber)' : 'var(--muted)'}
       action={
         onCreateCO ? (
           <button
@@ -82,12 +82,12 @@ export function ChangeOrderPanel({ changeOrders, budgetImpact, onCreateCO, onSel
     >
       {changeOrders.length === 0 ? (
         <div style={{ padding: '12px 12px', textAlign: 'center' }}>
-          <p style={{ fontSize: 11, color: 'var(--text-3)' }}>No change orders</p>
+          <p style={{ fontSize: 11, color: 'var(--muted)' }}>No change orders</p>
         </div>
       ) : (
         <>
           {changeOrders.map((co) => {
-            const color = CO_STATUS_COLORS[co.status] || 'var(--text-3)';
+            const color = CO_STATUS_COLORS[co.status] || 'var(--muted)';
             return (
               <button
                 key={co.id}
@@ -107,10 +107,10 @@ export function ChangeOrderPanel({ changeOrders, budgetImpact, onCreateCO, onSel
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0, flex: 1 }}>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-2)', flexShrink: 0 }}>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--mid)', flexShrink: 0 }}>
                     {co.coNumber}
                   </span>
-                  <span style={{ fontSize: 11, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <span style={{ fontSize: 11, color: 'var(--charcoal)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {co.title}
                   </span>
                 </div>
@@ -119,7 +119,7 @@ export function ChangeOrderPanel({ changeOrders, budgetImpact, onCreateCO, onSel
                     <span style={{ width: 5, height: 5, borderRadius: '50%', background: color }} />
                     {statusLabel(co.status)}
                   </span>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600, color: 'var(--text)' }}>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600, color: 'var(--charcoal)' }}>
                     +{formatCurrency(co.costImpact)}
                   </span>
                   {onSelectCO && <ChevronRight size={10} style={{ color: 'var(--border-strong)' }} />}
@@ -131,7 +131,7 @@ export function ChangeOrderPanel({ changeOrders, budgetImpact, onCreateCO, onSel
           {/* Impact summary */}
           {budgetImpact && (budgetImpact.approved > 0 || budgetImpact.pending > 0) && (
             <div style={{ borderTop: '1px solid var(--border)', margin: '4px 0 0', padding: '6px 12px 2px' }}>
-              <span style={{ fontSize: 11, color: 'var(--text-2)' }}>
+              <span style={{ fontSize: 11, color: 'var(--mid)' }}>
                 Impact:{' '}
                 {budgetImpact.approved > 0 && (
                   <span style={{ fontWeight: 600, color: 'var(--green)' }}>

@@ -23,9 +23,9 @@ function sqmmToSqft(sqmm: number): string {
 // Status badge
 function StatusBadge({ status }: { status: string }) {
   const colors: Record<string, { bg: string; text: string }> = {
-    pending: { bg: 'rgba(59,130,246,0.12)', text: '#3B82F6' },
-    measured: { bg: 'rgba(245,158,11,0.12)', text: '#F59E0B' },
-    complete: { bg: 'rgba(16,185,129,0.12)', text: '#10B981' },
+    pending: { bg: 'var(--blue-bg)', text: 'var(--blue)' },
+    measured: { bg: 'var(--yellow-bg)', text: 'var(--yellow)' },
+    complete: { bg: 'var(--green-bg)', text: 'var(--green)' },
   };
   const c = colors[status] ?? colors.pending;
   const labels: Record<string, string> = {
@@ -86,7 +86,7 @@ export default function RoomsPage() {
   const hasError = scans.some((s) => s.status === 'error');
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--charcoal)' }}>
       {/* Header */}
       <div
         style={{
@@ -95,7 +95,7 @@ export default function RoomsPage() {
           display: 'flex',
           alignItems: 'center',
           gap: 12,
-          background: 'var(--surface-1)',
+          background: 'var(--surface)',
         }}
       >
         <button
@@ -104,7 +104,7 @@ export default function RoomsPage() {
             background: 'none',
             border: 'none',
             cursor: 'pointer',
-            color: 'var(--text-3)',
+            color: 'var(--muted)',
             display: 'flex',
             alignItems: 'center',
             padding: 4,
@@ -122,7 +122,7 @@ export default function RoomsPage() {
               alignItems: 'center',
               gap: 6,
               fontSize: 11,
-              color: 'var(--text-3)',
+              color: 'var(--muted)',
               fontWeight: 500,
               letterSpacing: '0.04em',
               textTransform: 'uppercase',
@@ -144,7 +144,7 @@ export default function RoomsPage() {
             alignItems: 'center',
             gap: 6,
             padding: '8px 14px',
-            background: '#1E3A8A',
+            background: 'var(--blue)',
             color: '#fff',
             border: 'none',
             borderRadius: 8,
@@ -172,12 +172,12 @@ export default function RoomsPage() {
           <div
             style={{
               padding: '12px 16px',
-              background: 'rgba(239,68,68,0.08)',
+              background: 'var(--red-bg)',
               border: '1px solid rgba(239,68,68,0.3)',
               borderRadius: 10,
               marginBottom: 16,
               fontSize: 13,
-              color: '#EF4444',
+              color: 'var(--red)',
             }}
           >
             {importMutation.isError
@@ -214,13 +214,13 @@ export default function RoomsPage() {
               <div
                 key={label}
                 style={{
-                  background: 'var(--surface-1)',
+                  background: 'var(--surface)',
                   border: '1px solid var(--border)',
                   borderRadius: 10,
                   padding: '10px 14px',
                 }}
               >
-                <div style={{ fontSize: 10, color: 'var(--text-3)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>
+                <div style={{ fontSize: 10, color: 'var(--muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>
                   {label}
                 </div>
                 <div style={{ fontSize: 14, fontWeight: 600 }}>{value}</div>
@@ -231,7 +231,7 @@ export default function RoomsPage() {
 
         {/* Room list */}
         {roomsLoading ? (
-          <div style={{ color: 'var(--text-3)', fontSize: 14, paddingTop: 40, textAlign: 'center' }}>
+          <div style={{ color: 'var(--muted)', fontSize: 14, paddingTop: 40, textAlign: 'center' }}>
             Loading rooms…
           </div>
         ) : rooms.length === 0 ? (
@@ -239,7 +239,7 @@ export default function RoomsPage() {
             style={{
               textAlign: 'center',
               paddingTop: 60,
-              color: 'var(--text-3)',
+              color: 'var(--muted)',
             }}
           >
             <ScanLine size={40} style={{ marginBottom: 12, opacity: 0.4 }} />
@@ -250,12 +250,12 @@ export default function RoomsPage() {
               disabled={seedMutation.isPending}
               style={{
                 padding: '9px 18px',
-                background: 'var(--surface-1)',
+                background: 'var(--surface)',
                 border: '1px solid var(--border)',
                 borderRadius: 8,
                 fontSize: 13,
                 fontWeight: 600,
-                color: 'var(--text-2)',
+                color: 'var(--mid)',
                 cursor: seedMutation.isPending ? 'not-allowed' : 'pointer',
                 opacity: seedMutation.isPending ? 0.7 : 1,
               }}
@@ -266,7 +266,7 @@ export default function RoomsPage() {
         ) : (
           <div
             style={{
-              background: 'var(--surface-1)',
+              background: 'var(--surface)',
               border: '1px solid var(--border)',
               borderRadius: 12,
               overflow: 'hidden',
@@ -289,7 +289,7 @@ export default function RoomsPage() {
                   <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 3 }}>
                     {room.name}
                   </div>
-                  <div style={{ fontSize: 12, color: 'var(--text-3)' }}>
+                  <div style={{ fontSize: 12, color: 'var(--muted)' }}>
                     {sqmmToSqft(room.polygon.area_sqmm)} ft²
                     {' · '}
                     {room.openings.length} opening{room.openings.length !== 1 ? 's' : ''}
@@ -298,7 +298,7 @@ export default function RoomsPage() {
                   </div>
                 </div>
                 <StatusBadge status={room.status} />
-                <ChevronRight size={16} color="var(--text-3)" />
+                <ChevronRight size={16} color="var(--muted)" />
               </div>
             ))}
           </div>

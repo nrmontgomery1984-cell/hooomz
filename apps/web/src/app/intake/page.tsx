@@ -138,10 +138,10 @@ export default function IntakePage() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#F3F4F6' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--surface-2)' }}>
         <div className="text-center">
-          <div className="w-12 h-12 border-4 rounded-full animate-spin mx-auto mb-4" style={{ borderColor: '#E5E7EB', borderTopColor: '#0F766E' }} />
-          <p style={{ color: '#6B7280' }}>Loading...</p>
+          <div className="w-12 h-12 border-4 rounded-full animate-spin mx-auto mb-4" style={{ borderColor: 'var(--border)', borderTopColor: 'var(--accent)' }} />
+          <p style={{ color: 'var(--muted)' }}>Loading...</p>
         </div>
       </div>
     );
@@ -150,10 +150,10 @@ export default function IntakePage() {
   // Submitting state
   if (isSubmitting) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#F3F4F6' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--surface-2)' }}>
         <div className="text-center">
-          <div className="w-12 h-12 border-4 rounded-full animate-spin mx-auto mb-4" style={{ borderColor: '#E5E7EB', borderTopColor: '#0F766E' }} />
-          <p style={{ color: '#6B7280' }}>Creating your project...</p>
+          <div className="w-12 h-12 border-4 rounded-full animate-spin mx-auto mb-4" style={{ borderColor: 'var(--border)', borderTopColor: 'var(--accent)' }} />
+          <p style={{ color: 'var(--muted)' }}>Creating your project...</p>
         </div>
       </div>
     );
@@ -189,14 +189,14 @@ export default function IntakePage() {
   // Selection screen
   return (
     <PageErrorBoundary>
-    <div className="min-h-screen" style={{ background: '#F3F4F6' }}>
+    <div className="min-h-screen" style={{ background: 'var(--surface-2)' }}>
       {/* Header */}
-      <div className="sticky top-0 z-10" style={{ background: '#FFFFFF', borderBottom: '1px solid #E5E7EB' }}>
+      <div className="sticky top-0 z-10" style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
         <div className="max-w-lg mx-auto px-4 py-4">
           <button
             onClick={() => router.back()}
             className="min-h-[48px] min-w-[48px] flex items-center justify-center text-sm font-medium"
-            style={{ color: '#6B7280' }}
+            style={{ color: 'var(--muted)' }}
           >
             &larr; Back
           </button>
@@ -206,8 +206,8 @@ export default function IntakePage() {
       {/* Error Message */}
       {error && (
         <div className="max-w-lg mx-auto px-4 pt-4">
-          <div className="rounded-xl p-4" style={{ background: '#FEF2F2', border: '1px solid #FECACA' }}>
-            <p className="text-sm" style={{ color: '#EF4444' }}>{error}</p>
+          <div className="rounded-xl p-4" style={{ background: 'var(--red-bg)', border: '1px solid var(--red-bg)' }}>
+            <p className="text-sm" style={{ color: 'var(--red)' }}>{error}</p>
           </div>
         </div>
       )}
@@ -217,25 +217,25 @@ export default function IntakePage() {
         {/* Draft list — shown when in-progress drafts exist */}
         {drafts.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-[11px] font-semibold uppercase tracking-wider mb-2" style={{ color: '#9CA3AF' }}>
+            <h2 className="text-[11px] font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--muted)' }}>
               Continue Where You Left Off
             </h2>
             <div
               className="rounded-xl overflow-hidden"
-              style={{ background: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}
+              style={{ background: 'var(--surface)', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}
             >
               {drafts.map((draft, i) => (
                 <div
                   key={draft.id}
                   className="flex items-center gap-3 px-3 py-3 min-h-[56px]"
-                  style={{ borderBottom: i < drafts.length - 1 ? '1px solid #F3F4F6' : 'none' }}
+                  style={{ borderBottom: i < drafts.length - 1 ? '1px solid var(--surface-2)' : 'none' }}
                 >
                   {/* Type badge */}
                   <div
                     className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 text-[11px] font-bold"
                     style={{
-                      background: draft.type === 'homeowner' ? '#F0FDFA' : '#F3F4F6',
-                      color: draft.type === 'homeowner' ? '#0F766E' : '#6B7280',
+                      background: draft.type === 'homeowner' ? 'var(--green-bg)' : 'var(--surface-2)',
+                      color: draft.type === 'homeowner' ? 'var(--accent)' : 'var(--muted)',
                     }}
                   >
                     {draft.type === 'homeowner' ? 'HO' : 'CT'}
@@ -243,19 +243,19 @@ export default function IntakePage() {
 
                   {/* Info */}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate" style={{ color: '#111827' }}>
+                    <p className="text-sm font-medium truncate" style={{ color: 'var(--charcoal)' }}>
                       {draft.customerName}
                     </p>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-[11px]" style={{ color: '#9CA3AF' }}>
+                      <span className="text-[11px]" style={{ color: 'var(--muted)' }}>
                         {draft.projectSummary}
                       </span>
-                      <span className="text-[10px]" style={{ color: '#D1D5DB' }}>·</span>
-                      <span className="text-[10px]" style={{ color: '#D1D5DB' }}>
+                      <span className="text-[10px]" style={{ color: 'var(--border)' }}>·</span>
+                      <span className="text-[10px]" style={{ color: 'var(--border)' }}>
                         Step {draft.currentStep + 1} of 4
                       </span>
-                      <span className="text-[10px]" style={{ color: '#D1D5DB' }}>·</span>
-                      <span className="text-[10px]" style={{ color: '#D1D5DB' }}>
+                      <span className="text-[10px]" style={{ color: 'var(--border)' }}>·</span>
+                      <span className="text-[10px]" style={{ color: 'var(--border)' }}>
                         {formatRelativeTime(draft.updatedAt)}
                       </span>
                     </div>
@@ -265,14 +265,14 @@ export default function IntakePage() {
                   <button
                     onClick={() => handleResumeDraft(draft)}
                     className="text-xs font-medium px-3 min-h-[36px] rounded-lg flex-shrink-0"
-                    style={{ background: '#0F766E', color: '#FFFFFF' }}
+                    style={{ background: 'var(--accent)', color: '#fff' }}
                   >
                     Continue
                   </button>
                   <button
                     onClick={() => handleDeleteDraft(draft)}
                     className="min-h-[36px] min-w-[36px] flex items-center justify-center rounded-lg flex-shrink-0"
-                    style={{ color: '#9CA3AF' }}
+                    style={{ color: 'var(--muted)' }}
                   >
                     <Trash2 size={14} />
                   </button>
@@ -283,8 +283,8 @@ export default function IntakePage() {
         )}
 
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold mb-2" style={{ color: '#111827' }}>Start a New Project</h1>
-          <p style={{ color: '#6B7280' }}>Choose how you&apos;d like to get started</p>
+          <h1 className="text-2xl font-bold mb-2" style={{ color: 'var(--charcoal)' }}>Start a New Project</h1>
+          <p style={{ color: 'var(--muted)' }}>Choose how you&apos;d like to get started</p>
         </div>
 
         <div className="space-y-4">
@@ -293,24 +293,24 @@ export default function IntakePage() {
             onClick={() => setMode('homeowner')}
             disabled={!services}
             className="w-full p-6 rounded-2xl transition-all text-left disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{ background: '#FFFFFF', boxShadow: '0 2px 8px rgba(0,0,0,0.06)', border: '2px solid transparent' }}
-            onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#0F766E')}
+            style={{ background: 'var(--surface)', boxShadow: '0 2px 8px rgba(0,0,0,0.06)', border: '2px solid transparent' }}
+            onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'var(--accent)')}
             onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'transparent')}
           >
             <div className="flex items-start gap-4">
               <div
                 className="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0"
-                style={{ background: '#F0FDFA', color: '#0F766E' }}
+                style={{ background: 'var(--green-bg)', color: 'var(--accent)' }}
               >
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
               </div>
               <div className="flex-1">
-                <h2 className="text-lg font-semibold mb-1" style={{ color: '#111827' }}>I&apos;m a Homeowner</h2>
-                <p className="text-sm mb-3" style={{ color: '#6B7280' }}>
+                <h2 className="text-lg font-semibold mb-1" style={{ color: 'var(--charcoal)' }}>I&apos;m a Homeowner</h2>
+                <p className="text-sm mb-3" style={{ color: 'var(--muted)' }}>
                   Choose your bundle, pick your rooms, and we&apos;ll set everything up.
                 </p>
-                <div className="flex items-center gap-2 text-xs" style={{ color: '#9CA3AF' }}>
-                  <span className="px-2 py-0.5 rounded" style={{ background: '#F3F4F6' }}>4 steps</span>
+                <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--muted)' }}>
+                  <span className="px-2 py-0.5 rounded" style={{ background: 'var(--surface-2)' }}>4 steps</span>
                   <span>·</span>
                   <span>Bundle-based</span>
                 </div>
@@ -323,24 +323,24 @@ export default function IntakePage() {
             onClick={() => setMode('contractor')}
             disabled={!services}
             className="w-full p-6 rounded-2xl transition-all text-left disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{ background: '#FFFFFF', boxShadow: '0 2px 8px rgba(0,0,0,0.06)', border: '2px solid transparent' }}
-            onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#0F766E')}
+            style={{ background: 'var(--surface)', boxShadow: '0 2px 8px rgba(0,0,0,0.06)', border: '2px solid transparent' }}
+            onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'var(--accent)')}
             onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'transparent')}
           >
             <div className="flex items-start gap-4">
               <div
                 className="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0"
-                style={{ background: '#F3F4F6', color: '#6B7280' }}
+                style={{ background: 'var(--surface-2)', color: 'var(--muted)' }}
               >
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
               </div>
               <div className="flex-1">
-                <h2 className="text-lg font-semibold mb-1" style={{ color: '#111827' }}>I&apos;m a Contractor</h2>
-                <p className="text-sm mb-3" style={{ color: '#6B7280' }}>
+                <h2 className="text-lg font-semibold mb-1" style={{ color: 'var(--charcoal)' }}>I&apos;m a Contractor</h2>
+                <p className="text-sm mb-3" style={{ color: 'var(--muted)' }}>
                   Set up a project with trade-organized scope. Perfect for estimates and scheduling.
                 </p>
-                <div className="flex items-center gap-2 text-xs" style={{ color: '#9CA3AF' }}>
-                  <span className="px-2 py-0.5 rounded" style={{ background: '#F3F4F6' }}>4 steps</span>
+                <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--muted)' }}>
+                  <span className="px-2 py-0.5 rounded" style={{ background: 'var(--surface-2)' }}>4 steps</span>
                   <span>·</span>
                   <span>Trade-organized</span>
                 </div>
@@ -350,8 +350,8 @@ export default function IntakePage() {
         </div>
 
         {/* Info Card */}
-        <div className="mt-8 rounded-xl p-4" style={{ background: '#F0FDFA' }}>
-          <p className="text-sm" style={{ color: '#0F766E' }}>
+        <div className="mt-8 rounded-xl p-4" style={{ background: 'var(--green-bg)' }}>
+          <p className="text-sm" style={{ color: 'var(--accent)' }}>
             <strong>Tip:</strong> Both flows create the same project structure. Choose the one that
             matches how you prefer to work. You can always add details later.
           </p>

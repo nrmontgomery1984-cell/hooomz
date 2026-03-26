@@ -17,30 +17,7 @@ const nextConfig = {
     '@hooomz/reporting',
   ],
   async redirects() {
-    return [
-      {
-        source: '/',
-        destination: '/interiors',
-        permanent: false,
-        has: [
-          {
-            type: 'host',
-            value: 'hooomz.ca',
-          },
-        ],
-      },
-      {
-        source: '/',
-        destination: '/interiors',
-        permanent: false,
-        has: [
-          {
-            type: 'host',
-            value: 'www.hooomz.ca',
-          },
-        ],
-      },
-    ];
+    return [];
   },
   async rewrites() {
     return [

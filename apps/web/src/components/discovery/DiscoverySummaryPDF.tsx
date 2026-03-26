@@ -47,7 +47,7 @@ function capitalize(s: string | null | undefined): string {
 // Styles
 // ============================================================================
 
-const TEAL = '#0F766E';
+const ACCENT = '#6B6560';
 
 const styles = StyleSheet.create({
   page: {
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
   docType: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: TEAL,
+    color: ACCENT,
     textAlign: 'right' as const,
   },
   dateText: {
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textTransform: 'uppercase',
     letterSpacing: 1,
-    color: TEAL,
+    color: ACCENT,
     marginBottom: 8,
     marginTop: 16,
     borderBottomWidth: 1,
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
     borderRadius: 4,
     backgroundColor: '#f0fdfa',
-    color: TEAL,
+    color: ACCENT,
     fontWeight: 'bold',
   },
   scopeText: {
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
   },
   confirmText: {
     fontSize: 10,
-    color: TEAL,
+    color: ACCENT,
     fontWeight: 'bold',
   },
   footer: {

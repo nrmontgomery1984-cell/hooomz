@@ -40,9 +40,9 @@ const STATUS_TABS: { value: ConsultationStatus | 'all'; label: string }[] = [
 ];
 
 const STATUS_BADGE: Record<ConsultationStatus, { bg: string; text: string; label: string; icon: typeof Calendar }> = {
-  scheduled: { bg: '#EFF6FF', text: '#3B82F6', label: 'Scheduled', icon: Calendar },
-  completed: { bg: '#ECFDF5', text: '#10B981', label: 'Completed', icon: CheckCircle2 },
-  cancelled: { bg: '#F3F4F6', text: '#9CA3AF', label: 'Cancelled', icon: XCircle },
+  scheduled: { bg: 'var(--blue-bg)', text: 'var(--blue)', label: 'Scheduled', icon: Calendar },
+  completed: { bg: 'var(--green-bg)', text: 'var(--green)', label: 'Completed', icon: CheckCircle2 },
+  cancelled: { bg: 'var(--surface-2)', text: 'var(--muted)', label: 'Cancelled', icon: XCircle },
 };
 
 // ============================================================================
@@ -91,16 +91,16 @@ export default function ConsultationsPage() {
       <div style={{ minHeight: '100vh', paddingBottom: 96, background: 'var(--bg)' }}>
 
         {/* Header */}
-        <div style={{ background: 'var(--surface-1)', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
           <div className="max-w-lg md:max-w-full mx-auto px-4 md:px-6 py-3 md:py-4 flex items-center justify-between">
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <div style={{ width: 8, height: 8, borderRadius: '50%', background: COLOR }} />
-                <h1 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', fontFamily: 'var(--font-cond)', letterSpacing: '0.02em' }}>
+                <h1 style={{ fontSize: 16, fontWeight: 700, color: 'var(--charcoal)', fontFamily: 'var(--font-mono)', letterSpacing: '0.02em' }}>
                   Consultations
                 </h1>
               </div>
-              <p style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 2 }}>
+              <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>
                 Site visits and discovery sessions
               </p>
             </div>
@@ -124,9 +124,9 @@ export default function ConsultationsPage() {
                   style={{
                     minHeight: 30, padding: '0 12px',
                     borderRadius: 'var(--radius)', fontSize: 11,
-                    fontWeight: 600, fontFamily: 'var(--font-cond)', letterSpacing: '0.04em',
+                    fontWeight: 600, fontFamily: 'var(--font-mono)', letterSpacing: '0.04em',
                     background: statusFilter === tab.value ? COLOR : 'var(--bg)',
-                    color: statusFilter === tab.value ? '#FFFFFF' : 'var(--text-3)',
+                    color: statusFilter === tab.value ? '#FFFFFF' : 'var(--muted)',
                     border: statusFilter === tab.value ? 'none' : '1px solid var(--border)',
                     cursor: 'pointer', whiteSpace: 'nowrap',
                   }}
@@ -154,18 +154,18 @@ export default function ConsultationsPage() {
           {isLoading && (
             <div style={{ marginTop: 32, textAlign: 'center' }}>
               <div style={{ width: 32, height: 32, border: '2px solid var(--border)', borderTopColor: COLOR, borderRadius: '50%', animation: 'spin 0.7s linear infinite', margin: '0 auto 8px' }} />
-              <p style={{ fontSize: 11, color: 'var(--text-3)' }}>Loading...</p>
+              <p style={{ fontSize: 11, color: 'var(--muted)' }}>Loading...</p>
             </div>
           )}
 
           {/* Empty state */}
           {!isLoading && filteredConsultations.length === 0 && (
             <div style={{ marginTop: 48, textAlign: 'center' }}>
-              <div style={{ width: 56, height: 56, borderRadius: 'var(--radius)', background: 'var(--surface-1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+              <div style={{ width: 56, height: 56, borderRadius: 'var(--radius)', background: 'var(--surface)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
                 <ClipboardList size={24} style={{ color: COLOR }} strokeWidth={1.5} />
               </div>
-              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-2)' }}>No consultations yet</p>
-              <p style={{ fontSize: 12, color: 'var(--text-3)', marginTop: 4 }}>
+              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--mid)' }}>No consultations yet</p>
+              <p style={{ fontSize: 12, color: 'var(--muted)', marginTop: 4 }}>
                 Consultations are booked from a lead or created when discovery is completed.
               </p>
             </div>
@@ -188,7 +188,7 @@ export default function ConsultationsPage() {
                     key={consult.id}
                     style={{
                       padding: '12px 14px', borderRadius: 'var(--radius)',
-                      background: 'var(--surface-1)', border: '1px solid var(--border)',
+                      background: 'var(--surface)', border: '1px solid var(--border)',
                       boxShadow: 'var(--shadow-card)',
                     }}
                   >
@@ -201,7 +201,7 @@ export default function ConsultationsPage() {
                         >
                           {customerName}
                         </Link>
-                        <p style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 1 }}>
+                        <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 1 }}>
                           {projectName}
                         </p>
                       </div>
@@ -217,20 +217,20 @@ export default function ConsultationsPage() {
 
                     {/* Date + address */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 8, flexWrap: 'wrap' }}>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'var(--text-2)' }}>
-                        <Calendar size={10} style={{ color: 'var(--text-3)' }} />
+                      <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'var(--mid)' }}>
+                        <Calendar size={10} style={{ color: 'var(--muted)' }} />
                         {consult.scheduledDate
                           ? new Date(consult.scheduledDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
                           : 'Date TBD'}
                       </span>
                       {customer?.propertyAddress && (
-                        <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'var(--text-2)' }}>
-                          <MapPin size={10} style={{ color: 'var(--text-3)' }} />
+                        <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'var(--mid)' }}>
+                          <MapPin size={10} style={{ color: 'var(--muted)' }} />
                           {customer.propertyAddress}{customer.propertyCity ? `, ${customer.propertyCity}` : ''}
                         </span>
                       )}
                       {consult.completedDate && (
-                        <span style={{ fontSize: 10, color: 'var(--green, #10b981)' }}>
+                        <span style={{ fontSize: 10, color: 'var(--green)' }}>
                           Completed {new Date(consult.completedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                         </span>
                       )}
@@ -238,7 +238,7 @@ export default function ConsultationsPage() {
 
                     {/* Scope notes preview */}
                     {consult.scopeNotes && (
-                      <p style={{ marginTop: 6, fontSize: 11, color: 'var(--text-3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <p style={{ marginTop: 6, fontSize: 11, color: 'var(--muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {consult.scopeNotes.length > 80 ? consult.scopeNotes.slice(0, 77) + '...' : consult.scopeNotes}
                       </p>
                     )}
@@ -258,7 +258,7 @@ export default function ConsultationsPage() {
                         onClick={() => router.push(`/discovery/${consult.projectId}`)}
                         style={{
                           display: 'flex', alignItems: 'center', gap: 4,
-                          fontSize: 11, fontWeight: 600, color: COLOR,
+                          fontSize: 11, fontWeight: 600, color: COLOR, fontFamily: 'var(--font-mono)',
                           background: 'none', border: 'none', cursor: 'pointer', padding: 0,
                         }}
                       >
@@ -342,20 +342,20 @@ function ScheduleConsultationForm({
     width: '100%', minHeight: 34, padding: '0 10px',
     borderRadius: 'var(--radius)', fontSize: 12,
     background: 'var(--bg)', border: '1px solid var(--border)',
-    color: 'var(--text)', outline: 'none',
+    color: 'var(--charcoal)', outline: 'none',
   };
 
   return (
     <div style={{
       marginTop: 12, padding: 16, borderRadius: 'var(--radius)',
-      background: 'var(--surface-1)', border: `2px solid ${COLOR}40`,
+      background: 'var(--surface)', border: `2px solid ${COLOR}40`,
       boxShadow: 'var(--shadow-card)',
     }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-        <span style={{ fontFamily: 'var(--font-cond)', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: COLOR }}>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: COLOR }}>
           Schedule Consultation
         </span>
-        <button onClick={onCancel} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-3)' }}>
+        <button onClick={onCancel} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)' }}>
           <X size={16} />
         </button>
       </div>
@@ -364,20 +364,20 @@ function ScheduleConsultationForm({
 
         {/* Customer selector */}
         <div>
-          <label style={{ display: 'block', fontSize: 10, fontWeight: 600, color: 'var(--text-3)', marginBottom: 3 }}>Customer *</label>
+          <label style={{ display: 'block', fontSize: 10, fontWeight: 600, color: 'var(--muted)', marginBottom: 3 }}>Customer *</label>
           {selectedCustomer ? (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 10px', borderRadius: 'var(--radius)', background: 'var(--bg)', border: '1px solid var(--border)' }}>
-              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)' }}>
+              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--charcoal)' }}>
                 {selectedCustomer.firstName} {selectedCustomer.lastName}
               </span>
-              <button onClick={() => { setSelectedCustomerId(null); setSelectedProjectId(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-3)' }}>
+              <button onClick={() => { setSelectedCustomerId(null); setSelectedProjectId(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)' }}>
                 <X size={12} />
               </button>
             </div>
           ) : (
             <div>
               <div style={{ position: 'relative' }}>
-                <Search size={12} style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-3)' }} />
+                <Search size={12} style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', color: 'var(--muted)' }} />
                 <input
                   type="text"
                   value={customerSearch}
@@ -387,20 +387,20 @@ function ScheduleConsultationForm({
                 />
               </div>
               {customerOptions.length > 0 && (
-                <div style={{ marginTop: 4, maxHeight: 120, overflowY: 'auto', border: '1px solid var(--border)', borderRadius: 'var(--radius)', background: 'var(--surface-1)' }}>
+                <div style={{ marginTop: 4, maxHeight: 120, overflowY: 'auto', border: '1px solid var(--border)', borderRadius: 'var(--radius)', background: 'var(--surface)' }}>
                   {customerOptions.map((c) => (
                     <button
                       key={c.id}
                       onClick={() => { setSelectedCustomerId(c.id); setCustomerSearch(''); }}
                       style={{
                         display: 'block', width: '100%', textAlign: 'left',
-                        padding: '6px 10px', fontSize: 12, color: 'var(--text)',
+                        padding: '6px 10px', fontSize: 12, color: 'var(--charcoal)',
                         background: 'none', border: 'none', cursor: 'pointer',
-                        borderBottom: '1px solid var(--border)',
+                        borderBottom: '1px solid var(--border)', fontFamily: 'var(--font-mono)',
                       }}
                     >
                       {c.firstName} {c.lastName}
-                      {c.propertyCity && <span style={{ color: 'var(--text-3)', marginLeft: 8, fontSize: 10 }}>{c.propertyCity}</span>}
+                      {c.propertyCity && <span style={{ color: 'var(--muted)', marginLeft: 8, fontSize: 10 }}>{c.propertyCity}</span>}
                     </button>
                   ))}
                 </div>
@@ -412,9 +412,9 @@ function ScheduleConsultationForm({
         {/* Project selector */}
         {selectedCustomerId && (
           <div>
-            <label style={{ display: 'block', fontSize: 10, fontWeight: 600, color: 'var(--text-3)', marginBottom: 3 }}>Project *</label>
+            <label style={{ display: 'block', fontSize: 10, fontWeight: 600, color: 'var(--muted)', marginBottom: 3 }}>Project *</label>
             {customerProjects.length === 0 ? (
-              <p style={{ fontSize: 11, color: 'var(--text-3)', padding: '6px 0' }}>No projects linked to this customer yet</p>
+              <p style={{ fontSize: 11, color: 'var(--muted)', padding: '6px 0' }}>No projects linked to this customer yet</p>
             ) : (
               <select
                 value={selectedProjectId || ''}
@@ -432,13 +432,13 @@ function ScheduleConsultationForm({
 
         {/* Scheduled date */}
         <div>
-          <label style={{ display: 'block', fontSize: 10, fontWeight: 600, color: 'var(--text-3)', marginBottom: 3 }}>Scheduled Date</label>
+          <label style={{ display: 'block', fontSize: 10, fontWeight: 600, color: 'var(--muted)', marginBottom: 3 }}>Scheduled Date</label>
           <input type="date" value={scheduledDate} onChange={(e) => setScheduledDate(e.target.value)} style={inputStyle} />
         </div>
 
         {/* Scope notes */}
         <div>
-          <label style={{ display: 'block', fontSize: 10, fontWeight: 600, color: 'var(--text-3)', marginBottom: 3 }}>Scope Notes (optional)</label>
+          <label style={{ display: 'block', fontSize: 10, fontWeight: 600, color: 'var(--muted)', marginBottom: 3 }}>Scope Notes (optional)</label>
           <textarea
             value={scopeNotes}
             onChange={(e) => setScopeNotes(e.target.value)}
@@ -450,13 +450,13 @@ function ScheduleConsultationForm({
       </div>
 
       <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
-        <button onClick={onCancel} style={{ flex: 1, minHeight: 36, borderRadius: 'var(--radius)', fontSize: 12, fontWeight: 600, background: 'var(--bg)', color: 'var(--text-2)', border: '1px solid var(--border)', cursor: 'pointer' }}>
+        <button onClick={onCancel} style={{ flex: 1, minHeight: 36, borderRadius: 'var(--radius)', fontSize: 12, fontWeight: 600, fontFamily: 'var(--font-mono)', background: 'var(--bg)', color: 'var(--mid)', border: '1px solid var(--border)', cursor: 'pointer' }}>
           Cancel
         </button>
         <button
           onClick={handleSubmit}
           disabled={!canSubmit || createConsultation.isPending}
-          style={{ flex: 1, minHeight: 36, borderRadius: 'var(--radius)', fontSize: 12, fontWeight: 600, background: COLOR, color: '#FFFFFF', border: 'none', cursor: canSubmit ? 'pointer' : 'default', opacity: canSubmit && !createConsultation.isPending ? 1 : 0.5 }}
+          style={{ flex: 1, minHeight: 36, borderRadius: 'var(--radius)', fontSize: 12, fontWeight: 600, fontFamily: 'var(--font-mono)', background: COLOR, color: '#FFFFFF', border: 'none', cursor: canSubmit ? 'pointer' : 'default', opacity: canSubmit && !createConsultation.isPending ? 1 : 0.5 }}
         >
           {createConsultation.isPending ? 'Scheduling...' : 'Schedule'}
         </button>

@@ -89,7 +89,7 @@ export default function SOPDetailPage() {
             className="w-8 h-8 border-3 rounded-full animate-spin mx-auto mb-3"
             style={{ borderColor: 'var(--border)', borderTopColor: 'var(--blue)' }}
           />
-          <p className="text-sm" style={{ color: 'var(--text-3)' }}>Loading SOP...</p>
+          <p className="text-sm" style={{ color: 'var(--muted)' }}>Loading SOP...</p>
         </div>
       </div>
     );
@@ -99,8 +99,8 @@ export default function SOPDetailPage() {
     return (
       <div className="min-h-screen pb-24" style={{ background: 'var(--bg)' }}>
         <div className="max-w-lg mx-auto px-4 py-12 text-center">
-          <p className="text-sm" style={{ color: 'var(--text-2)' }}>SOP not found: {paramId}</p>
-          <p className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>
+          <p className="text-sm" style={{ color: 'var(--mid)' }}>SOP not found: {paramId}</p>
+          <p className="text-xs mt-1" style={{ color: 'var(--muted)' }}>
             {isSopCode ? 'Looked up by sopCode — have you seeded data at /labs/seed?' : 'Looked up by ID'}
           </p>
           <div className="flex gap-3 justify-center mt-4">
@@ -126,21 +126,21 @@ export default function SOPDetailPage() {
   return (
     <div className="min-h-screen pb-24" style={{ background: 'var(--bg)' }}>
       {/* Header */}
-      <div style={{ background: 'var(--surface-1)', borderBottom: '1px solid var(--border)' }}>
+      <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
         <div className="max-w-lg mx-auto px-4 py-4">
           <div className="flex items-center gap-2 mb-1">
             <Link href="/labs" className="text-sm hover:underline" style={{ color: 'var(--blue)' }}>Labs</Link>
-            <span className="text-xs" style={{ color: 'var(--text-3)' }}>/</span>
+            <span className="text-xs" style={{ color: 'var(--muted)' }}>/</span>
             <Link href="/labs/sops" className="text-sm hover:underline" style={{ color: 'var(--blue)' }}>SOPs</Link>
-            <span className="text-xs" style={{ color: 'var(--text-3)' }}>/</span>
+            <span className="text-xs" style={{ color: 'var(--muted)' }}>/</span>
           </div>
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-bold" style={{ color: 'var(--text)' }}>
-                <span className="font-mono mr-2" style={{ color: 'var(--text-3)' }}>{sop.sopCode}</span>
+              <h1 className="text-xl font-bold" style={{ color: 'var(--charcoal)' }}>
+                <span className="font-mono mr-2" style={{ color: 'var(--muted)' }}>{sop.sopCode}</span>
                 {sop.title}
               </h1>
-              <p className="text-xs" style={{ color: 'var(--text-3)' }}>Version {sop.version} — {sop.status}</p>
+              <p className="text-xs" style={{ color: 'var(--muted)' }}>Version {sop.version} — {sop.status}</p>
             </div>
           </div>
         </div>
@@ -148,29 +148,29 @@ export default function SOPDetailPage() {
 
       <div className="max-w-lg mx-auto px-4 mt-4 space-y-4">
         {/* SOP Metadata Card */}
-        <div className="rounded-xl p-4" style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-card)' }}>
-          <h2 className="text-sm font-semibold mb-3" style={{ color: 'var(--text)' }}>SOP Details</h2>
+        <div className="rounded-xl p-4" style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-card)' }}>
+          <h2 className="text-sm font-semibold mb-3" style={{ color: 'var(--charcoal)' }}>SOP Details</h2>
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
-              <span style={{ color: 'var(--text-2)' }}>Trade Family</span>
-              <span className="font-medium" style={{ color: 'var(--text)' }}>{sop.tradeFamily}</span>
+              <span style={{ color: 'var(--mid)' }}>Trade Family</span>
+              <span className="font-medium" style={{ color: 'var(--charcoal)' }}>{sop.tradeFamily}</span>
             </div>
             <div className="flex justify-between">
-              <span style={{ color: 'var(--text-2)' }}>Observation Mode</span>
-              <span className="font-medium" style={{ color: 'var(--text)' }}>{MODE_LABELS[sop.defaultObservationMode] || sop.defaultObservationMode}</span>
+              <span style={{ color: 'var(--mid)' }}>Observation Mode</span>
+              <span className="font-medium" style={{ color: 'var(--charcoal)' }}>{MODE_LABELS[sop.defaultObservationMode] || sop.defaultObservationMode}</span>
             </div>
             <div className="flex justify-between">
-              <span style={{ color: 'var(--text-2)' }}>Certification</span>
-              <span className="font-medium" style={{ color: 'var(--text)' }}>{sop.certificationLevel}</span>
+              <span style={{ color: 'var(--mid)' }}>Certification</span>
+              <span className="font-medium" style={{ color: 'var(--charcoal)' }}>{sop.certificationLevel}</span>
             </div>
             <div className="flex justify-between">
-              <span style={{ color: 'var(--text-2)' }}>Effective Date</span>
-              <span className="font-medium" style={{ color: 'var(--text)' }}>{sop.effectiveDate}</span>
+              <span style={{ color: 'var(--mid)' }}>Effective Date</span>
+              <span className="font-medium" style={{ color: 'var(--charcoal)' }}>{sop.effectiveDate}</span>
             </div>
             {sop.description && (
               <div className="pt-2" style={{ borderTop: '1px solid var(--border)' }}>
-                <span className="block mb-1" style={{ color: 'var(--text-2)' }}>Description</span>
-                <p style={{ color: 'var(--text-2)' }}>{sop.description}</p>
+                <span className="block mb-1" style={{ color: 'var(--mid)' }}>Description</span>
+                <p style={{ color: 'var(--mid)' }}>{sop.description}</p>
               </div>
             )}
           </div>
@@ -192,36 +192,36 @@ export default function SOPDetailPage() {
         <Link
           href={`/labs/sops/${sopId}/script`}
           className="block rounded-xl p-4 hover-surface transition-shadow"
-          style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-card)', textDecoration: 'none' }}
+          style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-card)', textDecoration: 'none' }}
         >
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-sm font-semibold" style={{ color: 'var(--text)' }}>SCRIPT Phase View</h2>
-              <p className="text-xs mt-0.5" style={{ color: 'var(--text-2)' }}>Organize checklist steps into Shield → Clear → Ready → Install → Punch → Turnover</p>
+              <h2 className="text-sm font-semibold" style={{ color: 'var(--charcoal)' }}>SCRIPT Phase View</h2>
+              <p className="text-xs mt-0.5" style={{ color: 'var(--mid)' }}>Organize checklist steps into Shield → Clear → Ready → Install → Punch → Turnover</p>
             </div>
-            <span className="text-sm" style={{ color: 'var(--text-3)' }}>→</span>
+            <span className="text-sm" style={{ color: 'var(--muted)' }}>→</span>
           </div>
         </Link>
 
         {/* Observation Summary */}
-        <div className="rounded-xl p-4" style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-card)' }}>
-          <h2 className="text-sm font-semibold mb-2" style={{ color: 'var(--text)' }}>Observation Config</h2>
+        <div className="rounded-xl p-4" style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-card)' }}>
+          <h2 className="text-sm font-semibold mb-2" style={{ color: 'var(--charcoal)' }}>Observation Config</h2>
           <div className="flex items-center gap-4 text-sm">
             <div>
-              <span style={{ color: 'var(--text-2)' }}>Total Steps</span>
-              <span className="ml-2 font-semibold" style={{ color: 'var(--text)' }}>{checklistItems.length}</span>
+              <span style={{ color: 'var(--mid)' }}>Total Steps</span>
+              <span className="ml-2 font-semibold" style={{ color: 'var(--charcoal)' }}>{checklistItems.length}</span>
             </div>
             <div>
-              <span style={{ color: 'var(--text-2)' }}>Observation Steps</span>
+              <span style={{ color: 'var(--mid)' }}>Observation Steps</span>
               <span className="ml-2 font-semibold" style={{ color: 'var(--blue)' }}>{observationItems.length}</span>
             </div>
           </div>
         </div>
 
         {/* Checklist Items */}
-        <div className="rounded-xl p-4" style={{ background: 'var(--surface-1)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-card)' }}>
+        <div className="rounded-xl p-4" style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-card)' }}>
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-semibold" style={{ color: 'var(--text)' }}>Checklist Items</h2>
+            <h2 className="text-sm font-semibold" style={{ color: 'var(--charcoal)' }}>Checklist Items</h2>
             <button
               onClick={() => setShowAddForm(true)}
               className="px-3 py-1.5 text-xs font-medium text-white rounded-lg"
@@ -232,7 +232,7 @@ export default function SOPDetailPage() {
           </div>
 
           {checklistItems.length === 0 ? (
-            <p className="text-sm text-center py-4" style={{ color: 'var(--text-3)' }}>No checklist items yet. Add your first step.</p>
+            <p className="text-sm text-center py-4" style={{ color: 'var(--muted)' }}>No checklist items yet. Add your first step.</p>
           ) : (
             <div className="space-y-2">
               {checklistItems.map((item) => (
@@ -311,29 +311,29 @@ function ChecklistItemRow({
       >
         <span
           className="mt-0.5 w-5 text-right flex-shrink-0"
-          style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--text-3)' }}
+          style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--muted)' }}
         >
           {item.stepNumber}
         </span>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className="text-sm" style={{ color: 'var(--text)' }}>{item.title}</span>
+            <span className="text-sm" style={{ color: 'var(--charcoal)' }}>{item.title}</span>
             {item.isCritical && (
               <span className="text-xs font-medium" style={{ color: 'var(--red)' }}>CRITICAL</span>
             )}
           </div>
           <div className="flex items-center gap-2 mt-1 flex-wrap">
-            <span className="text-xs" style={{ color: 'var(--text-3)' }}>{item.checklistType} / {item.category}</span>
+            <span className="text-xs" style={{ color: 'var(--muted)' }}>{item.checklistType} / {item.category}</span>
             {item.generatesObservation && (
               <span
                 className="inline-flex px-1.5 py-0.5 text-xs font-medium rounded"
-                style={{ background: 'var(--blue-dim)', color: 'var(--blue)' }}
+                style={{ background: 'var(--blue-bg)', color: 'var(--blue)' }}
               >
                 {item.triggerTiming === 'on_check' ? 'On-Check' : 'Batch'}
               </span>
             )}
             {item.requiresPhoto && (
-              <span className="text-xs" style={{ color: 'var(--text-3)' }}>Photo req.</span>
+              <span className="text-xs" style={{ color: 'var(--muted)' }}>Photo req.</span>
             )}
           </div>
         </div>
@@ -342,11 +342,11 @@ function ChecklistItemRow({
   }
 
   return (
-    <div className="p-3 rounded-lg space-y-3" style={{ border: '2px solid var(--blue)', background: 'var(--blue-dim)' }}>
+    <div className="p-3 rounded-lg space-y-3" style={{ border: '2px solid var(--blue)', background: 'var(--blue-bg)' }}>
       <div className="flex items-center gap-2">
         <span
           className="w-5 text-right flex-shrink-0"
-          style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--text-3)' }}
+          style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--muted)' }}
         >
           {item.stepNumber}
         </span>
@@ -357,8 +357,8 @@ function ChecklistItemRow({
           className="flex-1 px-2 py-1.5 text-sm rounded-lg"
           style={{
             border: '1px solid var(--border-strong)',
-            background: 'var(--surface-1)',
-            color: 'var(--text)',
+            background: 'var(--surface)',
+            color: 'var(--charcoal)',
             outline: 'none',
           }}
         />
@@ -373,7 +373,7 @@ function ChecklistItemRow({
             onChange={(e) => setGeneratesObs(e.target.checked)}
             className="w-4 h-4 rounded"
           />
-          <span className="text-xs font-medium" style={{ color: 'var(--text-2)' }}>Generates Observation</span>
+          <span className="text-xs font-medium" style={{ color: 'var(--mid)' }}>Generates Observation</span>
         </label>
       </div>
 
@@ -387,8 +387,8 @@ function ChecklistItemRow({
               className="px-2.5 py-1.5 text-xs font-medium rounded-lg transition-colors"
               style={{
                 border: triggerTiming === 'on_check' ? '1px solid var(--blue)' : '1px solid var(--border)',
-                background: triggerTiming === 'on_check' ? 'var(--blue-dim)' : 'transparent',
-                color: triggerTiming === 'on_check' ? 'var(--blue)' : 'var(--text-2)',
+                background: triggerTiming === 'on_check' ? 'var(--blue-bg)' : 'transparent',
+                color: triggerTiming === 'on_check' ? 'var(--blue)' : 'var(--mid)',
                 minHeight: '36px',
               }}
             >
@@ -400,8 +400,8 @@ function ChecklistItemRow({
               className="px-2.5 py-1.5 text-xs font-medium rounded-lg transition-colors"
               style={{
                 border: triggerTiming === 'batch' ? '1px solid var(--blue)' : '1px solid var(--border)',
-                background: triggerTiming === 'batch' ? 'var(--blue-dim)' : 'transparent',
-                color: triggerTiming === 'batch' ? 'var(--blue)' : 'var(--text-2)',
+                background: triggerTiming === 'batch' ? 'var(--blue-bg)' : 'transparent',
+                color: triggerTiming === 'batch' ? 'var(--blue)' : 'var(--mid)',
                 minHeight: '36px',
               }}
             >
@@ -411,12 +411,12 @@ function ChecklistItemRow({
 
           {/* Knowledge Type */}
           <div>
-            <label className="text-xs mb-1 block" style={{ color: 'var(--text-2)' }}>Knowledge Type</label>
+            <label className="text-xs mb-1 block" style={{ color: 'var(--mid)' }}>Knowledge Type</label>
             <select
               value={knowledgeType || ''}
               onChange={(e) => setKnowledgeType(e.target.value as KnowledgeType || null)}
               className="w-full px-2 py-1.5 text-xs rounded-lg"
-              style={{ border: '1px solid var(--border-strong)', background: 'var(--surface-1)', color: 'var(--text)' }}
+              style={{ border: '1px solid var(--border-strong)', background: 'var(--surface)', color: 'var(--charcoal)' }}
             >
               <option value="">None</option>
               {KNOWLEDGE_TYPES.map((kt) => (
@@ -433,7 +433,7 @@ function ChecklistItemRow({
               onChange={(e) => setRequiresPhoto(e.target.checked)}
               className="w-4 h-4 rounded"
             />
-            <span className="text-xs" style={{ color: 'var(--text-2)' }}>Requires Photo</span>
+            <span className="text-xs" style={{ color: 'var(--mid)' }}>Requires Photo</span>
           </label>
         </div>
       )}
@@ -457,7 +457,7 @@ function ChecklistItemRow({
         <button
           onClick={onCancel}
           className="px-3 py-1.5 text-xs font-medium rounded-lg hover-surface"
-          style={{ color: 'var(--text-2)', border: '1px solid var(--border)', background: 'transparent', minHeight: '36px' }}
+          style={{ color: 'var(--mid)', border: '1px solid var(--border)', background: 'transparent', minHeight: '36px' }}
         >
           Cancel
         </button>
@@ -520,17 +520,17 @@ function AddChecklistItemForm({
 
   const inputStyle = {
     border: '1px solid var(--border-strong)',
-    background: 'var(--surface-1)',
-    color: 'var(--text)',
+    background: 'var(--surface)',
+    color: 'var(--charcoal)',
   };
 
   return (
-    <div className="rounded-xl p-4" style={{ background: 'var(--surface-1)', border: '2px solid var(--blue)', boxShadow: 'var(--shadow-card)' }}>
-      <h3 className="text-sm font-semibold mb-3" style={{ color: 'var(--text)' }}>Add Checklist Step</h3>
+    <div className="rounded-xl p-4" style={{ background: 'var(--surface)', border: '2px solid var(--blue)', boxShadow: 'var(--shadow-card)' }}>
+      <h3 className="text-sm font-semibold mb-3" style={{ color: 'var(--charcoal)' }}>Add Checklist Step</h3>
       <form onSubmit={handleSubmit} className="space-y-3">
         {/* Title */}
         <div>
-          <label className="text-xs mb-1 block" style={{ color: 'var(--text-2)' }}>Step Title *</label>
+          <label className="text-xs mb-1 block" style={{ color: 'var(--mid)' }}>Step Title *</label>
           <input
             type="text"
             value={title}
@@ -545,7 +545,7 @@ function AddChecklistItemForm({
         {/* Type + Category */}
         <div className="flex gap-2">
           <div className="flex-1">
-            <label className="text-xs mb-1 block" style={{ color: 'var(--text-2)' }}>Type</label>
+            <label className="text-xs mb-1 block" style={{ color: 'var(--mid)' }}>Type</label>
             <select
               value={checklistType}
               onChange={(e) => setChecklistType(e.target.value as ChecklistType)}
@@ -558,7 +558,7 @@ function AddChecklistItemForm({
             </select>
           </div>
           <div className="flex-1">
-            <label className="text-xs mb-1 block" style={{ color: 'var(--text-2)' }}>Category</label>
+            <label className="text-xs mb-1 block" style={{ color: 'var(--mid)' }}>Category</label>
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value as ChecklistCategory)}
@@ -576,11 +576,11 @@ function AddChecklistItemForm({
         <div className="flex items-center gap-4">
           <label className="flex items-center gap-2 cursor-pointer" style={{ minHeight: '44px' }}>
             <input type="checkbox" checked={isCritical} onChange={(e) => setIsCritical(e.target.checked)} className="w-4 h-4 rounded" />
-            <span className="text-xs" style={{ color: 'var(--text-2)' }}>Critical</span>
+            <span className="text-xs" style={{ color: 'var(--mid)' }}>Critical</span>
           </label>
           <label className="flex items-center gap-2 cursor-pointer" style={{ minHeight: '44px' }}>
             <input type="checkbox" checked={generatesObs} onChange={(e) => setGeneratesObs(e.target.checked)} className="w-4 h-4 rounded" />
-            <span className="text-xs" style={{ color: 'var(--text-2)' }}>Generates Observation</span>
+            <span className="text-xs" style={{ color: 'var(--mid)' }}>Generates Observation</span>
           </label>
         </div>
 
@@ -594,8 +594,8 @@ function AddChecklistItemForm({
                 className="px-2.5 py-1.5 text-xs font-medium rounded-lg transition-colors"
                 style={{
                   border: triggerTiming === 'on_check' ? '1px solid var(--blue)' : '1px solid var(--border)',
-                  background: triggerTiming === 'on_check' ? 'var(--blue-dim)' : 'transparent',
-                  color: triggerTiming === 'on_check' ? 'var(--blue)' : 'var(--text-2)',
+                  background: triggerTiming === 'on_check' ? 'var(--blue-bg)' : 'transparent',
+                  color: triggerTiming === 'on_check' ? 'var(--blue)' : 'var(--mid)',
                   minHeight: '36px',
                 }}
               >
@@ -607,8 +607,8 @@ function AddChecklistItemForm({
                 className="px-2.5 py-1.5 text-xs font-medium rounded-lg transition-colors"
                 style={{
                   border: triggerTiming === 'batch' ? '1px solid var(--blue)' : '1px solid var(--border)',
-                  background: triggerTiming === 'batch' ? 'var(--blue-dim)' : 'transparent',
-                  color: triggerTiming === 'batch' ? 'var(--blue)' : 'var(--text-2)',
+                  background: triggerTiming === 'batch' ? 'var(--blue-bg)' : 'transparent',
+                  color: triggerTiming === 'batch' ? 'var(--blue)' : 'var(--mid)',
                   minHeight: '36px',
                 }}
               >
@@ -616,7 +616,7 @@ function AddChecklistItemForm({
               </button>
             </div>
             <div>
-              <label className="text-xs mb-1 block" style={{ color: 'var(--text-2)' }}>Knowledge Type</label>
+              <label className="text-xs mb-1 block" style={{ color: 'var(--mid)' }}>Knowledge Type</label>
               <select
                 value={knowledgeType || ''}
                 onChange={(e) => setKnowledgeType(e.target.value as KnowledgeType || null)}
@@ -631,7 +631,7 @@ function AddChecklistItemForm({
             </div>
             <label className="flex items-center gap-2 cursor-pointer" style={{ minHeight: '36px' }}>
               <input type="checkbox" checked={requiresPhoto} onChange={(e) => setRequiresPhoto(e.target.checked)} className="w-4 h-4 rounded" />
-              <span className="text-xs" style={{ color: 'var(--text-2)' }}>Requires Photo</span>
+              <span className="text-xs" style={{ color: 'var(--mid)' }}>Requires Photo</span>
             </label>
           </div>
         )}
@@ -650,7 +650,7 @@ function AddChecklistItemForm({
             type="button"
             onClick={onCancel}
             className="px-4 py-2 text-sm font-medium rounded-lg hover-surface"
-            style={{ color: 'var(--text-2)', border: '1px solid var(--border)', background: 'transparent', minHeight: '44px' }}
+            style={{ color: 'var(--mid)', border: '1px solid var(--border)', background: 'transparent', minHeight: '44px' }}
           >
             Cancel
           </button>

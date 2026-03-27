@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { useLeadPipeline } from '@/lib/hooks/useLeadData';
+import { useLeadPipeline, useUpdateLeadStage } from '@/lib/hooks/useLeadData';
 import type { LeadRecord } from '@/lib/hooks/useLeadData';
 import { calculateEstimateBreakdown } from '@/lib/instantEstimate';
 import type { EstimateBreakdown } from '@/lib/instantEstimate';
@@ -539,6 +539,27 @@ function ProjectDetail({ lead, onCheckToggle, onEdit }: { lead: Lead; onCheckTog
     return active ?? 'discover';
   });
   const [showPreview, setShowPreview] = useState(false);
+  const [estimateSent, setEstimateSent] = useState(lead.estimateSent);
+  const updateStage = useUpdateLeadStage();
+
+  const handleSendEstimate = useCallback(async () => {
+    const ok = window.confirm(`Send estimate to ${lead.clientFullName}?\n\nThis will advance the lead to the Estimate stage.`);
+    if (!ok) return;
+    try {
+      await updateStage.mutateAsync({
+        customerId: lead.id,
+        targetStage: 'discovery',
+        customerName: lead.clientFullName,
+      });
+      // Auto-check items 4 and 5
+      onCheckToggle(lead.id, 4);
+      onCheckToggle(lead.id, 5);
+      setEstimateSent(true);
+    } catch (err) {
+      console.error('Failed to send estimate:', err);
+      window.alert('Failed to send estimate. Check console for details.');
+    }
+  }, [lead, updateStage, onCheckToggle]);
 
   const tradesLabel = lead.trades.join(' / ');
   const goAheadComplete = lead.phases.goAhead.status === 'complete';
@@ -558,7 +579,17 @@ function ProjectDetail({ lead, onCheckToggle, onEdit }: { lead: Lead; onCheckTog
             <ActionButton label="📞 Call" border="#111010" color="#F0EDE8" fill="#111010" hoverBg="#2A2826" />
             <ActionButton label="💬 Text" border="#111010" color="#F0EDE8" fill="#111010" hoverBg="#2A2826" />
             <ActionButton label="Edit" border="#D0CBC3" color="#111010" onClick={onEdit} />
-            {!lead.estimateSent && <ActionButton label="↗ Send Estimate" border="#D0CBC3" color="#111010" onClick={() => setShowPreview(true)} />}
+            {!estimateSent ? (
+              <ActionButton
+                label={updateStage.isPending ? '↗ Sending...' : '↗ Send Estimate'}
+                border="#111010" color="#F0EDE8" fill="#111010" hoverBg="#2A2826"
+                onClick={handleSendEstimate}
+              />
+            ) : (
+              <span style={{ fontFamily: MONO, fontSize: 8, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#2D7A4F', padding: '6px 13px' }}>
+                ✓ Estimate Sent
+              </span>
+            )}
             {goAheadComplete && <ActionButton label="Convert to Job" border="#111010" color="#fff" fill="#111010" hoverBg="#2A2826" />}
           </div>
         </div>

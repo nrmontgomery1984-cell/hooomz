@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useMemo, useRef } from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLeadPipeline } from '@/lib/hooks/useLeadData';
 import type { LeadRecord } from '@/lib/hooks/useLeadData';
@@ -341,17 +341,22 @@ export default function DiscoverPage() {
   const router = useRouter();
   const pipeline = useLeadPipeline();
   const mappedLeads = useMemo(() => pipeline.leads.map(mapLeadRecord), [pipeline.leads]);
+  const [leads, setLeads] = useState<Lead[]>([]);
+  const knownIdsRef = useRef<Set<string>>(new Set());
 
-  // Checklist state stored in a ref so pipeline re-fetches don't clobber it
-  const checklistStateRef = useRef<Map<string, Map<number, boolean>>>(new Map());
-
-  const leads = useMemo(() => {
-    return mappedLeads.map((ml) => {
-      const savedChecks = checklistStateRef.current.get(ml.id);
-      if (savedChecks) {
-        return { ...ml, checklist: ml.checklist.map((c) => ({ ...c, checked: savedChecks.get(c.id) ?? c.checked })) };
+  // Only add NEW leads from pipeline — never overwrite existing state
+  useEffect(() => {
+    if (mappedLeads.length === 0) return;
+    setLeads((prev) => {
+      const newLeads: Lead[] = [];
+      for (const ml of mappedLeads) {
+        if (!knownIdsRef.current.has(ml.id)) {
+          knownIdsRef.current.add(ml.id);
+          newLeads.push(ml);
+        }
       }
-      return ml;
+      if (newLeads.length === 0) return prev;
+      return [...prev, ...newLeads];
     });
   }, [mappedLeads]);
 
@@ -360,13 +365,18 @@ export default function DiscoverPage() {
   const newCount = leads.filter((l) => l.status === 'new').length;
   const selectedLead = leads.find((l) => l.id === selectedId) ?? null;
 
-  const [, forceRender] = useState(0);
   const handleCheckToggle = useCallback((leadId: string, itemId: number) => {
-    const leadChecks = checklistStateRef.current.get(leadId) ?? new Map<number, boolean>();
-    const current = leadChecks.get(itemId) ?? false;
-    leadChecks.set(itemId, !current);
-    checklistStateRef.current.set(leadId, leadChecks);
-    forceRender((n) => n + 1);
+    setLeads((prev) =>
+      prev.map((l) => {
+        if (l.id !== leadId) return l;
+        return {
+          ...l,
+          checklist: l.checklist.map((c) =>
+            c.id === itemId ? { ...c, checked: !c.checked } : c,
+          ),
+        };
+      }),
+    );
   }, []);
 
   // Loading state

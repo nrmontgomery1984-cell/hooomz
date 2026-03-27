@@ -613,8 +613,9 @@ function ProjectDetail({ lead, onCheckToggle, onEdit }: { lead: Lead; onCheckTog
         customerName: lead.clientFullName,
       });
 
-      // Force reload to reflect the stage change
-      window.location.reload();
+      // The mutation hook invalidates pipeline queries on success.
+      // Show confirmation — the phase dots will update when React Query refetches.
+      window.alert(`Advanced to ${advance.nextPhase}. The lead pipeline will update.`);
     } catch (err) {
       console.error('Failed to advance phase:', err);
       window.alert('Failed to advance phase: ' + (err instanceof Error ? err.message : String(err)));

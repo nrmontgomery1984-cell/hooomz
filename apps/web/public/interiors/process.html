@@ -82,18 +82,20 @@
     text-transform: uppercase;
   }
 
-  .nav-right { display: flex; align-items: center; gap: 32px; }
+  .nav-right { display: flex; align-items: center; gap: 16px; }
 
   .nav-link {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
     color: rgba(255,255,255,0.6);
     text-decoration: none;
     letter-spacing: 0.02em;
-    transition: color 0.2s;
+    transition: color 0.2s, border-color 0.2s;
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 8px 16px;
   }
 
-  .nav-link:hover { color: white; }
+  .nav-link:hover { color: white; border-color: rgba(255,255,255,0.4); }
 
   .nav-cta {
     font-size: 13px;
@@ -572,13 +574,18 @@
   .fade-in { opacity: 0; animation: fadeUp 0.8s ease 0.1s forwards; }
 
   @media (max-width: 960px) {
-    nav { padding: 0 24px; }
+    nav { padding: 0 16px; gap: 8px; }
+    .nav-right { gap: 8px; }
+    .nav-link { font-size: 11px; padding: 6px 10px; }
+    .nav-cta { font-size: 11px; padding: 8px 14px; }
     .page-hero { padding: 120px 24px 60px; grid-template-columns: 1fr; gap: 32px; }
-    .phase-bar { flex-direction: column; position: static; }
-    .phase-bar-item { padding: 18px 24px; border-right: none; border-bottom: 1px solid var(--border); }
+    .phase-bar { flex-direction: row; position: static; }
+    .phase-bar-item { padding: 16px 24px; border-right: none; border-bottom: 1px solid var(--border); flex: 1; cursor: pointer; text-align: center; transition: opacity 0.2s; }
+    .phase-bar-item.dark { border-bottom: 1px solid rgba(255,255,255,0.1); }
     .stepper-hint-strip { display: none; }
     .stepper-track { grid-template-columns: 1fr; }
-    .stepper-phase { border-right: none; border-bottom: 1px solid var(--border); }
+    .stepper-phase { border-right: none; border-bottom: none; }
+    .stepper-phase.mobile-hidden { display: none; }
     .stage-panel { padding: 40px 24px; min-height: auto; }
     .passport-bridge { padding: 60px 24px; grid-template-columns: 1fr; gap: 48px; }
     .cta-section { padding: 60px 24px; grid-template-columns: 1fr; gap: 40px; }
@@ -982,11 +989,44 @@
     buildPips('script', scriptIdx);
   }
 
+  // Mobile phase tab switching
+  function setupMobileTabs() {
+    const isMobile = window.matchMedia('(max-width: 960px)').matches;
+    const designPhase = document.getElementById('design-phase');
+    const scriptPhase = document.getElementById('script-phase');
+    const phaseItems = document.querySelectorAll('.phase-bar-item');
+
+    if (!isMobile || !designPhase || !scriptPhase) return;
+
+    // Show design by default, hide script
+    scriptPhase.classList.add('mobile-hidden');
+    phaseItems[0].style.opacity = '1';
+    phaseItems[1].style.opacity = '0.4';
+
+    phaseItems.forEach((item, i) => {
+      item.addEventListener('click', () => {
+        if (i === 0) {
+          designPhase.classList.remove('mobile-hidden');
+          scriptPhase.classList.add('mobile-hidden');
+          phaseItems[0].style.opacity = '1';
+          phaseItems[1].style.opacity = '0.4';
+        } else {
+          scriptPhase.classList.remove('mobile-hidden');
+          designPhase.classList.add('mobile-hidden');
+          phaseItems[0].style.opacity = '0.4';
+          phaseItems[1].style.opacity = '1';
+        }
+      });
+    });
+  }
+
   // Init
   buildPips('design', 0);
   buildPips('script', 0);
   document.getElementById('design-prev').disabled = true;
   document.getElementById('script-prev').disabled = true;
+  setupMobileTabs();
+  window.addEventListener('resize', setupMobileTabs);
 </script>
 
 </body>

@@ -538,6 +538,7 @@ function ProjectDetail({ lead, onCheckToggle, onEdit }: { lead: Lead; onCheckTog
     const active = PHASE_KEYS.find((k) => lead.phases[k].status === 'active');
     return active ?? 'discover';
   });
+  const [showPreview, setShowPreview] = useState(false);
 
   const tradesLabel = lead.trades.join(' / ');
   const goAheadComplete = lead.phases.goAhead.status === 'complete';
@@ -557,7 +558,7 @@ function ProjectDetail({ lead, onCheckToggle, onEdit }: { lead: Lead; onCheckTog
             <ActionButton label="📞 Call" border="#111010" color="#F0EDE8" fill="#111010" hoverBg="#2A2826" />
             <ActionButton label="💬 Text" border="#111010" color="#F0EDE8" fill="#111010" hoverBg="#2A2826" />
             <ActionButton label="Edit" border="#D0CBC3" color="#111010" onClick={onEdit} />
-            {!lead.estimateSent && <ActionButton label="↗ Send Estimate" border="#D0CBC3" color="#111010" />}
+            {!lead.estimateSent && <ActionButton label="↗ Send Estimate" border="#D0CBC3" color="#111010" onClick={() => setShowPreview(true)} />}
             {goAheadComplete && <ActionButton label="Convert to Job" border="#111010" color="#fff" fill="#111010" hoverBg="#2A2826" />}
           </div>
         </div>
@@ -591,7 +592,7 @@ function ProjectDetail({ lead, onCheckToggle, onEdit }: { lead: Lead; onCheckTog
 
       {/* Tab Content */}
       <div style={{ flex: 1, overflow: 'auto' }}>
-        {activeTab === 'discover' && <DiscoverTab lead={lead} onCheckToggle={onCheckToggle} />}
+        {activeTab === 'discover' && <DiscoverTab lead={lead} onCheckToggle={onCheckToggle} showPreview={showPreview} setShowPreview={setShowPreview} />}
         {activeTab === 'script' && <ScriptTab />}
         {activeTab !== 'discover' && activeTab !== 'script' && (
           <PhaseTab
@@ -610,9 +611,8 @@ function ProjectDetail({ lead, onCheckToggle, onEdit }: { lead: Lead; onCheckTog
 // D — DISCOVER TAB (fully built)
 // ============================================================================
 
-function DiscoverTab({ lead, onCheckToggle }: { lead: Lead; onCheckToggle: (leadId: string, itemId: number) => void }) {
+function DiscoverTab({ lead, onCheckToggle, showPreview, setShowPreview }: { lead: Lead; onCheckToggle: (leadId: string, itemId: number) => void; showPreview: boolean; setShowPreview: (v: boolean) => void }) {
   const [showBreakdown, setShowBreakdown] = useState(false);
-  const [showPreview, setShowPreview] = useState(false);
   const catalog = useEffectiveCatalog();
 
   const breakdown = useMemo(() => {

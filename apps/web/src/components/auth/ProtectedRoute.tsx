@@ -48,7 +48,7 @@ function resolveModule(pathname: string): string | null {
 }
 
 /** Routes that bypass auth entirely */
-const PUBLIC_PATHS = ['/login', '/portal', '/intake'];
+const PUBLIC_PATHS = ['/login', '/portal', '/intake', '/interiors'];
 
 function isPublicRoute(pathname: string | null): boolean {
   if (!pathname) return false;
@@ -67,9 +67,9 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (isPublic || loading) return;
 
-    // Not authenticated → login
+    // Not authenticated → interiors landing page
     if (!user) {
-      router.replace('/login');
+      router.replace('/interiors');
       return;
     }
 

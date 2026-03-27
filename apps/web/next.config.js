@@ -17,13 +17,7 @@ const nextConfig = {
     '@hooomz/reporting',
   ],
   async redirects() {
-    return [
-      {
-        source: '/',
-        destination: '/interiors',
-        permanent: false,
-      },
-    ];
+    return [];
   },
   async rewrites() {
     return [

@@ -291,6 +291,16 @@ const PHASE_CHECKLISTS: Record<string, ChecklistItem[]> = {
   ],
 };
 
+// Phase advance: which lead stage to set when advancing from each phase
+const PHASE_ADVANCE_MAP: Record<string, { targetStage: string; nextPhase: string }> = {
+  discover: { targetStage: 'discovery', nextPhase: 'Estimate' },
+  estimate: { targetStage: 'site_visit', nextPhase: 'Survey' },
+  survey: { targetStage: 'quote_sent', nextPhase: 'Iterations' },
+  iterations: { targetStage: 'won', nextPhase: 'Go-Ahead' },
+  goAhead: { targetStage: 'won', nextPhase: 'Notify' },
+  notify: { targetStage: 'won', nextPhase: 'SCRIPT' },
+};
+
 const MONO = "'DM Mono', monospace";
 const FIG = "'Figtree', sans-serif";
 
@@ -589,6 +599,27 @@ function ProjectDetail({ lead, onCheckToggle, onEdit }: { lead: Lead; onCheckTog
     }
   }, [lead, updateStage, onCheckToggle, logActivity]);
 
+  const handleAdvancePhase = useCallback(async (phaseKey: string) => {
+    const advance = PHASE_ADVANCE_MAP[phaseKey];
+    if (!advance) return;
+
+    try {
+      await logActivity('lead.phase_completed', `${PHASE_WORDS[PHASE_KEYS.indexOf(phaseKey as PhaseKey)]} phase completed for ${lead.clientFullName}`, {
+        phase: phaseKey,
+        next_phase: advance.nextPhase,
+      });
+
+      await updateStage.mutateAsync({
+        customerId: lead.id,
+        targetStage: advance.targetStage,
+        customerName: lead.clientFullName,
+      });
+    } catch (err) {
+      console.error('Failed to advance phase:', err);
+      window.alert('Failed to advance phase. Check console.');
+    }
+  }, [lead, updateStage, logActivity]);
+
   const tradesLabel = lead.trades.join(' / ');
   const goAheadComplete = lead.phases.goAhead.status === 'complete';
 
@@ -651,7 +682,7 @@ function ProjectDetail({ lead, onCheckToggle, onEdit }: { lead: Lead; onCheckTog
 
       {/* Tab Content */}
       <div style={{ flex: 1, overflow: 'auto' }}>
-        {activeTab === 'discover' && <DiscoverTab lead={lead} onCheckToggle={onCheckToggle} showPreview={showPreview} setShowPreview={setShowPreview} />}
+        {activeTab === 'discover' && <DiscoverTab lead={lead} onCheckToggle={onCheckToggle} showPreview={showPreview} setShowPreview={setShowPreview} onAdvance={() => handleAdvancePhase('discover')} />}
         {activeTab === 'script' && <ScriptTab />}
         {activeTab !== 'discover' && activeTab !== 'script' && (
           <PhaseTab
@@ -659,6 +690,7 @@ function ProjectDetail({ lead, onCheckToggle, onEdit }: { lead: Lead; onCheckTog
             phaseKey={activeTab as PhaseKey}
             label={PHASE_WORDS[PHASE_KEYS.indexOf(activeTab as PhaseKey)]}
             lead={lead}
+            onAdvance={() => handleAdvancePhase(activeTab as string)}
           />
         )}
       </div>
@@ -670,7 +702,7 @@ function ProjectDetail({ lead, onCheckToggle, onEdit }: { lead: Lead; onCheckTog
 // D — DISCOVER TAB (fully built)
 // ============================================================================
 
-function DiscoverTab({ lead, onCheckToggle, showPreview, setShowPreview }: { lead: Lead; onCheckToggle: (leadId: string, itemId: number) => void; showPreview: boolean; setShowPreview: (v: boolean) => void }) {
+function DiscoverTab({ lead, onCheckToggle, showPreview, setShowPreview, onAdvance }: { lead: Lead; onCheckToggle: (leadId: string, itemId: number) => void; showPreview: boolean; setShowPreview: (v: boolean) => void; onAdvance: () => void }) {
   const [showBreakdown, setShowBreakdown] = useState(false);
   const catalog = useEffectiveCatalog();
 
@@ -787,6 +819,25 @@ function DiscoverTab({ lead, onCheckToggle, showPreview, setShowPreview }: { lea
               )}
             </React.Fragment>
           ))}
+
+          {/* Advance button — shows when all items checked */}
+          {checkedCount === totalCount && (
+            <button
+              onClick={onAdvance}
+              style={{
+                marginTop: 12, width: '100%', padding: '12px 16px',
+                background: '#111010', color: '#F0EDE8', border: 'none',
+                borderRadius: 4, cursor: 'pointer',
+                fontFamily: MONO, fontSize: 10, fontWeight: 600,
+                letterSpacing: '0.1em', textTransform: 'uppercase',
+                transition: 'background 0.15s',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = '#2A2826'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = '#111010'; }}
+            >
+              Advance to Estimate →
+            </button>
+          )}
         </SectionCard>
 
         {/* Activity log card */}
@@ -962,7 +1013,7 @@ function SectionCard({ children }: { children: React.ReactNode }) {
 // E–N PHASE TAB (full checklist)
 // ============================================================================
 
-function PhaseTab({ phaseKey, label, lead }: { phaseKey: PhaseKey; label: string; lead: Lead }) {
+function PhaseTab({ phaseKey, label, lead, onAdvance }: { phaseKey: PhaseKey; label: string; lead: Lead; onAdvance: () => void }) {
   const template = PHASE_CHECKLISTS[phaseKey];
   const [items, setItems] = useState<ChecklistItem[]>(() =>
     template ? template.map((c) => ({ ...c })) : [],
@@ -1002,6 +1053,25 @@ function PhaseTab({ phaseKey, label, lead }: { phaseKey: PhaseKey; label: string
               onToggle={() => handleToggle(item.id, item.type)}
             />
           ))}
+
+          {/* Advance button — shows when all items checked */}
+          {checkedCount === totalCount && PHASE_ADVANCE_MAP[phaseKey] && (
+            <button
+              onClick={onAdvance}
+              style={{
+                marginTop: 12, width: '100%', padding: '12px 16px',
+                background: '#111010', color: '#F0EDE8', border: 'none',
+                borderRadius: 4, cursor: 'pointer',
+                fontFamily: MONO, fontSize: 10, fontWeight: 600,
+                letterSpacing: '0.1em', textTransform: 'uppercase',
+                transition: 'background 0.15s',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = '#2A2826'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = '#111010'; }}
+            >
+              Advance to {PHASE_ADVANCE_MAP[phaseKey].nextPhase} →
+            </button>
+          )}
         </SectionCard>
       </div>
 

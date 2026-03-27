@@ -700,38 +700,28 @@ function DiscoverTab({ lead, onCheckToggle }: { lead: Lead; onCheckToggle: (lead
                       <div style={{ fontFamily: MONO, fontSize: 8, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6B6560', marginBottom: 8 }}>
                         Cost Catalogue Breakdown
                       </div>
-                      <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: FIG, fontSize: 12 }}>
-                        <thead>
-                          <tr style={{ borderBottom: '2px solid #E0DCD7' }}>
-                            <th style={{ textAlign: 'left', padding: '4px 0', fontFamily: MONO, fontSize: 8, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B6560', fontWeight: 500 }}>Trade</th>
-                            <th style={{ textAlign: 'left', padding: '4px 0', fontFamily: MONO, fontSize: 8, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B6560', fontWeight: 500 }}>Material</th>
-                            <th style={{ textAlign: 'right', padding: '4px 0', fontFamily: MONO, fontSize: 8, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B6560', fontWeight: 500 }}>Qty</th>
-                            <th style={{ textAlign: 'right', padding: '4px 0', fontFamily: MONO, fontSize: 8, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B6560', fontWeight: 500 }}>Rate</th>
-                            <th style={{ textAlign: 'right', padding: '4px 0', fontFamily: MONO, fontSize: 8, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B6560', fontWeight: 500 }}>Total</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {breakdown.lines.map((line, i) => (
-                            <tr key={i} style={{ borderBottom: '1px solid rgba(224,220,215,0.5)' }}>
-                              <td style={{ padding: '6px 0', color: '#1A1714', fontWeight: 500 }}>{line.trade}</td>
-                              <td style={{ padding: '6px 0', color: '#5C5349' }}>{line.material}</td>
-                              <td style={{ padding: '6px 0', textAlign: 'right', fontFamily: MONO, fontSize: 11, color: '#5C5349' }}>{line.quantity} {line.unit}</td>
-                              <td style={{ padding: '6px 0', textAlign: 'right', fontFamily: MONO, fontSize: 11, color: '#5C5349' }}>${line.rate.toFixed(2)}/{line.unit}</td>
-                              <td style={{ padding: '6px 0', textAlign: 'right', fontFamily: MONO, fontSize: 12, fontWeight: 600, color: '#1A1714' }}>${line.total.toLocaleString('en-CA')}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                        <tfoot>
-                          <tr style={{ borderTop: '2px solid #1A1714' }}>
-                            <td colSpan={4} style={{ padding: '8px 0', fontWeight: 700, color: '#1A1714' }}>Total (Better Tier)</td>
-                            <td style={{ padding: '8px 0', textAlign: 'right', fontFamily: MONO, fontSize: 14, fontWeight: 700, color: '#1A1714' }}>${breakdown.totalMid.toLocaleString('en-CA')}</td>
-                          </tr>
-                          <tr>
-                            <td colSpan={4} style={{ padding: '2px 0', fontFamily: MONO, fontSize: 9, color: '#9C9690' }}>Range (Good → Best)</td>
-                            <td style={{ padding: '2px 0', textAlign: 'right', fontFamily: MONO, fontSize: 10, color: '#9C9690' }}>${breakdown.low.toLocaleString('en-CA')} – ${breakdown.high.toLocaleString('en-CA')}</td>
-                          </tr>
-                        </tfoot>
-                      </table>
+                      {breakdown.lines.map((line, i) => (
+                        <div key={i} style={{ padding: '8px 0', borderBottom: i < breakdown.lines.length - 1 ? '1px solid rgba(224,220,215,0.5)' : 'none' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                            <div>
+                              <div style={{ fontFamily: FIG, fontSize: 13, fontWeight: 600, color: '#1A1714' }}>{line.trade}</div>
+                              <div style={{ fontFamily: MONO, fontSize: 9, color: '#6B6560', marginTop: 2 }}>{line.material}</div>
+                            </div>
+                            <div style={{ textAlign: 'right', flexShrink: 0, marginLeft: 12 }}>
+                              <div style={{ fontFamily: MONO, fontSize: 13, fontWeight: 600, color: '#1A1714' }}>${line.total.toFixed(2)}</div>
+                              <div style={{ fontFamily: MONO, fontSize: 8, color: '#9C9690', marginTop: 1 }}>{line.quantity} {line.unit} × ${line.rate.toFixed(2)}</div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                      <div style={{ borderTop: '2px solid #1A1714', marginTop: 8, paddingTop: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                        <span style={{ fontFamily: FIG, fontWeight: 700, fontSize: 13, color: '#1A1714' }}>Total (Better Tier)</span>
+                        <span style={{ fontFamily: MONO, fontSize: 15, fontWeight: 700, color: '#1A1714' }}>${breakdown.totalMid.toFixed(2)}</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
+                        <span style={{ fontFamily: MONO, fontSize: 8, color: '#9C9690' }}>Range (Good → Best)</span>
+                        <span style={{ fontFamily: MONO, fontSize: 9, color: '#9C9690' }}>${breakdown.low.toFixed(2)} – ${breakdown.high.toFixed(2)}</span>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -1066,38 +1056,30 @@ function EstimatePreviewModal({ lead, breakdown, onClose }: { lead: Lead; breakd
         </div>
 
         {/* Line items */}
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: FIG, fontSize: 13, marginBottom: 16 }}>
-          <thead>
-            <tr style={{ borderBottom: '2px solid #1A1714' }}>
-              <th style={{ textAlign: 'left', padding: '8px 0', fontFamily: MONO, fontSize: 9, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B6560', fontWeight: 500 }}>Description</th>
-              <th style={{ textAlign: 'right', padding: '8px 0', fontFamily: MONO, fontSize: 9, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B6560', fontWeight: 500 }}>Qty</th>
-              <th style={{ textAlign: 'right', padding: '8px 0', fontFamily: MONO, fontSize: 9, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B6560', fontWeight: 500 }}>Rate</th>
-              <th style={{ textAlign: 'right', padding: '8px 0', fontFamily: MONO, fontSize: 9, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B6560', fontWeight: 500 }}>Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            {breakdown.lines.map((line, i) => (
-              <tr key={i} style={{ borderBottom: '1px solid #E0DCD7' }}>
-                <td style={{ padding: '10px 0' }}>
-                  <div style={{ fontWeight: 600, color: '#1A1714' }}>{line.trade}</div>
-                  <div style={{ fontSize: 11, color: '#6B6560', marginTop: 1 }}>{line.material}</div>
-                </td>
-                <td style={{ padding: '10px 0', textAlign: 'right', fontFamily: MONO, fontSize: 12, color: '#5C5349' }}>{line.quantity} {line.unit}</td>
-                <td style={{ padding: '10px 0', textAlign: 'right', fontFamily: MONO, fontSize: 12, color: '#5C5349' }}>${line.rate.toFixed(2)}</td>
-                <td style={{ padding: '10px 0', textAlign: 'right', fontFamily: MONO, fontSize: 14, fontWeight: 600, color: '#1A1714' }}>${line.total.toLocaleString('en-CA')}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '2px solid #1A1714' }}>
+            <span style={{ fontFamily: MONO, fontSize: 9, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B6560' }}>Description</span>
+            <span style={{ fontFamily: MONO, fontSize: 9, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B6560' }}>Amount</span>
+          </div>
+          {breakdown.lines.map((line, i) => (
+            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '12px 0', borderBottom: '1px solid #E0DCD7' }}>
+              <div>
+                <div style={{ fontFamily: FIG, fontSize: 14, fontWeight: 600, color: '#1A1714' }}>{line.trade}</div>
+                <div style={{ fontFamily: FIG, fontSize: 12, color: '#6B6560', marginTop: 2 }}>{line.material}</div>
+              </div>
+              <div style={{ fontFamily: MONO, fontSize: 16, fontWeight: 600, color: '#1A1714', flexShrink: 0, marginLeft: 16 }}>${line.total.toFixed(2)}</div>
+            </div>
+          ))}
+        </div>
 
         {/* Total */}
         <div style={{ borderTop: '3px solid #1A1714', paddingTop: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
           <div style={{ fontFamily: FIG, fontSize: 16, fontWeight: 700, color: '#1A1714' }}>Estimated Total</div>
-          <div style={{ fontFamily: MONO, fontSize: 24, fontWeight: 700, color: '#1A1714' }}>${breakdown.totalMid.toLocaleString('en-CA')}</div>
+          <div style={{ fontFamily: MONO, fontSize: 24, fontWeight: 700, color: '#1A1714' }}>${breakdown.totalMid.toFixed(2)}</div>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginTop: 4 }}>
           <div style={{ fontFamily: MONO, fontSize: 9, color: '#9C9690', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Range</div>
-          <div style={{ fontFamily: MONO, fontSize: 12, color: '#9C9690' }}>${breakdown.low.toLocaleString('en-CA')} – ${breakdown.high.toLocaleString('en-CA')}</div>
+          <div style={{ fontFamily: MONO, fontSize: 12, color: '#9C9690' }}>${breakdown.low.toFixed(2)} – ${breakdown.high.toFixed(2)}</div>
         </div>
 
         {/* Footer */}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLeadPipeline } from '@/lib/hooks/useLeadData';
 import type { LeadRecord } from '@/lib/hooks/useLeadData';
@@ -340,43 +340,35 @@ function phaseDotStyle(e: PhaseEntry): { background: string; borderColor: string
 export default function DiscoverPage() {
   const router = useRouter();
   const pipeline = useLeadPipeline();
-  const mappedLeads = useMemo(() => pipeline.leads.map(mapLeadRecord), [pipeline.leads]);
-  const [leads, setLeads] = useState<Lead[]>([]);
-  const knownIdsRef = useRef<Set<string>>(new Set());
-
-  // Only add NEW leads from pipeline — never overwrite existing state
-  useEffect(() => {
-    if (mappedLeads.length === 0) return;
-    setLeads((prev) => {
-      const newLeads: Lead[] = [];
-      for (const ml of mappedLeads) {
-        if (!knownIdsRef.current.has(ml.id)) {
-          knownIdsRef.current.add(ml.id);
-          newLeads.push(ml);
-        }
-      }
-      if (newLeads.length === 0) return prev;
-      return [...prev, ...newLeads];
-    });
-  }, [mappedLeads]);
+  const leads = useMemo(() => pipeline.leads.map(mapLeadRecord), [pipeline.leads]);
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  // Separate checklist state keyed by leadId → itemId → checked
+  const [checkState, setCheckState] = useState<Record<string, Record<number, boolean>>>({});
 
   const newCount = leads.filter((l) => l.status === 'new').length;
-  const selectedLead = leads.find((l) => l.id === selectedId) ?? null;
+
+  // Merge check state into selected lead
+  const selectedLead = useMemo(() => {
+    const base = leads.find((l) => l.id === selectedId) ?? null;
+    if (!base) return null;
+    const overrides = checkState[base.id];
+    if (!overrides) return base;
+    return {
+      ...base,
+      checklist: base.checklist.map((c) => ({
+        ...c,
+        checked: overrides[c.id] ?? c.checked,
+      })),
+    };
+  }, [leads, selectedId, checkState]);
 
   const handleCheckToggle = useCallback((leadId: string, itemId: number) => {
-    setLeads((prev) =>
-      prev.map((l) => {
-        if (l.id !== leadId) return l;
-        return {
-          ...l,
-          checklist: l.checklist.map((c) =>
-            c.id === itemId ? { ...c, checked: !c.checked } : c,
-          ),
-        };
-      }),
-    );
+    setCheckState((prev) => {
+      const leadChecks = prev[leadId] ?? {};
+      const current = leadChecks[itemId] ?? false;
+      return { ...prev, [leadId]: { ...leadChecks, [itemId]: !current } };
+    });
   }, []);
 
   // Loading state

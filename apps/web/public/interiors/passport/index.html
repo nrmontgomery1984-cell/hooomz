@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Passport — Hooomz Interiors</title>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700;900&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F0EDE8;
+    --charcoal: #111010;
+    --accent: #6B6560;
+    --muted: #9A8E84;
+    --border: #E0DCD7;
+    --red: #DC2626;
+    --yellow: #D97706;
+    --green: #16A34A;
+    --surface: #FAF8F5;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Figtree', sans-serif;
+    background: var(--bg);
+    color: var(--charcoal);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 48px;
+    height: 72px;
+    background: var(--charcoal);
+  }
+
+  .logo { display: flex; flex-direction: column; gap: 1px; text-decoration: none; }
+
+  .logo-wordmark {
+    font-family: 'Figtree', sans-serif;
+    font-weight: 900;
+    font-size: 22px;
+    letter-spacing: 0.08em;
+    color: white;
+    line-height: 1;
+  }
+
+  .logo-wordmark .o1 { color: var(--red); }
+  .logo-wordmark .o2 { color: var(--yellow); }
+  .logo-wordmark .o3 { color: var(--green); }
+
+  .logo-sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+
+  .nav-right { display: flex; align-items: center; gap: 32px; }
+
+  .nav-link {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.6);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    transition: color 0.2s;
+  }
+
+  .nav-link:hover { color: white; }
+
+  .nav-cta {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--charcoal);
+    background: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    letter-spacing: 0.03em;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+
+  .nav-cta:hover { background: var(--bg); }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: stretch;
+    padding-top: 72px;
+  }
+
+  .hero-left {
+    padding: 80px 64px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-right: 1px solid var(--border);
+  }
+
+  .hero-headline {
+    font-size: clamp(48px, 6vw, 88px);
+    font-weight: 900;
+    line-height: 0.93;
+    letter-spacing: -0.03em;
+    color: var(--charcoal);
+    margin-bottom: 32px;
+  }
+
+  .hero-headline em {
+    font-style: normal;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  .hero-body {
+    font-size: 18px;
+    line-height: 1.65;
+    color: var(--accent);
+    max-width: 420px;
+    margin-bottom: 40px;
+  }
+
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--charcoal);
+    text-transform: uppercase;
+    border: 1px solid var(--charcoal);
+    padding: 10px 16px;
+    width: fit-content;
+  }
+
+  .hero-tag-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+
+  /* PASSPORT MOCKUP */
+  .hero-right {
+    background: var(--charcoal);
+    padding: 60px 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0;
+  }
+
+  .passport-mockup {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  .passport-mockup-header {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .pm-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .pm-address {
+    font-size: 15px;
+    font-weight: 600;
+    color: white;
+  }
+
+  .pm-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .pm-status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+  }
+
+  .pm-status-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    color: var(--green);
+    text-transform: uppercase;
+  }
+
+  .passport-tab-row {
+    display: flex;
+    gap: 1px;
+    margin-top: 1px;
+  }
+
+  .passport-tab {
+    flex: 1;
+    padding: 10px 16px;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    color: rgba(255,255,255,0.3);
+    text-transform: uppercase;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+
+  .passport-tab.active {
+    background: rgba(255,255,255,0.08);
+    color: white;
+    border-color: rgba(255,255,255,0.15);
+  }
+
+  .passport-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    margin-top: 1px;
+  }
+
+  .passport-row {
+    display: grid;
+    grid-template-columns: 100px 1fr auto;
+    align-items: center;
+    padding: 14px 24px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    gap: 16px;
+    transition: background 0.2s;
+  }
+
+  .passport-row:hover { background: rgba(255,255,255,0.06); }
+
+  .passport-row-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+
+  .passport-row-value {
+    font-size: 13px;
+    font-weight: 500;
+    color: white;
+  }
+
+  .passport-row-sub {
+    font-size: 11px;
+    color: rgba(255,255,255,0.3);
+    margin-top: 2px;
+  }
+
+  .passport-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    padding: 3px 8px;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+
+  .badge-good { background: rgba(22,163,74,0.15); color: var(--green); }
+  .badge-watch { background: rgba(217,119,6,0.15); color: var(--yellow); }
+  .badge-due { background: rgba(220,38,38,0.12); color: #ef4444; }
+
+  .passport-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.05);
+    margin-top: 1px;
+  }
+
+  .passport-footer-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    color: rgba(255,255,255,0.2);
+    text-transform: uppercase;
+  }
+
+  .passport-footer-date {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.2);
+  }
+
+  /* WHAT IT IS */
+  .what-section {
+    padding: 120px 64px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+    border-top: 1px solid var(--border);
+  }
+
+  .what-heading {
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    color: var(--charcoal);
+    margin-bottom: 20px;
+  }
+
+  .what-heading em {
+    font-style: normal;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  .what-body {
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--accent);
+  }
+
+  .what-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .what-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 24px 28px;
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: 20px;
+    align-items: start;
+    transition: background 0.2s;
+  }
+
+  .what-card:hover { background: white; }
+
+  .what-card-icon {
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 16px;
+  }
+
+  .what-card-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--charcoal);
+    margin-bottom: 6px;
+    letter-spacing: -0.01em;
+  }
+
+  .what-card-body {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--accent);
+  }
+
+  /* RESALE SECTION */
+  .resale-section {
+    background: var(--charcoal);
+    padding: 120px 64px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .resale-section::before {
+    content: 'PASSPORT';
+    position: absolute;
+    right: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 200px;
+    font-weight: 900;
+    color: rgba(255,255,255,0.02);
+    letter-spacing: -0.03em;
+    pointer-events: none;
+    line-height: 1;
+  }
+
+  .resale-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .resale-heading {
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    color: white;
+    margin-bottom: 20px;
+  }
+
+  .resale-heading .highlight { color: var(--green); }
+
+  .resale-body {
+    font-size: 17px;
+    line-height: 1.7;
+    color: rgba(255,255,255,0.45);
+  }
+
+  .resale-visual {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .resale-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: background 0.2s;
+  }
+
+  .resale-card:hover { background: rgba(255,255,255,0.07); }
+
+  .resale-card-icon {
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 14px;
+  }
+
+  .resale-card-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+
+  .resale-card-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+  }
+
+  .resale-card-note {
+    font-size: 12px;
+    color: rgba(255,255,255,0.3);
+    margin-top: 1px;
+  }
+
+  .resale-transfer {
+    margin-top: 16px;
+    padding: 16px 24px;
+    border: 1px dashed rgba(255,255,255,0.12);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .resale-transfer-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    flex-shrink: 0;
+  }
+
+  .resale-transfer-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: rgba(255,255,255,0.35);
+    text-transform: uppercase;
+  }
+
+  /* CREW SECTION */
+  .crew-section {
+    padding: 120px 64px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+    border-top: 1px solid var(--border);
+  }
+
+  .crew-heading {
+    font-size: clamp(28px, 3.5vw, 44px);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--charcoal);
+    margin-bottom: 16px;
+  }
+
+  .crew-body {
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--accent);
+  }
+
+  .crew-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .crew-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: background 0.2s;
+  }
+
+  .crew-card:hover { background: white; }
+
+  .crew-avatar {
+    width: 40px;
+    height: 40px;
+    background: var(--charcoal);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: white;
+    letter-spacing: 0.05em;
+  }
+
+  .crew-info { flex: 1; }
+
+  .crew-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--charcoal);
+    margin-bottom: 2px;
+  }
+
+  .crew-role {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .crew-cert {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    padding: 3px 8px;
+    background: rgba(22,163,74,0.1);
+    color: var(--green);
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+
+  /* CTA */
+  .cta-section {
+    background: var(--charcoal);
+    padding: 120px 64px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .cta-heading {
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    color: white;
+    max-width: 600px;
+  }
+
+  .cta-heading .accent-word { color: var(--green); }
+
+  .cta-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 16px; }
+
+  .btn-primary-large {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: white;
+    color: var(--charcoal);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    padding: 18px 36px;
+    text-decoration: none;
+    transition: background 0.2s;
+    white-space: nowrap;
+  }
+
+  .btn-primary-large:hover { background: var(--bg); }
+
+  .cta-note {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+
+  footer {
+    padding: 40px 64px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    background: var(--charcoal);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .footer-copy {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+
+  .footer-location {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: rgba(255,255,255,0.2);
+    text-transform: uppercase;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-in { opacity: 0; animation: fadeUp 0.8s ease 0.1s forwards; }
+
+  @media (max-width: 960px) {
+    nav { padding: 0 24px; }
+    .hero { grid-template-columns: 1fr; min-height: auto; }
+    .hero-left { padding: 100px 24px 60px; border-right: none; border-bottom: 1px solid var(--border); }
+    .hero-right { padding: 48px 24px; }
+    .what-section { padding: 80px 24px; grid-template-columns: 1fr; gap: 48px; }
+    .resale-section { padding: 80px 24px; grid-template-columns: 1fr; }
+    .crew-section { padding: 80px 24px; grid-template-columns: 1fr; gap: 48px; }
+    .cta-section { padding: 80px 24px; grid-template-columns: 1fr; gap: 40px; }
+    .cta-actions { align-items: flex-start; }
+    footer { padding: 32px 24px; flex-direction: column; gap: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/interiors" class="logo">
+    <div class="logo-wordmark">H<span class="o1">O</span><span class="o2">O</span><span class="o3">O</span>MZ</div>
+    <div class="logo-sub">Interiors</div>
+  </a>
+  <div class="nav-right">
+    <a href="/interiors/process" class="nav-link">How It Works</a>
+    <a href="/interiors/passport" class="nav-link">Passport</a>
+    <a href="/interiors/intake" class="nav-cta">Get an Estimate</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero fade-in">
+  <div class="hero-left">
+    <div class="section-label">Hooomz Passport</div>
+    <h1 class="hero-headline">Your home<br>has a memory<br><em>now.</em></h1>
+    <p class="hero-body">Every material, every finish, every trade decision — documented from the moment work begins. Your Passport is a permanent record of everything in your home. It doesn't belong to us. It doesn't belong to you. It belongs to the house.</p>
+    <div class="hero-tag"><div class="hero-tag-dot"></div>Included with every Hooomz job</div>
+  </div>
+  <div class="hero-right">
+    <div class="passport-mockup">
+      <div class="passport-mockup-header">
+        <div>
+          <div class="pm-title">Hooomz Passport</div>
+          <div class="pm-address">14 Hillside Crescent, Moncton NB</div>
+        </div>
+        <div class="pm-status">
+          <div class="pm-status-dot"></div>
+          <div class="pm-status-label">Active</div>
+        </div>
+      </div>
+      <div class="passport-tab-row">
+        <div class="passport-tab active">Materials</div>
+        <div class="passport-tab">Maintenance</div>
+        <div class="passport-tab">Crew</div>
+        <div class="passport-tab">Warranty</div>
+      </div>
+      <div class="passport-rows">
+        <div class="passport-row">
+          <div class="passport-row-label">Flooring</div>
+          <div>
+            <div class="passport-row-value">Shaw Floorté Pro — Weathered Oak</div>
+            <div class="passport-row-sub">Luxury Vinyl Plank · 7mm · Installed Mar 2026</div>
+          </div>
+          <div class="passport-badge badge-good">Good</div>
+        </div>
+        <div class="passport-row">
+          <div class="passport-row-label">Paint</div>
+          <div>
+            <div class="passport-row-value">BM Chantilly Lace OC-65</div>
+            <div class="passport-row-sub">Regal Select Eggshell · All walls · Mar 2026</div>
+          </div>
+          <div class="passport-badge badge-good">Good</div>
+        </div>
+        <div class="passport-row">
+          <div class="passport-row-label">Trim</div>
+          <div>
+            <div class="passport-row-value">Colonial 3½" Casing — MDF Primed</div>
+            <div class="passport-row-sub">BM Chantilly Lace semi-gloss · Mar 2026</div>
+          </div>
+          <div class="passport-badge badge-good">Good</div>
+        </div>
+        <div class="passport-row">
+          <div class="passport-row-label">HVAC Filter</div>
+          <div>
+            <div class="passport-row-value">Lennox MERV-11 · 16×25×4</div>
+            <div class="passport-row-sub">Replace every 6 months</div>
+          </div>
+          <div class="passport-badge badge-due">Due Apr 2026</div>
+        </div>
+        <div class="passport-row">
+          <div class="passport-row-label">Warranty</div>
+          <div>
+            <div class="passport-row-value">Shaw Floorté — 15yr residential</div>
+            <div class="passport-row-sub">Expires Mar 2041 · Claim via portal</div>
+          </div>
+          <div class="passport-badge badge-good">Active</div>
+        </div>
+      </div>
+      <div class="passport-footer">
+        <div class="passport-footer-label">Last updated</div>
+        <div class="passport-footer-date">March 27, 2026 · Stage 12 Turnover</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT IT CONTAINS -->
+<section class="what-section">
+  <div>
+    <div class="section-label">What's inside</div>
+    <h2 class="what-heading">Everything about<br>your home. <em>Nothing missing.</em></h2>
+    <p class="what-body">Most homeowners can't tell you what flooring is in their house, when it was installed, or what paint colour is on the walls. Your Passport changes that — permanently, for every trade Hooomz touches.</p>
+  </div>
+  <div class="what-cards">
+    <div class="what-card">
+      <div class="what-card-icon">◦</div>
+      <div>
+        <div class="what-card-title">Materials and finishes</div>
+        <div class="what-card-body">Every product installed in your home — brand, model, colour code, finish, and installation date. Touch up paint in three years without guessing. Match flooring if you ever extend a room.</div>
+      </div>
+    </div>
+    <div class="what-card">
+      <div class="what-card-icon">◷</div>
+      <div>
+        <div class="what-card-title">Warranty and lifespan tracking</div>
+        <div class="what-card-body">Every product warranty logged with expiry dates and claim instructions. Know what's covered, for how long, and exactly what to do if something goes wrong.</div>
+      </div>
+    </div>
+    <div class="what-card">
+      <div class="what-card-icon">✓</div>
+      <div>
+        <div class="what-card-title">Maintenance guidance</div>
+        <div class="what-card-body">What needs attention, when to do it, and whether it's a DIY task or a call to a professional. Built around what's actually in your home — not a generic checklist.</div>
+      </div>
+    </div>
+    <div class="what-card">
+      <div class="what-card-icon">⚙</div>
+      <div>
+        <div class="what-card-title">Crew and install documentation</div>
+        <div class="what-card-body">Who worked in your home, what they were qualified to do, and what was completed at each stage. A full record of the people and the work — not just the result.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESALE / TRANSFER -->
+<section class="resale-section">
+  <div>
+    <div class="resale-label">When you sell</div>
+    <h2 class="resale-heading">The Passport<br>stays with<br>the <span class="highlight">house.</span></h2>
+    <p class="resale-body">When you sell your home, your Passport transfers to the new owner automatically. They inherit a complete record of everything that was done — every finish, every warranty, every maintenance note. For a buyer, that's not a nice-to-have. It's proof.</p>
+  </div>
+  <div class="resale-visual">
+    <div class="resale-card">
+      <div class="resale-card-icon">⌂</div>
+      <div>
+        <div class="resale-card-label">Current owner</div>
+        <div class="resale-card-value">14 Hillside Crescent, Moncton</div>
+        <div class="resale-card-note">Passport active since March 2026</div>
+      </div>
+    </div>
+    <div class="resale-card">
+      <div class="resale-card-icon">◦</div>
+      <div>
+        <div class="resale-card-label">Materials on record</div>
+        <div class="resale-card-value">12 items documented</div>
+        <div class="resale-card-note">Flooring, paint, trim, fixtures and more</div>
+      </div>
+    </div>
+    <div class="resale-card">
+      <div class="resale-card-icon">◷</div>
+      <div>
+        <div class="resale-card-label">Active warranties</div>
+        <div class="resale-card-value">4 warranties — all transferable</div>
+        <div class="resale-card-note">Longest expiry: 2041</div>
+      </div>
+    </div>
+    <div class="resale-transfer">
+      <div class="resale-transfer-dot"></div>
+      <div class="resale-transfer-text">Transfers automatically at resale — new owner inherits full history</div>
+    </div>
+  </div>
+</section>
+
+<!-- CREW SECTION -->
+<section class="crew-section">
+  <div>
+    <div class="section-label">Who worked in your home</div>
+    <h2 class="crew-heading">You know who's<br>been in your house.<br>And what they're qualified to do.</h2>
+    <p class="crew-body">Every crew member assigned to your job is documented in your Passport — their credentials, their training, and what they completed on your project. Not because something might go wrong. Because you deserve to know.</p>
+  </div>
+  <div class="crew-cards">
+    <div class="crew-card">
+      <div class="crew-avatar">NH</div>
+      <div class="crew-info">
+        <div class="crew-name">Nathan H.</div>
+        <div class="crew-role">Lead · Red Seal Journeyman Carpenter</div>
+      </div>
+      <div class="crew-cert">Red Seal</div>
+    </div>
+    <div class="crew-card">
+      <div class="crew-avatar">JS</div>
+      <div class="crew-info">
+        <div class="crew-name">Jordan S.</div>
+        <div class="crew-role">Installer · Hooomz Certified</div>
+      </div>
+      <div class="crew-cert">Certified</div>
+    </div>
+    <div class="crew-card" style="opacity: 0.4; pointer-events: none;">
+      <div class="crew-avatar" style="background: var(--accent);">+</div>
+      <div class="crew-info">
+        <div class="crew-name">Additional crew</div>
+        <div class="crew-role">Documented as assigned</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2 class="cta-heading">Every Hooomz job comes<br>with a <span class="accent-word">Passport.</span></h2>
+  <div class="cta-actions">
+    <a href="/interiors/intake" class="btn-primary-large">Get an Estimate →</a>
+    <div class="cta-note">Passport included — no extra cost</div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-copy">© 2026 Hooomz Interiors Inc.</div>
+  <div class="footer-location">Southern New Brunswick</div>
+</footer>
+
+</body>
+</html>

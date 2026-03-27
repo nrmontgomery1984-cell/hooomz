@@ -37,6 +37,10 @@ const nextConfig = {
         source: '/interiors/floorplan',
         destination: '/interiors/floorplan/index.html',
       },
+      {
+        source: '/interiors/passport',
+        destination: '/interiors/passport/index.html',
+      },
     ];
   },
 }

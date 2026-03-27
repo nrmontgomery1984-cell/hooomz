@@ -438,7 +438,7 @@ export default function DiscoverPage() {
       {/* Project Detail Panel */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         {selectedLead ? (
-          <ProjectDetail key={selectedLead.id} lead={selectedLead} onCheckToggle={handleCheckToggle} onEdit={() => router.push(`/customers/${selectedLead.id}`)} />
+          <ProjectDetail key={selectedLead.id} lead={selectedLead} onCheckToggle={handleCheckToggle} onEdit={() => router.push(`/leads`)} />
         ) : (
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <EmptyDetail />

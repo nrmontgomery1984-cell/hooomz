@@ -1,1224 +1,993 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>How It Works — Hooomz Interiors</title>
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-  <meta name="theme-color" content="#111010">
-
-  <!-- Open Graph / SMS preview -->
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://hooomz.ca/interiors">
-  <meta property="og:title" content="Hooomz Interiors">
-  <meta property="og:description" content="Interior finishing for homeowners who want to know.">
-  <meta property="og:image" content="https://hooomz.ca/og-image.jpg">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Hooomz Interiors">
-  <meta name="twitter:description" content="Interior finishing for homeowners who want to know.">
-  <meta name="twitter:image" content="https://hooomz.ca/og-image.jpg">
-
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --bg: #F0EDE8;
-      --surface: #FAF8F5;
-      --surface-2: #EAE4DB;
-      --charcoal: #1A1714;
-      --dark-nav: #111010;
-      --mid: #5C5349;
-      --muted: #9A8E84;
-      --faint: #D4CEC7;
-      --border: #E0DCD7;
-      --border-s: rgba(0,0,0,0.18); /* non-canonical — used by .btn-outline, .cta-btn */
-      --accent: #6B6560;
-      --accent-bg: rgba(107,101,96,.09);
-      --accent-border: rgba(107,101,96,.22);
-      --green: #16A34A;
-      --green-bg: rgba(22,163,74,.08);
-      --red: #DC2626;
-      --amber: #D97706;
-      --blue: #4A7FA5;
-      --font-display: 'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      --font-body: 'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      --font-mono: 'DM Mono', 'SF Mono', ui-monospace, monospace;
-      --radius: 10px;
-      --radius-sm: 6px;
-    }
-
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      font-family: 'Figtree', sans-serif;
-      background: var(--bg);
-      color: var(--charcoal);
-      padding-top: 52px;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    /* ——————————————————————————————————————————
-       NAV
-    —————————————————————————————————————————— */
-    nav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 52px;
-      background: var(--dark-nav);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 32px;
-      z-index: 100;
-    }
-
-    .nav-logo {
-      display: flex;
-      align-items: center;
-      gap: 0;
-      font-family: 'DM Mono', monospace;
-      font-size: 13px;
-      color: #fff;
-      text-decoration: none;
-      letter-spacing: 0.02em;
-    }
-
-    .nav-logo .logo-interiors {
-      color: rgba(255,255,255,0.45);
-      margin-left: 2px;
-    }
-
-    .nav-logo svg {
-      margin: 0 1px;
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 28px;
-      list-style: none;
-    }
-
-    .nav-links a {
-      font-family: 'DM Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 0.10em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.4);
-      text-decoration: none;
-      transition: color 0.15s;
-    }
-
-    .nav-links a:hover {
-      color: rgba(255,255,255,0.7);
-    }
-
-    .nav-links a.active {
-      color: rgba(255,255,255,0.85);
-    }
-
-    .nav-links .btn-nav {
-      background: var(--green);
-      color: #fff;
-      padding: 6px 14px;
-      border-radius: 100px;
-      font-size: 9px;
-      letter-spacing: 0.10em;
-    }
-
-    .nav-links .btn-nav:hover {
-      background: #15803d;
-      color: #fff;
-    }
-
-    /* ——————————————————————————————————————————
-       HERO
-    —————————————————————————————————————————— */
-    .hero {
-      background: #111010;
-      padding: 96px 32px 80px;
-    }
-
-    .hero-inner {
-      max-width: 1080px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: 55fr 45fr;
-      gap: 56px;
-      align-items: center;
-    }
-
-    .hero-eyebrow {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.4);
-      margin-bottom: 16px;
-    }
-
-    .hero h1 {
-      font-family: 'Figtree', sans-serif;
-      font-weight: 700;
-      font-size: 52px;
-      line-height: 1.1;
-      color: #fff;
-      margin-bottom: 20px;
-    }
-
-    .hero-sub {
-      font-size: 16px;
-      line-height: 1.6;
-      color: rgba(255,255,255,0.6);
-      margin-bottom: 32px;
-    }
-
-    .hero-cta-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .btn {
-      font-family: 'DM Mono', monospace;
-      font-size: 9.5px;
-      letter-spacing: 0.10em;
-      text-transform: uppercase;
-      text-decoration: none;
-      padding: 10px 20px;
-      border-radius: 100px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      transition: opacity 0.15s, background 0.15s;
-    }
-
-    .btn-green {
-      background: var(--green);
-      color: #fff;
-      border: none;
-    }
-
-    .btn-green:hover {
-      background: #15803d;
-    }
-
-    .btn-outline-white {
-      background: transparent;
-      color: #fff;
-      border: 1.5px solid rgba(255,255,255,0.35);
-    }
-
-    .btn-outline-white:hover {
-      border-color: rgba(255,255,255,0.65);
-    }
-
-    .btn-outline-dark {
-      background: transparent;
-      color: var(--charcoal);
-      border: 1.5px solid var(--charcoal);
-    }
-
-    .btn-outline-dark:hover {
-      background: var(--charcoal);
-      color: #fff;
-    }
-
-    .hero-trust {
-      margin-top: 40px;
-      display: flex;
-      align-items: center;
-      gap: 0;
-    }
-
-    .trust-item {
-      padding-right: 24px;
-      margin-right: 24px;
-      border-right: 1px solid rgba(255,255,255,0.12);
-    }
-
-    .trust-item:last-child {
-      border-right: none;
-      padding-right: 0;
-      margin-right: 0;
-    }
-
-    .trust-num {
-      font-family: 'DM Mono', monospace;
-      font-size: 13px;
-      font-weight: 500;
-      color: #fff;
-      display: block;
-    }
-
-    .trust-label {
-      font-family: 'DM Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.38);
-      display: block;
-      margin-top: 3px;
-    }
-
-    /* Hero Card */
-    .hero-card {
-      background: #1A1D22;
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 12px;
-      padding: 24px;
-    }
-
-    .hero-card-header {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 0.10em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.35);
-      margin-bottom: 4px;
-    }
-
-    .hero-card-sub {
-      font-family: 'DM Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.22);
-      margin-bottom: 24px;
-    }
-
-    .trade-bars {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .trade-bar-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .trade-label {
-      font-family: 'DM Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 0.10em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.4);
-      width: 56px;
-      flex-shrink: 0;
-    }
-
-    .trade-bar-track {
-      flex: 1;
-      height: 5px;
-      background: rgba(255,255,255,0.07);
-      border-radius: 100px;
-      overflow: hidden;
-    }
-
-    .trade-bar-fill {
-      height: 100%;
-      border-radius: 100px;
-    }
-
-    .trade-pct {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      color: rgba(255,255,255,0.45);
-      width: 30px;
-      text-align: right;
-      flex-shrink: 0;
-    }
-
-    .hero-card-footer {
-      margin-top: 22px;
-      padding-top: 16px;
-      border-top: 1px solid rgba(255,255,255,0.07);
-      font-family: 'DM Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.28);
-    }
-
-    /* ——————————————————————————————————————————
-       HOW IT WORKS — STEPS
-    —————————————————————————————————————————— */
-    .steps-section {
-      background: var(--surface);
-      padding: 80px 32px;
-    }
-
-    .steps-inner {
-      max-width: 1080px;
-      margin: 0 auto;
-    }
-
-    .section-eyebrow {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 12px;
-    }
-
-    .section-h2 {
-      font-family: 'Figtree', sans-serif;
-      font-weight: 700;
-      font-size: 36px;
-      color: var(--charcoal);
-      margin-bottom: 56px;
-      line-height: 1.15;
-    }
-
-    .step {
-      display: grid;
-      grid-template-columns: 80px 1fr;
-      gap: 40px;
-      padding: 48px 0;
-      border-top: 1px solid var(--border);
-    }
-
-    .step:last-child {
-      border-bottom: 1px solid var(--border);
-    }
-
-    .step-num {
-      font-family: 'DM Mono', monospace;
-      font-size: 36px;
-      font-weight: 400;
-      color: var(--faint);
-      line-height: 1;
-      padding-top: 4px;
-    }
-
-    .step-content {}
-
-    .step-tag {
-      font-family: 'DM Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 6px;
-    }
-
-    .step-title {
-      font-family: 'Figtree', sans-serif;
-      font-weight: 700;
-      font-size: 26px;
-      color: var(--charcoal);
-      margin-bottom: 14px;
-    }
-
-    .step-body {
-      font-size: 16px;
-      line-height: 1.65;
-      color: var(--mid);
-      margin-bottom: 24px;
-      max-width: 580px;
-    }
-
-    .step-facts {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .step-facts li {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      font-size: 14px;
-      color: var(--mid);
-      line-height: 1.45;
-    }
-
-    .step-facts li svg {
-      flex-shrink: 0;
-      margin-top: 1px;
-    }
-
-    /* ——————————————————————————————————————————
-       DEMO SECTION
-    —————————————————————————————————————————— */
-    .demo-section {
-      background: var(--surface-2);
-      border-top: 1px solid var(--border);
-      padding: 80px 32px;
-    }
-
-    .demo-inner {
-      max-width: 1080px;
-      margin: 0 auto;
-    }
-
-    .demo-copy {
-      max-width: 620px;
-      margin-bottom: 36px;
-    }
-
-    .demo-copy .section-h2 {
-      margin-bottom: 14px;
-    }
-
-    .demo-body {
-      font-size: 16px;
-      line-height: 1.65;
-      color: var(--mid);
-    }
-
-    .demo-container {
-      border: 1.5px solid var(--border-s);
-      border-radius: var(--radius);
-      overflow: hidden;
-    }
-
-    .demo-label-bar {
-      background: #111010;
-      padding: 10px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .demo-label-left {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .green-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 6px 2px rgba(22,163,74,0.5);
-      flex-shrink: 0;
-    }
-
-    .demo-label-text {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 0.10em;
-      text-transform: uppercase;
-      color: #fff;
-    }
-
-    .demo-label-right {
-      font-family: 'DM Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 0.10em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.4);
-    }
-
-    #fp-embed {
-      height: 760px;
-      background: #0E1013;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .fp-placeholder {
-      text-align: center;
-    }
-
-    .fp-placeholder-label {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.18);
-      margin-top: 16px;
-    }
-
-    .demo-tips {
-      margin-top: 24px;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
-
-    .tip-card {
-      background: var(--surface);
-      border: 1px solid var(--border-s);
-      border-radius: var(--radius);
-      padding: 20px;
-    }
-
-    .tip-icon {
-      margin-bottom: 12px;
-      color: var(--muted);
-    }
-
-    .tip-label {
-      font-family: 'DM Mono', monospace;
-      font-size: 9.5px;
-      font-weight: 500;
-      letter-spacing: 0.10em;
-      text-transform: uppercase;
-      color: var(--charcoal);
-      margin-bottom: 8px;
-    }
-
-    .tip-body {
-      font-size: 13px;
-      line-height: 1.55;
-      color: var(--mid);
-    }
-
-    /* ——————————————————————————————————————————
-       WHY HOOOMZ
-    —————————————————————————————————————————— */
-    .why-section {
-      background: var(--bg);
-      padding: 80px 32px;
-    }
-
-    .why-inner {
-      max-width: 1080px;
-      margin: 0 auto;
-    }
-
-    .why-header {
-      margin-bottom: 48px;
-    }
-
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0;
-    }
-
-    .feature-card {
-      padding: 28px 28px 28px 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .feature-card:nth-child(3) ~ .feature-card {
-      border-bottom: none;
-    }
-
-    .feature-card:not(:nth-child(3n)) {
-      padding-right: 28px;
-      border-right: 1px solid var(--border);
-    }
-
-    .feature-card:nth-child(3n) {
-      padding-right: 0;
-      padding-left: 28px;
-    }
-
-    .feature-card:nth-child(3n-1) {
-      padding-left: 28px;
-    }
-
-    .feature-card:nth-child(3n-2) {
-      padding-left: 0;
-    }
-
-    .feature-title {
-      font-family: 'Figtree', sans-serif;
-      font-weight: 700;
-      font-size: 16px;
-      color: var(--charcoal);
-      margin-bottom: 8px;
-    }
-
-    .feature-desc {
-      font-size: 14px;
-      line-height: 1.6;
-      color: var(--mid);
-    }
-
-    /* ——————————————————————————————————————————
-       VISIT SECTION
-    —————————————————————————————————————————— */
-    .visit-section {
-      background: var(--surface);
-      padding: 80px 32px;
-    }
-
-    .visit-inner {
-      max-width: 1080px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 64px;
-      align-items: start;
-    }
-
-    .quote-card {
-      border-left: 3px solid var(--green);
-      padding-left: 20px;
-    }
-
-    .quote-text {
-      font-size: 18px;
-      line-height: 1.65;
-      color: var(--charcoal);
-      font-style: italic;
-      margin-bottom: 16px;
-    }
-
-    .quote-attr {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 0.06em;
-      color: var(--muted);
-      margin-bottom: 28px;
-    }
-
-    .visit-facts-label {
-      font-family: 'DM Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 20px;
-    }
-
-    .visit-facts {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .visit-facts li {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      font-size: 15px;
-      line-height: 1.5;
-      color: var(--mid);
-    }
-
-    .visit-facts li svg {
-      flex-shrink: 0;
-      margin-top: 2px;
-    }
-
-    /* ——————————————————————————————————————————
-       FOOTER
-    —————————————————————————————————————————— */
-    footer {
-      background: var(--dark-nav);
-      padding: 48px 32px;
-    }
-
-    .footer-inner {
-      max-width: 1080px;
-      margin: 0 auto;
-    }
-
-    .footer-cols {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 32px;
-      align-items: start;
-      margin-bottom: 40px;
-    }
-
-    .footer-links {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .footer-links a {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 0.10em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.5);
-      text-decoration: none;
-      transition: color 0.15s;
-    }
-
-    .footer-links a:hover {
-      color: rgba(255,255,255,0.8);
-    }
-
-    .footer-right {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 0.08em;
-      color: rgba(255,255,255,0.35);
-      text-align: right;
-    }
-
-    .footer-divider {
-      border: none;
-      border-top: 1px solid rgba(255,255,255,0.08);
-      margin-bottom: 20px;
-    }
-
-    .footer-copy {
-      text-align: center;
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 0.08em;
-      color: rgba(255,255,255,0.28);
-    }
-
-    /* ——————————————————————————————————————————
-       RESPONSIVE
-    —————————————————————————————————————————— */
-    @media (max-width: 768px) {
-      nav {
-        padding: 0 16px;
-      }
-
-      .nav-links {
-        gap: 16px;
-      }
-
-      .nav-links li:not(:last-child):not(:first-child) {
-        display: none;
-      }
-
-      .hero {
-        padding: 56px 16px 56px;
-      }
-
-      .hero-inner {
-        grid-template-columns: 1fr;
-        gap: 40px;
-      }
-
-      .hero h1 {
-        font-size: 36px;
-      }
-
-      .hero-trust {
-        flex-wrap: wrap;
-        gap: 16px;
-      }
-
-      .trust-item {
-        border-right: none;
-        padding-right: 0;
-        margin-right: 0;
-      }
-
-      .steps-section {
-        padding: 56px 16px;
-      }
-
-      .step {
-        grid-template-columns: 48px 1fr;
-        gap: 20px;
-      }
-
-      .step-num {
-        font-size: 24px;
-      }
-
-      .demo-section {
-        padding: 56px 16px;
-      }
-
-      #fp-embed {
-        height: 380px;
-      }
-
-      .demo-tips {
-        grid-template-columns: 1fr;
-      }
-
-      .why-section {
-        padding: 56px 16px;
-      }
-
-      .features-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .feature-card {
-        padding: 24px 0 !important;
-        border-right: none !important;
-        padding-left: 0 !important;
-        padding-right: 0 !important;
-        border-bottom: 1px solid var(--border) !important;
-      }
-
-      .feature-card:last-child {
-        border-bottom: none !important;
-      }
-
-      .visit-section {
-        padding: 56px 16px;
-      }
-
-      .visit-inner {
-        grid-template-columns: 1fr;
-        gap: 40px;
-      }
-
-      .footer-cols {
-        grid-template-columns: 1fr;
-        gap: 28px;
-      }
-
-      .footer-right {
-        text-align: left;
-      }
-
-      .section-h2 {
-        font-size: 28px;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How It Works — Hooomz Interiors</title>
+<!-- Favicon -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#111010">
+
+<!-- Open Graph / SMS preview -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://hooomz.ca/interiors/process">
+<meta property="og:title" content="How It Works — Hooomz Interiors">
+<meta property="og:description" content="Interior finishing for homeowners who want to know.">
+<meta property="og:image" content="https://hooomz.ca/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="How It Works — Hooomz Interiors">
+<meta name="twitter:description" content="Interior finishing for homeowners who want to know.">
+<meta name="twitter:image" content="https://hooomz.ca/og-image.jpg">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700;900&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F0EDE8;
+    --charcoal: #111010;
+    --accent: #6B6560;
+    --muted: #9A8E84;
+    --border: #E0DCD7;
+    --red: #DC2626;
+    --yellow: #D97706;
+    --green: #16A34A;
+    --surface: #FAF8F5;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Figtree', sans-serif;
+    background: var(--bg);
+    color: var(--charcoal);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 48px;
+    height: 72px;
+    background: var(--charcoal);
+  }
+
+  .logo { display: flex; flex-direction: column; gap: 1px; text-decoration: none; }
+
+  .logo-wordmark {
+    font-family: 'Figtree', sans-serif;
+    font-weight: 900;
+    font-size: 22px;
+    letter-spacing: 0.08em;
+    color: white;
+    line-height: 1;
+  }
+
+  .logo-wordmark .o1 { color: var(--red); }
+  .logo-wordmark .o2 { color: var(--yellow); }
+  .logo-wordmark .o3 { color: var(--green); }
+
+  .logo-sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+
+  .nav-right { display: flex; align-items: center; gap: 32px; }
+
+  .nav-link {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.6);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    transition: color 0.2s;
+  }
+
+  .nav-link:hover { color: white; }
+
+  .nav-cta {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--charcoal);
+    background: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    letter-spacing: 0.03em;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+
+  .nav-cta:hover { background: var(--bg); }
+
+  /* PAGE HERO */
+  .page-hero {
+    padding: 160px 64px 80px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: end;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .page-headline {
+    font-size: clamp(42px, 6vw, 80px);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    color: var(--charcoal);
+  }
+
+  .page-headline em {
+    font-style: normal;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  .page-intro {
+    font-size: 18px;
+    line-height: 1.65;
+    color: var(--accent);
+    margin-bottom: 32px;
+  }
+
+  .system-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--charcoal);
+    text-transform: uppercase;
+    border: 1px solid var(--charcoal);
+    padding: 10px 16px;
+  }
+
+  .system-tag-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--charcoal); }
+
+  /* PHASE BAR */
+  .phase-bar {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 72px;
+    z-index: 50;
+    background: var(--bg);
+  }
+
+  .phase-bar-item {
+    flex: 1;
+    padding: 20px 64px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-right: 1px solid var(--border);
+  }
+
+  .phase-bar-item:last-child { border-right: none; }
+  .phase-bar-item.dark { background: var(--charcoal); }
+
+  .phase-bar-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .phase-bar-item.dark .phase-bar-label { color: var(--accent); }
+
+  .phase-bar-name {
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--charcoal);
+  }
+
+  .phase-bar-item.dark .phase-bar-name { color: white; }
+
+
+
+
+  /* HINT STRIP */
+  .stepper-hint-strip {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .stepper-hint-block {
+    padding: 14px 64px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-right: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .stepper-hint-block:last-child { border-right: none; }
+  .stepper-hint-block.dark { background: rgba(255,255,255,0.03); border-right: none; }
+
+  .hint-arrows {
+    font-size: 16px;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+  }
+
+  .stepper-hint-block.dark .hint-arrows { color: rgba(255,255,255,0.3); }
+
+  .hint-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+
+  .stepper-hint-block.dark .hint-text { color: rgba(255,255,255,0.3); }
+
+  /* STEPPER */
+  .stepper-track {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .stepper-phase {
+    overflow: hidden;
+    border-right: 1px solid var(--border);
+    position: relative;
+  }
+
+  .stepper-phase:last-child { border-right: none; }
+  .stepper-phase.dark-phase { background: var(--charcoal); }
+
+  .stepper-viewport {
+    overflow: hidden;
+    position: relative;
+  }
+
+  .stepper-inner {
+    display: flex;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .stage-panel {
+    flex-shrink: 0;
+    width: 100%;
+    padding: 52px 64px 56px;
+    min-height: 560px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .stage-counter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 40px;
+  }
+
+  .stage-counter-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .stage-counter-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .stepper-phase.dark-phase .stage-counter-label { color: var(--accent); }
+
+  .stage-counter-pips {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+  }
+
+  .stage-pip {
+    width: 18px;
+    height: 3px;
+    background: var(--border);
+    cursor: pointer;
+    transition: background 0.2s;
+    border: none;
+    padding: 0;
+  }
+
+  .stage-pip.active { background: var(--charcoal); }
+  .stepper-phase.dark-phase .stage-pip { background: rgba(255,255,255,0.12); }
+  .stepper-phase.dark-phase .stage-pip.active { background: white; }
+
+  .stage-nav-arrows {
+    display: flex;
+    gap: 6px;
+  }
+
+  .stage-arrow {
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    color: var(--charcoal);
+    transition: all 0.2s;
+    font-family: inherit;
+    flex-shrink: 0;
+  }
+
+  .stage-arrow:hover:not(:disabled) { background: var(--charcoal); color: white; border-color: var(--charcoal); }
+  .stage-arrow:disabled { opacity: 0.2; cursor: default; }
+
+  .stepper-phase.dark-phase .stage-arrow {
+    border-color: rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.6);
+  }
+
+  .stepper-phase.dark-phase .stage-arrow:hover:not(:disabled) {
+    background: rgba(255,255,255,0.12);
+    color: white;
+    border-color: rgba(255,255,255,0.3);
+  }
+
+  .stage-number {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .stepper-phase.dark-phase .stage-number { color: var(--accent); }
+
+  .stage-letter {
+    font-size: 48px;
+    font-weight: 900;
+    color: var(--border);
+    font-family: 'Figtree', sans-serif;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+
+  .stepper-phase.dark-phase .stage-letter { color: rgba(255,255,255,0.05); }
+
+  .stage-title {
+    font-size: 38px;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    color: var(--charcoal);
+    line-height: 1;
+    margin-bottom: 20px;
+    margin-top: -8px;
+  }
+
+  .stepper-phase.dark-phase .stage-title { color: white; }
+
+  .stage-body {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--accent);
+    flex: 1;
+  }
+
+  .stepper-phase.dark-phase .stage-body { color: rgba(255,255,255,0.45); }
+
+  .stage-you {
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+    font-style: italic;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .stepper-phase.dark-phase .stage-you {
+    border-top-color: rgba(255,255,255,0.07);
+    color: rgba(255,255,255,0.28);
+  }
+
+  /* PASSPORT BRIDGE */
+  .passport-bridge {
+    padding: 100px 64px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+    border-top: 1px solid var(--border);
+  }
+
+  .passport-heading {
+    font-size: clamp(28px, 3.5vw, 44px);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--charcoal);
+    margin-bottom: 16px;
+  }
+
+  .passport-body { font-size: 16px; line-height: 1.65; color: var(--accent); margin-bottom: 28px; }
+
+  .passport-note {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .passport-note::before { content: ''; width: 24px; height: 1px; background: var(--muted); }
+
+  .timeline { display: flex; flex-direction: column; }
+  .timeline-item { display: flex; align-items: stretch; gap: 20px; padding: 16px 0; }
+
+  .timeline-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    width: 32px;
+  }
+
+  .timeline-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--border);
+    flex-shrink: 0;
+    margin-top: 4px;
+    border: 2px solid var(--bg);
+    outline: 1px solid var(--border);
+  }
+
+  .timeline-dot.design { background: var(--green); outline-color: var(--green); }
+  .timeline-dot.script { background: var(--charcoal); outline-color: var(--charcoal); }
+  .timeline-connector { width: 1px; flex: 1; background: var(--border); margin-top: 4px; min-height: 16px; }
+
+  .timeline-phase {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+
+  .timeline-title { font-size: 14px; font-weight: 600; color: var(--charcoal); }
+  .timeline-note { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* CTA */
+  .cta-section {
+    background: var(--charcoal);
+    padding: 100px 64px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .cta-heading {
+    font-size: clamp(32px, 4.5vw, 60px);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    color: white;
+    max-width: 560px;
+  }
+
+  .cta-heading .accent-word { color: var(--green); }
+  .cta-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 16px; }
+
+  .btn-primary-large {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: white;
+    color: var(--charcoal);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    padding: 18px 36px;
+    text-decoration: none;
+    transition: background 0.2s;
+    white-space: nowrap;
+  }
+
+  .btn-primary-large:hover { background: var(--bg); }
+
+  .cta-note {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+
+  footer {
+    padding: 40px 64px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    background: var(--charcoal);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .footer-copy {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+
+  .footer-location {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: rgba(255,255,255,0.2);
+    text-transform: uppercase;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-in { opacity: 0; animation: fadeUp 0.8s ease 0.1s forwards; }
+
+  @media (max-width: 960px) {
+    nav { padding: 0 24px; }
+    .page-hero { padding: 120px 24px 60px; grid-template-columns: 1fr; gap: 32px; }
+    .phase-bar { flex-direction: column; position: static; }
+    .phase-bar-item { padding: 18px 24px; border-right: none; border-bottom: 1px solid var(--border); }
+    .stepper-hint-strip { display: none; }
+    .stepper-track { grid-template-columns: 1fr; }
+    .stepper-phase { border-right: none; border-bottom: 1px solid var(--border); }
+    .stage-panel { padding: 40px 24px; min-height: auto; }
+    .passport-bridge { padding: 60px 24px; grid-template-columns: 1fr; gap: 48px; }
+    .cta-section { padding: 60px 24px; grid-template-columns: 1fr; gap: 40px; }
+    .cta-actions { align-items: flex-start; }
+    footer { padding: 32px 24px; flex-direction: column; gap: 12px; }
+  }
+</style>
 </head>
 <body>
 
-  <!-- ═══════════════════════════════════════ NAV ═══ -->
-  <nav>
-    <a href="/interiors" class="nav-logo">
-      <img src="/hooomz-logo-white.svg" alt="Hooomz Interiors" style="height:24px;width:auto;">
-    </a>
-    <ul class="nav-links">
-      <li><a href="/interiors">Home</a></li>
-      <li><a href="/interiors/process" class="active" style="color:var(--green)">How It Works</a></li>
-      <li><a href="/interiors/passport">Passport</a></li>
-      <li><a href="/interiors/intake" class="btn-nav btn">Get an Estimate</a></li>
-    </ul>
-  </nav>
+<nav>
+  <a href="/interiors" class="logo">
+    <div class="logo-wordmark">H<span class="o1">O</span><span class="o2">O</span><span class="o3">O</span>MZ</div>
+    <div class="logo-sub">Interiors</div>
+  </a>
+  <div class="nav-right">
+    <a href="/interiors/process" class="nav-link">How It Works</a>
+    <a href="/interiors/passport" class="nav-link">Passport</a>
+    <a href="/interiors/intake" class="nav-cta">Get an Estimate</a>
+  </div>
+</nav>
 
-  <!-- ═══════════════════════════════════════ HERO ═══ -->
-  <section class="hero" id="top">
-    <div class="hero-inner">
-      <!-- Left -->
-      <div class="hero-left">
-        <p class="hero-eyebrow">How It Works</p>
-        <h1>From first visit to<br>final install.</h1>
-        <p class="hero-sub">We show up with a floor plan, build the scope with you room by room, and hand it off to trusted trades. No surprises.</p>
-        <div class="hero-cta-row">
-          <a href="/interiors/intake" class="btn btn-green">Get an Estimate</a>
-          <a href="/interiors" class="btn btn-outline-white">See Services</a>
-        </div>
-        <div class="hero-trust">
-          <div class="trust-item">
-            <span class="trust-num">45-min</span>
-            <span class="trust-label">Site visit</span>
-          </div>
-          <div class="trust-item">
-            <span class="trust-num">On-site</span>
-            <span class="trust-label">Scope built with you</span>
-          </div>
-          <div class="trust-item">
-            <span class="trust-num">Fixed</span>
-            <span class="trust-label">Price quotes</span>
-          </div>
-        </div>
-      </div>
+<section class="page-hero fade-in">
+  <div>
+    <div class="section-label">How it works</div>
+    <h1 class="page-headline">A job that runs<br>on a <em>system,</em><br>not a handshake.</h1>
+  </div>
+  <div>
+    <p class="page-intro">Most contractors operate on experience and instinct. That works — until it doesn't. Every Hooomz job runs through a proprietary 12-stage process designed so nothing is left to chance and you're never left wondering.</p>
+    <div class="system-tag"><div class="system-tag-dot"></div>12-stage end-to-end system</div>
+  </div>
+</section>
 
-      <!-- Right — Job card -->
-      <div class="hero-card">
-        <p class="hero-card-header">J-2024-031 · 142 Elmwood Dr, Dieppe</p>
-        <p class="hero-card-sub">Full Interior Refresh — Day 12 of 18</p>
-        <div class="trade-bars">
-          <div class="trade-bar-row">
-            <span class="trade-label">Paint</span>
-            <div class="trade-bar-track">
-              <div class="trade-bar-fill" style="width:78%;background:#F59E0B;"></div>
+<div class="phase-bar">
+  <div class="phase-bar-item">
+    <div>
+      <div class="phase-bar-label">Phase 01</div>
+      <div class="phase-bar-name">Design</div>
+    </div>
+  </div>
+  <div class="phase-bar-item dark">
+    <div>
+      <div class="phase-bar-label">Phase 02</div>
+      <div class="phase-bar-name">Script</div>
+    </div>
+  </div>
+</div>
+
+<!-- HINT STRIP -->
+<div class="stepper-hint-strip">
+  <div class="stepper-hint-block">
+    <span class="hint-arrows">&larr; &rarr;</span>
+    <span class="hint-text">Use arrows to step through all 6 stages</span>
+  </div>
+  <div class="stepper-hint-block dark">
+    <span class="hint-arrows">&larr; &rarr;</span>
+    <span class="hint-text">Use arrows to step through all 6 stages</span>
+  </div>
+</div>
+
+<div class="stepper-track">
+
+  <!-- DESIGN -->
+  <div class="stepper-phase" id="design-phase">
+    <div class="stepper-viewport">
+      <div class="stepper-inner" id="design-inner">
+
+        <div class="stage-panel">
+          <div class="stage-counter">
+            <div class="stage-counter-left">
+              <div class="stage-counter-label" id="design-counter">Stage 1 of 6</div>
+              <div class="stage-counter-pips" id="design-pips"></div>
             </div>
-            <span class="trade-pct">78%</span>
-          </div>
-          <div class="trade-bar-row">
-            <span class="trade-label">Flooring</span>
-            <div class="trade-bar-track">
-              <div class="trade-bar-fill" style="width:45%;background:#14B8A6;"></div>
+            <div class="stage-nav-arrows">
+              <button class="stage-arrow" id="design-prev" onclick="stepDesign(-1)">&larr;</button>
+              <button class="stage-arrow" id="design-next" onclick="stepDesign(1)">&rarr;</button>
             </div>
-            <span class="trade-pct">45%</span>
           </div>
-          <div class="trade-bar-row">
-            <span class="trade-label">Trim</span>
-            <div class="trade-bar-track">
-              <div class="trade-bar-fill" style="width:62%;background:#A855F7;"></div>
+          <div class="stage-number"><span>Stage 01 &middot; D</span><span class="stage-letter">D</span></div>
+          <div class="stage-title">Discover</div>
+          <div class="stage-body">Your project starts the moment you submit an estimate request. Your information goes into the system and a preliminary range is generated automatically from our cost catalogue. No phone tag, no waiting — you have a ballpark number and we have what we need to move forward.</div>
+          <div class="stage-you">By the end of Discover, you have a ballpark range. We have everything we need to build a formal estimate.</div>
+        </div>
+
+        <div class="stage-panel">
+          <div class="stage-counter">
+            <div class="stage-counter-left">
+              <div class="stage-counter-label">Stage 2 of 6</div>
+              <div class="stage-counter-pips" id="design-pips-2"></div>
             </div>
-            <span class="trade-pct">62%</span>
+            <div class="stage-nav-arrows">
+              <button class="stage-arrow" onclick="stepDesign(-1)">&larr;</button>
+              <button class="stage-arrow" onclick="stepDesign(1)">&rarr;</button>
+            </div>
           </div>
+          <div class="stage-number"><span>Stage 02 &middot; E</span><span class="stage-letter">E</span></div>
+          <div class="stage-title">Estimate</div>
+          <div class="stage-body">A formal estimate is generated from our cost catalogue, broken down by trade — flooring, paint, trim — across three tiers: Good, Better, Best. Each trade shows what you're getting and what it costs at that level. One disclaimer applies: the actual quote is confirmed after the site visit. The estimate is what it looks like before we've seen your home in person.</div>
+          <div class="stage-you">You see exactly where your money goes before committing to anything.</div>
         </div>
-        <div class="hero-card-footer">7 Rooms &middot; 24 Tasks &middot; 14 Complete</div>
+
+        <div class="stage-panel">
+          <div class="stage-counter">
+            <div class="stage-counter-left">
+              <div class="stage-counter-label">Stage 3 of 6</div>
+              <div class="stage-counter-pips" id="design-pips-3"></div>
+            </div>
+            <div class="stage-nav-arrows">
+              <button class="stage-arrow" onclick="stepDesign(-1)">&larr;</button>
+              <button class="stage-arrow" onclick="stepDesign(1)">&rarr;</button>
+            </div>
+          </div>
+          <div class="stage-number"><span>Stage 03 &middot; S</span><span class="stage-letter">S</span></div>
+          <div class="stage-title">Survey</div>
+          <div class="stage-body">We come to your home. We measure using a Bluetooth laser and iPad LiDAR — precise, fast, and fully documented. We assess site conditions, confirm what was scoped matches what's actually there, and introduce you to your Passport for the first time. This is where the portal comes to life. We walk through it with you, show you how selections work, and how your project will live there from this point forward. Your Passport opens here — everything is on record from this moment on.</div>
+          <div class="stage-you">What we find on site shapes the final plan. No assumptions carried forward.</div>
+        </div>
+
+        <div class="stage-panel">
+          <div class="stage-counter">
+            <div class="stage-counter-left">
+              <div class="stage-counter-label">Stage 4 of 6</div>
+              <div class="stage-counter-pips" id="design-pips-4"></div>
+            </div>
+            <div class="stage-nav-arrows">
+              <button class="stage-arrow" onclick="stepDesign(-1)">&larr;</button>
+              <button class="stage-arrow" onclick="stepDesign(1)">&rarr;</button>
+            </div>
+          </div>
+          <div class="stage-number"><span>Stage 04 &middot; I</span><span class="stage-letter">I</span></div>
+          <div class="stage-title">Iterations</div>
+          <div class="stage-body">With the site confirmed, you make your material selections directly in the portal — flooring, paint, trim, and more, drawn from our actual inventory across Good, Better, and Best tiers. The system builds your quote from your choices. Any scope adjustments are documented and updated in real time. Your Passport opens here — from this point forward, everything is on record. The quote you approve is the quote we build to.</div>
+          <div class="stage-you">You're in the driver's seat on selections. The system handles the numbers.</div>
+        </div>
+
+        <div class="stage-panel">
+          <div class="stage-counter">
+            <div class="stage-counter-left">
+              <div class="stage-counter-label">Stage 5 of 6</div>
+              <div class="stage-counter-pips" id="design-pips-5"></div>
+            </div>
+            <div class="stage-nav-arrows">
+              <button class="stage-arrow" onclick="stepDesign(-1)">&larr;</button>
+              <button class="stage-arrow" onclick="stepDesign(1)">&rarr;</button>
+            </div>
+          </div>
+          <div class="stage-number"><span>Stage 05 &middot; G</span><span class="stage-letter">G</span></div>
+          <div class="stage-title">Go-Ahead</div>
+          <div class="stage-body">Scope locked. Selections confirmed. Contract signed digitally, deposit collected, start date set. Everyone knows what's happening, what it costs, and what the finished result looks like. From this point, the project is booked and protected — nothing changes without a documented change order.</div>
+          <div class="stage-you">Your sign-off starts the clock. Nothing moves without it.</div>
+        </div>
+
+        <div class="stage-panel">
+          <div class="stage-counter">
+            <div class="stage-counter-left">
+              <div class="stage-counter-label">Stage 6 of 6</div>
+              <div class="stage-counter-pips" id="design-pips-6"></div>
+            </div>
+            <div class="stage-nav-arrows">
+              <button class="stage-arrow" onclick="stepDesign(-1)">&larr;</button>
+              <button class="stage-arrow" onclick="stepDesign(1)" disabled>&rarr;</button>
+            </div>
+          </div>
+          <div class="stage-number"><span>Stage 06 &middot; N</span><span class="stage-letter">N</span></div>
+          <div class="stage-title">Notify</div>
+          <div class="stage-body">Your start date is confirmed and your crew is assigned. You'll receive their credentials and training documentation through the portal so you know exactly who is coming into your home and what they're qualified to do. The day before work begins, a what-to-expect communication arrives with arrival times and how to prepare. Crew assignments can change due to scheduling — if they do, you're notified immediately and the portal updates in real time.</div>
+          <div class="stage-you">No strangers showing up unannounced. You know who's coming before they arrive.</div>
+        </div>
+
       </div>
     </div>
-  </section>
+  </div>
 
-  <!-- ═══════════════════════════════════════ STEPS ═══ -->
-  <section class="steps-section" id="how-it-works">
-    <div class="steps-inner">
-      <p class="section-eyebrow">The Process</p>
-      <h2 class="section-h2">Three steps. Zero guessing.</h2>
+  <!-- SCRIPT -->
+  <div class="stepper-phase dark-phase" id="script-phase">
+    <div class="stepper-viewport">
+      <div class="stepper-inner" id="script-inner">
 
-      <!-- Step 01 -->
-      <div class="step">
-        <div class="step-num">01</div>
-        <div class="step-content">
-          <p class="step-tag">Discover</p>
-          <h3 class="step-title">The Site Visit</h3>
-          <p class="step-body">We arrive at your home with an existing floor plan loaded into our scope tool. Over 45 minutes, we walk every room with you — confirming dimensions, identifying issues, and agreeing on scope together. You're not handed a quote later. You watch it get built.</p>
-          <ul class="step-facts">
-            <li>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#16A34A" stroke-width="1"/><path d="M4.5 8.5L7 11L11.5 5.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Floor plan confirmed on-site
-            </li>
-            <li>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#16A34A" stroke-width="1"/><path d="M4.5 8.5L7 11L11.5 5.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Every room walked and documented
-            </li>
-            <li>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#16A34A" stroke-width="1"/><path d="M4.5 8.5L7 11L11.5 5.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Scope agreed before we leave
-            </li>
-            <li>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#16A34A" stroke-width="1"/><path d="M4.5 8.5L7 11L11.5 5.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              No vague scope — line items only
-            </li>
-          </ul>
+        <div class="stage-panel">
+          <div class="stage-counter">
+            <div class="stage-counter-left">
+              <div class="stage-counter-label" id="script-counter">Stage 1 of 6</div>
+              <div class="stage-counter-pips" id="script-pips"></div>
+            </div>
+            <div class="stage-nav-arrows">
+              <button class="stage-arrow" id="script-prev" onclick="stepScript(-1)">&larr;</button>
+              <button class="stage-arrow" id="script-next" onclick="stepScript(1)">&rarr;</button>
+            </div>
+          </div>
+          <div class="stage-number"><span>Stage 07 &middot; S</span><span class="stage-letter">S</span></div>
+          <div class="stage-title">Shield</div>
+          <div class="stage-body">Before the first cut is made, your home is protected. Floors covered, furniture moved, surfaces masked. Every job, every time — regardless of scope. A clean site is a safe site, and a safe site is a professional one.</div>
+          <div class="stage-you">Your home is treated with the same care you expect for the finished result.</div>
         </div>
+
+        <div class="stage-panel">
+          <div class="stage-counter">
+            <div class="stage-counter-left">
+              <div class="stage-counter-label">Stage 2 of 6</div>
+              <div class="stage-counter-pips" id="script-pips-2"></div>
+            </div>
+            <div class="stage-nav-arrows">
+              <button class="stage-arrow" onclick="stepScript(-1)">&larr;</button>
+              <button class="stage-arrow" onclick="stepScript(1)">&rarr;</button>
+            </div>
+          </div>
+          <div class="stage-number"><span>Stage 08 &middot; C</span><span class="stage-letter">C</span></div>
+          <div class="stage-title">Clear</div>
+          <div class="stage-body">Demo and removal — everything that needs to come out, comes out. Old flooring, trim, fixtures. Done properly, disposed of responsibly, and fully cleared before the next stage begins. Nothing is built on top of something that shouldn't be there.</div>
+          <div class="stage-you">The work no one sees is what everything else sits on.</div>
+        </div>
+
+        <div class="stage-panel">
+          <div class="stage-counter">
+            <div class="stage-counter-left">
+              <div class="stage-counter-label">Stage 3 of 6</div>
+              <div class="stage-counter-pips" id="script-pips-3"></div>
+            </div>
+            <div class="stage-nav-arrows">
+              <button class="stage-arrow" onclick="stepScript(-1)">&larr;</button>
+              <button class="stage-arrow" onclick="stepScript(1)">&rarr;</button>
+            </div>
+          </div>
+          <div class="stage-number"><span>Stage 09 &middot; R</span><span class="stage-letter">R</span></div>
+          <div class="stage-title">Ready</div>
+          <div class="stage-body">Surfaces prepped, substrates confirmed, materials staged, sequencing set. A clean and organized site isn't just efficient — it's safer. We don't start installing until the site is ready to receive it. This is the stage that separates a properly run job from one that creates problems down the road.</div>
+          <div class="stage-you">Preparation is where quality is decided, long before the finish goes on.</div>
+        </div>
+
+        <div class="stage-panel">
+          <div class="stage-counter">
+            <div class="stage-counter-left">
+              <div class="stage-counter-label">Stage 4 of 6</div>
+              <div class="stage-counter-pips" id="script-pips-4"></div>
+            </div>
+            <div class="stage-nav-arrows">
+              <button class="stage-arrow" onclick="stepScript(-1)">&larr;</button>
+              <button class="stage-arrow" onclick="stepScript(1)">&rarr;</button>
+            </div>
+          </div>
+          <div class="stage-number"><span>Stage 10 &middot; I</span><span class="stage-letter">I</span></div>
+          <div class="stage-title">Install</div>
+          <div class="stage-body">The work is executed against the approved plan. Every material confirmed against your selections as it goes in. Every scope item tracked. Your Passport updates as the job progresses — so there's always a live record of what's been done and what remains.</div>
+          <div class="stage-you">What was quoted is what gets installed. No substitutions without your approval.</div>
+        </div>
+
+        <div class="stage-panel">
+          <div class="stage-counter">
+            <div class="stage-counter-left">
+              <div class="stage-counter-label">Stage 5 of 6</div>
+              <div class="stage-counter-pips" id="script-pips-5"></div>
+            </div>
+            <div class="stage-nav-arrows">
+              <button class="stage-arrow" onclick="stepScript(-1)">&larr;</button>
+              <button class="stage-arrow" onclick="stepScript(1)">&rarr;</button>
+            </div>
+          </div>
+          <div class="stage-number"><span>Stage 11 &middot; P</span><span class="stage-letter">P</span></div>
+          <div class="stage-title">Punch</div>
+          <div class="stage-body">Before you see the finished space, we walk it first — a full internal quality control pass against the approved plan. Every detail checked. Touch-ups, corrections, and final refinements handled before you set foot in the room. Only once we're satisfied does the walkthrough with you begin. We find the issues. You don't have to.</div>
+          <div class="stage-you">The QC is ours to own. The walkthrough is yours to enjoy.</div>
+        </div>
+
+        <div class="stage-panel">
+          <div class="stage-counter">
+            <div class="stage-counter-left">
+              <div class="stage-counter-label">Stage 6 of 6</div>
+              <div class="stage-counter-pips" id="script-pips-6"></div>
+            </div>
+            <div class="stage-nav-arrows">
+              <button class="stage-arrow" onclick="stepScript(-1)">&larr;</button>
+              <button class="stage-arrow" onclick="stepScript(1)" disabled>&rarr;</button>
+            </div>
+          </div>
+          <div class="stage-number"><span>Stage 12 &middot; T</span><span class="stage-letter">T</span></div>
+          <div class="stage-title">Turnover</div>
+          <div class="stage-body">A final walkthrough together. Every scope item closed out, every question answered. Your Passport is complete — every material, every finish, every warranty detail documented and yours permanently. Your home is returned to you better than you left it, with a full record of everything in it.</div>
+          <div class="stage-you">The job isn't done until you're satisfied. That's not a slogan — it's how we close.</div>
+        </div>
+
       </div>
     </div>
-  </section>
+  </div>
 
-  <!-- ═══════════════════════════════════════ DEMO ═══ -->
-  <section class="demo-section" id="demo">
-    <div class="demo-inner">
-      <div class="demo-copy">
-        <p class="section-eyebrow">Interactive Demo</p>
-        <h2 class="section-h2">Try the floor plan tool we use on-site with you.</h2>
-        <p class="demo-body">When we come to your home, we work through a live floor plan just like this one — marking rooms, tracking trades, and building out a real scope in real time. Click any room to explore what gets documented during the visit.</p>
-      </div>
+</div>
 
-      <div class="demo-container">
-        <div class="demo-label-bar">
-          <div class="demo-label-left">
-            <div class="green-dot"></div>
-            <span class="demo-label-text">Hooomz OS — Floor Plan &amp; Scope Tool · Live Demo</span>
-          </div>
-          <span class="demo-label-right">Interactive</span>
-        </div>
-        <div id="fp-embed" style="height:760px;background:#0E1013;">
-          <!-- INLINE FLOORPLAN EMBED HERE -->
-          <iframe
-            src="/interiors/floorplan"
-            style="width:100%;height:100%;border:none;display:block;"
-            title="Hooomz Floor Plan & Scope Tool — Interactive Demo"
-            loading="lazy"
-          ></iframe>
-        </div>
-      </div>
-
-      <div class="demo-tips">
-        <div class="tip-card">
-          <div class="tip-icon">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M7 3.5C7 2.67 7.67 2 8.5 2C9.33 2 10 2.67 10 3.5V9L12 7.5C12.55 7.11 13.3 7.25 13.69 7.8C14.08 8.35 13.94 9.1 13.39 9.49L10 12V14C10 15.1 10.9 16 12 16H13C14.1 16 15 16.9 15 18H4C4 16.9 4.9 16 6 16H7V12L7 3.5Z" stroke="#9A8E84" stroke-width="1.3" stroke-linejoin="round"/></svg>
-          </div>
-          <p class="tip-label">Click Any Room</p>
-          <p class="tip-body">Select a space to see how scope, trades, and finishes get attached to each room during the site visit.</p>
-        </div>
-        <div class="tip-card">
-          <div class="tip-icon">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="4" width="16" height="3" rx="1" stroke="#9A8E84" stroke-width="1.3"/><rect x="2" y="8.5" width="16" height="3" rx="1" stroke="#9A8E84" stroke-width="1.3"/><rect x="2" y="13" width="16" height="3" rx="1" stroke="#9A8E84" stroke-width="1.3"/></svg>
-          </div>
-          <p class="tip-label">Switch Trade Layers</p>
-          <p class="tip-body">Toggle paint, flooring, and trim overlays to see how each trade is tracked independently.</p>
-        </div>
-        <div class="tip-card">
-          <div class="tip-icon">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#9A8E84" stroke-width="1.3"/><path d="M6.5 10.5L9 13L13.5 7" stroke="#9A8E84" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <p class="tip-label">This Is What We Use On-Site</p>
-          <p class="tip-body">No clipboard, no vague notes. Your actual scope gets built here, in front of you, during the 45-minute visit.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ═══════════════════════════════════════ STEPS continued ═══ -->
-  <section class="steps-section" style="padding-top:0;border-top:none;">
-    <div class="steps-inner">
-
-      <!-- Step 02 -->
-      <div class="step">
-        <div class="step-num">02</div>
-        <div class="step-content">
-          <p class="step-tag">Estimate</p>
-          <h3 class="step-title">The Scope &amp; Quote</h3>
-          <p class="step-body">Within 48 hours you receive a fixed-price quote broken down by room and trade. Paint, flooring, trim — each line item tied to a specific product, quantity, and labour rate. No allowances. No "we'll figure it out."</p>
-          <ul class="step-facts">
-            <li>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#16A34A" stroke-width="1"/><path d="M4.5 8.5L7 11L11.5 5.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Fixed price — not an estimate
-            </li>
-            <li>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#16A34A" stroke-width="1"/><path d="M4.5 8.5L7 11L11.5 5.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Broken down by room and trade
-            </li>
-            <li>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#16A34A" stroke-width="1"/><path d="M4.5 8.5L7 11L11.5 5.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Materials specified by brand, SKU, colour
-            </li>
-            <li>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#16A34A" stroke-width="1"/><path d="M4.5 8.5L7 11L11.5 5.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Revision rounds included
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- Step 03 -->
-      <div class="step">
-        <div class="step-num">03</div>
-        <div class="step-content">
-          <p class="step-tag">Install</p>
-          <h3 class="step-title">Trades On-Site</h3>
-          <p class="step-body">We coordinate and supervise every trade. You get daily progress updates through the same tool you saw at the site visit — real task statuses, material delivery confirmations, and photos as work is completed.</p>
-          <ul class="step-facts">
-            <li>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#16A34A" stroke-width="1"/><path d="M4.5 8.5L7 11L11.5 5.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Trades coordinated by Hooomz
-            </li>
-            <li>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#16A34A" stroke-width="1"/><path d="M4.5 8.5L7 11L11.5 5.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Daily status updates
-            </li>
-            <li>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#16A34A" stroke-width="1"/><path d="M4.5 8.5L7 11L11.5 5.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Same tool, live data
-            </li>
-            <li>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#16A34A" stroke-width="1"/><path d="M4.5 8.5L7 11L11.5 5.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Sign-off required before final invoice
-            </li>
-          </ul>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ═══════════════════════════════════════ WHY HOOOMZ ═══ -->
-  <section class="why-section" id="why">
-    <div class="why-inner">
-      <div class="why-header">
-        <p class="section-eyebrow">Why Hooomz</p>
-        <h2 class="section-h2" style="margin-bottom:0;">Built differently.</h2>
-      </div>
-      <div class="features-grid">
-        <div class="feature-card">
-          <p class="feature-title">Fixed-price quotes</p>
-          <p class="feature-desc">You know the number before anyone picks up a tool.</p>
-        </div>
-        <div class="feature-card">
-          <p class="feature-title">Scope built with you</p>
-          <p class="feature-desc">Not handed to you. Built together during the visit.</p>
-        </div>
-        <div class="feature-card">
-          <p class="feature-title">Trades we trust</p>
-          <p class="feature-desc">We've worked with the same crew for years. They know our standards.</p>
-        </div>
-        <div class="feature-card">
-          <p class="feature-title">No project manager markup</p>
-          <p class="feature-desc">We coordinate trades directly. You pay trade rates, not agency rates.</p>
-        </div>
-        <div class="feature-card">
-          <p class="feature-title">Material specs included</p>
-          <p class="feature-desc">Every product specified by brand, SKU, finish, and quantity.</p>
-        </div>
-        <div class="feature-card">
-          <p class="feature-title">Daily progress visibility</p>
-          <p class="feature-desc">The same tool from day one shows live job status throughout install.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ═══════════════════════════════════════ VISIT ═══ -->
-  <section class="visit-section" id="visit">
-    <div class="visit-inner">
-      <!-- Left — testimonial -->
+<!-- PASSPORT BRIDGE -->
+<section class="passport-bridge">
+  <div>
+    <div class="section-label">What stays behind</div>
+    <h2 class="passport-heading">Every stage documented. Permanently.</h2>
+    <p class="passport-body">From your first material selection to the final walkthrough — everything is captured in your Passport. What was installed, when it was done, what to watch for, and when to call. It stays with the home, not the owner. Forever.</p>
+    <div class="passport-note">Opens at Survey. Complete at Turnover.</div>
+  </div>
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-left"><div class="timeline-dot design"></div><div class="timeline-connector"></div></div>
       <div>
-        <div class="quote-card">
-          <p class="quote-text">"We've done renovations before. This was the first time we actually understood what we were paying for before anyone showed up."</p>
-          <p class="quote-attr">— Sarah M., Moncton</p>
-        </div>
-        <a href="/interiors/intake" class="btn btn-outline-dark" style="margin-top:4px;">Get an Estimate</a>
+        <div class="timeline-phase">Design &middot; Stage 03</div>
+        <div class="timeline-title">Portal introduced &middot; Passport opens</div>
+        <div class="timeline-note">Site measured, selections begin documenting</div>
       </div>
-
-      <!-- Right — visit facts -->
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-left"><div class="timeline-dot design"></div><div class="timeline-connector"></div></div>
       <div>
-        <p class="visit-facts-label">What Happens During the Visit</p>
-        <ul class="visit-facts">
-          <li>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#16A34A" stroke-width="1"/><path d="M4.5 8.5L7 11L11.5 5.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            We bring the floor plan — no measuring tape theatre
-          </li>
-          <li>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#16A34A" stroke-width="1"/><path d="M4.5 8.5L7 11L11.5 5.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            You confirm every room's scope in real time
-          </li>
-          <li>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#16A34A" stroke-width="1"/><path d="M4.5 8.5L7 11L11.5 5.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Blockers and concerns are noted immediately
-          </li>
-          <li>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#16A34A" stroke-width="1"/><path d="M4.5 8.5L7 11L11.5 5.5" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Material samples on hand to review in your actual space
-          </li>
-        </ul>
+        <div class="timeline-phase">Design &middot; Stage 05</div>
+        <div class="timeline-title">Scope locked</div>
+        <div class="timeline-note">Confirmed plan and selections captured in full</div>
       </div>
     </div>
-  </section>
+    <div class="timeline-item">
+      <div class="timeline-left"><div class="timeline-dot script"></div><div class="timeline-connector"></div></div>
+      <div>
+        <div class="timeline-phase">Script &middot; Stage 10</div>
+        <div class="timeline-title">Installation recorded</div>
+        <div class="timeline-note">Every material confirmed as installed</div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-left"><div class="timeline-dot script"></div></div>
+      <div>
+        <div class="timeline-phase">Script &middot; Stage 12</div>
+        <div class="timeline-title">Passport complete</div>
+        <div class="timeline-note">Transfers with the home at resale — permanently</div>
+      </div>
+    </div>
+  </div>
+</section>
 
-  <!-- ═══════════════════════════════════════ FOOTER ═══ -->
-  <footer>
-    <div class="footer-inner">
-      <div class="footer-cols">
-        <!-- Logo -->
-        <div>
-          <a href="/interiors" class="nav-logo" style="text-decoration:none;">
-            <img src="/hooomz-logo-white.svg" alt="Hooomz Interiors" style="height:22px;width:auto;opacity:.7;">
-          </a>
-        </div>
-        <!-- Links -->
-        <div class="footer-links">
-          <a href="/interiors">Home</a>
-          <a href="/interiors/process">How It Works</a>
-          <a href="/interiors/passport">Passport</a>
-          <a href="/interiors/intake">Get an Estimate</a>
-        </div>
-        <!-- Location -->
-        <div class="footer-right">
-          Dieppe, NB &middot; hooomz.ca
-        </div>
-      </div>
-      <hr class="footer-divider" />
-      <p class="footer-copy">&copy; 2026 Hooomz Interiors. All rights reserved.</p>
-    </div>
-  </footer>
+<section class="cta-section">
+  <h2 class="cta-heading">Ready to start the<br><span class="accent-word">design</span> phase?</h2>
+  <div class="cta-actions">
+    <a href="/interiors/intake" class="btn-primary-large">Get an Estimate &rarr;</a>
+    <div class="cta-note">Response within 24–48 hours</div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-copy">&copy; 2026 Hooomz Interiors Inc.</div>
+  <div class="footer-location">Southern New Brunswick</div>
+</footer>
+
+<script>
+  const STAGES = 6;
+  let designIdx = 0;
+  let scriptIdx = 0;
+
+  function buildPips(prefix, activeIdx) {
+    for (let i = 1; i <= STAGES; i++) {
+      const id = i === 1 ? `${prefix}-pips` : `${prefix}-pips-${i}`;
+      const el = document.getElementById(id);
+      if (!el) continue;
+      el.innerHTML = '';
+      for (let j = 0; j < STAGES; j++) {
+        const pip = document.createElement('button');
+        pip.className = 'stage-pip' + (j === activeIdx ? ' active' : '');
+        pip.setAttribute('aria-label', `Go to stage ${j + 1}`);
+        const capturedJ = j;
+        pip.onclick = () => prefix === 'design' ? jumpDesign(capturedJ) : jumpScript(capturedJ);
+        el.appendChild(pip);
+      }
+    }
+  }
+
+  function stepDesign(dir) {
+    designIdx = Math.max(0, Math.min(STAGES - 1, designIdx + dir));
+    applyDesign();
+  }
+
+  function jumpDesign(idx) {
+    designIdx = idx;
+    applyDesign();
+  }
+
+  function applyDesign() {
+    const inner = document.getElementById('design-inner');
+    const panels = inner.querySelectorAll('.stage-panel');
+    inner.style.transform = `translateX(-${designIdx * 100}%)`;
+    document.getElementById('design-prev').disabled = designIdx === 0;
+    document.getElementById('design-next').disabled = designIdx === STAGES - 1;
+    buildPips('design', designIdx);
+  }
+
+  function stepScript(dir) {
+    scriptIdx = Math.max(0, Math.min(STAGES - 1, scriptIdx + dir));
+    applyScript();
+  }
+
+  function jumpScript(idx) {
+    scriptIdx = idx;
+    applyScript();
+  }
+
+  function applyScript() {
+    const inner = document.getElementById('script-inner');
+    const panels = inner.querySelectorAll('.stage-panel');
+    inner.style.transform = `translateX(-${scriptIdx * 100}%)`;
+    document.getElementById('script-prev').disabled = scriptIdx === 0;
+    document.getElementById('script-next').disabled = scriptIdx === STAGES - 1;
+    buildPips('script', scriptIdx);
+  }
+
+  // Init
+  buildPips('design', 0);
+  buildPips('script', 0);
+  document.getElementById('design-prev').disabled = true;
+  document.getElementById('script-prev').disabled = true;
+</script>
 
 </body>
 </html>

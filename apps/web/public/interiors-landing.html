@@ -23,671 +23,1022 @@
 <meta name="twitter:description" content="Interior finishing for homeowners who want to know.">
 <meta name="twitter:image" content="https://hooomz.ca/og-image.jpg">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700;900&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#F0EDE8;
-  --surface:#FAF8F5;
-  --surface-2:#EAE4DB;
-  --charcoal:#1A1714;
-  --dark-nav:#111010;
-  --mid:#5C5349;
-  --muted:#9A8E84;
-  --faint:#D4CEC7;
-  --border:#E0DCD7;
-  --accent:#6B6560;
-  --accent-bg:rgba(107,101,96,.09);
-  --accent-border:rgba(107,101,96,.22);
-  --red:#DC2626;
-  --red-bg:rgba(220,38,38,.08);
-  --yellow:#D97706;
-  --yellow-bg:rgba(217,119,6,.08);
-  --green:#16A34A;
-  --green-bg:rgba(22,163,74,.08);
-  --blue:#4A7FA5;
-  --blue-bg:rgba(74,127,165,.08);
-  --violet:#7C3AED;
-  --font-display:'Figtree',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-  --font-body:'Figtree',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-  --font-mono:'DM Mono','SF Mono',ui-monospace,monospace;
-  --radius:10px;
-  --radius-sm:6px;
-}
-html{scroll-behavior:smooth}
-body{font-family:var(--font-body);background:var(--bg);color:var(--charcoal);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* ── NAV ─────────────────────────────── */
-nav{
-  position:fixed;top:0;left:0;right:0;z-index:100;
-  background:var(--dark-nav);
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 64px;height:60px;
-}
-.nav-left{display:flex;align-items:center;gap:12px;text-decoration:none}
-.nav-wordmark{font-weight:700;font-size:18px;letter-spacing:-.02em;color:#fff}
-.nav-wordmark span{color:var(--muted);font-weight:300}
-.dots{display:flex;gap:4px}
-.dot{width:7px;height:7px;border-radius:50%}
-.dot-r{background:var(--red)}.dot-y{background:var(--yellow)}.dot-g{background:var(--green)}
-.nav-links{display:flex;align-items:center;gap:28px;list-style:none}
-.nav-links a{font-size:13px;font-weight:500;color:rgba(255,255,255,.5);text-decoration:none;transition:color .2s;letter-spacing:.02em}
-.nav-links a:hover{color:#fff}
-.nav-book{background:var(--green)!important;color:#fff!important;padding:7px 18px;border-radius:var(--radius-sm);font-weight:600!important}
-.nav-book:hover{background:#15803d!important;color:#fff!important}
+  :root {
+    --bg: #F0EDE8;
+    --charcoal: #111010;
+    --accent: #6B6560;
+    --muted: #9A8E84;
+    --border: #E0DCD7;
+    --red: #DC2626;
+    --yellow: #D97706;
+    --green: #16A34A;
+    --surface: #FAF8F5;
+  }
 
-/* ── HERO ────────────────────────────── */
-.hero{
-  min-height:100vh;
-  display:flex;flex-direction:column;justify-content:flex-end;
-  padding:0 64px 80px;
-  position:relative;overflow:hidden;
-}
-.hero-bg{
-  position:absolute;inset:0;
-  background:var(--bg);
-}
-/* Subtle depth vignette */
-.hero-bg::after{
-  content:'';position:absolute;
-  right:-40px;bottom:-60px;
-  width:65vw;height:65vw;
-  background:radial-gradient(ellipse at center, rgba(26,23,20,.05) 0%, transparent 70%);
-  pointer-events:none;
-}
-.hero-content{position:relative;z-index:2;max-width:900px;padding-top:140px}
-.eyebrow{
-  font-family:'DM Mono',monospace;font-size:11px;font-weight:500;
-  letter-spacing:.18em;text-transform:uppercase;color:var(--accent);
-  margin-bottom:32px;display:flex;align-items:center;gap:12px;
-}
-.eyebrow::before{content:'';width:32px;height:1px;background:var(--accent);display:block}
-h1{
-  font-size:clamp(56px,8vw,120px);
-  font-weight:700;line-height:.96;
-  letter-spacing:-.04em;
-  margin-bottom:0;
-}
-h1 .line-muted{color:var(--muted);font-weight:300}
-.hero-divider{
-  width:100%;height:1px;background:var(--border);
-  margin:40px 0;
-}
-.hero-bottom{display:flex;align-items:flex-end;justify-content:space-between;gap:40px;flex-wrap:wrap}
-.hero-sub{
-  font-size:17px;line-height:1.65;color:var(--accent);
-  max-width:520px;
-}
-.hero-actions{display:flex;align-items:center;gap:14px;flex-shrink:0}
-.btn{
-  display:inline-flex;align-items:center;gap:8px;
-  font-family:'Figtree',sans-serif;font-size:14px;font-weight:600;
-  padding:14px 28px;border-radius:var(--radius);
-  text-decoration:none;letter-spacing:-.01em;
-  transition:all .2s;cursor:pointer;border:none;white-space:nowrap;
-}
-.btn-dark{background:var(--charcoal);color:#fff}
-.btn-dark:hover{background:#2d2926;transform:translateY(-1px)}
-.btn-outline{
-  background:transparent;color:var(--accent);
-  border:1.5px solid var(--border);font-size:13px;font-weight:500;
-  padding:13px 22px;
-}
-.btn-outline:hover{border-color:var(--charcoal);color:var(--charcoal)}
+  html { scroll-behavior: smooth; }
 
-/* ── PROOF STRIP ─────────────────────── */
-.proof{
-  background:var(--dark-nav);
-  padding:0 64px;
-  display:flex;align-items:stretch;
-  border-top:1px solid rgba(255,255,255,.06);
-}
-.proof-item{
-  flex:1;padding:28px 0;
-  display:flex;flex-direction:column;gap:4px;
-  border-right:1px solid rgba(255,255,255,.08);
-  padding-right:40px;padding-left:40px;
-}
-.proof-item:first-child{padding-left:0}
-.proof-item:last-child{border-right:none}
-.proof-num{
-  font-family:'DM Mono',monospace;font-size:28px;font-weight:500;
-  color:#fff;letter-spacing:-.03em;line-height:1;
-}
-.proof-label{font-size:12px;color:rgba(255,255,255,.4);line-height:1.4;margin-top:4px}
+  body {
+    font-family: 'Figtree', sans-serif;
+    background: var(--bg);
+    color: var(--charcoal);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
 
-/* ── SERVICES ────────────────────────── */
-.services{padding:96px 64px}
-.section-label{
-  font-family:'DM Mono',monospace;font-size:10px;
-  letter-spacing:.18em;text-transform:uppercase;color:var(--accent);
-  margin-bottom:20px;
-}
-.services-header{
-  display:flex;align-items:flex-end;justify-content:space-between;
-  gap:40px;margin-bottom:56px;flex-wrap:wrap;
-}
-.services-headline{
-  font-size:clamp(32px,4vw,52px);font-weight:700;
-  line-height:1.05;letter-spacing:-.03em;
-}
-.services-intro{font-size:15px;color:var(--accent);line-height:1.65;max-width:360px}
-.service-grid{
-  display:grid;grid-template-columns:repeat(4,1fr);
-  gap:2px;
-}
-.service-card{
-  background:var(--surface);
-  padding:36px 28px;
-  display:flex;flex-direction:column;gap:16px;
-  border-radius:0;
-  transition:background .2s;
-}
-.service-card:first-child{border-radius:var(--radius) 0 0 var(--radius)}
-.service-card:last-child{border-radius:0 var(--radius) var(--radius) 0}
-.service-card:hover{background:#fff}
-.service-icon{
-  width:40px;height:40px;
-  display:flex;align-items:center;justify-content:center;
-}
-.service-icon svg{width:28px;height:28px;stroke:var(--charcoal);fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
-.service-name{font-size:16px;font-weight:700;letter-spacing:-.01em}
-.service-desc{font-size:13px;color:var(--accent);line-height:1.55}
-.service-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto}
-.tag{
-  font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;
-  text-transform:uppercase;color:var(--accent);
-  background:var(--bg);border:1px solid var(--border);
-  padding:4px 8px;border-radius:4px;
-}
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 48px;
+    height: 72px;
+    background: var(--charcoal);
+  }
 
-/* ── TRUST ───────────────────────────── */
-.trust{
-  background:var(--dark-nav);
-  padding:96px 64px;
-  display:grid;grid-template-columns:1fr 1fr;
-  gap:80px;align-items:center;
-}
-.trust-left .section-label{color:rgba(255,255,255,.3)}
-.trust-quote{
-  font-size:clamp(24px,3vw,38px);font-weight:600;
-  line-height:1.25;letter-spacing:-.025em;color:#fff;
-  margin-bottom:28px;
-}
-.trust-quote em{font-style:italic;color:rgba(255,255,255,.4);font-weight:300}
-.trust-body{font-size:15px;color:rgba(255,255,255,.45);line-height:1.7;margin-bottom:36px}
-.trust-body strong{color:rgba(255,255,255,.75);font-weight:600}
-.trust-creds{display:flex;flex-direction:column;gap:12px}
-.cred-row{
-  display:flex;align-items:center;gap:14px;
-  padding:14px 18px;
-  background:rgba(255,255,255,.04);
-  border:1px solid rgba(255,255,255,.07);
-  border-radius:var(--radius-sm);
-}
-.cred-icon{width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.cred-icon svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
-.cred-text{font-size:13px;color:rgba(255,255,255,.6);line-height:1.4}
-.cred-text strong{color:#fff;font-weight:600;display:block;font-size:14px;margin-bottom:1px}
-/* Right: passport card */
-.passport-card{
-  background:var(--surface);
-  border-radius:16px;
-  overflow:hidden;
-  box-shadow:0 32px 64px rgba(0,0,0,.4);
-}
-.passport-header{
-  background:var(--charcoal);
-  padding:24px 28px;
-  display:flex;align-items:center;justify-content:space-between;
-}
-.passport-header-title{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5)}
-.passport-header-id{font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.3)}
-.passport-score{
-  padding:28px 28px 20px;
-  display:flex;align-items:center;gap:20px;
-  border-bottom:1px solid var(--border);
-}
-.score-num{font-family:'DM Mono',monospace;font-size:52px;font-weight:500;color:var(--charcoal);letter-spacing:-.04em;line-height:1}
-.score-label{font-size:12px;color:var(--accent);line-height:1.5}
-.score-label strong{display:block;font-size:14px;font-weight:700;color:var(--charcoal);margin-bottom:2px}
-.passport-rows{padding:0 28px 28px;display:flex;flex-direction:column;gap:0}
-.p-row{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:12px 0;border-bottom:1px solid var(--border);
-  font-size:13px;
-}
-.p-row:last-child{border-bottom:none}
-.p-row-label{color:var(--accent);font-weight:500}
-.p-row-val{font-weight:600;color:var(--charcoal);text-align:right}
-.p-row-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-top:1px;text-align:right}
-.passport-footer{
-  background:var(--bg);padding:14px 28px;
-  display:flex;align-items:center;justify-content:space-between;
-}
-.passport-footer-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-.status-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px rgba(22,163,74,.2)}
+  .logo {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
 
-/* ── PROCESS ─────────────────────────── */
-.process-section{padding:96px 64px;background:var(--surface);border-top:1.5px solid var(--border)}
-.process-header{display:flex;align-items:flex-end;justify-content:space-between;gap:40px;margin-bottom:56px;flex-wrap:wrap}
-.process-headline{font-size:clamp(32px,4vw,52px);font-weight:700;line-height:1.05;letter-spacing:-.03em}
-.process-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:2px}
-.process-card{
-  background:var(--bg);
-  padding:32px 24px;
-  position:relative;
-  transition:background .2s;
-}
-.process-card:first-child{border-radius:var(--radius) 0 0 var(--radius)}
-.process-card:last-child{border-radius:0 var(--radius) var(--radius) 0}
-.process-card:hover{background:#fff}
-.process-letter{
-  font-size:48px;font-weight:700;letter-spacing:-.04em;
-  color:rgba(26,23,20,.07);line-height:1;margin-bottom:16px;
-}
-.process-num{
-  font-family:'DM Mono',monospace;font-size:10px;
-  letter-spacing:.14em;color:var(--muted);margin-bottom:8px;
-}
-.process-name{font-size:15px;font-weight:700;margin-bottom:6px}
-.process-desc{font-size:12px;color:var(--accent);line-height:1.55}
+  .logo-wordmark {
+    font-family: 'Figtree', sans-serif;
+    font-weight: 900;
+    font-size: 22px;
+    letter-spacing: 0.08em;
+    color: white;
+    line-height: 1;
+  }
 
-/* ── FINAL CTA ───────────────────────── */
-.cta-section{
-  padding:96px 64px;
-  display:grid;grid-template-columns:1fr 1fr;
-  gap:80px;align-items:center;
-}
-.cta-left .section-label{margin-bottom:16px}
-.cta-headline{font-size:clamp(36px,5vw,64px);font-weight:700;line-height:1.0;letter-spacing:-.04em;margin-bottom:24px}
-.cta-sub{font-size:16px;color:var(--accent);line-height:1.7;margin-bottom:36px}
-.cta-actions{display:flex;gap:14px;flex-wrap:wrap}
-.btn-green{background:var(--green);color:#fff}
-.btn-green:hover{background:#15803d;transform:translateY(-1px)}
-.cta-right{
-  background:var(--dark-nav);
-  border-radius:16px;
-  padding:48px;
-  display:flex;flex-direction:column;gap:24px;
-}
-.cta-card-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.3)}
-.cta-card-headline{font-size:22px;font-weight:700;color:#fff;letter-spacing:-.02em;line-height:1.25}
-.cta-steps{display:flex;flex-direction:column;gap:16px}
-.cta-step{display:flex;align-items:flex-start;gap:14px}
-.cta-step-num{
-  font-family:'DM Mono',monospace;font-size:10px;
-  color:var(--green);background:rgba(22,163,74,.1);
-  border:1px solid rgba(22,163,74,.2);
-  width:24px;height:24px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;font-weight:500;margin-top:1px;
-}
-.cta-step-text{font-size:14px;color:rgba(255,255,255,.55);line-height:1.5}
-.cta-step-text strong{color:#fff;font-weight:600}
-.btn-ghost-white{
-  background:transparent;color:rgba(255,255,255,.4);
-  border:1.5px solid rgba(255,255,255,.12);
-  font-size:13px;font-weight:500;padding:12px 20px;
-}
-.btn-ghost-white:hover{color:#fff;border-color:rgba(255,255,255,.3)}
+  .logo-wordmark .o1 { color: var(--red); }
+  .logo-wordmark .o2 { color: var(--yellow); }
+  .logo-wordmark .o3 { color: var(--green); }
 
-/* ── FOOTER ──────────────────────────── */
-footer{
-  background:var(--dark-nav);
-  border-top:1px solid rgba(255,255,255,.06);
-  padding:28px 64px;
-  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;
-}
-.footer-brand .nav-wordmark{font-size:15px}
-.footer-sub{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.25);margin-top:3px}
-.footer-links{display:flex;gap:24px}
-.footer-links a{font-size:12px;color:rgba(255,255,255,.35);text-decoration:none;transition:color .2s}
-.footer-links a:hover{color:rgba(255,255,255,.7)}
+  .logo-sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
 
-/* ── ANIMATIONS ──────────────────────── */
-@keyframes up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-.hero-content{animation:up .8s ease both}
-.hero-bottom{animation:up .8s .12s ease both}
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
 
-/* ── RESPONSIVE ──────────────────────── */
-@media(max-width:960px){
-  nav{padding:0 24px}
-  .nav-links{display:none}
-  .hero{padding:0 24px 60px;padding-top:48px;min-height:auto;justify-content:flex-start}
-  .hero-content{padding-top:100px}
-  .hero-bottom{flex-direction:column;align-items:flex-start}
-  .proof{flex-wrap:wrap;padding:0 24px;gap:0}
-  .proof-item{flex:50%;padding:20px 16px;border-right:none;border-bottom:1px solid rgba(255,255,255,.08)}
-  .services{padding:64px 24px}
-  .service-grid{grid-template-columns:1fr 1fr;gap:2px}
-  .service-card:first-child{border-radius:var(--radius) 0 0 0}
-  .service-card:last-child{border-radius:0 0 var(--radius) var(--radius)}
-  .trust{grid-template-columns:1fr;padding:64px 24px;gap:48px}
-  .process-section{padding:64px 24px}
-  .process-grid{grid-template-columns:1fr 1fr;gap:2px}
-  .process-card:first-child{border-radius:var(--radius) 0 0 0}
-  .process-card:last-child{border-radius:0 0 var(--radius) var(--radius)}
-  .cta-section{grid-template-columns:1fr;padding:64px 24px;gap:40px}
-  footer{padding:24px;flex-direction:column;align-items:flex-start;gap:20px}
-}
+  .nav-link {
+    font-family: 'Figtree', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.6);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    transition: color 0.2s;
+  }
+
+  .nav-link:hover { color: white; }
+
+  .nav-cta {
+    font-family: 'Figtree', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--charcoal);
+    background: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    letter-spacing: 0.03em;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+
+  .nav-cta:hover { background: var(--bg); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0 64px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.2s forwards;
+  }
+
+  .hero-eyebrow-line {
+    width: 40px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .hero-eyebrow-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+
+  .hero-headline {
+    font-size: clamp(64px, 9vw, 128px);
+    font-weight: 900;
+    line-height: 0.92;
+    letter-spacing: -0.03em;
+    color: var(--charcoal);
+    opacity: 0;
+    animation: fadeUp 0.9s ease 0.35s forwards;
+    margin-bottom: 40px;
+  }
+
+  .hero-headline .muted-line {
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  .hero-bottom {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.55s forwards;
+  }
+
+  .hero-descriptor {
+    max-width: 340px;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.6;
+    color: var(--accent);
+  }
+
+  .hero-actions {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--charcoal);
+    color: white;
+    font-family: 'Figtree', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    padding: 14px 28px;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+
+  .btn-primary:hover { background: #2a2a2a; }
+
+  .btn-ghost {
+    font-family: 'Figtree', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--accent);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    transition: color 0.2s;
+  }
+
+  .btn-ghost:hover { color: var(--charcoal); }
+
+  /* PROOF STRIP */
+  .proof {
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .proof-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .proof-item:first-child { justify-content: flex-start; }
+  .proof-item:last-child { justify-content: flex-end; }
+
+  .proof-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    flex-shrink: 0;
+  }
+
+  .proof-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* PROBLEM SECTION */
+  .problem {
+    padding: 120px 64px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+
+  .problem-heading {
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--charcoal);
+  }
+
+  .problem-heading em {
+    font-style: normal;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  .problem-right { padding-top: 8px; }
+
+  .problem-intro {
+    font-size: 17px;
+    font-weight: 400;
+    line-height: 1.65;
+    color: var(--accent);
+    margin-bottom: 24px;
+  }
+
+  .problem-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .problem-list li {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: background 0.2s;
+  }
+
+  .problem-list li:hover { background: white; }
+
+  .problem-question {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--charcoal);
+  }
+
+  .problem-solver {
+    font-size: 13px;
+    font-style: italic;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--accent);
+  }
+
+  /* SOLUTION SECTION */
+  .solution {
+    background: var(--charcoal);
+    padding: 120px 64px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .solution::before {
+    content: 'HOOOMZ';
+    position: absolute;
+    right: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(255,255,255,0.02);
+    letter-spacing: -0.05em;
+    pointer-events: none;
+    line-height: 1;
+  }
+
+  .solution-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 48px;
+  }
+
+  .solution-headline {
+    font-size: clamp(36px, 5vw, 68px);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    color: white;
+    max-width: 800px;
+    margin-bottom: 64px;
+  }
+
+  .solution-headline .highlight { color: var(--green); }
+
+  .solution-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .solution-card {
+    background: var(--charcoal);
+    padding: 40px 36px;
+    transition: background 0.2s;
+  }
+
+  .solution-card:hover { background: #1a1a1a; }
+
+  .card-number {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    margin-bottom: 20px;
+  }
+
+  .card-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 12px;
+    letter-spacing: -0.01em;
+  }
+
+  .card-body {
+    font-size: 14px;
+    line-height: 1.6;
+    color: rgba(255,255,255,0.45);
+  }
+
+  /* PASSPORT SECTION */
+  .passport-section {
+    padding: 120px 64px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .passport-visual {
+    background: var(--charcoal);
+    aspect-ratio: 4/3;
+    display: flex;
+    flex-direction: column;
+    padding: 32px;
+    gap: 16px;
+  }
+
+  .passport-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .passport-title-block .passport-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .passport-title-block .passport-address {
+    font-size: 15px;
+    font-weight: 600;
+    color: white;
+  }
+
+  .passport-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .passport-badge-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+  }
+
+  .passport-badge-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    color: var(--green);
+    text-transform: uppercase;
+  }
+
+  .passport-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+  }
+
+  .passport-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .passport-row-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-transform: uppercase;
+    min-width: 80px;
+  }
+
+  .passport-row-value {
+    font-size: 13px;
+    font-weight: 500;
+    color: white;
+    flex: 1;
+    padding: 0 12px;
+  }
+
+  .passport-row-status {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    padding: 3px 8px;
+    border-radius: 2px;
+  }
+
+  .status-good { background: rgba(22,163,74,0.15); color: var(--green); }
+  .status-watch { background: rgba(217,119,6,0.15); color: var(--yellow); }
+
+  .passport-content { padding-top: 16px; }
+  .passport-content .section-label { margin-bottom: 20px; }
+
+  .passport-heading {
+    font-size: clamp(28px, 3.5vw, 44px);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--charcoal);
+    margin-bottom: 20px;
+  }
+
+  .passport-body {
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--accent);
+    margin-bottom: 32px;
+  }
+
+  .passport-features {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .passport-feature {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    color: var(--charcoal);
+    font-weight: 500;
+  }
+
+  .feature-tick {
+    width: 18px;
+    height: 18px;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 10px;
+    color: var(--green);
+  }
+
+  /* PROCESS TEASER */
+  .process-teaser {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 100px 64px;
+    text-align: center;
+  }
+
+  .process-teaser .section-label {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .process-teaser-heading {
+    font-size: clamp(32px, 4vw, 54px);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    color: var(--charcoal);
+    max-width: 640px;
+    margin: 0 auto 20px;
+  }
+
+  .process-teaser-sub {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--accent);
+    max-width: 480px;
+    margin: 0 auto 48px;
+  }
+
+  .process-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Figtree', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--charcoal);
+    text-decoration: none;
+    letter-spacing: 0.03em;
+    border-bottom: 1px solid var(--charcoal);
+    padding-bottom: 2px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .process-link:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* SPOKE TEASER */
+  .spoke-teaser {
+    padding: 100px 64px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .spoke-heading {
+    font-size: clamp(28px, 3.5vw, 44px);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--charcoal);
+    margin-bottom: 16px;
+  }
+
+  .spoke-heading em {
+    font-style: normal;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  .spoke-body {
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--accent);
+    margin-bottom: 32px;
+  }
+
+  .spoke-coming {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+    border: 1px solid var(--border);
+    padding: 8px 16px;
+  }
+
+  .spoke-visual {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .spoke-card {
+    background: var(--charcoal);
+    border: 1px solid var(--charcoal);
+    padding: 24px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .spoke-card-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: white;
+  }
+
+  .spoke-card-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .spoke-status-live {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    padding: 4px 10px;
+    text-transform: uppercase;
+    background: rgba(22,163,74,0.12);
+    color: var(--green);
+  }
+
+  .spoke-ghost {
+    border: 1px dashed var(--border);
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    opacity: 0.45;
+    margin-top: 2px;
+  }
+
+  .spoke-ghost-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-size: 10px;
+  }
+
+  .spoke-ghost-soon {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  /* CTA */
+  .cta-section {
+    background: var(--charcoal);
+    padding: 120px 64px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .cta-heading {
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    color: white;
+    max-width: 600px;
+  }
+
+  .cta-heading .accent-word { color: var(--green); }
+
+  .cta-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 16px;
+  }
+
+  .btn-primary-large {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: white;
+    color: var(--charcoal);
+    font-family: 'Figtree', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    padding: 18px 36px;
+    text-decoration: none;
+    transition: background 0.2s;
+    white-space: nowrap;
+  }
+
+  .btn-primary-large:hover { background: var(--bg); }
+
+  .cta-note {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-transform: uppercase;
+    text-align: right;
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 40px 64px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    background: var(--charcoal);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .footer-copy {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+
+  .footer-location {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: rgba(255,255,255,0.2);
+    text-transform: uppercase;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* MOBILE */
+  @media (max-width: 960px) {
+    nav { padding: 0 24px; }
+    .hero { padding: 48px 24px 60px; min-height: auto; justify-content: flex-start; }
+    .hero-headline { font-size: 56px; }
+    .hero-bottom { flex-direction: column; align-items: flex-start; gap: 32px; }
+    .proof { padding: 20px 24px; flex-wrap: wrap; gap: 12px; justify-content: flex-start; }
+    .proof-item { flex: none; justify-content: flex-start; }
+    .proof-item:last-child { justify-content: flex-start; }
+    .problem { padding: 80px 24px; grid-template-columns: 1fr; gap: 40px; }
+    .solution { padding: 80px 24px; }
+    .solution-grid { grid-template-columns: 1fr; }
+    .passport-section { padding: 80px 24px; grid-template-columns: 1fr; }
+    .process-teaser { padding: 80px 24px; }
+    .spoke-teaser { padding: 80px 24px; grid-template-columns: 1fr; }
+    .cta-section { padding: 80px 24px; grid-template-columns: 1fr; }
+    .cta-actions { align-items: flex-start; }
+    footer { padding: 32px 24px; flex-direction: column; gap: 12px; text-align: center; }
+  }
 </style>
 </head>
 <body>
 
 <!-- NAV -->
 <nav>
-  <a href="/interiors" class="nav-left">
-    <img src="/hooomz-logo-white.svg" alt="Hooomz Interiors" style="height:38px;width:auto;">
-  </a>
-  <ul class="nav-links">
-    <li><a href="/interiors/process">How It Works</a></li>
-    <li><a href="/interiors/passport">Passport</a></li>
-    <li><a href="/interiors/intake" class="nav-book">Get an Estimate</a></li>
-  </ul>
+  <div class="logo">
+    <div class="logo-wordmark">H<span class="o1">O</span><span class="o2">O</span><span class="o3">O</span>MZ</div>
+    <div class="logo-sub">Interiors</div>
+  </div>
+  <div class="nav-right">
+    <a href="/interiors/process" class="nav-link">How It Works</a>
+    <a href="/interiors/passport" class="nav-link">Passport</a>
+    <a href="/interiors/intake" class="nav-cta">Get an Estimate</a>
+  </div>
 </nav>
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-bg"></div>
-  <div class="hero-content">
-    <div class="eyebrow">Hooomz Interiors · Southern New Brunswick</div>
-    <h1>
-      Floors.<br>
-      Paint.<br>
-      Trim.<br>
-      <span class="line-muted">Done right.</span>
-    </h1>
+  <div class="hero-eyebrow">
+    <div class="hero-eyebrow-line"></div>
+    <div class="hero-eyebrow-text">Hooomz Interiors · Southern New Brunswick</div>
   </div>
-  <div class="hero-divider"></div>
+  <div class="hero-headline">
+    Floors.<br>
+    Paint.<br>
+    Trim.<br>
+    <span class="muted-line">Done right.</span>
+  </div>
   <div class="hero-bottom">
-    <p class="hero-sub">Interior finishing built on 20+ years of trade experience. Three-tier pricing, every job documented, and a permanent record of every material in your home.</p>
+    <p class="hero-descriptor">The person you call when you need something done to your house. Finishing trades built on 20+ years of experience, a proprietary system, and a permanent record of everything in your home.</p>
     <div class="hero-actions">
-      <a href="/interiors/intake" class="btn btn-dark">
-        Get an Estimate
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 7h10M8 3l4 4-4 4" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </a>
-      <a href="/interiors/process" class="btn btn-outline">How It Works</a>
+      <a href="/interiors/intake" class="btn-primary">Get an Estimate →</a>
+      <a href="/interiors/process" class="btn-ghost">How It Works</a>
     </div>
   </div>
 </section>
 
 <!-- PROOF STRIP -->
 <div class="proof">
-  <div class="proof-item">
-    <div class="proof-num">20+</div>
-    <div class="proof-label">Years of trade<br>experience</div>
-  </div>
-  <div class="proof-item">
-    <div class="proof-num">3</div>
-    <div class="proof-label">Tier pricing — Good,<br>Better, and Best</div>
-  </div>
-  <div class="proof-item">
-    <div class="proof-num">1</div>
-    <div class="proof-label">LiDAR site visit<br>delivers all three quotes</div>
-  </div>
-  <div class="proof-item">
-    <div class="proof-num">∞</div>
-    <div class="proof-label">Hooomz Passport<br>your home record, forever</div>
-  </div>
+  <div class="proof-item"><div class="proof-dot"></div><div class="proof-label">Red Seal Journeyman Carpenter</div></div>
+  <div class="proof-item"><div class="proof-dot"></div><div class="proof-label">20+ Years Experience</div></div>
+  <div class="proof-item"><div class="proof-dot"></div><div class="proof-label">Every Job Documented</div></div>
+  <div class="proof-item"><div class="proof-dot"></div><div class="proof-label">Three-Tier Pricing</div></div>
+  <div class="proof-item"><div class="proof-dot"></div><div class="proof-label">Southern New Brunswick</div></div>
 </div>
 
-<!-- SERVICES -->
-<section class="services" id="services">
-  <div class="services-header">
-    <div>
-      <div class="section-label">What We Do</div>
-      <h2 class="services-headline">Every finish,<br>under one process.</h2>
-    </div>
-    <p class="services-intro">Flooring, paint, trim, and specialty finishes — all managed through the same documented system, every time.</p>
+<!-- PROBLEM -->
+<section class="problem">
+  <div class="problem-left">
+    <div class="section-label">The problem</div>
+    <h2 class="problem-heading">Homeownership is<br><em>more complicated</em><br>than it should be.</h2>
   </div>
-  <div class="service-grid">
-    <!-- Flooring -->
-    <div class="service-card">
-      <div class="service-icon">
-        <svg viewBox="0 0 28 28" fill="none" stroke="var(--charcoal)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="4" y="4" width="9" height="9"/><rect x="15" y="4" width="9" height="9"/><rect x="4" y="15" width="9" height="9"/><rect x="15" y="15" width="9" height="9"/>
-        </svg>
-      </div>
-      <div class="service-name">Flooring</div>
-      <div class="service-desc">LVP, hardwood, and tile. Rooms are measured precisely before anything is ordered — substrate conditions inspected and resolved before the first plank goes down.</div>
-      <div class="service-tags">
-        <span class="tag">LVP</span>
-        <span class="tag">Hardwood</span>
-        <span class="tag">Tile</span>
-      </div>
+  <div class="problem-right">
+    <p class="problem-intro">Most homeowners don't know who to call, what to expect, or whether they're getting it right. That uncertainty is expensive.</p>
+    <ul class="problem-list">
+      <li>
+        <span class="problem-question">Who do I trust with my home — and how do I know?</span>
+        <span class="problem-solver">Every Hooomz job is backed by a Red Seal tradesperson with 20+ years of experience. Our record speaks for itself.</span>
+      </li>
+      <li>
+        <span class="problem-question">Will the work add value, or just cost money?</span>
+        <span class="problem-solver">Three-tier pricing lets you choose the level that fits your home and your goals — before a single nail is driven.</span>
+      </li>
+      <li>
+        <span class="problem-question">What was installed, and is that what was quoted?</span>
+        <span class="problem-solver">Every material is documented in your Passport. What was selected, what was installed — it's all there.</span>
+      </li>
+      <li>
+        <span class="problem-question">Is the job on track — and if not, would I even know?</span>
+        <span class="problem-solver">Our proprietary system keeps every job on a defined path. You're informed at every stage, not just at the end.</span>
+      </li>
+      <li>
+        <span class="problem-question">Is this a DIY fix or do I need a professional?</span>
+        <span class="problem-solver">Your Passport tells you what's in your home, how long it should last, and exactly when to call someone.</span>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- SOLUTION -->
+<section class="solution">
+  <div class="solution-label">The Hooomz difference</div>
+  <h2 class="solution-headline">One relationship.<br>Every trade.<br><span class="highlight">Your home, documented.</span></h2>
+  <div class="solution-grid">
+    <div class="solution-card">
+      <div class="card-number">01</div>
+      <div class="card-title">A proprietary system</div>
+      <div class="card-body">Every job runs through a structured process — from the first conversation to the final walkthrough. Nothing is improvised. Nothing falls through the cracks.</div>
     </div>
-    <!-- Paint -->
-    <div class="service-card">
-      <div class="service-icon">
-        <svg viewBox="0 0 28 28" fill="none" stroke="var(--charcoal)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M10 4h8v5l2 2v4H8v-4l2-2V4z"/><path d="M8 15v5a2 2 0 0 0 4 0v-5"/><path d="M4 9h4M20 9h4"/>
-        </svg>
-      </div>
-      <div class="service-name">Interior Paint</div>
-      <div class="service-desc">The right sheen for the right surface — flat for ceilings, eggshell for walls, semi-gloss for trim and doors. Full prep, two coats, clean lines. Every colour recorded in your Passport.</div>
-      <div class="service-tags">
-        <span class="tag">Walls</span>
-        <span class="tag">Ceilings</span>
-        <span class="tag">Trim</span>
-      </div>
+    <div class="solution-card">
+      <div class="card-number">02</div>
+      <div class="card-title">Three-tier pricing</div>
+      <div class="card-body">Good. Better. Best. Every line item is transparent. You choose the level that fits your home and your budget — no surprises, no upsells at the door.</div>
     </div>
-    <!-- Trim -->
-    <div class="service-card">
-      <div class="service-icon">
-        <svg viewBox="0 0 28 28" fill="none" stroke="var(--charcoal)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 22h20M4 22V6M24 22V6M4 6h20M8 6v16M20 6v16"/>
-        </svg>
-      </div>
-      <div class="service-name">Trim & Millwork</div>
-      <div class="service-desc">Clean lines where walls meet floors, doors meet walls, and rooms come together. Baseboard, casing, and interior door installations done to a consistent standard — properly coped, fitted, and finished.</div>
-      <div class="service-tags">
-        <span class="tag">Baseboard</span>
-        <span class="tag">Casing</span>
-        <span class="tag">Interior Doors</span>
-      </div>
-    </div>
-    <!-- Feature Walls -->
-    <div class="service-card">
-      <div class="service-icon">
-        <svg viewBox="0 0 28 28" fill="none" stroke="var(--charcoal)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="4" y="4" width="20" height="20" rx="1.5"/>
-          <path d="M4 11h20M4 17h20M11 4v20M17 4v20"/>
-        </svg>
-      </div>
-      <div class="service-name">Feature Walls</div>
-      <div class="service-desc">One wall that changes how a room reads. Board and batten, shiplap, wainscoting, and wallpaper — substrate prepped properly so the finish lasts.</div>
-      <div class="service-tags">
-        <span class="tag">Board & Batten</span>
-        <span class="tag">Wainscoting</span>
-        <span class="tag">Wallpaper</span>
-      </div>
+    <div class="solution-card">
+      <div class="card-number">03</div>
+      <div class="card-title">Your Passport</div>
+      <div class="card-body">A permanent record of everything done in your home. What's in the walls. What was installed. What to watch. A living document that travels with the house.</div>
     </div>
   </div>
 </section>
 
-<!-- TRUST -->
-<section class="trust" id="trust">
-  <div class="trust-left">
-    <div class="section-label">Who's On Your Job</div>
-    <p class="trust-quote">"Any contractor can do the work. <em>Almost none of them can tell you what they used three years later.</em>"</p>
-    <p class="trust-body">Every Hooomz job closes with a Passport — a permanent record of every material, colour, warranty, and photo. <strong>It's yours to keep, forever.</strong> Not on a contractor's server. Not locked behind an app. Yours.</p>
-    <div class="trust-creds">
-      <div class="cred-row">
-        <div class="cred-icon">
-          <svg viewBox="0 0 18 18" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="6" r="3"/><path d="M3 16c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>
-        </div>
-        <div class="cred-text"><strong>20+ years of trade experience</strong>Residential finishing — Southern New Brunswick</div>
-      </div>
-      <div class="cred-row">
-        <div class="cred-icon">
-          <svg viewBox="0 0 18 18" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="14" height="12" rx="1.5"/><path d="M6 7h6M6 10h4"/></svg>
-        </div>
-        <div class="cred-text"><strong>Documented to a standard</strong>3 trade programs · 30 modules · 81 SOPs on every job</div>
-      </div>
-      <div class="cred-row">
-        <div class="cred-icon">
-          <svg viewBox="0 0 18 18" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2C5.7 2 3 4.7 3 8c0 2.4 1.4 4.5 3.4 5.5L9 16l2.6-2.5C13.6 12.5 15 10.4 15 8c0-3.3-2.7-6-6-6z"/><circle cx="9" cy="8" r="2"/></svg>
-        </div>
-        <div class="cred-text"><strong>Moncton · Fredericton · Saint John</strong>Serving Greater Southern New Brunswick</div>
-      </div>
-    </div>
-  </div>
-  <!-- Passport card -->
-  <div class="passport-card">
+<!-- PASSPORT -->
+<section class="passport-section">
+  <div class="passport-visual">
     <div class="passport-header">
-      <span class="passport-header-title">Hooomz Passport</span>
-      <span class="passport-header-id">J-2024-019</span>
-    </div>
-    <div class="passport-score">
-      <div class="score-num">90</div>
-      <div class="score-label">
-        <strong>Home Health — Excellent</strong>
-        Arsenault Residence<br>
-        47 Rosslyn Dr · Moncton NB
+      <div class="passport-title-block">
+        <div class="passport-name">Hooomz Passport</div>
+        <div class="passport-address">14 Hillside Crescent, Moncton</div>
+      </div>
+      <div class="passport-badge">
+        <div class="passport-badge-dot"></div>
+        <div class="passport-badge-label">Active</div>
       </div>
     </div>
     <div class="passport-rows">
-      <div class="p-row">
-        <span class="p-row-label">Flooring</span>
-        <div>
-          <div class="p-row-val">Cortec Pro Plus</div>
-          <div class="p-row-sub">Better Tier · 25 yr warranty</div>
-        </div>
+      <div class="passport-row">
+        <span class="passport-row-label">Flooring</span>
+        <span class="passport-row-value">Luxury Vinyl Plank — Shaw Floorté</span>
+        <span class="passport-row-status status-good">Good</span>
       </div>
-      <div class="p-row">
-        <span class="p-row-label">Wall Paint</span>
-        <div>
-          <div class="p-row-val">Agreeable Gray</div>
-          <div class="p-row-sub">Eggshell · All rooms</div>
-        </div>
+      <div class="passport-row">
+        <span class="passport-row-label">Paint</span>
+        <span class="passport-row-value">BM Chantilly Lace OC-65</span>
+        <span class="passport-row-status status-good">Good</span>
       </div>
-      <div class="p-row">
-        <span class="p-row-label">Trim Paint</span>
-        <div>
-          <div class="p-row-val">White Dove</div>
-          <div class="p-row-sub">Semi-Gloss · All trim</div>
-        </div>
+      <div class="passport-row">
+        <span class="passport-row-label">Trim</span>
+        <span class="passport-row-value">Colonial Profile — MDF Primed</span>
+        <span class="passport-row-status status-good">Good</span>
       </div>
-      <div class="p-row">
-        <span class="p-row-label">Baseboard</span>
-        <div>
-          <div class="p-row-val">4½" Colonial</div>
-          <div class="p-row-sub">Casing: 2¾" Flat</div>
-        </div>
-      </div>
-      <div class="p-row">
-        <span class="p-row-label">Completed</span>
-        <div>
-          <div class="p-row-val">April 3, 2025</div>
-          <div class="p-row-sub">1,240 sq ft · $18,400</div>
-        </div>
+      <div class="passport-row">
+        <span class="passport-row-label">HVAC Filter</span>
+        <span class="passport-row-value">Next service due April 2026</span>
+        <span class="passport-row-status status-watch">Watch</span>
       </div>
     </div>
-    <div class="passport-footer">
-      <span class="passport-footer-label">Generated by Hooomz Labs · Moncton NB</span>
-      <div class="status-dot"></div>
+  </div>
+  <div class="passport-content">
+    <div class="section-label">Hooomz Passport</div>
+    <h2 class="passport-heading">Your home has a memory now.</h2>
+    <p class="passport-body">Every material, every finish, every trade decision — documented and accessible. Your Passport lives with the home, not the owner. When you sell, it transfers. When something needs attention years from now, the answer is already there.</p>
+    <div class="passport-features">
+      <div class="passport-feature"><div class="feature-tick">✓</div>Complete material and finish records</div>
+      <div class="passport-feature"><div class="feature-tick">✓</div>Warranty and lifespan tracking</div>
+      <div class="passport-feature"><div class="feature-tick">✓</div>Maintenance guidance built in</div>
+      <div class="passport-feature"><div class="feature-tick">✓</div>Transfers with the home at resale</div>
     </div>
   </div>
 </section>
 
-<!-- PROCESS -->
-<section class="process-section" id="process">
-  <div class="process-header">
-    <div>
-      <div class="section-label">How It Works</div>
-      <h2 class="process-headline">Six stages.<br>Every job.<br>No exceptions.</h2>
-    </div>
-    <p style="font-size:15px;color:var(--accent);line-height:1.65;max-width:340px">SCRIPT is the production method we run on every renovation — so nothing gets skipped, no surprises get buried, and turnover is clean.</p>
+<!-- PROCESS TEASER -->
+<section class="process-teaser">
+  <div class="section-label">How it works</div>
+  <h2 class="process-teaser-heading">A structured system. Not just a contractor.</h2>
+  <p class="process-teaser-sub">Every Hooomz job runs through a proprietary process — designed to keep you informed, in control, and never surprised.</p>
+  <a href="/interiors/process" class="process-link">See how it works →</a>
+</section>
+
+<!-- SPOKE TEASER -->
+<section class="spoke-teaser">
+  <div class="spoke-content">
+    <div class="section-label">The Hooomz platform</div>
+    <h2 class="spoke-heading">The renovation<br>is just the<br><em>beginning.</em></h2>
+    <p class="spoke-body">Hooomz is building something bigger — a single relationship for everything that touches your home. The finishing trades are where we start. More is coming.</p>
+    <div class="spoke-coming">● More services coming soon</div>
   </div>
-  <div class="process-grid">
-    <div class="process-card">
-      <div class="process-letter">S</div>
-      <div class="process-num">01</div>
-      <div class="process-name">Shield</div>
-      <div class="process-desc">Surface protection placed, existing finishes documented. Nothing moves without substrate sign-off.</div>
+  <div class="spoke-visual">
+    <div class="spoke-card">
+      <div>
+        <div class="spoke-card-name">Hooomz Interiors</div>
+        <div class="spoke-card-label">Finishing trades · Live now</div>
+      </div>
+      <div class="spoke-status-live">Live</div>
     </div>
-    <div class="process-card">
-      <div class="process-letter">C</div>
-      <div class="process-num">02</div>
-      <div class="process-name">Clear</div>
-      <div class="process-desc">Demo and removal. Substrate issues flagged immediately — no surprises buried under new floors.</div>
+    <div class="spoke-ghost">
+      <div class="spoke-ghost-name">More services</div>
+      <div class="spoke-ghost-soon">Coming soon</div>
     </div>
-    <div class="process-card">
-      <div class="process-letter">R</div>
-      <div class="process-num">03</div>
-      <div class="process-name">Ready</div>
-      <div class="process-desc">Layout confirmed, cut list generated, all materials staged and verified before installation begins.</div>
-    </div>
-    <div class="process-card">
-      <div class="process-letter">I</div>
-      <div class="process-num">04</div>
-      <div class="process-name">Install</div>
-      <div class="process-desc">Daily progress logged, photos documented by room. You can see it happen in real time.</div>
-    </div>
-    <div class="process-card">
-      <div class="process-letter">P</div>
-      <div class="process-num">05</div>
-      <div class="process-name">Punch</div>
-      <div class="process-desc">Full walkthrough, every open item tracked. Room-by-room sign-off. You're invited to join.</div>
-    </div>
-    <div class="process-card">
-      <div class="process-letter">T</div>
-      <div class="process-num">06</div>
-      <div class="process-name">Turnover</div>
-      <div class="process-desc">Warranty docs delivered, care guide issued, Passport generated. Closed when all items resolved.</div>
+    <div class="spoke-ghost">
+      <div class="spoke-ghost-name">More services</div>
+      <div class="spoke-ghost-soon">Coming soon</div>
     </div>
   </div>
 </section>
 
-<!-- FINAL CTA -->
+<!-- CTA -->
 <section class="cta-section">
-  <div class="cta-left">
-    <div class="section-label">Ready to Start</div>
-    <h2 class="cta-headline">One visit.<br>Three quotes.<br>You choose.</h2>
-    <p class="cta-sub">Get a free estimate. We'll talk through your scope, schedule a LiDAR site visit, and deliver a formal Good / Better / Best quote — no pressure, no obligation.</p>
-    <div class="cta-actions">
-      <a href="/interiors/intake" class="btn btn-green">
-        Get an Estimate
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </a>
-      <a href="/interiors/process" class="btn btn-outline">How It Works</a>
-    </div>
-  </div>
-  <div class="cta-right">
-    <span class="cta-card-label">What happens next</span>
-    <p class="cta-card-headline">From estimate to quote in one site visit.</p>
-    <div class="cta-steps">
-      <div class="cta-step">
-        <div class="cta-step-num">1</div>
-        <div class="cta-step-text"><strong>Discovery call</strong> — 15 minutes. Tell us your scope and timeline.</div>
-      </div>
-      <div class="cta-step">
-        <div class="cta-step-num">2</div>
-        <div class="cta-step-text"><strong>LiDAR site visit</strong> — we measure every room precisely. One visit covers all three tiers.</div>
-      </div>
-      <div class="cta-step">
-        <div class="cta-step-num">3</div>
-        <div class="cta-step-text"><strong>Formal quote delivered</strong> — Good, Better, and Best. You pick what fits your budget and vision.</div>
-      </div>
-      <div class="cta-step">
-        <div class="cta-step-num">4</div>
-        <div class="cta-step-text"><strong>Project starts</strong> — SCRIPT kicks in. You track every stage in real time.</div>
-      </div>
-    </div>
-    <a href="/interiors/process" class="btn btn-ghost-white">See the full process →</a>
+  <h2 class="cta-heading">Ready to <span class="accent-word">design</span> what happens in your home?</h2>
+  <div class="cta-actions">
+    <a href="/interiors/intake" class="btn-primary-large">Get an Estimate →</a>
+    <div class="cta-note">Response within 24–48 hours</div>
   </div>
 </section>
 
 <!-- FOOTER -->
 <footer>
-  <div class="footer-brand">
-    <img src="/hooomz-logo-white.svg" alt="Hooomz Interiors" style="height:24px;width:auto;opacity:.7;">
-    <div class="footer-sub">Southern New Brunswick · hooomz.ca</div>
-  </div>
-  <div class="footer-links">
-    <a href="/interiors/process">How It Works</a>
-    <a href="tel:+15065885585">506-588-5585</a>
-    <a href="/cdn-cgi/l/email-protection#432d223726032b2c2c2c2e396d202c2e"><span class="__cf_
+  <div class="footer-copy">© 2026 Hooomz Interiors Inc.</div>
+  <div class="footer-location">Southern New Brunswick</div>
+</footer>
+
+</body>
+</html>

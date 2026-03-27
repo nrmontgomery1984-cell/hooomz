@@ -1,9 +1,12 @@
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLeadPipeline } from '@/lib/hooks/useLeadData';
 import type { LeadRecord } from '@/lib/hooks/useLeadData';
+import { calculateEstimateBreakdown } from '@/lib/instantEstimate';
+import type { EstimateBreakdown } from '@/lib/instantEstimate';
+import { useEffectiveCatalog } from '@/lib/hooks/useCostCatalog';
 
 // ============================================================================
 // TYPES
@@ -608,6 +611,19 @@ function ProjectDetail({ lead, onCheckToggle, onEdit }: { lead: Lead; onCheckTog
 // ============================================================================
 
 function DiscoverTab({ lead, onCheckToggle }: { lead: Lead; onCheckToggle: (leadId: string, itemId: number) => void }) {
+  const [showBreakdown, setShowBreakdown] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+  const catalog = useEffectiveCatalog();
+
+  const breakdown = useMemo(() => {
+    return calculateEstimateBreakdown({
+      scopeTags: lead.trades.map(t => t === 'FL' ? 'floors' : t === 'PT' ? 'paint' : 'trim'),
+      roomCount: lead.roomCount,
+      totalSqft: lead.sqft > 0 ? lead.sqft : null,
+      materialPrefs: {},
+    }, catalog);
+  }, [lead, catalog]);
+
   const checkedCount = lead.checklist.filter((c) => c.checked).length;
   const totalCount = lead.checklist.length;
   const estimateTotal = lead.intakeEstimate.reduce((s, l) => s + l.amount, 0);
@@ -642,18 +658,85 @@ function DiscoverTab({ lead, onCheckToggle }: { lead: Lead; onCheckToggle: (lead
 
           {/* Items */}
           {lead.checklist.map((item) => (
-            <ChecklistRow
-              key={item.id}
-              item={item}
-              onToggle={() => {
-                if (item.type === 'auto') return;
-                if (item.type === 'killer' && !item.checked) {
-                  const ok = window.confirm('⚑ STOP & CONFIRM — This is a killer item. Verify before marking complete. Proceed?');
-                  if (!ok) return;
-                }
-                onCheckToggle(lead.id, item.id);
-              }}
-            />
+            <React.Fragment key={item.id}>
+              <ChecklistRow
+                item={item}
+                onToggle={() => {
+                  if (item.type === 'auto') return;
+                  if (item.type === 'killer' && !item.checked) {
+                    const ok = window.confirm('⚑ STOP & CONFIRM — This is a killer item. Verify before marking complete. Proceed?');
+                    if (!ok) return;
+                  }
+                  onCheckToggle(lead.id, item.id);
+                }}
+              />
+              {item.id === 4 && (
+                <div style={{ marginLeft: 25, marginBottom: 8 }}>
+                  <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setShowBreakdown(prev => !prev); }}
+                      style={{
+                        fontFamily: MONO, fontSize: 8, letterSpacing: '0.06em', textTransform: 'uppercase',
+                        color: '#2C5F8A', background: '#EEF3F8', border: '1px solid #B8CCE0',
+                        borderRadius: 4, padding: '4px 10px', cursor: 'pointer',
+                      }}
+                    >
+                      {showBreakdown ? 'Hide Breakdown' : 'View Breakdown'}
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setShowPreview(true); }}
+                      style={{
+                        fontFamily: MONO, fontSize: 8, letterSpacing: '0.06em', textTransform: 'uppercase',
+                        color: '#111010', background: '#FAF8F5', border: '1px solid #E0DCD7',
+                        borderRadius: 4, padding: '4px 10px', cursor: 'pointer',
+                      }}
+                    >
+                      Preview Estimate
+                    </button>
+                  </div>
+
+                  {showBreakdown && breakdown && (
+                    <div style={{ marginTop: 8, background: '#FAF8F5', border: '1px solid #E0DCD7', borderRadius: 6, padding: 12 }}>
+                      <div style={{ fontFamily: MONO, fontSize: 8, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6B6560', marginBottom: 8 }}>
+                        Cost Catalogue Breakdown
+                      </div>
+                      <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: FIG, fontSize: 12 }}>
+                        <thead>
+                          <tr style={{ borderBottom: '2px solid #E0DCD7' }}>
+                            <th style={{ textAlign: 'left', padding: '4px 0', fontFamily: MONO, fontSize: 8, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B6560', fontWeight: 500 }}>Trade</th>
+                            <th style={{ textAlign: 'left', padding: '4px 0', fontFamily: MONO, fontSize: 8, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B6560', fontWeight: 500 }}>Material</th>
+                            <th style={{ textAlign: 'right', padding: '4px 0', fontFamily: MONO, fontSize: 8, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B6560', fontWeight: 500 }}>Qty</th>
+                            <th style={{ textAlign: 'right', padding: '4px 0', fontFamily: MONO, fontSize: 8, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B6560', fontWeight: 500 }}>Rate</th>
+                            <th style={{ textAlign: 'right', padding: '4px 0', fontFamily: MONO, fontSize: 8, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B6560', fontWeight: 500 }}>Total</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {breakdown.lines.map((line, i) => (
+                            <tr key={i} style={{ borderBottom: '1px solid rgba(224,220,215,0.5)' }}>
+                              <td style={{ padding: '6px 0', color: '#1A1714', fontWeight: 500 }}>{line.trade}</td>
+                              <td style={{ padding: '6px 0', color: '#5C5349' }}>{line.material}</td>
+                              <td style={{ padding: '6px 0', textAlign: 'right', fontFamily: MONO, fontSize: 11, color: '#5C5349' }}>{line.quantity} {line.unit}</td>
+                              <td style={{ padding: '6px 0', textAlign: 'right', fontFamily: MONO, fontSize: 11, color: '#5C5349' }}>${line.rate.toFixed(2)}/{line.unit}</td>
+                              <td style={{ padding: '6px 0', textAlign: 'right', fontFamily: MONO, fontSize: 12, fontWeight: 600, color: '#1A1714' }}>${line.total.toLocaleString('en-CA')}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                        <tfoot>
+                          <tr style={{ borderTop: '2px solid #1A1714' }}>
+                            <td colSpan={4} style={{ padding: '8px 0', fontWeight: 700, color: '#1A1714' }}>Total (Better Tier)</td>
+                            <td style={{ padding: '8px 0', textAlign: 'right', fontFamily: MONO, fontSize: 14, fontWeight: 700, color: '#1A1714' }}>${breakdown.totalMid.toLocaleString('en-CA')}</td>
+                          </tr>
+                          <tr>
+                            <td colSpan={4} style={{ padding: '2px 0', fontFamily: MONO, fontSize: 9, color: '#9C9690' }}>Range (Good → Best)</td>
+                            <td style={{ padding: '2px 0', textAlign: 'right', fontFamily: MONO, fontSize: 10, color: '#9C9690' }}>${breakdown.low.toLocaleString('en-CA')} – ${breakdown.high.toLocaleString('en-CA')}</td>
+                          </tr>
+                        </tfoot>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              )}
+            </React.Fragment>
           ))}
         </SectionCard>
 
@@ -725,6 +808,10 @@ function DiscoverTab({ lead, onCheckToggle }: { lead: Lead; onCheckToggle: (lead
           </div>
         </SectionCard>
       </div>
+
+      {showPreview && breakdown && (
+        <EstimatePreviewModal lead={lead} breakdown={breakdown} onClose={() => setShowPreview(false)} />
+      )}
     </div>
   );
 }
@@ -923,6 +1010,106 @@ function ScriptTab() {
         }}
       >
         SCRIPT activates after Go-Ahead signed
+      </div>
+    </div>
+  );
+}
+
+// ============================================================================
+// ESTIMATE PREVIEW MODAL
+// ============================================================================
+
+function EstimatePreviewModal({ lead, breakdown, onClose }: { lead: Lead; breakdown: EstimateBreakdown; onClose: () => void }) {
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+        background: 'rgba(17,16,16,0.6)', zIndex: 1000,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: 24,
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          background: '#FAF8F5', borderRadius: 8, maxWidth: 640, width: '100%',
+          maxHeight: '90vh', overflow: 'auto', padding: 32,
+          border: '1px solid #E0DCD7',
+        }}
+      >
+        {/* Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
+          <div>
+            <div style={{ fontFamily: MONO, fontSize: 9, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#9C9690', marginBottom: 4 }}>
+              Preliminary Estimate
+            </div>
+            <div style={{ fontFamily: FIG, fontSize: 24, fontWeight: 700, color: '#1A1714' }}>
+              {lead.clientFullName}
+            </div>
+            <div style={{ fontFamily: MONO, fontSize: 9, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B6560', marginTop: 4 }}>
+              {lead.sqft} sqft · {lead.roomCount} rooms · {lead.trades.join(' / ')}
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            style={{ width: 36, height: 36, borderRadius: 6, background: '#F0EDE8', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B6560', fontSize: 18 }}
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* Logo */}
+        <div style={{ fontFamily: FIG, fontSize: 16, fontWeight: 800, color: '#1A1714', marginBottom: 20 }}>
+          H<span style={{ color: '#C0392B' }}>O</span><span style={{ color: '#D4830A' }}>O</span><span style={{ color: '#2D7A4F' }}>O</span>MZ
+          <span style={{ fontFamily: MONO, fontSize: 8, color: '#9C9690', letterSpacing: '0.12em', marginLeft: 8 }}>INTERIORS</span>
+        </div>
+
+        {/* Line items */}
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: FIG, fontSize: 13, marginBottom: 16 }}>
+          <thead>
+            <tr style={{ borderBottom: '2px solid #1A1714' }}>
+              <th style={{ textAlign: 'left', padding: '8px 0', fontFamily: MONO, fontSize: 9, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B6560', fontWeight: 500 }}>Description</th>
+              <th style={{ textAlign: 'right', padding: '8px 0', fontFamily: MONO, fontSize: 9, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B6560', fontWeight: 500 }}>Qty</th>
+              <th style={{ textAlign: 'right', padding: '8px 0', fontFamily: MONO, fontSize: 9, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B6560', fontWeight: 500 }}>Rate</th>
+              <th style={{ textAlign: 'right', padding: '8px 0', fontFamily: MONO, fontSize: 9, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6B6560', fontWeight: 500 }}>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {breakdown.lines.map((line, i) => (
+              <tr key={i} style={{ borderBottom: '1px solid #E0DCD7' }}>
+                <td style={{ padding: '10px 0' }}>
+                  <div style={{ fontWeight: 600, color: '#1A1714' }}>{line.trade}</div>
+                  <div style={{ fontSize: 11, color: '#6B6560', marginTop: 1 }}>{line.material}</div>
+                </td>
+                <td style={{ padding: '10px 0', textAlign: 'right', fontFamily: MONO, fontSize: 12, color: '#5C5349' }}>{line.quantity} {line.unit}</td>
+                <td style={{ padding: '10px 0', textAlign: 'right', fontFamily: MONO, fontSize: 12, color: '#5C5349' }}>${line.rate.toFixed(2)}</td>
+                <td style={{ padding: '10px 0', textAlign: 'right', fontFamily: MONO, fontSize: 14, fontWeight: 600, color: '#1A1714' }}>${line.total.toLocaleString('en-CA')}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {/* Total */}
+        <div style={{ borderTop: '3px solid #1A1714', paddingTop: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+          <div style={{ fontFamily: FIG, fontSize: 16, fontWeight: 700, color: '#1A1714' }}>Estimated Total</div>
+          <div style={{ fontFamily: MONO, fontSize: 24, fontWeight: 700, color: '#1A1714' }}>${breakdown.totalMid.toLocaleString('en-CA')}</div>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginTop: 4 }}>
+          <div style={{ fontFamily: MONO, fontSize: 9, color: '#9C9690', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Range</div>
+          <div style={{ fontFamily: MONO, fontSize: 12, color: '#9C9690' }}>${breakdown.low.toLocaleString('en-CA')} – ${breakdown.high.toLocaleString('en-CA')}</div>
+        </div>
+
+        {/* Footer */}
+        <div style={{ marginTop: 24, paddingTop: 16, borderTop: '1px solid #E0DCD7' }}>
+          <div style={{ fontFamily: MONO, fontSize: 8, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#9C9690', lineHeight: 1.6 }}>
+            This preliminary estimate is based on the information provided and standard market rates for the Moncton area.
+            Final pricing will be confirmed after an on-site survey. All prices in CAD. Valid for 30 days.
+          </div>
+          <div style={{ fontFamily: MONO, fontSize: 8, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#9C9690', marginTop: 12 }}>
+            MONCTON · DIEPPE · RIVERVIEW
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -599,26 +599,27 @@ function ProjectDetail({ lead, onCheckToggle, onEdit }: { lead: Lead; onCheckTog
     }
   }, [lead, updateStage, onCheckToggle, logActivity]);
 
-  const handleAdvancePhase = useCallback(async (phaseKey: string) => {
+  const handleAdvancePhase = async (phaseKey: string) => {
     const advance = PHASE_ADVANCE_MAP[phaseKey];
-    if (!advance) return;
+    if (!advance) {
+      window.alert('No advance mapping for phase: ' + phaseKey);
+      return;
+    }
 
     try {
-      await logActivity('lead.phase_completed', `${PHASE_WORDS[PHASE_KEYS.indexOf(phaseKey as PhaseKey)]} phase completed for ${lead.clientFullName}`, {
-        phase: phaseKey,
-        next_phase: advance.nextPhase,
-      });
-
       await updateStage.mutateAsync({
         customerId: lead.id,
         targetStage: advance.targetStage,
         customerName: lead.clientFullName,
       });
+
+      // Force reload to reflect the stage change
+      window.location.reload();
     } catch (err) {
       console.error('Failed to advance phase:', err);
-      window.alert('Failed to advance phase. Check console.');
+      window.alert('Failed to advance phase: ' + (err instanceof Error ? err.message : String(err)));
     }
-  }, [lead, updateStage, logActivity]);
+  };
 
   const tradesLabel = lead.trades.join(' / ');
   const goAheadComplete = lead.phases.goAhead.status === 'complete';

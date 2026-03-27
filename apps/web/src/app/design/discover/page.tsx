@@ -201,7 +201,7 @@ function mapLeadRecord(rec: LeadRecord): Lead {
     preferredContact: rec.preferredContact || '',
     referredBy: rec.referralSource || '—',
     scope,
-    checklist: DISCOVER_CHECKLIST.map(item => ({ ...item })),
+    checklist: DISCOVER_CHECKLIST.map(item => ({ ...item, checked: item.type === 'auto' ? true : item.checked })),
     intakeEstimate,
   };
 }

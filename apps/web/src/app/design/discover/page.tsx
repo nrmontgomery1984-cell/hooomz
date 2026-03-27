@@ -7,6 +7,7 @@ import type { LeadRecord } from '@/lib/hooks/useLeadData';
 import { calculateEstimateBreakdown } from '@/lib/instantEstimate';
 import type { EstimateBreakdown } from '@/lib/instantEstimate';
 import { useEffectiveCatalog } from '@/lib/hooks/useCostCatalog';
+import { useServicesContext } from '@/lib/services/ServicesContext';
 
 // ============================================================================
 // TYPES
@@ -541,16 +542,48 @@ function ProjectDetail({ lead, onCheckToggle, onEdit }: { lead: Lead; onCheckTog
   const [showPreview, setShowPreview] = useState(false);
   const [estimateSent, setEstimateSent] = useState(lead.estimateSent);
   const updateStage = useUpdateLeadStage();
+  const { services } = useServicesContext();
+
+  const logActivity = useCallback(async (eventType: string, summary: string, data?: Record<string, unknown>) => {
+    if (!services) return;
+    try {
+      await services.activity.create({
+        event_type: eventType,
+        project_id: `lead-${lead.id}`,
+        entity_type: 'lead',
+        entity_id: lead.id,
+        summary,
+        event_data: data ?? {},
+      });
+    } catch (err) {
+      console.error(`Failed to log ${eventType}:`, err);
+    }
+  }, [services, lead.id]);
 
   const handleSendEstimate = useCallback(async () => {
     const ok = window.confirm(`Send estimate to ${lead.clientFullName}?\n\nThis will advance the lead to the Estimate stage.`);
     if (!ok) return;
     try {
+      // Log estimate approved
+      await logActivity('estimate.approved', `Estimate approved for ${lead.clientFullName}`, {
+        client_name: lead.clientFullName,
+        budget_min: lead.budgetMin,
+        budget_max: lead.budgetMax,
+      });
+
+      // Log estimate sent
+      await logActivity('estimate.sent', `Estimate sent to ${lead.clientFullName}`, {
+        client_name: lead.clientFullName,
+        client_email: lead.email,
+      });
+
+      // Advance lead stage
       await updateStage.mutateAsync({
         customerId: lead.id,
         targetStage: 'discovery',
         customerName: lead.clientFullName,
       });
+
       // Auto-check items 4 and 5
       onCheckToggle(lead.id, 4);
       onCheckToggle(lead.id, 5);
@@ -559,7 +592,7 @@ function ProjectDetail({ lead, onCheckToggle, onEdit }: { lead: Lead; onCheckTog
       console.error('Failed to send estimate:', err);
       window.alert('Failed to send estimate. Check console for details.');
     }
-  }, [lead, updateStage, onCheckToggle]);
+  }, [lead, updateStage, onCheckToggle, logActivity]);
 
   const tradesLabel = lead.trades.join(' / ');
   const goAheadComplete = lead.phases.goAhead.status === 'complete';

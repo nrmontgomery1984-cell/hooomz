@@ -316,6 +316,9 @@ function deriveStage(customer: Customer, linkedProject?: Project): LeadStage {
 
   // Manual stage progression (no project yet)
   const manualStage = parseManualStage(tags);
+  if (manualStage === 'quote_sent') return 'quote_sent';
+  if (manualStage === 'site_visit') return 'site_visit';
+  if (manualStage === 'discovery') return 'discovery';
   if (manualStage === 'site-visit-booked') return 'contacted';
   if (manualStage === 'contacted') return 'contacted';
 

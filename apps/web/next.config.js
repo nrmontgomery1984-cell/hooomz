@@ -43,6 +43,18 @@ const nextConfig = {
       },
     ];
   },
+  async headers() {
+    return [
+      {
+        source: '/interiors-landing.html',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=300, must-revalidate' }],
+      },
+      {
+        source: '/interiors/:path*',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=300, must-revalidate' }],
+      },
+    ];
+  },
 }
 
 module.exports = nextConfig

@@ -81,12 +81,8 @@ const DISCOVER_CHECKLIST: ChecklistItem[] = [
   { id: 1, type: 'auto', label: 'Intake received — CRM lead + draft estimate auto-created', note: '⚡ Automated — fires on form submit', checked: false },
   { id: 2, type: 'auto', label: 'Intake confirmation sent to client', note: '⚡ Automated — branded email + SMS on receipt', checked: false },
   { id: 3, type: 'auto', label: 'New lead notification sent to manager', note: '⚡ Automated — email + in-app alert with CRM link', checked: false },
-  { id: 4, type: 'killer', label: 'Draft estimate reviewed by manager', note: '⚑ Only manual step — review for accuracy before sending', checked: false },
-  { id: 5, type: 'killer', label: 'Estimate sent to client within 24 hours of intake', note: '⚑ Includes survey booking link. Speed = conversion.', checked: false },
-  { id: 6, type: 'normal', label: 'Client opened estimate — confirmed via tracking', note: '⚡ Drip fires if survey not booked within 48h', checked: false },
-  { id: 7, type: 'normal', label: 'Survey booked by client via booking link', note: '⚡ Calendar confirmation auto-sent both parties', checked: false },
-  { id: 8, type: 'normal', label: 'Survey reminder sent 24h before visit', note: '⚡ Automated — SMS + email with prep checklist', checked: false },
-  { id: 9, type: 'normal', label: 'Lock D phase with performance colour → advance to Estimate', note: '🟢 Estimate <24h + survey booked · 🟡 <48h · 🔴 Manual follow-up required', checked: false },
+  { id: 4, type: 'killer', label: 'Draft estimate reviewed by manager', note: '⚑ Review intake estimate for accuracy before sending', checked: false },
+  { id: 5, type: 'normal', label: 'Lock D phase with performance colour → advance to Estimate', note: '🟢 Estimate reviewed <24h · 🟡 <48h · 🔴 Manual follow-up required', checked: false },
 ];
 
 // ============================================================================
@@ -246,25 +242,25 @@ const SCRIPT_PHASES = [
 
 const PHASE_CHECKLISTS: Record<string, ChecklistItem[]> = {
   estimate: [
-    { id: 1, type: 'auto', label: 'Draft estimate auto-generated from intake data', note: '⚡ Automated — pulls room/sqft/trade data from intake', checked: false },
-    { id: 2, type: 'killer', label: 'Manager reviews and adjusts line items', note: '⚑ Verify quantities, rates, and material selections', checked: false },
+    { id: 1, type: 'killer', label: 'Estimate sent to client within 24 hours of intake', note: '⚑ Includes survey booking link. Speed = conversion.', checked: false },
+    { id: 2, type: 'auto', label: 'Client opened estimate — confirmed via tracking', note: '⚡ Drip fires if survey not booked within 48h', checked: false },
     { id: 3, type: 'normal', label: 'Material costs confirmed with supplier', note: 'Check current pricing — quotes valid 30 days', checked: false },
     { id: 4, type: 'normal', label: 'Labour hours estimated per trade', note: 'Use historical data from similar projects', checked: false },
     { id: 5, type: 'killer', label: 'Margin meets minimum threshold (35%+)', note: '⚑ Do not proceed below margin floor without approval', checked: false },
     { id: 6, type: 'normal', label: 'Estimate PDF generated and reviewed', note: 'Check formatting, spelling, and line item totals', checked: false },
-    { id: 7, type: 'auto', label: 'Estimate sent to client via portal link', note: '⚡ Automated — client receives email with view/accept link', checked: false },
-    { id: 8, type: 'normal', label: 'Lock E phase with performance colour → advance to Survey', note: '🟢 Sent <24h · 🟡 <48h · 🔴 Manual follow-up required', checked: false },
+    { id: 7, type: 'normal', label: 'Lock E phase with performance colour → advance to Survey', note: '🟢 Sent <24h + margin confirmed · 🟡 <48h · 🔴 Manual follow-up required', checked: false },
   ],
   survey: [
-    { id: 1, type: 'auto', label: 'Survey appointment confirmed in calendar', note: '⚡ Automated — syncs to company + client calendar', checked: false },
-    { id: 2, type: 'normal', label: 'Pre-survey prep checklist sent to client', note: 'Clear furniture, access requirements, parking', checked: false },
-    { id: 3, type: 'killer', label: 'On-site measurements completed', note: '⚑ Laser measure all rooms — record in survey tool', checked: false },
-    { id: 4, type: 'normal', label: 'Subfloor condition assessed', note: 'Check for moisture, level, and structural issues', checked: false },
-    { id: 5, type: 'normal', label: 'Moisture readings taken and recorded', note: 'Pin meter + RH probe — log all readings by room', checked: false },
-    { id: 6, type: 'normal', label: 'Site photos captured (all rooms + details)', note: 'Minimum 3 per room — overview, floor, transitions', checked: false },
-    { id: 7, type: 'killer', label: 'Survey report uploaded to project', note: '⚑ Must include measurements, photos, and notes', checked: false },
-    { id: 8, type: 'normal', label: 'Estimate updated with survey findings', note: 'Adjust for actual conditions vs intake assumptions', checked: false },
-    { id: 9, type: 'normal', label: 'Lock S phase with performance colour → advance to Iterations', note: '🟢 Survey complete + estimate updated · 🟡 Partial data · 🔴 Re-survey needed', checked: false },
+    { id: 1, type: 'auto', label: 'Survey booked by client via booking link', note: '⚡ Calendar confirmation auto-sent both parties', checked: false },
+    { id: 2, type: 'auto', label: 'Survey reminder sent 24h before visit', note: '⚡ Automated — SMS + email with prep checklist', checked: false },
+    { id: 3, type: 'normal', label: 'Pre-survey prep checklist sent to client', note: 'Clear furniture, access requirements, parking', checked: false },
+    { id: 4, type: 'killer', label: 'On-site measurements completed', note: '⚑ Laser measure all rooms — record in survey tool', checked: false },
+    { id: 5, type: 'normal', label: 'Subfloor condition assessed', note: 'Check for moisture, level, and structural issues', checked: false },
+    { id: 6, type: 'normal', label: 'Moisture readings taken and recorded', note: 'Pin meter + RH probe — log all readings by room', checked: false },
+    { id: 7, type: 'normal', label: 'Site photos captured (all rooms + details)', note: 'Minimum 3 per room — overview, floor, transitions', checked: false },
+    { id: 8, type: 'killer', label: 'Survey report uploaded to project', note: '⚑ Must include measurements, photos, and notes', checked: false },
+    { id: 9, type: 'normal', label: 'Estimate updated with survey findings', note: 'Adjust for actual conditions vs intake assumptions', checked: false },
+    { id: 10, type: 'normal', label: 'Lock S phase with performance colour → advance to Iterations', note: '🟢 Survey complete + estimate updated · 🟡 Partial data · 🔴 Re-survey needed', checked: false },
   ],
   iterations: [
     { id: 1, type: 'auto', label: 'Updated estimate sent to client for review', note: '⚡ Automated — client notified of revised estimate', checked: false },
@@ -584,9 +580,8 @@ function ProjectDetail({ lead, onCheckToggle, onEdit }: { lead: Lead; onCheckTog
         customerName: lead.clientFullName,
       });
 
-      // Auto-check items 4 and 5
+      // Auto-check item 4 (estimate reviewed)
       onCheckToggle(lead.id, 4);
-      onCheckToggle(lead.id, 5);
       setEstimateSent(true);
     } catch (err) {
       console.error('Failed to send estimate:', err);

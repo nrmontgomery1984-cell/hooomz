@@ -120,6 +120,22 @@ function setupVisibilitySync(): void {
   });
 }
 
+/** Periodic sync pull every 60s so intake submissions appear without manual refresh */
+let periodicSyncInterval: ReturnType<typeof setInterval> | null = null;
+
+function setupPeriodicSync(): void {
+  if (typeof window === 'undefined') return;
+  if (periodicSyncInterval) return; // already running
+
+  periodicSyncInterval = setInterval(() => {
+    if (document.visibilityState === 'visible' && isSupabaseConfigured()) {
+      runCrossDeviceSync().catch((err) =>
+        console.error('Periodic sync error:', err)
+      );
+    }
+  }, 60_000);
+}
+
 interface ServicesContextValue {
   services: Services | null;
   isLoading: boolean;
@@ -194,6 +210,7 @@ export function ServicesProvider({ children }: ServicesProviderProps) {
             console.error('Cross-device sync error:', err)
           );
           setupVisibilitySync();
+          setupPeriodicSync();
         }
       } catch (err) {
         if (mounted) {

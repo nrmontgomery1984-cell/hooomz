@@ -118,7 +118,7 @@ export default function CommandCentre() {
   const { profile } = useAuth();
   const role = profile?.role ?? 'owner';
   const { viewMode, setViewMode } = useViewMode();
-  const isInstaller = viewMode === 'installer';
+  const isInstaller = role === 'installer'; // Only real installers see the installer view
 
   const dashboard = useDashboardData();
   const { data: allInvoices = [] } = useAllInvoices();

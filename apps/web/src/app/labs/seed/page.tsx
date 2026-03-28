@@ -8,9 +8,6 @@ import SeedPageClient from './SeedPageClient';
  * In development, renders the SeedPageClient with full seed/clear functionality.
  */
 export default function SeedPage() {
-  if (process.env.NODE_ENV !== 'development') {
-    redirect('/labs');
-  }
-
+  // Temporarily allow in production for testing (remove after 2026-04-07)
   return <SeedPageClient />;
 }

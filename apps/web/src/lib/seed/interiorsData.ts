@@ -211,6 +211,61 @@ function createProjects(customerIds: string[]): CreateProject[] {
       dates: { startDate: daysAgo(21).split('T')[0], estimatedEndDate: daysAgo(3).split('T')[0] },
       budget: { estimatedCost: 9800, actualCost: 9100 },
     },
+    // 8. Bourque Upstairs — Clear stage ($7,200)
+    {
+      name: 'Bourque Upstairs Bedrooms',
+      projectType: ProjectType.RENOVATION,
+      status: ProjectStatus.IN_PROGRESS,
+      jobStage: JobStage.CLEAR,
+      customerId: customerIds[1],
+      address: { street: '78 Pine St', city: 'Riverview', province: 'NB', postalCode: 'E1B 3J4', country: 'Canada' },
+      dates: { startDate: daysAgo(5).split('T')[0], estimatedEndDate: daysFromNow(12) },
+      budget: { estimatedCost: 7200, actualCost: 1100 },
+    },
+    // 9. Steeves Dining Room — Ready stage ($5,600)
+    {
+      name: 'Steeves Dining Room',
+      projectType: ProjectType.RENOVATION,
+      status: ProjectStatus.IN_PROGRESS,
+      jobStage: JobStage.READY,
+      customerId: customerIds[3],
+      address: { street: '19 Heritage Lane', city: 'Dieppe', province: 'NB', postalCode: 'E1A 7K3', country: 'Canada' },
+      dates: { startDate: daysAgo(10).split('T')[0], estimatedEndDate: daysFromNow(4) },
+      budget: { estimatedCost: 5600, actualCost: 2400 },
+    },
+    // 10. Goguen Basement — Turnover stage ($8,100)
+    {
+      name: 'Goguen Basement',
+      projectType: ProjectType.RENOVATION,
+      status: ProjectStatus.IN_PROGRESS,
+      jobStage: JobStage.TURNOVER,
+      customerId: customerIds[4],
+      address: { street: '55 Church St', city: 'Moncton', province: 'NB', postalCode: 'E1C 4Z5', country: 'Canada' },
+      dates: { startDate: daysAgo(28).split('T')[0], estimatedEndDate: daysAgo(1).split('T')[0] },
+      budget: { estimatedCost: 8100, actualCost: 7850 },
+    },
+    // 11. Bourque Bathroom — Estimate stage ($4,500)
+    {
+      name: 'Bourque Bathroom Tile',
+      projectType: ProjectType.RENOVATION,
+      status: ProjectStatus.LEAD,
+      jobStage: JobStage.ESTIMATE,
+      customerId: customerIds[1],
+      address: { street: '78 Pine St', city: 'Riverview', province: 'NB', postalCode: 'E1B 3J4', country: 'Canada' },
+      dates: {},
+      budget: { estimatedCost: 4500, actualCost: 0 },
+    },
+    // 12. LeBlanc Kitchen — Contracted stage ($12,800)
+    {
+      name: 'LeBlanc Kitchen Reno',
+      projectType: ProjectType.RENOVATION,
+      status: ProjectStatus.APPROVED,
+      jobStage: JobStage.CONTRACT,
+      customerId: customerIds[2],
+      address: { street: '234 Mapleton Rd', city: 'Moncton', province: 'NB', postalCode: 'E1C 8K5', country: 'Canada' },
+      dates: { startDate: daysFromNow(7), estimatedEndDate: daysFromNow(28) },
+      budget: { estimatedCost: 12800, actualCost: 0 },
+    },
   ];
 }
 
@@ -263,7 +318,7 @@ export async function seedInteriorsDemo(_services: Services, addLog: LogFn): Pro
 
   // Link projects to customers
   for (let i = 0; i < projectIds.length; i++) {
-    const custIdx = [0, 1, 2, 2, 3, 4, 0][i]; // customer index per project
+    const custIdx = [0, 1, 2, 2, 3, 4, 0, 1, 3, 4, 1, 2][i]; // customer index per project
     const cust = await services.customersV2.findById(customerIds[custIdx]);
     if (cust && !cust.jobIds.includes(projectIds[i])) {
       await services.customersV2.addJobToCustomer(customerIds[custIdx], projectIds[i]);

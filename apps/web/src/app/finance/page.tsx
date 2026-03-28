@@ -4,7 +4,7 @@
  * Finance Dashboard — Revenue, forecast, cost tracking
  */
 
-import { useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 import { PageErrorBoundary } from '@/components/ui/PageErrorBoundary';
@@ -35,6 +35,7 @@ type TransactionRow = {
 };
 
 export default function FinanceDashboard() {
+  const [activeTab, setActiveTab] = useState<'overview' | 'reporting'>('overview');
   const { services, isLoading: servicesLoading } = useServicesContext();
   const { projectId: crewProjectId } = useActiveCrew();
   const { data: labourVariance } = useProjectVarianceSummary(crewProjectId);
@@ -116,8 +117,42 @@ export default function FinanceDashboard() {
           </div>
         </div>
 
+        {/* TAB BAR */}
+        <div style={{
+          display: 'flex',
+          borderBottom: '1px solid var(--border)',
+          background: 'var(--surface)',
+          paddingLeft: 20,
+          gap: 0,
+        }}>
+          {(['overview', 'reporting'] as const).map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              style={{
+                padding: '12px 20px',
+                fontFamily: 'var(--font-mono)',
+                fontSize: 9,
+                fontWeight: 700,
+                letterSpacing: '0.14em',
+                textTransform: 'uppercase',
+                border: 'none',
+                background: 'transparent',
+                cursor: 'pointer',
+                color: activeTab === tab ? 'var(--charcoal)' : 'var(--muted)',
+                borderBottom: activeTab === tab ? '2px solid var(--charcoal)' : '2px solid transparent',
+                transition: 'all 0.15s',
+              }}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+
         <div className="max-w-lg md:max-w-full mx-auto px-4 md:px-6">
 
+          {activeTab === 'overview' && (
+          <div>
           {/* Financial Score Widget */}
           <div style={{ marginTop: 16 }}>
             <FinancialScoreWidget />
@@ -357,6 +392,147 @@ export default function FinanceDashboard() {
               </div>
             </div>
           </div>
+          </div>
+          )}
+
+          {activeTab === 'reporting' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16, paddingTop: 20 }}>
+
+            {/* PAYROLL SUMMARY */}
+            {/**
+             * Placeholder data until timeclock service is wired.
+             * Wire to crew time entries queryable by installer ID + date range.
+             */}
+            <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 20 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                <SectionHeader title="Installer Hours — Payroll Summary" />
+                <button style={{
+                  fontFamily: 'var(--font-mono)', fontSize: 8, letterSpacing: '0.14em',
+                  textTransform: 'uppercase', background: 'transparent', border: '1px solid var(--border)',
+                  color: 'var(--muted)', padding: '6px 12px', cursor: 'pointer', borderRadius: 'var(--radius)',
+                }}>Export →</button>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px 80px 80px 100px', gap: 8, paddingBottom: 8, borderBottom: '1px solid var(--border)', marginBottom: 4 }}>
+                {['Installer', 'Install hrs', 'Indirect hrs', 'Total hrs', 'Pay'].map((h) => (
+                  <div key={h} style={{ fontFamily: 'var(--font-mono)', fontSize: 7, letterSpacing: '0.14em', textTransform: 'uppercase' as const, color: 'var(--muted)', textAlign: h === 'Installer' ? 'left' : 'right' }}>{h}</div>
+                ))}
+              </div>
+
+              {[
+                { name: 'Jordan S.', role: 'Installer · $28/hr', install: '26.4h', indirect: '5.8h', total: '32.2h', pay: '$902' },
+                { name: 'Mike T.', role: 'Installer · $26/hr', install: '29.1h', indirect: '4.9h', total: '34.0h', pay: '$884' },
+              ].map((row, i, arr) => (
+                <div key={row.name} style={{ display: 'grid', gridTemplateColumns: '1fr 80px 80px 80px 100px', gap: 8, padding: '10px 0', borderBottom: i < arr.length - 1 ? '1px solid var(--border)' : 'none', alignItems: 'center' }}>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--charcoal)' }}>{row.name}</div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--muted)', marginTop: 1 }}>{row.role}</div>
+                  </div>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--charcoal)', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{row.install}</div>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--yellow)', textAlign: 'right' }}>{row.indirect}</div>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, color: 'var(--charcoal)', textAlign: 'right' }}>{row.total}</div>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, color: 'var(--green)', textAlign: 'right' }}>{row.pay}</div>
+                </div>
+              ))}
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px 80px 80px 100px', gap: 8, padding: '10px 0 0', borderTop: '1px solid var(--border)', marginTop: 4, alignItems: 'center' }}>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, letterSpacing: '0.12em', textTransform: 'uppercase' as const, color: 'var(--muted)' }}>Week total</div>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, color: 'var(--charcoal)', textAlign: 'right' }}>55.5h</div>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, color: 'var(--yellow)', textAlign: 'right' }}>10.7h</div>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 900, color: 'var(--charcoal)', textAlign: 'right' }}>66.2h</div>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 900, color: 'var(--green)', textAlign: 'right' }}>$1,786</div>
+              </div>
+            </div>
+
+            {/* INDIRECT PRODUCTION BREAKDOWN */}
+            {/**
+             * Placeholder data until timeclock service is wired.
+             * Wire to indirect time entries tagged by category.
+             */}
+            <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 20 }}>
+              <SectionHeader title="Indirect Production — This Week" />
+              <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                {[
+                  { tag: 'Travel', detail: 'To/from site · 6 trips', hours: '3.8h', cost: '$106', warn: true },
+                  { tag: 'Setup', detail: 'Site prep · 3 jobs', hours: '1.4h', cost: '$39', warn: false },
+                  { tag: 'Clean', detail: 'End of day · 3 jobs', hours: '1.8h', cost: '$50', warn: false },
+                  { tag: 'Mat Run', detail: 'Store trips · 4 runs', hours: '2.2h', cost: '$62', warn: true },
+                  { tag: 'Rework', detail: 'Corrections — see notes', hours: '0h', cost: '$0', warn: false },
+                  { tag: 'Wait', detail: 'Delivery delay · 1 job', hours: '1.5h', cost: '$42', warn: true },
+                  { tag: 'Admin', detail: 'Photos, checklists on site', hours: '0h', cost: '$0', warn: false },
+                ].map((row) => (
+                  <div key={row.tag} style={{
+                    display: 'grid', gridTemplateColumns: '80px 1fr 70px 70px',
+                    alignItems: 'center', padding: '10px 12px', gap: 12,
+                    background: row.warn ? 'rgba(217,119,6,0.04)' : 'var(--bg)',
+                    border: '1px solid var(--border)',
+                  }}>
+                    <div style={{
+                      fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '0.12em',
+                      padding: '3px 7px', borderRadius: 2, textTransform: 'uppercase' as const,
+                      background: 'rgba(217,119,6,0.1)', color: 'var(--yellow)',
+                      width: 'fit-content',
+                    }}>{row.tag}</div>
+                    <div style={{ fontSize: 12, color: 'var(--muted)' }}>{row.detail}</div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: row.warn ? 'var(--yellow)' : 'var(--charcoal)', textAlign: 'right', fontWeight: row.warn ? 700 : 400 }}>{row.hours}</div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--muted)', textAlign: 'right' }}>{row.cost}</div>
+                  </div>
+                ))}
+
+                <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr 70px 70px', alignItems: 'center', padding: '10px 12px', gap: 12, borderTop: '1px solid var(--border)', marginTop: 4 }}>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, letterSpacing: '0.12em', textTransform: 'uppercase' as const, color: 'var(--muted)' }}>Total</div>
+                  <div/>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 900, color: 'var(--yellow)', textAlign: 'right' }}>10.7h</div>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 900, color: 'var(--charcoal)', textAlign: 'right' }}>$299</div>
+                </div>
+              </div>
+            </div>
+
+            {/* LINE ITEM TIME DETAIL */}
+            {/**
+             * Placeholder data until timeclock service + useLocalProjects are wired.
+             * Wire to task-level time entries with stage/trade/installer metadata.
+             */}
+            <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 20 }}>
+              <SectionHeader title="Line Item Time Detail — All Active Jobs" />
+              <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 2 }}>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr 90px 70px 70px 80px', gap: 8, paddingBottom: 8, borderBottom: '1px solid var(--border)' }}>
+                  {['Stage · Trade', 'Task', 'Installer', 'Budgeted', 'Actual', 'Variance'].map((h) => (
+                    <div key={h} style={{ fontFamily: 'var(--font-mono)', fontSize: 7, letterSpacing: '0.13em', textTransform: 'uppercase' as const, color: 'var(--muted)', textAlign: h === 'Stage · Trade' || h === 'Task' || h === 'Installer' ? 'left' : 'right' }}>{h}</div>
+                  ))}
+                </div>
+
+                {[
+                  { stage: 'S10 · FLR', task: 'LVP Flooring Install', job: '14 Hillside Cr.', installer: 'Jordan S.', budgeted: '4.5h', actual: '6.2h', variance: '+1.7h', over: true },
+                  { stage: 'S10 · PNT', task: 'Paint — Walls', job: '14 Hillside Cr.', installer: 'Mike T.', budgeted: '6.0h', actual: '5.6h', variance: '\u22120.4h', over: false },
+                  { stage: 'S10 · TRM', task: 'Trim — Baseboard', job: '14 Hillside Cr.', installer: 'Jordan S.', budgeted: '3.0h', actual: '\u2014', variance: '\u2014', over: false },
+                  { stage: 'S11 · PNT', task: 'Paint — Walls', job: '88 Pine St.', installer: 'Mike T.', budgeted: '5.5h', actual: '5.1h', variance: '\u22120.4h', over: false },
+                  { stage: 'S11 · FLR', task: 'LVP Flooring Install', job: '88 Pine St.', installer: 'Jordan S.', budgeted: '6.0h', actual: '6.8h', variance: '+0.8h', over: true },
+                ].map((row) => (
+                  <div key={`${row.job}-${row.stage}`} style={{
+                    display: 'grid', gridTemplateColumns: '100px 1fr 90px 70px 70px 80px',
+                    gap: 8, padding: '10px 0',
+                    borderBottom: '1px solid var(--border)',
+                    alignItems: 'center',
+                  }}>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase' as const, color: 'var(--muted)', background: 'var(--bg)', padding: '2px 6px', width: 'fit-content' }}>{row.stage}</div>
+                    <div>
+                      <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--charcoal)' }}>{row.task}</div>
+                      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--muted)', marginTop: 1 }}>{row.job}</div>
+                    </div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--muted)' }}>{row.installer}</div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--charcoal)', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{row.budgeted}</div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--charcoal)', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{row.actual}</div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, color: row.variance === '\u2014' ? 'var(--muted)' : row.over ? 'var(--red)' : 'var(--green)', textAlign: 'right' }}>{row.variance}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+          </div>
+          )}
+
         </div>
       </div>
     </PageErrorBoundary>

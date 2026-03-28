@@ -269,6 +269,9 @@ export default function ScriptDashboardPage() {
               )}
             </div>
 
+            {/* Time tracking */}
+            <TimeTrackingWidget projects={projects} />
+
             {/* Alerts */}
             <div style={{ background: '#FAF8F5', border: '1px solid #E0DCD7', borderRadius: 8, padding: 16 }}>
               <div style={{ fontFamily: MONO, fontSize: 8, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#6B6660', marginBottom: 14 }}>
@@ -305,6 +308,185 @@ function StatTile({ label, value, sub, accent }: { label: string; value: string;
       <div style={{ fontFamily: MONO, fontSize: 20, fontWeight: 500, color: '#1A1714', lineHeight: 1 }}>{value}</div>
       <div style={{ fontFamily: MONO, fontSize: 8, color: '#6B6660', marginTop: 5, letterSpacing: '0.06em', textTransform: 'uppercase' }}>{label}</div>
       {sub && <div style={{ fontFamily: MONO, fontSize: 8, color: '#9C9690', marginTop: 3 }}>{sub}</div>}
+    </div>
+  );
+}
+
+// ============================================================================
+// TIME TRACKING WIDGET
+// ============================================================================
+
+/**
+ * Live time tracking panel for the SCRIPT dashboard right column.
+ *
+ * Data source: Currently uses placeholder data. Will be wired to the
+ * timeclock service once crew clock-in/clock-out is integrated.
+ * Reads project names from the real project list for per-job variance.
+ */
+function TimeTrackingWidget({ projects }: { projects: { id: string; name: string; address?: { street?: string }; budget?: { estimatedCost: number; actualCost?: number } }[] }) {
+  // Placeholder live installers — will come from timeclock service
+  const liveInstallers = [
+    { initials: 'NM', name: 'Nathan M.', task: projects[0]?.name ?? 'No active job', elapsed: '2:14', indirect: false },
+    { initials: 'NS', name: 'Nishant', task: 'Travel', elapsed: '0:23', indirect: true },
+  ];
+
+  const clockedIn = liveInstallers.length;
+
+  // Per-job hour variance — placeholder until timeclock data exists
+  const jobVariance = projects.slice(0, 3).map((p) => {
+    const addr = p.address?.street ?? p.name;
+    const budgetHrs = p.budget?.estimatedCost ? Math.round(p.budget.estimatedCost / 55) : 0; // ~$55/hr blended
+    const actualHrs = Math.round(budgetHrs * (0.85 + Math.random() * 0.35)); // simulated
+    return {
+      name: addr,
+      budget: `${budgetHrs}.0h`,
+      actual: `${actualHrs}.${Math.floor(Math.random() * 10)}h`,
+      over: actualHrs > budgetHrs,
+      warn: actualHrs > budgetHrs && actualHrs < budgetHrs * 1.15,
+    };
+  });
+
+  return (
+    <div style={{
+      background: '#FAF8F5',
+      border: '1px solid #E0DCD7',
+      borderRadius: 8,
+      padding: 16,
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 12,
+    }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{
+          fontFamily: MONO,
+          fontSize: 8,
+          fontWeight: 700,
+          letterSpacing: '0.14em',
+          textTransform: 'uppercase' as const,
+          color: '#6B6660',
+        }}>Live · Time</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          <div style={{
+            width: 6,
+            height: 6,
+            borderRadius: '50%',
+            background: clockedIn > 0 ? '#16A34A' : '#9C9690',
+            boxShadow: clockedIn > 0 ? '0 0 6px rgba(22,163,74,0.5)' : 'none',
+          }}/>
+          <span style={{
+            fontFamily: MONO,
+            fontSize: 8,
+            letterSpacing: '0.12em',
+            textTransform: 'uppercase' as const,
+            color: clockedIn > 0 ? '#16A34A' : '#9C9690',
+          }}>{clockedIn} clocked in</span>
+        </div>
+      </div>
+
+      {/* Live installers */}
+      {liveInstallers.map((installer) => (
+        <div key={installer.initials} style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          padding: '8px 10px',
+          background: '#111010',
+          borderRadius: 4,
+        }}>
+          <div style={{
+            width: 24,
+            height: 24,
+            borderRadius: '50%',
+            background: '#222120',
+            border: '1px solid rgba(255,255,255,0.1)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: 8,
+            fontWeight: 700,
+            color: 'rgba(255,255,255,0.5)',
+            fontFamily: MONO,
+            flexShrink: 0,
+          }}>{installer.initials}</div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontFamily: FIG, fontSize: 11, fontWeight: 600, color: 'white', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {installer.task}
+            </div>
+            <div style={{
+              fontFamily: MONO,
+              fontSize: 8,
+              letterSpacing: '0.1em',
+              color: installer.indirect ? '#D97706' : 'rgba(255,255,255,0.3)',
+              textTransform: 'uppercase' as const,
+              marginTop: 1,
+            }}>{installer.name} · {installer.indirect ? 'Indirect' : 'Install'}</div>
+          </div>
+          <div style={{
+            fontFamily: MONO,
+            fontSize: 11,
+            fontWeight: 500,
+            color: '#16A34A',
+            letterSpacing: '0.05em',
+            flexShrink: 0,
+          }}>{installer.elapsed}</div>
+        </div>
+      ))}
+
+      {/* Today's indirect */}
+      <div style={{
+        padding: '8px 10px',
+        background: 'rgba(217,119,6,0.06)',
+        border: '1px solid rgba(217,119,6,0.15)',
+        borderRadius: 4,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      }}>
+        <div style={{
+          fontFamily: MONO,
+          fontSize: 8,
+          letterSpacing: '0.12em',
+          textTransform: 'uppercase' as const,
+          color: '#D97706',
+        }}>Indirect today</div>
+        <div style={{
+          fontFamily: MONO,
+          fontSize: 12,
+          fontWeight: 700,
+          color: '#D97706',
+        }}>2.1h · $59</div>
+      </div>
+
+      {/* Per-job variance */}
+      {jobVariance.length > 0 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {jobVariance.map((job) => (
+            <div key={job.name} style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '6px 0',
+              borderBottom: '1px solid #E0DCD7',
+            }}>
+              <div style={{ fontFamily: FIG, fontSize: 11, fontWeight: 500, color: '#111010', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.name}</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0, marginLeft: 8 }}>
+                <span style={{
+                  fontFamily: MONO,
+                  fontSize: 10,
+                  color: '#9A8E84',
+                }}>{job.actual}</span>
+                <div style={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: '50%',
+                  background: job.over ? (job.warn ? '#D97706' : '#DC2626') : '#16A34A',
+                }}/>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

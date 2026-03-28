@@ -154,22 +154,32 @@ export default function CommandCentre() {
   const currentTaskTitle = clockState?.currentTaskTitle ?? null;
   const clockInTime = clockState?.clockInTime ? new Date(clockState.clockInTime).getTime() : null;
 
-  const todayHours = Math.floor(todayTotalMinutes / 60);
-  const todayMins = todayTotalMinutes % 60;
+  const totalMinsRounded = Math.round(todayTotalMinutes);
+  const todayHours = Math.floor(totalMinsRounded / 60);
+  const todayMins = totalMinsRounded % 60;
 
   // Live clock states — who is clocked in right now
+  // Check all seeded crew members + the current user's active session ID
+  const liveCheckIds = useMemo(() => {
+    const ids = new Set(allCrewMembers.map((m) => m.id));
+    if (crewMemberId) ids.add(crewMemberId);
+    return [...ids];
+  }, [allCrewMembers, crewMemberId]);
+
   const { data: liveInstallers = [] } = useQuery({
-    queryKey: ['timeclock', 'live', allCrewMembers.map((m) => m.id).join(',')],
+    queryKey: ['timeclock', 'live', liveCheckIds.join(',')],
     queryFn: async () => {
       if (!services) return [];
       const results = await Promise.all(
-        allCrewMembers.map(async (m) => {
-          const state = await services.timeClock.getCurrentState(m.id);
+        liveCheckIds.map(async (id) => {
+          const state = await services.timeClock.getCurrentState(id);
           if (!state?.isClockedIn) return null;
-          const initials = m.name?.split(' ').map((n: string) => n[0]).join('') ?? '??';
+          const member = allCrewMembers.find((m) => m.id === id);
+          const name = member?.name ?? crewMemberName ?? 'Unknown';
+          const initials = name.split(' ').map((n: string) => n[0]).join('') || '??';
           return {
             initials,
-            name: m.name ?? '??',
+            name,
             task: state.currentTaskTitle ?? 'Unknown task',
             clockInTime: state.clockInTime ?? null,
             indirect: false,
@@ -178,8 +188,8 @@ export default function CommandCentre() {
       );
       return results.filter(Boolean) as { initials: string; name: string; task: string; clockInTime: string | null; indirect: boolean }[];
     },
-    refetchInterval: 30_000,
-    enabled: allCrewMembers.length > 0 && !!services,
+    refetchInterval: 15_000,
+    enabled: liveCheckIds.length > 0 && !!services,
   });
 
   // Today's indirect total across all crew

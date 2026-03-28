@@ -144,7 +144,7 @@ export default function CommandCentre() {
 
   // Real time clock infrastructure
   const { data: allCrewMembers = [] } = useActiveCrewMembers();
-  const { crewMemberId, crewMemberName, projectId: crewProjectId } = useActiveCrew();
+  const { crewMemberId, crewMemberName, projectId: crewProjectId, startSession } = useActiveCrew();
   const { data: clockState } = useTimeClockState(crewMemberId);
   const { data: todayTotalMinutes = 0 } = useTodayTotal(crewMemberId);
   const clockIn = useClockIn();
@@ -199,16 +199,23 @@ export default function CommandCentre() {
     enabled: allCrewMembers.length > 0 && !!services,
   });
 
-  const handleClockIn = (taskId: string, taskTitle: string, _jobName?: string) => {
-    if (!crewMemberId || !crewMemberName) return;
+  const handleClockIn = async (taskId: string, taskTitle: string, _jobName?: string) => {
     const pid = selectedJob?.id || crewProjectId || 'general';
-    clockIn.mutate({
-      crewMemberId,
-      crewMemberName,
-      projectId: pid,
-      taskId,
-      taskTitle,
-    });
+
+    // Auto-start crew session if none exists
+    let cid = crewMemberId;
+    let cname = crewMemberName;
+    if (!cid || !cname) {
+      // Use the logged-in user's profile to find or create a crew session
+      const name = profile?.full_name ?? 'Unknown';
+      // Match crew member by name, or use a convention-based ID
+      const match = allCrewMembers.find((m) => m.name === name);
+      cid = match?.id ?? `crew_${name.toLowerCase().replace(/\s+/g, '_')}`;
+      cname = name;
+      await startSession(cid, cname, pid);
+    }
+
+    clockIn.mutate({ crewMemberId: cid, crewMemberName: cname, projectId: pid, taskId, taskTitle });
     setShowClockModal(false);
     setClockStep('mode');
     setSelectedJob(null);

@@ -117,7 +117,7 @@ export default function CommandCentre() {
   const router = useRouter();
   const { profile } = useAuth();
   const role = profile?.role ?? 'owner';
-  const isInstaller = role === 'installer';
+  const isInstaller = viewMode === 'installer';
 
   const dashboard = useDashboardData();
   const { data: allInvoices = [] } = useAllInvoices();
@@ -283,7 +283,7 @@ export default function CommandCentre() {
     { id: 'admin2', tag: 'ADMIN', label: 'Admin', meta: 'General admin, emails, planning', indirect: false },
   ];
 
-  const isOwnerOrOperator = profile?.role === 'owner' || profile?.role === 'operator';
+  const isOwnerOrOperator = viewMode === 'manager' || viewMode === 'operator';
   const taskCategories = clockMode === 'office' ? ownerOperatorCategories : fieldCategories;
 
   // ── Installer View ──

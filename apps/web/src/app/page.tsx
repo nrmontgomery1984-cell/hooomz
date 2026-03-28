@@ -128,13 +128,16 @@ export default function CommandCentre() {
   const [showJobs, setShowJobs] = useState(false);
   const [clockMode, setClockMode] = useState<'office' | 'field'>(role === 'installer' ? 'field' : 'office');
   const [showClockModal, setShowClockModal] = useState(false);
+  const [clockStep, setClockStep] = useState<'mode' | 'job' | 'category'>('mode');
   const [clockedTask, setClockedTask] = useState<{ label: string; indirect: boolean; job?: string } | null>(null);
   const [clockInTime, setClockInTime] = useState<number | null>(null);
+  const [selectedJob, setSelectedJob] = useState<{ id: string; name: string } | null>(null);
 
   const handleClockOut = () => {
     setClockedTask(null);
     setClockInTime(null);
-    (window as unknown as Record<string, unknown>).__selectedJob = null;
+    setSelectedJob(null);
+    setClockStep('mode');
   };
 
   // Finance computations
@@ -559,38 +562,43 @@ export default function CommandCentre() {
         {/* ── SCROLLABLE BODY ── */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '28px 32px' }}>
 
-          {/* ── CLOCK IN — compact card ── */}
-          <div style={{ marginBottom: 20 }}>
+          {/* ── CLOCK IN — compact inline card ── */}
+          <div style={{ marginBottom: 20, maxWidth: 340 }}>
             <Card>
               <button
-                onClick={() => clockedTask ? handleClockOut() : setShowClockModal(true)}
+                onClick={() => {
+                  if (clockedTask) { handleClockOut(); }
+                  else { setClockStep(isOwnerOrOperator ? 'mode' : 'job'); setShowClockModal(true); }
+                }}
                 style={{
                   width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  padding: '14px 18px', border: 'none', background: 'transparent', cursor: 'pointer',
-                  textAlign: 'left',
+                  padding: '12px 14px', border: 'none', background: 'transparent', cursor: 'pointer',
+                  textAlign: 'left', gap: 12,
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 }}>
                   <div style={{
-                    width: 10, height: 10, borderRadius: '50%',
+                    width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
                     background: clockedTask ? 'var(--green)' : 'var(--muted)',
-                    boxShadow: clockedTask ? '0 0 8px rgba(22,163,74,0.5)' : 'none',
+                    boxShadow: clockedTask ? '0 0 6px rgba(22,163,74,0.5)' : 'none',
                   }} />
-                  <div>
-                    <div style={{ fontFamily: 'var(--font-display)', fontSize: 13, fontWeight: 600, color: 'var(--charcoal)' }}>
-                      {clockedTask ? clockedTask.label : 'Clock In'}
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontFamily: 'var(--font-display)', fontSize: 12, fontWeight: 600, color: 'var(--charcoal)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {clockedTask ? `${clockedTask.label}${clockedTask.job ? ` — ${clockedTask.job}` : ''}` : 'Clock In'}
                     </div>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--muted)', marginTop: 1, letterSpacing: '0.06em', textTransform: 'uppercase' as const }}>
-                      {clockedTask ? (clockedTask.job ?? (clockedTask.indirect ? 'Indirect' : 'Office')) : 'Tap to start tracking time'}
-                    </div>
+                    {!clockedTask && (
+                      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--muted)', letterSpacing: '0.06em', textTransform: 'uppercase' as const }}>
+                        Tap to start
+                      </div>
+                    )}
                   </div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
                   {clockedTask && clockInTime && <ClockElapsed startTime={clockInTime} />}
                   <div style={{
-                    fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 700,
+                    fontFamily: 'var(--font-mono)', fontSize: 8, fontWeight: 700,
                     letterSpacing: '0.1em', textTransform: 'uppercase' as const,
-                    padding: '5px 12px', borderRadius: 'var(--radius)',
+                    padding: '4px 10px', borderRadius: 'var(--radius)',
                     background: clockedTask ? 'rgba(220,38,38,0.1)' : 'var(--green)',
                     color: clockedTask ? 'var(--red)' : 'white',
                     border: clockedTask ? '1px solid rgba(220,38,38,0.25)' : 'none',
@@ -602,130 +610,109 @@ export default function CommandCentre() {
             </Card>
           </div>
 
-          {/* ── CLOCK MODAL ── */}
+          {/* ── CLOCK MODAL — stepped flow ── */}
           {showClockModal && (
             <div
-              style={{
-                position: 'fixed', inset: 0, zIndex: 100,
-                background: 'rgba(0,0,0,0.5)', display: 'flex',
-                alignItems: 'center', justifyContent: 'center', padding: 16,
-              }}
-              onClick={() => setShowClockModal(false)}
+              style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}
+              onClick={() => { setShowClockModal(false); setClockStep('mode'); setSelectedJob(null); }}
             >
               <div
                 onClick={(e) => e.stopPropagation()}
-                style={{
-                  width: '100%', maxWidth: 480, maxHeight: '80vh', overflowY: 'auto',
-                  background: 'var(--surface)', border: '1px solid var(--border)',
-                  borderRadius: 'var(--radius)', boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
-                }}
+                style={{ width: '100%', maxWidth: 360, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', boxShadow: '0 16px 48px rgba(0,0,0,0.25)', overflow: 'hidden' }}
               >
-                {/* Modal header */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase' as const, color: 'var(--charcoal)' }}>Clock In</span>
-                  <button onClick={() => setShowClockModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 18, color: 'var(--muted)', lineHeight: 1 }}>×</button>
+                {/* Header */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', borderBottom: '1px solid var(--border)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    {clockStep !== 'mode' && clockStep !== (isOwnerOrOperator ? 'mode' : 'job') && (
+                      <button
+                        onClick={() => setClockStep(clockStep === 'category' ? (clockMode === 'field' ? 'job' : 'mode') : 'mode')}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--muted)', padding: 0, lineHeight: 1 }}
+                      >←</button>
+                    )}
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase' as const, color: 'var(--charcoal)' }}>
+                      {clockStep === 'mode' ? 'Clock In' : clockStep === 'job' ? 'Select Job' : clockMode === 'field' ? 'Task Type' : 'Category'}
+                    </span>
+                  </div>
+                  <button onClick={() => { setShowClockModal(false); setClockStep('mode'); setSelectedJob(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 16, color: 'var(--muted)', lineHeight: 1 }}>×</button>
                 </div>
 
-                <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <div style={{ padding: '14px 18px' }}>
 
-                  {/* Office / Field toggle */}
-                  {isOwnerOrOperator && (
-                    <div style={{ display: 'flex', gap: 0, borderRadius: 'var(--radius)', overflow: 'hidden', border: '1px solid var(--border)' }}>
-                      {(['office', 'field'] as const).map((mode) => (
+                  {/* STEP 1: Office or Field */}
+                  {clockStep === 'mode' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                      <button
+                        onClick={() => { setClockMode('office'); setClockStep('category'); }}
+                        style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '14px 16px', border: '1px solid var(--border)', background: 'var(--bg)', borderRadius: 'var(--radius)', cursor: 'pointer', width: '100%', textAlign: 'left' }}
+                      >
+                        <div style={{ fontSize: 18, lineHeight: 1 }}>🏢</div>
+                        <div>
+                          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--charcoal)' }}>Office</div>
+                          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--muted)', marginTop: 1 }}>Sales, admin, planning, finance</div>
+                        </div>
+                      </button>
+                      <button
+                        onClick={() => { setClockMode('field'); setClockStep('job'); }}
+                        style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '14px 16px', border: '1px solid var(--border)', background: 'var(--bg)', borderRadius: 'var(--radius)', cursor: 'pointer', width: '100%', textAlign: 'left' }}
+                      >
+                        <div style={{ fontSize: 18, lineHeight: 1 }}>🔨</div>
+                        <div>
+                          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--charcoal)' }}>Field</div>
+                          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--muted)', marginTop: 1 }}>On site, install, travel, indirect</div>
+                        </div>
+                      </button>
+                    </div>
+                  )}
+
+                  {/* STEP 2: Pick a job (field mode only) */}
+                  {clockStep === 'job' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                      {dashboard.activeProjects.slice(0, 6).map((project) => (
                         <button
-                          key={mode}
-                          onClick={() => setClockMode(mode)}
-                          style={{
-                            flex: 1, padding: '10px 16px',
-                            fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700,
-                            letterSpacing: '0.12em', textTransform: 'uppercase',
-                            border: 'none', cursor: 'pointer', transition: 'all 0.15s',
-                            background: clockMode === mode ? 'var(--charcoal)' : 'var(--bg)',
-                            color: clockMode === mode ? 'white' : 'var(--muted)',
-                          }}
+                          key={project.id}
+                          onClick={() => { setSelectedJob({ id: project.id, name: project.name }); setClockStep('category'); }}
+                          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', border: '1px solid var(--border)', background: 'var(--bg)', borderRadius: 'var(--radius)', cursor: 'pointer', width: '100%', textAlign: 'left' }}
                         >
-                          {mode}
+                          <div>
+                            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--charcoal)' }}>{project.name}</div>
+                            {project.jobStage && <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--muted)', marginTop: 1, textTransform: 'uppercase' as const, letterSpacing: '0.06em' }}>{project.jobStage}</div>}
+                          </div>
+                          <ChevronRight size={12} style={{ color: 'var(--muted)' }} />
                         </button>
                       ))}
+                      {dashboard.activeProjects.length === 0 && (
+                        <div style={{ padding: 16, textAlign: 'center', fontSize: 12, color: 'var(--muted)' }}>No active jobs</div>
+                      )}
                     </div>
                   )}
 
-                  {/* Job selector — only for field mode */}
-                  {clockMode === 'field' && dashboard.activeProjects.length > 0 && (
-                    <div>
-                      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase' as const, color: 'var(--muted)', marginBottom: 6 }}>Job</div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                        {dashboard.activeProjects.map((project) => (
-                          <button
-                            key={project.id}
-                            id={`modal-job-${project.id}`}
-                            onClick={() => {
-                              document.querySelectorAll('[id^="modal-job-"]').forEach((el) => {
-                                (el as HTMLElement).style.borderColor = 'var(--border)';
-                                (el as HTMLElement).style.background = 'var(--bg)';
-                              });
-                              const el = document.getElementById(`modal-job-${project.id}`);
-                              if (el) { el.style.borderColor = 'var(--charcoal)'; el.style.background = 'var(--surface)'; }
-                              (window as unknown as Record<string, unknown>).__selectedJob = project;
-                            }}
-                            style={{
-                              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                              padding: '10px 12px', border: '1px solid var(--border)',
-                              background: 'var(--bg)', cursor: 'pointer',
-                              borderRadius: 'var(--radius)', textAlign: 'left', width: '100%',
-                            }}
-                          >
-                            <div>
-                              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--charcoal)' }}>{project.name}</div>
-                              {project.jobStage && (
-                                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--muted)', marginTop: 1, textTransform: 'uppercase' as const, letterSpacing: '0.06em' }}>{project.jobStage}</div>
-                              )}
-                            </div>
-                            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--muted)' }}>{project.completedCount}/{project.taskCount}</span>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Category selector */}
-                  <div>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase' as const, color: 'var(--muted)', marginBottom: 6 }}>
-                      {clockMode === 'field' ? 'Task Type' : 'Category'}
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  {/* STEP 3: Pick a category */}
+                  {clockStep === 'category' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                       {taskCategories.map((cat) => (
                         <button
                           key={cat.id}
                           onClick={() => {
-                            const job = (window as unknown as Record<string, unknown>).__selectedJob as { name: string } | undefined;
-                            setClockedTask({ label: cat.label, indirect: cat.indirect, job: job?.name });
+                            setClockedTask({ label: cat.label, indirect: cat.indirect, job: selectedJob?.name });
                             setClockInTime(Date.now());
                             setShowClockModal(false);
+                            setClockStep('mode');
+                            setSelectedJob(null);
                           }}
-                          style={{
-                            display: 'flex', alignItems: 'center', gap: 10,
-                            padding: '10px 12px', border: '1px solid var(--border)',
-                            background: 'var(--bg)', cursor: 'pointer',
-                            borderRadius: 'var(--radius)', textAlign: 'left', width: '100%',
-                            transition: 'all 0.15s',
-                          }}
+                          style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', border: '1px solid var(--border)', background: 'var(--bg)', borderRadius: 'var(--radius)', cursor: 'pointer', width: '100%', textAlign: 'left' }}
                         >
                           <div style={{
-                            fontFamily: 'var(--font-mono)', fontSize: 8, letterSpacing: '0.1em',
-                            padding: '2px 6px', borderRadius: 2, textTransform: 'uppercase' as const,
+                            fontFamily: 'var(--font-mono)', fontSize: 8, letterSpacing: '0.1em', padding: '2px 6px', borderRadius: 2, textTransform: 'uppercase' as const,
                             background: cat.indirect ? 'rgba(217,119,6,0.1)' : 'rgba(255,255,255,0.06)',
                             color: cat.indirect ? 'var(--yellow)' : 'var(--muted)',
                             flexShrink: 0, minWidth: 42, textAlign: 'center' as const,
                           }}>{cat.tag}</div>
-                          <div style={{ flex: 1 }}>
-                            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--charcoal)' }}>{cat.label}</div>
-                            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--muted)', marginTop: 1 }}>{cat.meta}</div>
-                          </div>
+                          <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--charcoal)' }}>{cat.label}</div>
                         </button>
                       ))}
                     </div>
-                  </div>
+                  )}
+
                 </div>
               </div>
             </div>

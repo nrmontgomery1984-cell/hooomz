@@ -117,6 +117,7 @@ export default function CommandCentre() {
   const router = useRouter();
   const { profile } = useAuth();
   const role = profile?.role ?? 'owner';
+  const { viewMode, setViewMode } = useViewMode();
   const isInstaller = viewMode === 'installer';
 
   const dashboard = useDashboardData();
@@ -138,7 +139,6 @@ export default function CommandCentre() {
   const [jobTasks, setJobTasks] = useState<Array<{ id: string; title: string; description?: string; status?: string }>>([]);
   const [loadingTasks, setLoadingTasks] = useState(false);
   const { services } = useServicesContext();
-  const { viewMode, setViewMode } = useViewMode();
 
   const handleClockOut = () => {
     setClockedTask(null);

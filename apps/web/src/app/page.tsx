@@ -28,6 +28,8 @@ import {
 } from 'lucide-react';
 import { useDashboardData } from '@/lib/hooks/useDashboardData';
 import { useServicesContext } from '@/lib/services/ServicesContext';
+import { useActiveCrewMembers } from '@/lib/hooks/useCrewData';
+import { useQuery } from '@tanstack/react-query';
 import { useViewMode, VIEW_MODE_LABELS } from '@/lib/viewmode';
 import type { ViewMode } from '@/lib/viewmode';
 import { useAllInvoices } from '@/lib/hooks/useInvoices';
@@ -141,6 +143,7 @@ export default function CommandCentre() {
   const { services } = useServicesContext();
 
   // Real time clock infrastructure
+  const { data: allCrewMembers = [] } = useActiveCrewMembers();
   const { crewMemberId, crewMemberName, projectId: crewProjectId } = useActiveCrew();
   const { data: clockState } = useTimeClockState(crewMemberId);
   const { data: todayTotalMinutes = 0 } = useTodayTotal(crewMemberId);
@@ -153,6 +156,48 @@ export default function CommandCentre() {
 
   const todayHours = Math.floor(todayTotalMinutes / 60);
   const todayMins = todayTotalMinutes % 60;
+
+  // Live clock states — who is clocked in right now
+  const { data: liveInstallers = [] } = useQuery({
+    queryKey: ['timeclock', 'live', allCrewMembers.map((m) => m.id).join(',')],
+    queryFn: async () => {
+      if (!services) return [];
+      const results = await Promise.all(
+        allCrewMembers.map(async (m) => {
+          const state = await services.timeClock.getCurrentState(m.id);
+          if (!state?.isClockedIn) return null;
+          const initials = m.name?.split(' ').map((n: string) => n[0]).join('') ?? '??';
+          return {
+            initials,
+            name: m.name ?? '??',
+            task: state.currentTaskTitle ?? 'Unknown task',
+            clockInTime: state.clockInTime ?? null,
+            indirect: false,
+          };
+        })
+      );
+      return results.filter(Boolean) as { initials: string; name: string; task: string; clockInTime: string | null; indirect: boolean }[];
+    },
+    refetchInterval: 30_000,
+    enabled: allCrewMembers.length > 0 && !!services,
+  });
+
+  // Today's indirect total across all crew
+  const { data: liveIndirect } = useQuery({
+    queryKey: ['timeclock', 'indirect', 'today', allCrewMembers.map((m) => m.id).join(',')],
+    queryFn: async () => {
+      if (!services) return { hours: '0h', cost: '$0' };
+      const allEntries = await Promise.all(
+        allCrewMembers.map((m) => services.timeClock.getTodayEntries(m.id))
+      );
+      const flat = allEntries.flat().filter((e) => e.entryType === 'overhead' && e.clock_out !== null);
+      const hours = flat.reduce((s, e) => s + (e.total_hours ?? 0), 0);
+      const cost = flat.reduce((s, e) => s + (e.total_hours ?? 0) * (e.hourly_rate ?? 0), 0);
+      return { hours: `${hours.toFixed(1)}h`, cost: `$${cost.toFixed(0)}` };
+    },
+    refetchInterval: 30_000,
+    enabled: allCrewMembers.length > 0 && !!services,
+  });
 
   const handleClockIn = (taskId: string, taskTitle: string, _jobName?: string) => {
     if (!crewMemberId || !crewMemberName) return;
@@ -1162,12 +1207,7 @@ export default function CommandCentre() {
               <ActivityList events={recentEvents} />
             </div>
 
-            {/* Time Tracking — Live */}
-            {/**
-             * Placeholder data until timeclock service is wired.
-             * Live installer rows + indirect total are static.
-             * Per-job variance pulls real project names from dashboard.activeProjects.
-             */}
+            {/* Time Tracking — Live (real data) */}
             <div>
               <Card>
                 {/* Header */}
@@ -1176,23 +1216,22 @@ export default function CommandCentre() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                     <div style={{
                       width: 6, height: 6, borderRadius: '50%',
-                      background: 'var(--green)',
-                      boxShadow: '0 0 6px rgba(22,163,74,0.4)',
+                      background: liveInstallers.length > 0 ? 'var(--green)' : 'var(--muted)',
+                      boxShadow: liveInstallers.length > 0 ? '0 0 6px rgba(22,163,74,0.4)' : 'none',
                     }}/>
                     <span style={{
                       fontFamily: 'var(--font-mono)', fontSize: 8,
                       letterSpacing: '0.12em', textTransform: 'uppercase' as const,
-                      color: 'var(--green)',
-                    }}>2 clocked in</span>
+                      color: liveInstallers.length > 0 ? 'var(--green)' : 'var(--muted)',
+                    }}>{liveInstallers.length} clocked in</span>
                   </div>
                 </div>
 
                 {/* Live installers */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 4, padding: '10px 14px' }}>
-                  {[
-                    { initials: 'NM', name: 'Nathan M.', task: 'LVP Flooring Install', elapsed: '2:14', indirect: false },
-                    { initials: 'NS', name: 'Nishant', task: 'Travel', elapsed: '0:23', indirect: true },
-                  ].map((installer) => (
+                  {liveInstallers.length === 0 ? (
+                    <div style={{ padding: '8px 0', textAlign: 'center', fontSize: 11, color: 'var(--muted)' }}>No one clocked in</div>
+                  ) : liveInstallers.map((installer) => (
                     <div key={installer.initials} style={{
                       display: 'flex', alignItems: 'center', gap: 8,
                       padding: '8px 10px',
@@ -1221,10 +1260,7 @@ export default function CommandCentre() {
                           marginTop: 1,
                         }}>{installer.name} · {installer.indirect ? 'Indirect' : 'Install'}</div>
                       </div>
-                      <div style={{
-                        fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 500,
-                        color: 'var(--green)', letterSpacing: '0.05em', flexShrink: 0,
-                      }}>{installer.elapsed}</div>
+                      {installer.clockInTime && <ClockElapsed startTime={new Date(installer.clockInTime).getTime()} />}
                     </div>
                   ))}
                 </div>
@@ -1246,7 +1282,7 @@ export default function CommandCentre() {
                     <span style={{
                       fontFamily: 'var(--font-mono)', fontSize: 12,
                       fontWeight: 700, color: 'var(--yellow)',
-                    }}>2.1h · $59</span>
+                    }}>{liveIndirect?.hours ?? '0h'} · {liveIndirect?.cost ?? '$0'}</span>
                   </div>
                 </div>
 

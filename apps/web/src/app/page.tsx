@@ -235,6 +235,38 @@ export default function CommandCentre() {
 
   // ── Installer View ──
   if (isInstaller) {
+    /**
+     * Task categories for the time clock.
+     * Owners/operators see business categories; installers see field categories.
+     * Uses profile.role (auth role), not viewMode, so category set is always correct.
+     *
+     * Temporary UI state (window.__selectedTask, etc.) will be replaced by
+     * proper React state + timeclock service in a future sprint.
+     */
+    const fieldCategories = [
+      { id: 'travel', tag: 'TRVL', label: 'Travel', meta: 'To / from site · Between sites', indirect: true },
+      { id: 'setup', tag: 'SETUP', label: 'Site Setup', meta: 'Protection, staging, prep', indirect: true },
+      { id: 'clean', tag: 'CLEAN', label: 'Site Clean', meta: 'During job · End of day · Final', indirect: true },
+      { id: 'matrun', tag: 'MAT', label: 'Material Run', meta: 'Store trip · Pickup · Delivery', indirect: true },
+      { id: 'rework', tag: 'RWRK', label: 'Rework', meta: 'Correction required — note reason', indirect: true },
+      { id: 'wait', tag: 'WAIT', label: 'Wait', meta: 'Blocked by trade · Delivery · Decision', indirect: true },
+      { id: 'admin', tag: 'ADMIN', label: 'Admin', meta: 'Photos, checklists, paperwork on site', indirect: true },
+    ];
+
+    const ownerOperatorCategories = [
+      { id: 'sales', tag: 'SALES', label: 'Sales', meta: 'Estimates, client meetings, follow-up', indirect: false },
+      { id: 'bizdev', tag: 'BIZ DEV', label: 'Biz Dev', meta: 'Networking, referrals, home shows', indirect: false },
+      { id: 'marketing', tag: 'MKTG', label: 'Marketing', meta: 'Content, social, website, Labs', indirect: false },
+      { id: 'operations', tag: 'OPS', label: 'Operations', meta: 'Scheduling, procurement, vendors', indirect: false },
+      { id: 'finance2', tag: 'FIN', label: 'Finance', meta: 'Invoicing, bookkeeping, reporting', indirect: false },
+      { id: 'training', tag: 'TRAIN', label: 'Training', meta: 'Crew development, SOPs, onboarding', indirect: false },
+      { id: 'tech', tag: 'TECH', label: 'Tech', meta: 'Platform dev, app builds, integrations', indirect: false },
+      { id: 'admin2', tag: 'ADMIN', label: 'Admin', meta: 'General admin, emails, planning', indirect: false },
+    ];
+
+    const isOwnerOrOperator = profile?.role === 'owner' || profile?.role === 'operator';
+    const taskCategories = isOwnerOrOperator ? ownerOperatorCategories : fieldCategories;
+
     return (
       <PageErrorBoundary>
         <div style={{ minHeight: '100vh', paddingBottom: 96, background: 'var(--bg)' }}>
@@ -247,6 +279,139 @@ export default function CommandCentre() {
             </div>
           </div>
           <div className="max-w-lg mx-auto px-4">
+
+            {/* TIME CLOCK */}
+            <div style={{ marginTop: 16 }}>
+              <SectionHeader title="Time Clock" />
+              <Card>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: 14 }}>
+
+                  {/* Clock display */}
+                  <div style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    padding: '14px 16px', background: 'var(--charcoal)', borderRadius: 'var(--radius)',
+                  }}>
+                    <div>
+                      <div id="clock-status-label" style={{
+                        fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '0.18em',
+                        textTransform: 'uppercase' as const, color: 'rgba(255,255,255,0.35)', marginBottom: 4,
+                      }}>Not clocked in</div>
+                      <div id="clock-task-label" style={{ fontSize: 13, fontWeight: 600, color: 'white' }}>
+                        Select a task to begin
+                      </div>
+                    </div>
+                    <div id="clock-elapsed" style={{
+                      fontFamily: 'var(--font-mono)', fontSize: 20, fontWeight: 700,
+                      color: 'var(--green)', letterSpacing: '0.05em', fontVariantNumeric: 'tabular-nums',
+                    }} />
+                  </div>
+
+                  {/* Task selector */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    {taskCategories.map((cat) => (
+                      <div
+                        key={cat.id}
+                        id={`task-${cat.id}`}
+                        onClick={() => {
+                          document.querySelectorAll('[id^="task-"]').forEach((el) => {
+                            (el as HTMLElement).style.borderColor = 'var(--border)';
+                            (el as HTMLElement).style.background = 'var(--bg)';
+                          });
+                          const el = document.getElementById(`task-${cat.id}`);
+                          if (el) { el.style.borderColor = 'var(--charcoal)'; el.style.background = 'var(--surface)'; }
+                          (window as unknown as Record<string, unknown>).__selectedTask = cat;
+                          const btn = document.getElementById('clock-btn');
+                          if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = 'auto'; btn.textContent = `Clock In — ${cat.label}`; }
+                        }}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: 10,
+                          padding: '10px 12px', border: '1px solid var(--border)',
+                          background: 'var(--bg)', cursor: 'pointer',
+                          borderRadius: 'var(--radius)', transition: 'all 0.15s',
+                        }}
+                      >
+                        <div style={{
+                          fontFamily: 'var(--font-mono)', fontSize: 8, letterSpacing: '0.1em',
+                          padding: '2px 6px', borderRadius: 2, textTransform: 'uppercase' as const,
+                          background: cat.indirect ? 'rgba(217,119,6,0.1)' : 'rgba(255,255,255,0.06)',
+                          color: cat.indirect ? 'var(--yellow)' : 'var(--muted)',
+                          flexShrink: 0, minWidth: 42, textAlign: 'center' as const,
+                        }}>{cat.tag}</div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--charcoal)' }}>{cat.label}</div>
+                          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--muted)', marginTop: 1 }}>{cat.meta}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Clock in/out button */}
+                  {/** Temporary DOM manipulation — replace with React state + timeclock service */}
+                  <button
+                    id="clock-btn"
+                    style={{
+                      width: '100%', padding: 16,
+                      fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 700,
+                      letterSpacing: '0.04em', textTransform: 'uppercase' as const,
+                      border: 'none', borderRadius: 'var(--radius)',
+                      background: 'var(--green)', color: 'white',
+                      cursor: 'pointer', opacity: 0.35,
+                      pointerEvents: 'none' as const, transition: 'all 0.2s',
+                    }}
+                    onClick={() => {
+                      const w = window as unknown as Record<string, unknown>;
+                      const task = w.__selectedTask as { label: string; indirect: boolean } | null;
+                      if (!task) return;
+                      const isClockedIn = w.__clockedIn as boolean;
+                      const btn = document.getElementById('clock-btn');
+                      const statusLabel = document.getElementById('clock-status-label');
+                      const taskLabel = document.getElementById('clock-task-label');
+                      const elapsed = document.getElementById('clock-elapsed');
+
+                      if (!isClockedIn) {
+                        w.__clockedIn = true;
+                        w.__clockInTime = Date.now();
+                        w.__elapsedInterval = setInterval(() => {
+                          const secs = Math.floor((Date.now() - (w.__clockInTime as number)) / 1000);
+                          const h = Math.floor(secs / 3600);
+                          const m = Math.floor((secs % 3600) / 60);
+                          const s = secs % 60;
+                          if (elapsed) elapsed.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+                        }, 1000);
+                        if (statusLabel) { statusLabel.textContent = task.indirect ? 'Indirect task active' : 'Clocked in'; statusLabel.style.color = 'var(--green)'; }
+                        if (taskLabel) taskLabel.textContent = task.label;
+                        if (btn) { btn.textContent = 'Clock Out'; btn.style.background = 'rgba(220,38,38,0.15)'; btn.style.color = 'var(--red)'; btn.style.border = '1px solid rgba(220,38,38,0.3)'; }
+                      } else {
+                        w.__clockedIn = false;
+                        clearInterval(w.__elapsedInterval as number);
+                        if (elapsed) elapsed.textContent = '';
+                        if (statusLabel) { statusLabel.textContent = 'Not clocked in'; statusLabel.style.color = 'rgba(255,255,255,0.35)'; }
+                        if (taskLabel) taskLabel.textContent = 'Select a task to begin';
+                        if (btn) { btn.textContent = 'Clock In'; btn.style.background = 'var(--green)'; btn.style.color = 'white'; btn.style.border = 'none'; btn.style.opacity = '0.35'; btn.style.pointerEvents = 'none'; }
+                        document.querySelectorAll('[id^="task-"]').forEach((el) => {
+                          (el as HTMLElement).style.borderColor = 'var(--border)';
+                          (el as HTMLElement).style.background = 'var(--bg)';
+                        });
+                        w.__selectedTask = null;
+                      }
+                    }}
+                  >
+                    Clock In
+                  </button>
+
+                  {/* Shift total */}
+                  <div style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    paddingTop: 8, borderTop: '1px solid var(--border)',
+                  }}>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, letterSpacing: '0.14em', textTransform: 'uppercase' as const, color: 'var(--muted)' }}>Total logged today</span>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, color: 'var(--charcoal)' }}>0h 00m</span>
+                  </div>
+
+                </div>
+              </Card>
+            </div>
+
             <div style={{ marginTop: 20 }}>
               <SectionHeader title="My Schedule Today" />
               <Card>

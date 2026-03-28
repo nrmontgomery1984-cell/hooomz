@@ -508,6 +508,165 @@ export default function CrewPage() {
               </div>
             )}
 
+            {/* TIME & HOURS */}
+            {/**
+             * Placeholder data until timeclock service is wired.
+             * All values are static. Wire to timeclock entries queryable
+             * by crew member ID in a future sprint.
+             */}
+            <div style={{ marginTop: 16, marginBottom: 20 }}>
+              <SectionHeader title="Time & Hours" />
+
+              {/* Stat row */}
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: 2,
+                marginBottom: 12,
+              }}>
+                {[
+                  { label: 'This week', value: '32.2h', sub: '26.4h install' },
+                  { label: 'This month', value: '118h', sub: '94h install' },
+                  { label: 'Indirect', value: '18%', sub: 'of total hours' },
+                ].map((stat) => (
+                  <div key={stat.label} style={{
+                    background: 'var(--surface)',
+                    border: '1px solid var(--border)',
+                    padding: '10px 12px',
+                  }}>
+                    <div style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: 8,
+                      letterSpacing: '0.12em',
+                      textTransform: 'uppercase' as const,
+                      color: 'var(--muted)',
+                      marginBottom: 5,
+                    }}>{stat.label}</div>
+                    <div style={{
+                      fontSize: 18,
+                      fontWeight: 900,
+                      letterSpacing: '-0.02em',
+                      color: 'var(--charcoal)',
+                      fontVariantNumeric: 'tabular-nums',
+                    }}>{stat.value}</div>
+                    <div style={{
+                      fontSize: 10,
+                      color: 'var(--muted)',
+                      marginTop: 2,
+                    }}>{stat.sub}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Indirect breakdown */}
+              <div style={{
+                padding: '8px 12px',
+                background: 'rgba(217,119,6,0.05)',
+                border: '1px solid rgba(217,119,6,0.15)',
+                borderRadius: 'var(--radius)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginBottom: 12,
+              }}>
+                <div>
+                  <div style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: 8,
+                    letterSpacing: '0.12em',
+                    textTransform: 'uppercase' as const,
+                    color: 'var(--yellow)',
+                    marginBottom: 2,
+                  }}>Indirect this week</div>
+                  <div style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: 10,
+                    color: 'var(--muted)',
+                  }}>Travel 1.8h · Setup 0.6h · Clean 0.9h · Mat Run 0.4h</div>
+                </div>
+                <div style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 13,
+                  fontWeight: 700,
+                  color: 'var(--yellow)',
+                }}>3.7h</div>
+              </div>
+
+              {/* Jobs this week */}
+              <div style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: 8,
+                fontWeight: 700,
+                letterSpacing: '0.14em',
+                textTransform: 'uppercase' as const,
+                color: 'var(--muted)',
+                marginBottom: 8,
+              }}>Jobs this week</div>
+
+              {[
+                { job: '14 Hillside Crescent', hours: '17.2h', indirect: '1.8h', variance: '+1.7h', over: true },
+                { job: '88 Pine Street', hours: '15.0h', indirect: '1.9h', variance: '\u22120.4h', over: false },
+              ].map((entry, i, arr) => (
+                <div key={entry.job} style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 52px 52px 60px',
+                  alignItems: 'center',
+                  padding: '8px 0',
+                  borderBottom: i < arr.length - 1 ? '1px solid var(--border)' : 'none',
+                  gap: 8,
+                }}>
+                  <div style={{
+                    fontSize: 12,
+                    fontWeight: 600,
+                    color: 'var(--charcoal)',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}>{entry.job}</div>
+                  <div style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: 10,
+                    color: 'var(--charcoal)',
+                    textAlign: 'right',
+                    fontVariantNumeric: 'tabular-nums',
+                  }}>{entry.hours}</div>
+                  <div style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: 10,
+                    color: 'var(--yellow)',
+                    textAlign: 'right',
+                  }}>{entry.indirect}</div>
+                  <div style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: 10,
+                    fontWeight: 700,
+                    color: entry.over ? 'var(--red)' : 'var(--green)',
+                    textAlign: 'right',
+                  }}>{entry.variance}</div>
+                </div>
+              ))}
+
+              {/* Column labels */}
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 52px 52px 60px',
+                gap: 8,
+                marginTop: 4,
+              }}>
+                <div/>
+                {['Hours', 'Indirect', 'Variance'].map((label) => (
+                  <div key={label} style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: 7,
+                    letterSpacing: '0.12em',
+                    textTransform: 'uppercase' as const,
+                    color: 'var(--muted)',
+                    textAlign: 'right',
+                  }}>{label}</div>
+                ))}
+              </div>
+            </div>
+
             {/* Emergency Contact */}
             {ec && ec.name && (
               <div style={{ marginTop: 16 }}>

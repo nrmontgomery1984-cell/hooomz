@@ -107,16 +107,46 @@ export function useClockIn() {
 }
 
 export function useClockOut() {
-  const service = useTimeClockService();
+  const services = useServices();
+  const service = services.timeClock;
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (params: { crewMemberId: string; crewMemberName: string }) =>
       service.clockOut(params.crewMemberId, params.crewMemberName),
-    onSuccess: (_data, variables) => {
+    onSuccess: async (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: timeClockKeys.state(variables.crewMemberId) });
       queryClient.invalidateQueries({ queryKey: timeClockKeys.todayEntries(variables.crewMemberId) });
       queryClient.invalidateQueries({ queryKey: timeClockKeys.todayTotal(variables.crewMemberId) });
+
+      // ── CONNECTION: Update labour variance on clock-out ──
+      try {
+        const todayEntries = await service.getTodayEntries(variables.crewMemberId);
+        const lastEntry = todayEntries
+          .filter((e) => e.clock_out !== null && e.task_instance_id !== null)
+          .sort((a, b) => new Date(b.clock_out!).getTime() - new Date(a.clock_out!).getTime())[0];
+
+        if (lastEntry?.task_instance_id) {
+          const taskId = lastEntry.task_instance_id;
+          const taskEntries = await service.getEntriesForTask(taskId);
+          const totalActualHours = taskEntries
+            .filter((e) => e.clock_out !== null)
+            .reduce((sum, e) => sum + (e.total_hours ?? 0), 0);
+
+          // Try to record actual hours on the deployed task.
+          // task_instance_id may be a scheduling task ID or a deployed task ID —
+          // recordActualHours will return null if no deployed task found (non-fatal).
+          await services.labourEstimation.recordActualHours(
+            taskId,
+            totalActualHours,
+          );
+
+          queryClient.invalidateQueries({ queryKey: ['labour'] });
+        }
+      } catch (e) {
+        // Task may not have a deployed task or labour estimate — non-fatal
+        console.warn('[TimeTracking] Labour variance update skipped:', e);
+      }
     },
   });
 }

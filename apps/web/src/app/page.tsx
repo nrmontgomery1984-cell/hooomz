@@ -25,7 +25,6 @@ import {
   AlertTriangle,
   CheckCircle2,
   ArrowRight,
-  MessageSquare,
 } from 'lucide-react';
 import { useDashboardData } from '@/lib/hooks/useDashboardData';
 import { useAllInvoices } from '@/lib/hooks/useInvoices';
@@ -682,13 +681,129 @@ export default function CommandCentre() {
               <ActivityList events={recentEvents} />
             </div>
 
-            {/* Messages Placeholder */}
+            {/* Time Tracking — Live */}
+            {/**
+             * Placeholder data until timeclock service is wired.
+             * Live installer rows + indirect total are static.
+             * Per-job variance pulls real project names from dashboard.activeProjects.
+             */}
             <div>
-              <SectionHeader title="Messages" />
               <Card>
-                <div style={{ padding: '20px 14px', textAlign: 'center' }}>
-                  <MessageSquare size={20} style={{ color: 'var(--muted)', margin: '0 auto 8px' }} />
-                  <p style={{ fontSize: 12, color: 'var(--muted)', margin: 0 }}>Team messaging coming soon</p>
+                {/* Header */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px 0' }}>
+                  <SectionHeader title="Time · Live" />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                    <div style={{
+                      width: 6, height: 6, borderRadius: '50%',
+                      background: 'var(--green)',
+                      boxShadow: '0 0 6px rgba(22,163,74,0.4)',
+                    }}/>
+                    <span style={{
+                      fontFamily: 'var(--font-mono)', fontSize: 8,
+                      letterSpacing: '0.12em', textTransform: 'uppercase' as const,
+                      color: 'var(--green)',
+                    }}>2 clocked in</span>
+                  </div>
+                </div>
+
+                {/* Live installers */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4, padding: '10px 14px' }}>
+                  {[
+                    { initials: 'NM', name: 'Nathan M.', task: 'LVP Flooring Install', elapsed: '2:14', indirect: false },
+                    { initials: 'NS', name: 'Nishant', task: 'Travel', elapsed: '0:23', indirect: true },
+                  ].map((installer) => (
+                    <div key={installer.initials} style={{
+                      display: 'flex', alignItems: 'center', gap: 8,
+                      padding: '8px 10px',
+                      background: 'var(--charcoal)',
+                      borderRadius: 'var(--radius)',
+                    }}>
+                      <div style={{
+                        width: 24, height: 24, borderRadius: '50%',
+                        background: 'rgba(255,255,255,0.06)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 8, fontWeight: 700,
+                        color: 'rgba(255,255,255,0.4)',
+                        fontFamily: 'var(--font-mono)',
+                        flexShrink: 0,
+                      }}>{installer.initials}</div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{
+                          fontSize: 11, fontWeight: 600, color: 'white',
+                          whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                        }}>{installer.task}</div>
+                        <div style={{
+                          fontFamily: 'var(--font-mono)', fontSize: 8,
+                          letterSpacing: '0.1em', textTransform: 'uppercase' as const,
+                          color: installer.indirect ? 'var(--yellow)' : 'rgba(255,255,255,0.3)',
+                          marginTop: 1,
+                        }}>{installer.name} · {installer.indirect ? 'Indirect' : 'Install'}</div>
+                      </div>
+                      <div style={{
+                        fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 500,
+                        color: 'var(--green)', letterSpacing: '0.05em', flexShrink: 0,
+                      }}>{installer.elapsed}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Indirect today */}
+                <div style={{ padding: '0 14px 10px' }}>
+                  <div style={{
+                    padding: '8px 10px',
+                    background: 'var(--yellow-bg)',
+                    border: '1px solid rgba(217,119,6,0.15)',
+                    borderRadius: 'var(--radius)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  }}>
+                    <span style={{
+                      fontFamily: 'var(--font-mono)', fontSize: 8,
+                      letterSpacing: '0.12em', textTransform: 'uppercase' as const,
+                      color: 'var(--yellow)',
+                    }}>Indirect today</span>
+                    <span style={{
+                      fontFamily: 'var(--font-mono)', fontSize: 12,
+                      fontWeight: 700, color: 'var(--yellow)',
+                    }}>2.1h · $59</span>
+                  </div>
+                </div>
+
+                {/* Per-job variance — real project names, placeholder hours */}
+                <div style={{ padding: '0 14px' }}>
+                  {dashboard.activeProjects.slice(0, 3).map((project, i) => (
+                    <div key={project.id} style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                      padding: '7px 0',
+                      borderBottom: i < Math.min(dashboard.activeProjects.length, 3) - 1 ? '1px solid var(--border)' : 'none',
+                    }}>
+                      <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--charcoal)', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {project.address?.street ?? project.name}
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0, marginLeft: 8 }}>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--muted)' }}>—h</span>
+                        <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--muted)' }}/>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Shift total */}
+                <div style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  padding: '10px 14px',
+                  marginTop: 4,
+                  borderTop: '1px solid var(--border)',
+                }}>
+                  <span style={{
+                    fontFamily: 'var(--font-mono)', fontSize: 8,
+                    fontWeight: 700, letterSpacing: '0.14em',
+                    textTransform: 'uppercase' as const, color: 'var(--muted)',
+                  }}>Total logged today</span>
+                  <span style={{
+                    fontFamily: 'var(--font-mono)', fontSize: 14,
+                    fontWeight: 700, color: 'var(--charcoal)',
+                  }}>11.4h</span>
                 </div>
               </Card>
             </div>

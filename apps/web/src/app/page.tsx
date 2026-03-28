@@ -15,7 +15,7 @@
  * All data from IndexedDB via existing hooks. Zero hardcoded values.
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { PageErrorBoundary } from '@/components/ui/PageErrorBoundary';
@@ -127,6 +127,15 @@ export default function CommandCentre() {
 
   const [showJobs, setShowJobs] = useState(false);
   const [clockMode, setClockMode] = useState<'office' | 'field'>(role === 'installer' ? 'field' : 'office');
+  const [showClockModal, setShowClockModal] = useState(false);
+  const [clockedTask, setClockedTask] = useState<{ label: string; indirect: boolean; job?: string } | null>(null);
+  const [clockInTime, setClockInTime] = useState<number | null>(null);
+
+  const handleClockOut = () => {
+    setClockedTask(null);
+    setClockInTime(null);
+    (window as unknown as Record<string, unknown>).__selectedJob = null;
+  };
 
   // Finance computations
   const currentMonth = new Date().getMonth();
@@ -550,152 +559,177 @@ export default function CommandCentre() {
         {/* ── SCROLLABLE BODY ── */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '28px 32px' }}>
 
-          {/* ── TIME CLOCK (all roles) ── */}
+          {/* ── CLOCK IN — compact card ── */}
           <div style={{ marginBottom: 20 }}>
-            <SectionHeader title="Time Clock" />
             <Card>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: 14 }}>
-
-                {/* Clock display */}
-                <div style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  padding: '14px 16px', background: 'var(--charcoal)', borderRadius: 'var(--radius)',
-                }}>
-                  <div>
-                    <div id="mgr-clock-status" style={{
-                      fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '0.18em',
-                      textTransform: 'uppercase' as const, color: 'rgba(255,255,255,0.35)', marginBottom: 4,
-                    }}>Not clocked in</div>
-                    <div id="mgr-clock-task" style={{ fontSize: 13, fontWeight: 600, color: 'white' }}>
-                      Select a task to begin
-                    </div>
-                  </div>
-                  <div id="mgr-clock-elapsed" style={{
-                    fontFamily: 'var(--font-mono)', fontSize: 20, fontWeight: 700,
-                    color: 'var(--green)', letterSpacing: '0.05em', fontVariantNumeric: 'tabular-nums',
+              <button
+                onClick={() => clockedTask ? handleClockOut() : setShowClockModal(true)}
+                style={{
+                  width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  padding: '14px 18px', border: 'none', background: 'transparent', cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div style={{
+                    width: 10, height: 10, borderRadius: '50%',
+                    background: clockedTask ? 'var(--green)' : 'var(--muted)',
+                    boxShadow: clockedTask ? '0 0 8px rgba(22,163,74,0.5)' : 'none',
                   }} />
-                </div>
-
-                {/* Office / Field toggle */}
-                {isOwnerOrOperator && (
-                  <div style={{ display: 'flex', gap: 0, borderRadius: 'var(--radius)', overflow: 'hidden', border: '1px solid var(--border)' }}>
-                    {(['office', 'field'] as const).map((mode) => (
-                      <button
-                        key={mode}
-                        onClick={() => setClockMode(mode)}
-                        style={{
-                          flex: 1, padding: '8px 16px',
-                          fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 700,
-                          letterSpacing: '0.12em', textTransform: 'uppercase',
-                          border: 'none', cursor: 'pointer', transition: 'all 0.15s',
-                          background: clockMode === mode ? 'var(--charcoal)' : 'var(--bg)',
-                          color: clockMode === mode ? 'white' : 'var(--muted)',
-                        }}
-                      >
-                        {mode}
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                {/* Task selector — horizontal for manager view */}
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                  {taskCategories.map((cat) => (
-                    <div
-                      key={cat.id}
-                      id={`mgr-task-${cat.id}`}
-                      onClick={() => {
-                        document.querySelectorAll('[id^="mgr-task-"]').forEach((el) => {
-                          (el as HTMLElement).style.borderColor = 'var(--border)';
-                          (el as HTMLElement).style.background = 'var(--bg)';
-                        });
-                        const el = document.getElementById(`mgr-task-${cat.id}`);
-                        if (el) { el.style.borderColor = 'var(--charcoal)'; el.style.background = 'var(--surface)'; }
-                        (window as unknown as Record<string, unknown>).__mgrSelectedTask = cat;
-                        const btn = document.getElementById('mgr-clock-btn');
-                        if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = 'auto'; btn.textContent = `Clock In — ${cat.label}`; }
-                      }}
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: 6,
-                        padding: '6px 10px', border: '1px solid var(--border)',
-                        background: 'var(--bg)', cursor: 'pointer',
-                        borderRadius: 'var(--radius)', transition: 'all 0.15s',
-                      }}
-                    >
-                      <div style={{
-                        fontFamily: 'var(--font-mono)', fontSize: 7, letterSpacing: '0.1em',
-                        padding: '1px 5px', borderRadius: 2, textTransform: 'uppercase' as const,
-                        background: cat.indirect ? 'rgba(217,119,6,0.1)' : 'rgba(255,255,255,0.06)',
-                        color: cat.indirect ? 'var(--yellow)' : 'var(--muted)',
-                      }}>{cat.tag}</div>
-                      <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--charcoal)' }}>{cat.label}</div>
+                  <div>
+                    <div style={{ fontFamily: 'var(--font-display)', fontSize: 13, fontWeight: 600, color: 'var(--charcoal)' }}>
+                      {clockedTask ? clockedTask.label : 'Clock In'}
                     </div>
-                  ))}
-                </div>
-
-                {/* Clock in/out + shift total row */}
-                {/** Temporary DOM manipulation — replace with React state + timeclock service */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <button
-                    id="mgr-clock-btn"
-                    style={{
-                      flex: 1, padding: 12,
-                      fontFamily: 'var(--font-display)', fontSize: 12, fontWeight: 700,
-                      letterSpacing: '0.04em', textTransform: 'uppercase' as const,
-                      border: 'none', borderRadius: 'var(--radius)',
-                      background: 'var(--green)', color: 'white',
-                      cursor: 'pointer', opacity: 0.35,
-                      pointerEvents: 'none' as const, transition: 'all 0.2s',
-                    }}
-                    onClick={() => {
-                      const w = window as unknown as Record<string, unknown>;
-                      const task = w.__mgrSelectedTask as { label: string; indirect: boolean } | null;
-                      if (!task) return;
-                      const isClockedIn = w.__mgrClockedIn as boolean;
-                      const btn = document.getElementById('mgr-clock-btn');
-                      const statusLabel = document.getElementById('mgr-clock-status');
-                      const taskLabel = document.getElementById('mgr-clock-task');
-                      const elapsed = document.getElementById('mgr-clock-elapsed');
-
-                      if (!isClockedIn) {
-                        w.__mgrClockedIn = true;
-                        w.__mgrClockInTime = Date.now();
-                        w.__mgrInterval = setInterval(() => {
-                          const secs = Math.floor((Date.now() - (w.__mgrClockInTime as number)) / 1000);
-                          const h = Math.floor(secs / 3600);
-                          const m = Math.floor((secs % 3600) / 60);
-                          const s = secs % 60;
-                          if (elapsed) elapsed.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-                        }, 1000);
-                        if (statusLabel) { statusLabel.textContent = task.indirect ? 'Indirect task active' : 'Clocked in'; statusLabel.style.color = 'var(--green)'; }
-                        if (taskLabel) taskLabel.textContent = task.label;
-                        if (btn) { btn.textContent = 'Clock Out'; btn.style.background = 'rgba(220,38,38,0.15)'; btn.style.color = 'var(--red)'; btn.style.border = '1px solid rgba(220,38,38,0.3)'; }
-                      } else {
-                        w.__mgrClockedIn = false;
-                        clearInterval(w.__mgrInterval as number);
-                        if (elapsed) elapsed.textContent = '';
-                        if (statusLabel) { statusLabel.textContent = 'Not clocked in'; statusLabel.style.color = 'rgba(255,255,255,0.35)'; }
-                        if (taskLabel) taskLabel.textContent = 'Select a task to begin';
-                        if (btn) { btn.textContent = 'Clock In'; btn.style.background = 'var(--green)'; btn.style.color = 'white'; btn.style.border = 'none'; btn.style.opacity = '0.35'; btn.style.pointerEvents = 'none'; }
-                        document.querySelectorAll('[id^="mgr-task-"]').forEach((el) => {
-                          (el as HTMLElement).style.borderColor = 'var(--border)';
-                          (el as HTMLElement).style.background = 'var(--bg)';
-                        });
-                        w.__mgrSelectedTask = null;
-                      }
-                    }}
-                  >
-                    Clock In
-                  </button>
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 7, letterSpacing: '0.14em', textTransform: 'uppercase' as const, color: 'var(--muted)' }}>Today</div>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 700, color: 'var(--charcoal)' }}>0h 00m</div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--muted)', marginTop: 1, letterSpacing: '0.06em', textTransform: 'uppercase' as const }}>
+                      {clockedTask ? (clockedTask.job ?? (clockedTask.indirect ? 'Indirect' : 'Office')) : 'Tap to start tracking time'}
+                    </div>
                   </div>
                 </div>
-
-              </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  {clockedTask && clockInTime && <ClockElapsed startTime={clockInTime} />}
+                  <div style={{
+                    fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 700,
+                    letterSpacing: '0.1em', textTransform: 'uppercase' as const,
+                    padding: '5px 12px', borderRadius: 'var(--radius)',
+                    background: clockedTask ? 'rgba(220,38,38,0.1)' : 'var(--green)',
+                    color: clockedTask ? 'var(--red)' : 'white',
+                    border: clockedTask ? '1px solid rgba(220,38,38,0.25)' : 'none',
+                  }}>
+                    {clockedTask ? 'Stop' : 'Start'}
+                  </div>
+                </div>
+              </button>
             </Card>
           </div>
+
+          {/* ── CLOCK MODAL ── */}
+          {showClockModal && (
+            <div
+              style={{
+                position: 'fixed', inset: 0, zIndex: 100,
+                background: 'rgba(0,0,0,0.5)', display: 'flex',
+                alignItems: 'center', justifyContent: 'center', padding: 16,
+              }}
+              onClick={() => setShowClockModal(false)}
+            >
+              <div
+                onClick={(e) => e.stopPropagation()}
+                style={{
+                  width: '100%', maxWidth: 480, maxHeight: '80vh', overflowY: 'auto',
+                  background: 'var(--surface)', border: '1px solid var(--border)',
+                  borderRadius: 'var(--radius)', boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+                }}
+              >
+                {/* Modal header */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase' as const, color: 'var(--charcoal)' }}>Clock In</span>
+                  <button onClick={() => setShowClockModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 18, color: 'var(--muted)', lineHeight: 1 }}>×</button>
+                </div>
+
+                <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+                  {/* Office / Field toggle */}
+                  {isOwnerOrOperator && (
+                    <div style={{ display: 'flex', gap: 0, borderRadius: 'var(--radius)', overflow: 'hidden', border: '1px solid var(--border)' }}>
+                      {(['office', 'field'] as const).map((mode) => (
+                        <button
+                          key={mode}
+                          onClick={() => setClockMode(mode)}
+                          style={{
+                            flex: 1, padding: '10px 16px',
+                            fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700,
+                            letterSpacing: '0.12em', textTransform: 'uppercase',
+                            border: 'none', cursor: 'pointer', transition: 'all 0.15s',
+                            background: clockMode === mode ? 'var(--charcoal)' : 'var(--bg)',
+                            color: clockMode === mode ? 'white' : 'var(--muted)',
+                          }}
+                        >
+                          {mode}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Job selector — only for field mode */}
+                  {clockMode === 'field' && dashboard.activeProjects.length > 0 && (
+                    <div>
+                      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase' as const, color: 'var(--muted)', marginBottom: 6 }}>Job</div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                        {dashboard.activeProjects.map((project) => (
+                          <button
+                            key={project.id}
+                            id={`modal-job-${project.id}`}
+                            onClick={() => {
+                              document.querySelectorAll('[id^="modal-job-"]').forEach((el) => {
+                                (el as HTMLElement).style.borderColor = 'var(--border)';
+                                (el as HTMLElement).style.background = 'var(--bg)';
+                              });
+                              const el = document.getElementById(`modal-job-${project.id}`);
+                              if (el) { el.style.borderColor = 'var(--charcoal)'; el.style.background = 'var(--surface)'; }
+                              (window as unknown as Record<string, unknown>).__selectedJob = project;
+                            }}
+                            style={{
+                              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                              padding: '10px 12px', border: '1px solid var(--border)',
+                              background: 'var(--bg)', cursor: 'pointer',
+                              borderRadius: 'var(--radius)', textAlign: 'left', width: '100%',
+                            }}
+                          >
+                            <div>
+                              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--charcoal)' }}>{project.name}</div>
+                              {project.jobStage && (
+                                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--muted)', marginTop: 1, textTransform: 'uppercase' as const, letterSpacing: '0.06em' }}>{project.jobStage}</div>
+                              )}
+                            </div>
+                            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--muted)' }}>{project.completedCount}/{project.taskCount}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Category selector */}
+                  <div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase' as const, color: 'var(--muted)', marginBottom: 6 }}>
+                      {clockMode === 'field' ? 'Task Type' : 'Category'}
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                      {taskCategories.map((cat) => (
+                        <button
+                          key={cat.id}
+                          onClick={() => {
+                            const job = (window as unknown as Record<string, unknown>).__selectedJob as { name: string } | undefined;
+                            setClockedTask({ label: cat.label, indirect: cat.indirect, job: job?.name });
+                            setClockInTime(Date.now());
+                            setShowClockModal(false);
+                          }}
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: 10,
+                            padding: '10px 12px', border: '1px solid var(--border)',
+                            background: 'var(--bg)', cursor: 'pointer',
+                            borderRadius: 'var(--radius)', textAlign: 'left', width: '100%',
+                            transition: 'all 0.15s',
+                          }}
+                        >
+                          <div style={{
+                            fontFamily: 'var(--font-mono)', fontSize: 8, letterSpacing: '0.1em',
+                            padding: '2px 6px', borderRadius: 2, textTransform: 'uppercase' as const,
+                            background: cat.indirect ? 'rgba(217,119,6,0.1)' : 'rgba(255,255,255,0.06)',
+                            color: cat.indirect ? 'var(--yellow)' : 'var(--muted)',
+                            flexShrink: 0, minWidth: 42, textAlign: 'center' as const,
+                          }}>{cat.tag}</div>
+                          <div style={{ flex: 1 }}>
+                            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--charcoal)' }}>{cat.label}</div>
+                            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--muted)', marginTop: 1 }}>{cat.meta}</div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* ── Row 1: DESIGN funnel (2fr) + Finance (1fr) ── */}
           <div style={{ marginTop: 20, display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16 }}>
@@ -1257,5 +1291,31 @@ function ActivityList({ events }: { events: Array<Record<string, unknown>> }) {
         View All <ArrowRight size={10} />
       </Link>
     </Card>
+  );
+}
+
+function ClockElapsed({ startTime }: { startTime: number }) {
+  const [elapsed, setElapsed] = useState('00:00:00');
+
+  useEffect(() => {
+    const tick = () => {
+      const secs = Math.floor((Date.now() - startTime) / 1000);
+      const h = Math.floor(secs / 3600);
+      const m = Math.floor((secs % 3600) / 60);
+      const s = secs % 60;
+      setElapsed(`${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`);
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [startTime]);
+
+  return (
+    <span style={{
+      fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 700,
+      color: 'var(--green)', letterSpacing: '0.05em', fontVariantNumeric: 'tabular-nums',
+    }}>
+      {elapsed}
+    </span>
   );
 }

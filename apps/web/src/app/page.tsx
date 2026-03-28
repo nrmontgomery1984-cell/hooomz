@@ -118,7 +118,7 @@ export default function CommandCentre() {
   const { profile } = useAuth();
   const role = profile?.role ?? 'owner';
   const { viewMode, setViewMode } = useViewMode();
-  const isInstaller = role === 'installer'; // Only real installers see the installer view
+  const isInstaller = viewMode === 'installer';
 
   const dashboard = useDashboardData();
   const { data: allInvoices = [] } = useAllInvoices();
@@ -299,6 +299,28 @@ export default function CommandCentre() {
               <p style={{ fontSize: 11, color: 'var(--muted)', fontFamily: 'var(--font-mono)' }}>{getDateString()}</p>
             </div>
           </div>
+
+          {/* View mode switcher */}
+          <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid var(--border)', background: 'var(--surface)' }}>
+            {(['manager', 'operator', 'installer', 'homeowner'] as ViewMode[]).map((mode) => (
+              <button
+                key={mode}
+                onClick={() => setViewMode(mode)}
+                style={{
+                  flex: 1, padding: '10px 0', border: 'none', cursor: 'pointer',
+                  fontFamily: 'var(--font-mono)', fontSize: 8, fontWeight: 700,
+                  letterSpacing: '0.12em', textTransform: 'uppercase',
+                  background: viewMode === mode ? 'var(--bg)' : 'transparent',
+                  color: viewMode === mode ? 'var(--charcoal)' : 'var(--muted)',
+                  borderBottom: viewMode === mode ? '2px solid var(--charcoal)' : '2px solid transparent',
+                  transition: 'all 0.15s',
+                }}
+              >
+                {VIEW_MODE_LABELS[mode]}
+              </button>
+            ))}
+          </div>
+
           <div className="max-w-lg mx-auto px-4">
 
             {/* TIME CLOCK */}

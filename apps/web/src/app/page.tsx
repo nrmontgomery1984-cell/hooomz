@@ -28,6 +28,8 @@ import {
 } from 'lucide-react';
 import { useDashboardData } from '@/lib/hooks/useDashboardData';
 import { useServicesContext } from '@/lib/services/ServicesContext';
+import { useViewMode, VIEW_MODE_LABELS } from '@/lib/viewmode';
+import type { ViewMode } from '@/lib/viewmode';
 import { useAllInvoices } from '@/lib/hooks/useInvoices';
 import { useLocalRecentActivity } from '@/lib/hooks/useLocalData';
 import { useTeamWeekSchedule } from '@/lib/hooks/useSchedule';
@@ -133,15 +135,16 @@ export default function CommandCentre() {
   const [clockedTask, setClockedTask] = useState<{ label: string; indirect: boolean; job?: string } | null>(null);
   const [clockInTime, setClockInTime] = useState<number | null>(null);
   const [selectedJob, setSelectedJob] = useState<{ id: string; name: string } | null>(null);
-  const [jobLineItems, setJobLineItems] = useState<Array<{ id: string; description: string; category?: string }>>([]);
-  const [loadingLineItems, setLoadingLineItems] = useState(false);
+  const [jobTasks, setJobTasks] = useState<Array<{ id: string; title: string; description?: string; status?: string }>>([]);
+  const [loadingTasks, setLoadingTasks] = useState(false);
   const { services } = useServicesContext();
+  const { viewMode, setViewMode } = useViewMode();
 
   const handleClockOut = () => {
     setClockedTask(null);
     setClockInTime(null);
     setSelectedJob(null);
-    setJobLineItems([]);
+    setJobTasks([]);
     setClockStep('mode');
   };
 
@@ -562,6 +565,25 @@ export default function CommandCentre() {
               isLast
             />
           </div>
+
+          {/* View mode switcher */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 0, marginLeft: 'auto', borderLeft: '1px solid rgba(255,255,255,.06)', height: 52 }}>
+            {(['manager', 'operator', 'installer', 'homeowner'] as ViewMode[]).map((mode) => (
+              <button
+                key={mode}
+                onClick={() => setViewMode(mode)}
+                style={{
+                  padding: '0 12px', height: '100%', border: 'none', cursor: 'pointer',
+                  fontFamily: 'var(--font-mono)', fontSize: 7.5, letterSpacing: '0.1em',
+                  textTransform: 'uppercase', transition: 'all 0.15s',
+                  background: viewMode === mode ? 'rgba(255,255,255,.08)' : 'transparent',
+                  color: viewMode === mode ? 'rgba(255,255,255,.9)' : 'rgba(255,255,255,.25)',
+                }}
+              >
+                {VIEW_MODE_LABELS[mode]}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* ── SCROLLABLE BODY ── */}
@@ -677,18 +699,19 @@ export default function CommandCentre() {
                           key={project.id}
                           onClick={async () => {
                             setSelectedJob({ id: project.id, name: project.name });
-                            setJobLineItems([]);
-                            setLoadingLineItems(true);
+                            setJobTasks([]);
+                            setLoadingTasks(true);
                             setClockStep('category');
                             if (services) {
                               try {
-                                const items = await services.estimating.lineItems.findByProjectId(project.id);
-                                setJobLineItems(items.map((li: { id: string; description: string; category?: string }) => ({
-                                  id: li.id, description: li.description, category: li.category,
+                                const result = await services.scheduling.tasks.findAll({ filters: { projectId: project.id } });
+                                const tasks = result.tasks || [];
+                                setJobTasks(tasks.map((t: { id: string; title: string; description?: string; status?: string }) => ({
+                                  id: t.id, title: t.title, description: t.description, status: t.status,
                                 })));
                               } catch { /* empty */ }
                             }
-                            setLoadingLineItems(false);
+                            setLoadingTasks(false);
                           }}
                           style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', border: '1px solid var(--border)', background: 'var(--bg)', borderRadius: 'var(--radius)', cursor: 'pointer', width: '100%', textAlign: 'left' }}
                         >
@@ -712,30 +735,30 @@ export default function CommandCentre() {
                       {/* Line items from the selected job (field mode) */}
                       {clockMode === 'field' && selectedJob && (
                         <>
-                          {loadingLineItems && (
+                          {loadingTasks && (
                             <div style={{ padding: 12, textAlign: 'center', fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--muted)' }}>Loading tasks...</div>
                           )}
-                          {!loadingLineItems && jobLineItems.length > 0 && jobLineItems.map((li) => (
+                          {!loadingTasks && jobTasks.length > 0 && jobTasks.map((task) => (
                             <button
-                              key={li.id}
+                              key={task.id}
                               onClick={() => {
-                                setClockedTask({ label: li.description, indirect: false, job: selectedJob.name });
+                                setClockedTask({ label: task.title, indirect: false, job: selectedJob.name });
                                 setClockInTime(Date.now());
-                                setShowClockModal(false); setClockStep('mode'); setSelectedJob(null); setJobLineItems([]);
+                                setShowClockModal(false); setClockStep('mode'); setSelectedJob(null); setJobTasks([]);
                               }}
                               style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', border: '1px solid var(--border)', background: 'var(--bg)', borderRadius: 'var(--radius)', cursor: 'pointer', width: '100%', textAlign: 'left' }}
                             >
-                              {li.category && (
+                              {task.status && (
                                 <div style={{
-                                  fontFamily: 'var(--font-mono)', fontSize: 7, letterSpacing: '0.1em', padding: '2px 5px', borderRadius: 2, textTransform: 'uppercase' as const,
-                                  background: 'rgba(255,255,255,0.06)', color: 'var(--muted)', flexShrink: 0,
-                                }}>{li.category}</div>
+                                  width: 6, height: 6, borderRadius: '50%', flexShrink: 0,
+                                  background: task.status === 'complete' ? 'var(--green)' : task.status === 'in_progress' ? 'var(--blue)' : 'var(--muted)',
+                                }} />
                               )}
-                              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--charcoal)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{li.description}</div>
+                              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--charcoal)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{task.title}</div>
                             </button>
                           ))}
-                          {!loadingLineItems && jobLineItems.length === 0 && (
-                            <div style={{ padding: 10, textAlign: 'center', fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--muted)', letterSpacing: '0.06em' }}>No line items — use indirect below</div>
+                          {!loadingTasks && jobTasks.length === 0 && (
+                            <div style={{ padding: 10, textAlign: 'center', fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--muted)', letterSpacing: '0.06em' }}>No tasks — use indirect below</div>
                           )}
 
                           {/* Divider before indirect */}
@@ -751,7 +774,7 @@ export default function CommandCentre() {
                           onClick={() => {
                             setClockedTask({ label: cat.label, indirect: cat.indirect, job: selectedJob?.name });
                             setClockInTime(Date.now());
-                            setShowClockModal(false); setClockStep('mode'); setSelectedJob(null); setJobLineItems([]);
+                            setShowClockModal(false); setClockStep('mode'); setSelectedJob(null); setJobTasks([]);
                           }}
                           style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', border: '1px solid var(--border)', background: 'var(--bg)', borderRadius: 'var(--radius)', cursor: 'pointer', width: '100%', textAlign: 'left' }}
                         >

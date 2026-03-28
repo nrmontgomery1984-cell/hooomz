@@ -778,7 +778,7 @@ export default function CommandCentre() {
                       borderBottom: i < Math.min(dashboard.activeProjects.length, 3) - 1 ? '1px solid var(--border)' : 'none',
                     }}>
                       <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--charcoal)', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {project.address?.street ?? project.name}
+                        {project.name}
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0, marginLeft: 8 }}>
                         <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--muted)' }}>—h</span>

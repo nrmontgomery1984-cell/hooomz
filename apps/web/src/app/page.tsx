@@ -233,40 +233,40 @@ export default function CommandCentre() {
     );
   }
 
+  /**
+   * Task categories for the time clock.
+   * Owners/operators see business categories; installers see field categories.
+   * Uses profile.role (auth role), not viewMode, so category set is always correct.
+   *
+   * Temporary UI state (window.__selectedTask, etc.) will be replaced by
+   * proper React state + timeclock service in a future sprint.
+   */
+  const fieldCategories = [
+    { id: 'travel', tag: 'TRVL', label: 'Travel', meta: 'To / from site · Between sites', indirect: true },
+    { id: 'setup', tag: 'SETUP', label: 'Site Setup', meta: 'Protection, staging, prep', indirect: true },
+    { id: 'clean', tag: 'CLEAN', label: 'Site Clean', meta: 'During job · End of day · Final', indirect: true },
+    { id: 'matrun', tag: 'MAT', label: 'Material Run', meta: 'Store trip · Pickup · Delivery', indirect: true },
+    { id: 'rework', tag: 'RWRK', label: 'Rework', meta: 'Correction required — note reason', indirect: true },
+    { id: 'wait', tag: 'WAIT', label: 'Wait', meta: 'Blocked by trade · Delivery · Decision', indirect: true },
+    { id: 'admin', tag: 'ADMIN', label: 'Admin', meta: 'Photos, checklists, paperwork on site', indirect: true },
+  ];
+
+  const ownerOperatorCategories = [
+    { id: 'sales', tag: 'SALES', label: 'Sales', meta: 'Estimates, client meetings, follow-up', indirect: false },
+    { id: 'bizdev', tag: 'BIZ DEV', label: 'Biz Dev', meta: 'Networking, referrals, home shows', indirect: false },
+    { id: 'marketing', tag: 'MKTG', label: 'Marketing', meta: 'Content, social, website, Labs', indirect: false },
+    { id: 'operations', tag: 'OPS', label: 'Operations', meta: 'Scheduling, procurement, vendors', indirect: false },
+    { id: 'finance2', tag: 'FIN', label: 'Finance', meta: 'Invoicing, bookkeeping, reporting', indirect: false },
+    { id: 'training', tag: 'TRAIN', label: 'Training', meta: 'Crew development, SOPs, onboarding', indirect: false },
+    { id: 'tech', tag: 'TECH', label: 'Tech', meta: 'Platform dev, app builds, integrations', indirect: false },
+    { id: 'admin2', tag: 'ADMIN', label: 'Admin', meta: 'General admin, emails, planning', indirect: false },
+  ];
+
+  const isOwnerOrOperator = profile?.role === 'owner' || profile?.role === 'operator';
+  const taskCategories = isOwnerOrOperator ? ownerOperatorCategories : fieldCategories;
+
   // ── Installer View ──
   if (isInstaller) {
-    /**
-     * Task categories for the time clock.
-     * Owners/operators see business categories; installers see field categories.
-     * Uses profile.role (auth role), not viewMode, so category set is always correct.
-     *
-     * Temporary UI state (window.__selectedTask, etc.) will be replaced by
-     * proper React state + timeclock service in a future sprint.
-     */
-    const fieldCategories = [
-      { id: 'travel', tag: 'TRVL', label: 'Travel', meta: 'To / from site · Between sites', indirect: true },
-      { id: 'setup', tag: 'SETUP', label: 'Site Setup', meta: 'Protection, staging, prep', indirect: true },
-      { id: 'clean', tag: 'CLEAN', label: 'Site Clean', meta: 'During job · End of day · Final', indirect: true },
-      { id: 'matrun', tag: 'MAT', label: 'Material Run', meta: 'Store trip · Pickup · Delivery', indirect: true },
-      { id: 'rework', tag: 'RWRK', label: 'Rework', meta: 'Correction required — note reason', indirect: true },
-      { id: 'wait', tag: 'WAIT', label: 'Wait', meta: 'Blocked by trade · Delivery · Decision', indirect: true },
-      { id: 'admin', tag: 'ADMIN', label: 'Admin', meta: 'Photos, checklists, paperwork on site', indirect: true },
-    ];
-
-    const ownerOperatorCategories = [
-      { id: 'sales', tag: 'SALES', label: 'Sales', meta: 'Estimates, client meetings, follow-up', indirect: false },
-      { id: 'bizdev', tag: 'BIZ DEV', label: 'Biz Dev', meta: 'Networking, referrals, home shows', indirect: false },
-      { id: 'marketing', tag: 'MKTG', label: 'Marketing', meta: 'Content, social, website, Labs', indirect: false },
-      { id: 'operations', tag: 'OPS', label: 'Operations', meta: 'Scheduling, procurement, vendors', indirect: false },
-      { id: 'finance2', tag: 'FIN', label: 'Finance', meta: 'Invoicing, bookkeeping, reporting', indirect: false },
-      { id: 'training', tag: 'TRAIN', label: 'Training', meta: 'Crew development, SOPs, onboarding', indirect: false },
-      { id: 'tech', tag: 'TECH', label: 'Tech', meta: 'Platform dev, app builds, integrations', indirect: false },
-      { id: 'admin2', tag: 'ADMIN', label: 'Admin', meta: 'General admin, emails, planning', indirect: false },
-    ];
-
-    const isOwnerOrOperator = profile?.role === 'owner' || profile?.role === 'operator';
-    const taskCategories = isOwnerOrOperator ? ownerOperatorCategories : fieldCategories;
-
     return (
       <PageErrorBoundary>
         <div style={{ minHeight: '100vh', paddingBottom: 96, background: 'var(--bg)' }}>
@@ -526,6 +526,131 @@ export default function CommandCentre() {
 
         {/* ── SCROLLABLE BODY ── */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '28px 32px' }}>
+
+          {/* ── TIME CLOCK (all roles) ── */}
+          <div style={{ marginBottom: 20 }}>
+            <SectionHeader title="Time Clock" />
+            <Card>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: 14 }}>
+
+                {/* Clock display */}
+                <div style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  padding: '14px 16px', background: 'var(--charcoal)', borderRadius: 'var(--radius)',
+                }}>
+                  <div>
+                    <div id="mgr-clock-status" style={{
+                      fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '0.18em',
+                      textTransform: 'uppercase' as const, color: 'rgba(255,255,255,0.35)', marginBottom: 4,
+                    }}>Not clocked in</div>
+                    <div id="mgr-clock-task" style={{ fontSize: 13, fontWeight: 600, color: 'white' }}>
+                      Select a task to begin
+                    </div>
+                  </div>
+                  <div id="mgr-clock-elapsed" style={{
+                    fontFamily: 'var(--font-mono)', fontSize: 20, fontWeight: 700,
+                    color: 'var(--green)', letterSpacing: '0.05em', fontVariantNumeric: 'tabular-nums',
+                  }} />
+                </div>
+
+                {/* Task selector — horizontal for manager view */}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                  {taskCategories.map((cat) => (
+                    <div
+                      key={cat.id}
+                      id={`mgr-task-${cat.id}`}
+                      onClick={() => {
+                        document.querySelectorAll('[id^="mgr-task-"]').forEach((el) => {
+                          (el as HTMLElement).style.borderColor = 'var(--border)';
+                          (el as HTMLElement).style.background = 'var(--bg)';
+                        });
+                        const el = document.getElementById(`mgr-task-${cat.id}`);
+                        if (el) { el.style.borderColor = 'var(--charcoal)'; el.style.background = 'var(--surface)'; }
+                        (window as unknown as Record<string, unknown>).__mgrSelectedTask = cat;
+                        const btn = document.getElementById('mgr-clock-btn');
+                        if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = 'auto'; btn.textContent = `Clock In — ${cat.label}`; }
+                      }}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 6,
+                        padding: '6px 10px', border: '1px solid var(--border)',
+                        background: 'var(--bg)', cursor: 'pointer',
+                        borderRadius: 'var(--radius)', transition: 'all 0.15s',
+                      }}
+                    >
+                      <div style={{
+                        fontFamily: 'var(--font-mono)', fontSize: 7, letterSpacing: '0.1em',
+                        padding: '1px 5px', borderRadius: 2, textTransform: 'uppercase' as const,
+                        background: cat.indirect ? 'rgba(217,119,6,0.1)' : 'rgba(255,255,255,0.06)',
+                        color: cat.indirect ? 'var(--yellow)' : 'var(--muted)',
+                      }}>{cat.tag}</div>
+                      <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--charcoal)' }}>{cat.label}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Clock in/out + shift total row */}
+                {/** Temporary DOM manipulation — replace with React state + timeclock service */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <button
+                    id="mgr-clock-btn"
+                    style={{
+                      flex: 1, padding: 12,
+                      fontFamily: 'var(--font-display)', fontSize: 12, fontWeight: 700,
+                      letterSpacing: '0.04em', textTransform: 'uppercase' as const,
+                      border: 'none', borderRadius: 'var(--radius)',
+                      background: 'var(--green)', color: 'white',
+                      cursor: 'pointer', opacity: 0.35,
+                      pointerEvents: 'none' as const, transition: 'all 0.2s',
+                    }}
+                    onClick={() => {
+                      const w = window as unknown as Record<string, unknown>;
+                      const task = w.__mgrSelectedTask as { label: string; indirect: boolean } | null;
+                      if (!task) return;
+                      const isClockedIn = w.__mgrClockedIn as boolean;
+                      const btn = document.getElementById('mgr-clock-btn');
+                      const statusLabel = document.getElementById('mgr-clock-status');
+                      const taskLabel = document.getElementById('mgr-clock-task');
+                      const elapsed = document.getElementById('mgr-clock-elapsed');
+
+                      if (!isClockedIn) {
+                        w.__mgrClockedIn = true;
+                        w.__mgrClockInTime = Date.now();
+                        w.__mgrInterval = setInterval(() => {
+                          const secs = Math.floor((Date.now() - (w.__mgrClockInTime as number)) / 1000);
+                          const h = Math.floor(secs / 3600);
+                          const m = Math.floor((secs % 3600) / 60);
+                          const s = secs % 60;
+                          if (elapsed) elapsed.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+                        }, 1000);
+                        if (statusLabel) { statusLabel.textContent = task.indirect ? 'Indirect task active' : 'Clocked in'; statusLabel.style.color = 'var(--green)'; }
+                        if (taskLabel) taskLabel.textContent = task.label;
+                        if (btn) { btn.textContent = 'Clock Out'; btn.style.background = 'rgba(220,38,38,0.15)'; btn.style.color = 'var(--red)'; btn.style.border = '1px solid rgba(220,38,38,0.3)'; }
+                      } else {
+                        w.__mgrClockedIn = false;
+                        clearInterval(w.__mgrInterval as number);
+                        if (elapsed) elapsed.textContent = '';
+                        if (statusLabel) { statusLabel.textContent = 'Not clocked in'; statusLabel.style.color = 'rgba(255,255,255,0.35)'; }
+                        if (taskLabel) taskLabel.textContent = 'Select a task to begin';
+                        if (btn) { btn.textContent = 'Clock In'; btn.style.background = 'var(--green)'; btn.style.color = 'white'; btn.style.border = 'none'; btn.style.opacity = '0.35'; btn.style.pointerEvents = 'none'; }
+                        document.querySelectorAll('[id^="mgr-task-"]').forEach((el) => {
+                          (el as HTMLElement).style.borderColor = 'var(--border)';
+                          (el as HTMLElement).style.background = 'var(--bg)';
+                        });
+                        w.__mgrSelectedTask = null;
+                      }
+                    }}
+                  >
+                    Clock In
+                  </button>
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 7, letterSpacing: '0.14em', textTransform: 'uppercase' as const, color: 'var(--muted)' }}>Today</div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 700, color: 'var(--charcoal)' }}>0h 00m</div>
+                  </div>
+                </div>
+
+              </div>
+            </Card>
+          </div>
 
           {/* ── Row 1: DESIGN funnel (2fr) + Finance (1fr) ── */}
           <div style={{ marginTop: 20, display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16 }}>

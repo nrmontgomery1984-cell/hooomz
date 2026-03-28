@@ -27,6 +27,7 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { useDashboardData } from '@/lib/hooks/useDashboardData';
+import { useServicesContext } from '@/lib/services/ServicesContext';
 import { useAllInvoices } from '@/lib/hooks/useInvoices';
 import { useLocalRecentActivity } from '@/lib/hooks/useLocalData';
 import { useTeamWeekSchedule } from '@/lib/hooks/useSchedule';
@@ -132,11 +133,15 @@ export default function CommandCentre() {
   const [clockedTask, setClockedTask] = useState<{ label: string; indirect: boolean; job?: string } | null>(null);
   const [clockInTime, setClockInTime] = useState<number | null>(null);
   const [selectedJob, setSelectedJob] = useState<{ id: string; name: string } | null>(null);
+  const [jobLineItems, setJobLineItems] = useState<Array<{ id: string; description: string; category?: string }>>([]);
+  const [loadingLineItems, setLoadingLineItems] = useState(false);
+  const { services } = useServicesContext();
 
   const handleClockOut = () => {
     setClockedTask(null);
     setClockInTime(null);
     setSelectedJob(null);
+    setJobLineItems([]);
     setClockStep('mode');
   };
 
@@ -670,7 +675,21 @@ export default function CommandCentre() {
                       {dashboard.activeProjects.slice(0, 6).map((project) => (
                         <button
                           key={project.id}
-                          onClick={() => { setSelectedJob({ id: project.id, name: project.name }); setClockStep('category'); }}
+                          onClick={async () => {
+                            setSelectedJob({ id: project.id, name: project.name });
+                            setJobLineItems([]);
+                            setLoadingLineItems(true);
+                            setClockStep('category');
+                            if (services) {
+                              try {
+                                const items = await services.estimating.lineItems.findByProjectId(project.id);
+                                setJobLineItems(items.map((li: { id: string; description: string; category?: string }) => ({
+                                  id: li.id, description: li.description, category: li.category,
+                                })));
+                              } catch { /* empty */ }
+                            }
+                            setLoadingLineItems(false);
+                          }}
                           style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', border: '1px solid var(--border)', background: 'var(--bg)', borderRadius: 'var(--radius)', cursor: 'pointer', width: '100%', textAlign: 'left' }}
                         >
                           <div>
@@ -686,18 +705,53 @@ export default function CommandCentre() {
                     </div>
                   )}
 
-                  {/* STEP 3: Pick a category */}
+                  {/* STEP 3: Pick a line item (field) or category (office) */}
                   {clockStep === 'category' && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                      {taskCategories.map((cat) => (
+
+                      {/* Line items from the selected job (field mode) */}
+                      {clockMode === 'field' && selectedJob && (
+                        <>
+                          {loadingLineItems && (
+                            <div style={{ padding: 12, textAlign: 'center', fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--muted)' }}>Loading tasks...</div>
+                          )}
+                          {!loadingLineItems && jobLineItems.length > 0 && jobLineItems.map((li) => (
+                            <button
+                              key={li.id}
+                              onClick={() => {
+                                setClockedTask({ label: li.description, indirect: false, job: selectedJob.name });
+                                setClockInTime(Date.now());
+                                setShowClockModal(false); setClockStep('mode'); setSelectedJob(null); setJobLineItems([]);
+                              }}
+                              style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', border: '1px solid var(--border)', background: 'var(--bg)', borderRadius: 'var(--radius)', cursor: 'pointer', width: '100%', textAlign: 'left' }}
+                            >
+                              {li.category && (
+                                <div style={{
+                                  fontFamily: 'var(--font-mono)', fontSize: 7, letterSpacing: '0.1em', padding: '2px 5px', borderRadius: 2, textTransform: 'uppercase' as const,
+                                  background: 'rgba(255,255,255,0.06)', color: 'var(--muted)', flexShrink: 0,
+                                }}>{li.category}</div>
+                              )}
+                              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--charcoal)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{li.description}</div>
+                            </button>
+                          ))}
+                          {!loadingLineItems && jobLineItems.length === 0 && (
+                            <div style={{ padding: 10, textAlign: 'center', fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--muted)', letterSpacing: '0.06em' }}>No line items — use indirect below</div>
+                          )}
+
+                          {/* Divider before indirect */}
+                          <div style={{ height: 1, background: 'var(--border)', margin: '6px 0' }} />
+                          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 7, letterSpacing: '0.14em', textTransform: 'uppercase' as const, color: 'var(--muted)', marginBottom: 2 }}>Indirect</div>
+                        </>
+                      )}
+
+                      {/* Categories (office mode shows all; field mode shows indirect only below line items) */}
+                      {(clockMode === 'office' ? taskCategories : fieldCategories).map((cat) => (
                         <button
                           key={cat.id}
                           onClick={() => {
                             setClockedTask({ label: cat.label, indirect: cat.indirect, job: selectedJob?.name });
                             setClockInTime(Date.now());
-                            setShowClockModal(false);
-                            setClockStep('mode');
-                            setSelectedJob(null);
+                            setShowClockModal(false); setClockStep('mode'); setSelectedJob(null); setJobLineItems([]);
                           }}
                           style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', border: '1px solid var(--border)', background: 'var(--bg)', borderRadius: 'var(--radius)', cursor: 'pointer', width: '100%', textAlign: 'left' }}
                         >

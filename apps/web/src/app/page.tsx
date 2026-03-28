@@ -126,6 +126,7 @@ export default function CommandCentre() {
   const salesDotColor = sales.state === 'green' ? 'var(--green)' : sales.state === 'amber' ? 'var(--amber)' : 'var(--red)';
 
   const [showJobs, setShowJobs] = useState(false);
+  const [clockMode, setClockMode] = useState<'office' | 'field'>(role === 'installer' ? 'field' : 'office');
 
   // Finance computations
   const currentMonth = new Date().getMonth();
@@ -263,7 +264,7 @@ export default function CommandCentre() {
   ];
 
   const isOwnerOrOperator = profile?.role === 'owner' || profile?.role === 'operator';
-  const taskCategories = isOwnerOrOperator ? ownerOperatorCategories : fieldCategories;
+  const taskCategories = clockMode === 'office' ? ownerOperatorCategories : fieldCategories;
 
   // ── Installer View ──
   if (isInstaller) {
@@ -305,6 +306,28 @@ export default function CommandCentre() {
                       color: 'var(--green)', letterSpacing: '0.05em', fontVariantNumeric: 'tabular-nums',
                     }} />
                   </div>
+
+                  {/* Office / Field toggle */}
+                  {isOwnerOrOperator && (
+                    <div style={{ display: 'flex', gap: 0, borderRadius: 'var(--radius)', overflow: 'hidden', border: '1px solid var(--border)' }}>
+                      {(['office', 'field'] as const).map((mode) => (
+                        <button
+                          key={mode}
+                          onClick={() => setClockMode(mode)}
+                          style={{
+                            flex: 1, padding: '10px 16px',
+                            fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700,
+                            letterSpacing: '0.12em', textTransform: 'uppercase',
+                            border: 'none', cursor: 'pointer', transition: 'all 0.15s',
+                            background: clockMode === mode ? 'var(--charcoal)' : 'var(--bg)',
+                            color: clockMode === mode ? 'white' : 'var(--muted)',
+                          }}
+                        >
+                          {mode}
+                        </button>
+                      ))}
+                    </div>
+                  )}
 
                   {/* Task selector */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -552,6 +575,28 @@ export default function CommandCentre() {
                     color: 'var(--green)', letterSpacing: '0.05em', fontVariantNumeric: 'tabular-nums',
                   }} />
                 </div>
+
+                {/* Office / Field toggle */}
+                {isOwnerOrOperator && (
+                  <div style={{ display: 'flex', gap: 0, borderRadius: 'var(--radius)', overflow: 'hidden', border: '1px solid var(--border)' }}>
+                    {(['office', 'field'] as const).map((mode) => (
+                      <button
+                        key={mode}
+                        onClick={() => setClockMode(mode)}
+                        style={{
+                          flex: 1, padding: '8px 16px',
+                          fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 700,
+                          letterSpacing: '0.12em', textTransform: 'uppercase',
+                          border: 'none', cursor: 'pointer', transition: 'all 0.15s',
+                          background: clockMode === mode ? 'var(--charcoal)' : 'var(--bg)',
+                          color: clockMode === mode ? 'white' : 'var(--muted)',
+                        }}
+                      >
+                        {mode}
+                      </button>
+                    ))}
+                  </div>
+                )}
 
                 {/* Task selector — horizontal for manager view */}
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>

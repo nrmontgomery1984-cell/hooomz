@@ -34,6 +34,8 @@ import { useAllInvoices } from '@/lib/hooks/useInvoices';
 import { useLocalRecentActivity } from '@/lib/hooks/useLocalData';
 import { useTeamWeekSchedule } from '@/lib/hooks/useSchedule';
 import { useAuth } from '@/context/AuthContext';
+import { useTimeClockState, useTodayTotal, useClockIn, useClockOut } from '@/lib/hooks/useTimeClock';
+import { useActiveCrew } from '@/lib/crew/ActiveCrewContext';
 import { SCRIPT_STAGES, JOB_STAGE_TO_DESIGN, type InvoiceRecord, type DesignStage } from '@hooomz/shared-contracts';
 import { useJobHealthSummary } from '@/lib/hooks/useJobHealthSummary';
 
@@ -133,16 +135,44 @@ export default function CommandCentre() {
   const [clockMode, setClockMode] = useState<'office' | 'field'>(role === 'installer' ? 'field' : 'office');
   const [showClockModal, setShowClockModal] = useState(false);
   const [clockStep, setClockStep] = useState<'mode' | 'job' | 'category'>('mode');
-  const [clockedTask, setClockedTask] = useState<{ label: string; indirect: boolean; job?: string } | null>(null);
-  const [clockInTime, setClockInTime] = useState<number | null>(null);
   const [selectedJob, setSelectedJob] = useState<{ id: string; name: string } | null>(null);
   const [jobTasks, setJobTasks] = useState<Array<{ id: string; title: string; description?: string; status?: string }>>([]);
   const [loadingTasks, setLoadingTasks] = useState(false);
   const { services } = useServicesContext();
 
+  // Real time clock infrastructure
+  const { crewMemberId, crewMemberName, projectId: crewProjectId } = useActiveCrew();
+  const { data: clockState } = useTimeClockState(crewMemberId);
+  const { data: todayTotalMinutes = 0 } = useTodayTotal(crewMemberId);
+  const clockIn = useClockIn();
+  const clockOut = useClockOut();
+
+  const isClockedIn = clockState?.isClockedIn ?? false;
+  const currentTaskTitle = clockState?.currentTaskTitle ?? null;
+  const clockInTime = clockState?.clockInTime ? new Date(clockState.clockInTime).getTime() : null;
+
+  const todayHours = Math.floor(todayTotalMinutes / 60);
+  const todayMins = todayTotalMinutes % 60;
+
+  const handleClockIn = (taskId: string, taskTitle: string, _jobName?: string) => {
+    if (!crewMemberId || !crewMemberName) return;
+    const pid = selectedJob?.id || crewProjectId || 'general';
+    clockIn.mutate({
+      crewMemberId,
+      crewMemberName,
+      projectId: pid,
+      taskId,
+      taskTitle,
+    });
+    setShowClockModal(false);
+    setClockStep('mode');
+    setSelectedJob(null);
+    setJobTasks([]);
+  };
+
   const handleClockOut = () => {
-    setClockedTask(null);
-    setClockInTime(null);
+    if (!crewMemberId || !crewMemberName) return;
+    clockOut.mutate({ crewMemberId, crewMemberName });
     setSelectedJob(null);
     setJobTasks([]);
     setClockStep('mode');
@@ -470,7 +500,7 @@ export default function CommandCentre() {
                     paddingTop: 8, borderTop: '1px solid var(--border)',
                   }}>
                     <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, letterSpacing: '0.14em', textTransform: 'uppercase' as const, color: 'var(--muted)' }}>Total logged today</span>
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, color: 'var(--charcoal)' }}>0h 00m</span>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, color: 'var(--charcoal)' }}>{todayHours}h {String(todayMins).padStart(2, '0')}m</span>
                   </div>
 
                 </div>
@@ -616,7 +646,7 @@ export default function CommandCentre() {
             <Card>
               <button
                 onClick={() => {
-                  if (clockedTask) { handleClockOut(); }
+                  if (isClockedIn) { handleClockOut(); }
                   else { setClockStep(isOwnerOrOperator ? 'mode' : 'job'); setShowClockModal(true); }
                 }}
                 style={{
@@ -628,14 +658,14 @@ export default function CommandCentre() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 }}>
                   <div style={{
                     width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
-                    background: clockedTask ? 'var(--green)' : 'var(--muted)',
-                    boxShadow: clockedTask ? '0 0 6px rgba(22,163,74,0.5)' : 'none',
+                    background: isClockedIn ? 'var(--green)' : 'var(--muted)',
+                    boxShadow: isClockedIn ? '0 0 6px rgba(22,163,74,0.5)' : 'none',
                   }} />
                   <div style={{ minWidth: 0 }}>
                     <div style={{ fontFamily: 'var(--font-display)', fontSize: 12, fontWeight: 600, color: 'var(--charcoal)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {clockedTask ? `${clockedTask.label}${clockedTask.job ? ` — ${clockedTask.job}` : ''}` : 'Clock In'}
+                      {isClockedIn ? (currentTaskTitle ?? 'Clocked In') : 'Clock In'}
                     </div>
-                    {!clockedTask && (
+                    {!isClockedIn && (
                       <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--muted)', letterSpacing: '0.06em', textTransform: 'uppercase' as const }}>
                         Tap to start
                       </div>
@@ -643,16 +673,16 @@ export default function CommandCentre() {
                   </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-                  {clockedTask && clockInTime && <ClockElapsed startTime={clockInTime} />}
+                  {isClockedIn && clockInTime && <ClockElapsed startTime={clockInTime} />}
                   <div style={{
                     fontFamily: 'var(--font-mono)', fontSize: 8, fontWeight: 700,
                     letterSpacing: '0.1em', textTransform: 'uppercase' as const,
                     padding: '4px 10px', borderRadius: 'var(--radius)',
-                    background: clockedTask ? 'rgba(220,38,38,0.1)' : 'var(--green)',
-                    color: clockedTask ? 'var(--red)' : 'white',
-                    border: clockedTask ? '1px solid rgba(220,38,38,0.25)' : 'none',
+                    background: isClockedIn ? 'rgba(220,38,38,0.1)' : 'var(--green)',
+                    color: isClockedIn ? 'var(--red)' : 'white',
+                    border: isClockedIn ? '1px solid rgba(220,38,38,0.25)' : 'none',
                   }}>
-                    {clockedTask ? 'Stop' : 'Start'}
+                    {isClockedIn ? 'Stop' : 'Start'}
                   </div>
                 </div>
               </button>
@@ -764,9 +794,7 @@ export default function CommandCentre() {
                             <button
                               key={task.id}
                               onClick={() => {
-                                setClockedTask({ label: task.title, indirect: false, job: selectedJob.name });
-                                setClockInTime(Date.now());
-                                setShowClockModal(false); setClockStep('mode'); setSelectedJob(null); setJobTasks([]);
+                                handleClockIn(task.id, task.title, selectedJob.name);
                               }}
                               style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', border: '1px solid var(--border)', background: 'var(--bg)', borderRadius: 'var(--radius)', cursor: 'pointer', width: '100%', textAlign: 'left' }}
                             >
@@ -794,9 +822,7 @@ export default function CommandCentre() {
                         <button
                           key={cat.id}
                           onClick={() => {
-                            setClockedTask({ label: cat.label, indirect: cat.indirect, job: selectedJob?.name });
-                            setClockInTime(Date.now());
-                            setShowClockModal(false); setClockStep('mode'); setSelectedJob(null); setJobTasks([]);
+                            handleClockIn(cat.id, cat.label, selectedJob?.name);
                           }}
                           style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', border: '1px solid var(--border)', background: 'var(--bg)', borderRadius: 'var(--radius)', cursor: 'pointer', width: '100%', textAlign: 'left' }}
                         >
@@ -1258,7 +1284,7 @@ export default function CommandCentre() {
                   <span style={{
                     fontFamily: 'var(--font-mono)', fontSize: 14,
                     fontWeight: 700, color: 'var(--charcoal)',
-                  }}>11.4h</span>
+                  }}>{todayHours}h {String(todayMins).padStart(2, '0')}m</span>
                 </div>
               </Card>
             </div>

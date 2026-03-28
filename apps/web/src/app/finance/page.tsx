@@ -18,6 +18,7 @@ import { useInvoiceAging } from '@/lib/hooks/useInvoiceAging';
 import { ARAgingTable } from '@/components/finance/ARAgingTable';
 import { FinancialScoreWidget } from '@/components/finance/FinancialScoreWidget';
 import { useServicesContext } from '@/lib/services/ServicesContext';
+import { useActiveCrewMembers } from '@/lib/hooks/useCrewData';
 import {
   usePendingReimbursements,
   usePendingExpenseReview,
@@ -49,6 +50,85 @@ export default function FinanceDashboard() {
     enabled: !servicesLoading && !!services,
     staleTime: 15_000,
   });
+
+  // ── Reporting tab data (real from timeclock) ──
+  const { data: crewMembers = [] } = useActiveCrewMembers();
+
+  // Payroll: today's entries per crew member
+  const { data: payrollData = [] } = useQuery({
+    queryKey: ['reporting', 'payroll', 'today', crewMembers.map((m) => m.id).join(',')],
+    queryFn: async () => {
+      if (!services) return [];
+      return Promise.all(
+        crewMembers.map(async (member) => {
+          const entries = await services.timeClock.getTodayEntries(member.id);
+          const closed = entries.filter((e) => e.clock_out !== null);
+          const installHours = closed
+            .filter((e) => e.entryType !== 'overhead' && e.entryType !== 'break')
+            .reduce((sum, e) => sum + (e.total_hours ?? 0), 0);
+          const indirectHours = closed
+            .filter((e) => e.entryType === 'overhead')
+            .reduce((sum, e) => sum + (e.total_hours ?? 0), 0);
+          const totalHours = installHours + indirectHours;
+          const rate = member.wageRate ?? 0;
+          return {
+            name: member.name,
+            role: `${member.role ?? 'Installer'} · $${rate}/hr`,
+            installStr: `${installHours.toFixed(1)}h`,
+            indirectStr: `${indirectHours.toFixed(1)}h`,
+            totalStr: `${totalHours.toFixed(1)}h`,
+            payStr: `$${(totalHours * rate).toFixed(0)}`,
+            totalHours,
+            indirectHours,
+            payNum: totalHours * rate,
+          };
+        })
+      );
+    },
+    enabled: crewMembers.length > 0 && !servicesLoading && !!services,
+    staleTime: 15_000,
+  });
+
+  // Indirect breakdown: today's overhead entries grouped by note/category
+  const { data: indirectData = [] } = useQuery({
+    queryKey: ['reporting', 'indirect', 'today', crewMembers.map((m) => m.id).join(',')],
+    queryFn: async () => {
+      if (!services) return [];
+      const allEntries = await Promise.all(
+        crewMembers.map((m) => services.timeClock.getTodayEntries(m.id))
+      );
+      const flat = allEntries.flat().filter((e) =>
+        e.entryType === 'overhead' && e.clock_out !== null
+      );
+      const grouped: Record<string, { hours: number; cost: number }> = {};
+      for (const entry of flat) {
+        const tag = entry.note || 'Admin';
+        if (!grouped[tag]) grouped[tag] = { hours: 0, cost: 0 };
+        grouped[tag].hours += entry.total_hours ?? 0;
+        grouped[tag].cost += (entry.total_hours ?? 0) * (entry.hourly_rate ?? 0);
+      }
+      return Object.entries(grouped)
+        .map(([tag, data]) => ({
+          tag,
+          detail: '',
+          hours: `${data.hours.toFixed(1)}h`,
+          cost: `$${data.cost.toFixed(0)}`,
+          hoursNum: data.hours,
+          costNum: data.cost,
+          warn: data.hours > 1,
+        }))
+        .sort((a, b) => b.hoursNum - a.hoursNum);
+    },
+    enabled: crewMembers.length > 0 && !servicesLoading && !!services,
+    staleTime: 15_000,
+  });
+
+  const indirectTotalHours = indirectData.reduce((s, r) => s + r.hoursNum, 0);
+  const indirectTotalCost = indirectData.reduce((s, r) => s + r.costNum, 0);
+  const payrollTotalInstall = payrollData.reduce((s, r) => s + r.totalHours - r.indirectHours, 0);
+  const payrollTotalIndirect = payrollData.reduce((s, r) => s + r.indirectHours, 0);
+  const payrollTotalHours = payrollData.reduce((s, r) => s + r.totalHours, 0);
+  const payrollTotalPay = payrollData.reduce((s, r) => s + r.payNum, 0);
 
   // Merge invoices + expenses into a unified transaction list (last 10)
   const recentTransactions = useMemo<TransactionRow[]>(() => {
@@ -398,14 +478,10 @@ export default function FinanceDashboard() {
           {activeTab === 'reporting' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16, paddingTop: 20 }}>
 
-            {/* PAYROLL SUMMARY */}
-            {/**
-             * Placeholder data until timeclock service is wired.
-             * Wire to crew time entries queryable by installer ID + date range.
-             */}
+            {/* PAYROLL SUMMARY — real data from timeclock */}
             <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-                <SectionHeader title="Installer Hours — Payroll Summary" />
+                <SectionHeader title="Crew Hours — Today" />
                 <button style={{
                   fontFamily: 'var(--font-mono)', fontSize: 8, letterSpacing: '0.14em',
                   textTransform: 'uppercase', background: 'transparent', border: '1px solid var(--border)',
@@ -414,53 +490,44 @@ export default function FinanceDashboard() {
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px 80px 80px 100px', gap: 8, paddingBottom: 8, borderBottom: '1px solid var(--border)', marginBottom: 4 }}>
-                {['Installer', 'Install hrs', 'Indirect hrs', 'Total hrs', 'Pay'].map((h) => (
-                  <div key={h} style={{ fontFamily: 'var(--font-mono)', fontSize: 7, letterSpacing: '0.14em', textTransform: 'uppercase' as const, color: 'var(--muted)', textAlign: h === 'Installer' ? 'left' : 'right' }}>{h}</div>
+                {['Crew', 'Install hrs', 'Indirect hrs', 'Total hrs', 'Pay'].map((h) => (
+                  <div key={h} style={{ fontFamily: 'var(--font-mono)', fontSize: 7, letterSpacing: '0.14em', textTransform: 'uppercase' as const, color: 'var(--muted)', textAlign: h === 'Crew' ? 'left' : 'right' }}>{h}</div>
                 ))}
               </div>
 
-              {[
-                { name: 'Jordan S.', role: 'Installer · $28/hr', install: '26.4h', indirect: '5.8h', total: '32.2h', pay: '$902' },
-                { name: 'Mike T.', role: 'Installer · $26/hr', install: '29.1h', indirect: '4.9h', total: '34.0h', pay: '$884' },
-              ].map((row, i, arr) => (
+              {payrollData.length === 0 ? (
+                <div style={{ padding: 16, textAlign: 'center', fontSize: 12, color: 'var(--muted)' }}>No time entries today</div>
+              ) : payrollData.map((row, i, arr) => (
                 <div key={row.name} style={{ display: 'grid', gridTemplateColumns: '1fr 80px 80px 80px 100px', gap: 8, padding: '10px 0', borderBottom: i < arr.length - 1 ? '1px solid var(--border)' : 'none', alignItems: 'center' }}>
                   <div>
                     <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--charcoal)' }}>{row.name}</div>
                     <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--muted)', marginTop: 1 }}>{row.role}</div>
                   </div>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--charcoal)', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{row.install}</div>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--yellow)', textAlign: 'right' }}>{row.indirect}</div>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, color: 'var(--charcoal)', textAlign: 'right' }}>{row.total}</div>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, color: 'var(--green)', textAlign: 'right' }}>{row.pay}</div>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--charcoal)', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{row.installStr}</div>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--yellow)', textAlign: 'right' }}>{row.indirectStr}</div>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, color: 'var(--charcoal)', textAlign: 'right' }}>{row.totalStr}</div>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, color: 'var(--green)', textAlign: 'right' }}>{row.payStr}</div>
                 </div>
               ))}
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px 80px 80px 100px', gap: 8, padding: '10px 0 0', borderTop: '1px solid var(--border)', marginTop: 4, alignItems: 'center' }}>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, letterSpacing: '0.12em', textTransform: 'uppercase' as const, color: 'var(--muted)' }}>Week total</div>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, color: 'var(--charcoal)', textAlign: 'right' }}>55.5h</div>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, color: 'var(--yellow)', textAlign: 'right' }}>10.7h</div>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 900, color: 'var(--charcoal)', textAlign: 'right' }}>66.2h</div>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 900, color: 'var(--green)', textAlign: 'right' }}>$1,786</div>
-              </div>
+              {payrollData.length > 0 && (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px 80px 80px 100px', gap: 8, padding: '10px 0 0', borderTop: '1px solid var(--border)', marginTop: 4, alignItems: 'center' }}>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, letterSpacing: '0.12em', textTransform: 'uppercase' as const, color: 'var(--muted)' }}>Today total</div>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, color: 'var(--charcoal)', textAlign: 'right' }}>{payrollTotalInstall.toFixed(1)}h</div>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, color: 'var(--yellow)', textAlign: 'right' }}>{payrollTotalIndirect.toFixed(1)}h</div>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 900, color: 'var(--charcoal)', textAlign: 'right' }}>{payrollTotalHours.toFixed(1)}h</div>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 900, color: 'var(--green)', textAlign: 'right' }}>${payrollTotalPay.toFixed(0)}</div>
+                </div>
+              )}
             </div>
 
-            {/* INDIRECT PRODUCTION BREAKDOWN */}
-            {/**
-             * Placeholder data until timeclock service is wired.
-             * Wire to indirect time entries tagged by category.
-             */}
+            {/* INDIRECT PRODUCTION BREAKDOWN — real data */}
             <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 20 }}>
-              <SectionHeader title="Indirect Production — This Week" />
+              <SectionHeader title="Indirect Production — Today" />
               <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                {[
-                  { tag: 'Travel', detail: 'To/from site · 6 trips', hours: '3.8h', cost: '$106', warn: true },
-                  { tag: 'Setup', detail: 'Site prep · 3 jobs', hours: '1.4h', cost: '$39', warn: false },
-                  { tag: 'Clean', detail: 'End of day · 3 jobs', hours: '1.8h', cost: '$50', warn: false },
-                  { tag: 'Mat Run', detail: 'Store trips · 4 runs', hours: '2.2h', cost: '$62', warn: true },
-                  { tag: 'Rework', detail: 'Corrections — see notes', hours: '0h', cost: '$0', warn: false },
-                  { tag: 'Wait', detail: 'Delivery delay · 1 job', hours: '1.5h', cost: '$42', warn: true },
-                  { tag: 'Admin', detail: 'Photos, checklists on site', hours: '0h', cost: '$0', warn: false },
-                ].map((row) => (
+                {indirectData.length === 0 ? (
+                  <div style={{ padding: 16, textAlign: 'center', fontSize: 12, color: 'var(--muted)' }}>No indirect time logged today</div>
+                ) : indirectData.map((row) => (
                   <div key={row.tag} style={{
                     display: 'grid', gridTemplateColumns: '80px 1fr 70px 70px',
                     alignItems: 'center', padding: '10px 12px', gap: 12,
@@ -479,54 +546,26 @@ export default function FinanceDashboard() {
                   </div>
                 ))}
 
-                <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr 70px 70px', alignItems: 'center', padding: '10px 12px', gap: 12, borderTop: '1px solid var(--border)', marginTop: 4 }}>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, letterSpacing: '0.12em', textTransform: 'uppercase' as const, color: 'var(--muted)' }}>Total</div>
-                  <div/>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 900, color: 'var(--yellow)', textAlign: 'right' }}>10.7h</div>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 900, color: 'var(--charcoal)', textAlign: 'right' }}>$299</div>
-                </div>
+                {indirectData.length > 0 && (
+                  <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr 70px 70px', alignItems: 'center', padding: '10px 12px', gap: 12, borderTop: '1px solid var(--border)', marginTop: 4 }}>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, letterSpacing: '0.12em', textTransform: 'uppercase' as const, color: 'var(--muted)' }}>Total</div>
+                    <div/>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 900, color: 'var(--yellow)', textAlign: 'right' }}>{indirectTotalHours.toFixed(1)}h</div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 900, color: 'var(--charcoal)', textAlign: 'right' }}>${indirectTotalCost.toFixed(0)}</div>
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* LINE ITEM TIME DETAIL */}
-            {/**
-             * Placeholder data until timeclock service + useLocalProjects are wired.
-             * Wire to task-level time entries with stage/trade/installer metadata.
-             */}
+            {/* LINE ITEM TIME DETAIL — placeholder until deployed tasks are populated */}
             <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: 20 }}>
-              <SectionHeader title="Line Item Time Detail — All Active Jobs" />
-              <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 2 }}>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr 90px 70px 70px 80px', gap: 8, paddingBottom: 8, borderBottom: '1px solid var(--border)' }}>
-                  {['Stage · Trade', 'Task', 'Installer', 'Budgeted', 'Actual', 'Variance'].map((h) => (
-                    <div key={h} style={{ fontFamily: 'var(--font-mono)', fontSize: 7, letterSpacing: '0.13em', textTransform: 'uppercase' as const, color: 'var(--muted)', textAlign: h === 'Stage · Trade' || h === 'Task' || h === 'Installer' ? 'left' : 'right' }}>{h}</div>
-                  ))}
-                </div>
-
-                {[
-                  { stage: 'S10 · FLR', task: 'LVP Flooring Install', job: '14 Hillside Cr.', installer: 'Jordan S.', budgeted: '4.5h', actual: '6.2h', variance: '+1.7h', over: true },
-                  { stage: 'S10 · PNT', task: 'Paint — Walls', job: '14 Hillside Cr.', installer: 'Mike T.', budgeted: '6.0h', actual: '5.6h', variance: '\u22120.4h', over: false },
-                  { stage: 'S10 · TRM', task: 'Trim — Baseboard', job: '14 Hillside Cr.', installer: 'Jordan S.', budgeted: '3.0h', actual: '\u2014', variance: '\u2014', over: false },
-                  { stage: 'S11 · PNT', task: 'Paint — Walls', job: '88 Pine St.', installer: 'Mike T.', budgeted: '5.5h', actual: '5.1h', variance: '\u22120.4h', over: false },
-                  { stage: 'S11 · FLR', task: 'LVP Flooring Install', job: '88 Pine St.', installer: 'Jordan S.', budgeted: '6.0h', actual: '6.8h', variance: '+0.8h', over: true },
-                ].map((row) => (
-                  <div key={`${row.job}-${row.stage}`} style={{
-                    display: 'grid', gridTemplateColumns: '100px 1fr 90px 70px 70px 80px',
-                    gap: 8, padding: '10px 0',
-                    borderBottom: '1px solid var(--border)',
-                    alignItems: 'center',
-                  }}>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase' as const, color: 'var(--muted)', background: 'var(--bg)', padding: '2px 6px', width: 'fit-content' }}>{row.stage}</div>
-                    <div>
-                      <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--charcoal)' }}>{row.task}</div>
-                      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--muted)', marginTop: 1 }}>{row.job}</div>
-                    </div>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--muted)' }}>{row.installer}</div>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--charcoal)', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{row.budgeted}</div>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--charcoal)', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{row.actual}</div>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, color: row.variance === '\u2014' ? 'var(--muted)' : row.over ? 'var(--red)' : 'var(--green)', textAlign: 'right' }}>{row.variance}</div>
-                  </div>
-                ))}
+              <SectionHeader title="Line Item Time Detail — Active Jobs" />
+              <div style={{ marginTop: 12, padding: 16, textAlign: 'center', fontSize: 12, color: 'var(--muted)' }}>
+                Line item detail requires deployed tasks with labour estimates.
+                <br />
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--muted)' }}>
+                  Apply estimates via the job passport to see budgeted vs actual hours per task.
+                </span>
               </div>
             </div>
 

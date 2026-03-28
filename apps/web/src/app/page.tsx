@@ -670,8 +670,46 @@ export default function CommandCentre() {
             />
           </div>
 
+          {/* Live clock indicator — always visible in strip */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            padding: '0 20px', height: 52,
+            borderLeft: '1px solid rgba(255,255,255,.06)',
+            borderRight: '1px solid rgba(255,255,255,.06)',
+          }}>
+            <div style={{
+              width: 7, height: 7, borderRadius: '50%',
+              background: liveInstallers.length > 0 ? 'var(--green)' : 'rgba(255,255,255,.15)',
+              boxShadow: liveInstallers.length > 0 ? '0 0 8px rgba(22,163,74,0.6)' : 'none',
+              flexShrink: 0,
+            }} />
+            {liveInstallers.length === 0 ? (
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'rgba(255,255,255,.25)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                No one on clock
+              </span>
+            ) : (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                {liveInstallers.map((inst) => (
+                  <div key={inst.initials} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                    <div style={{
+                      width: 20, height: 20, borderRadius: '50%',
+                      background: 'rgba(255,255,255,.08)', border: '1px solid rgba(255,255,255,.12)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontFamily: 'var(--font-mono)', fontSize: 7, fontWeight: 700,
+                      color: 'rgba(255,255,255,.5)',
+                    }}>{inst.initials}</div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 7, color: 'rgba(255,255,255,.5)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>{inst.task.length > 16 ? inst.task.slice(0, 14) + '…' : inst.task}</span>
+                      {inst.clockInTime && <ClockElapsed startTime={new Date(inst.clockInTime).getTime()} />}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
           {/* View mode switcher */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 0, marginLeft: 'auto', borderLeft: '1px solid rgba(255,255,255,.06)', height: 52 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 0, marginLeft: 'auto', height: 52 }}>
             {(['manager', 'operator', 'installer', 'homeowner'] as ViewMode[]).map((mode) => (
               <button
                 key={mode}

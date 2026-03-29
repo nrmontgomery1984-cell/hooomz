@@ -103,7 +103,11 @@ export function Sidebar() {
   }, []);
 
   const handleSignOut = useCallback(async () => {
-    await signOut();
+    try {
+      await signOut();
+    } catch {
+      // Always redirect even if Supabase signOut fails
+    }
     router.push('/login');
   }, [signOut, router]);
 

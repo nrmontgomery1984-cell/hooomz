@@ -195,17 +195,24 @@ export function Sidebar() {
           style={{ height: 1, background: colors.sidebarDivider }}
         />
 
-        {/* Flat items */}
-        <div className="py-3">
-          {FLAT_ITEMS.map((item) => (
-            <SidebarNavItem
-              key={item.href}
-              item={item}
-              active={isActive(pathname, item.href)}
-              kind="flat"
-            />
-          ))}
-        </div>
+        {/* Flat items — each separated by a divider */}
+        {FLAT_ITEMS.map((item, i) => (
+          <div key={item.href}>
+            {i > 0 && (
+              <div
+                className="mx-3 my-1.5"
+                style={{ height: 1, background: colors.sidebarDivider }}
+              />
+            )}
+            <div className="py-3">
+              <SidebarNavItem
+                item={item}
+                active={isActive(pathname, item.href)}
+                kind="flat"
+              />
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Sign Out */}

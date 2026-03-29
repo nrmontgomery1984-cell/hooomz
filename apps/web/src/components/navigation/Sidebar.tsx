@@ -9,7 +9,7 @@
 
 import { useCallback, useState, useMemo } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { LogOut, ChevronRight } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { colors, typography, fontSizes } from '@/lib/constants/designSystem';
@@ -91,7 +91,6 @@ function groupForPath(pathname: string | null): string | null {
 
 export function Sidebar() {
   const pathname = usePathname();
-  const router = useRouter();
   const { signOut, profile } = useAuth();
 
   // Accordion: only one group open at a time. Initial = active route's group.

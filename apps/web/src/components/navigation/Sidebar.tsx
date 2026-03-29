@@ -103,18 +103,22 @@ export function Sidebar() {
   }, []);
 
   const handleSignOut = useCallback(async () => {
+    // Clear all Supabase session keys FIRST, before calling signOut
+    try {
+      Object.keys(localStorage)
+        .filter((k) => k.startsWith('sb-'))
+        .forEach((k) => localStorage.removeItem(k));
+    } catch { /* ignore */ }
+
     // Race signOut against a 2s timeout — if Supabase hangs, redirect anyway
     await Promise.race([
       signOut().catch(() => {}),
       new Promise((resolve) => setTimeout(resolve, 2000)),
     ]);
-    // Clear any cached session so ProtectedRoute doesn't re-authenticate
-    try {
-      const key = Object.keys(localStorage).find((k) => k.startsWith('sb-') && k.endsWith('-auth-token'));
-      if (key) localStorage.removeItem(key);
-    } catch { /* ignore */ }
-    router.push('/login');
-  }, [signOut, router]);
+
+    // Hard redirect — avoids React re-rendering with stale auth state
+    window.location.href = '/login';
+  }, [signOut]);
 
   if (hiddenPaths.some((p) => pathname?.startsWith(p))) return null;
 

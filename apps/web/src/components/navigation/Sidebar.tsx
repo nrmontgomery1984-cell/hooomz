@@ -103,11 +103,16 @@ export function Sidebar() {
   }, []);
 
   const handleSignOut = useCallback(async () => {
+    // Race signOut against a 2s timeout — if Supabase hangs, redirect anyway
+    await Promise.race([
+      signOut().catch(() => {}),
+      new Promise((resolve) => setTimeout(resolve, 2000)),
+    ]);
+    // Clear any cached session so ProtectedRoute doesn't re-authenticate
     try {
-      await signOut();
-    } catch {
-      // Always redirect even if Supabase signOut fails
-    }
+      const key = Object.keys(localStorage).find((k) => k.startsWith('sb-') && k.endsWith('-auth-token'));
+      if (key) localStorage.removeItem(key);
+    } catch { /* ignore */ }
     router.push('/login');
   }, [signOut, router]);
 
